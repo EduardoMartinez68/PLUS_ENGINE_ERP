@@ -30,36 +30,6 @@ function filterApps() {
 let sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || []; 
 
 //this function is for load the web that need
-function nextWeb2(url) {
-  if (typeof url === 'string' && url.trim() !== '') {
-    fetch(url, {
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
-      }
-      return response.text();
-    })
-    .then(html => {
-      //update the container of the web like if was SAP
-      document.getElementById('main-content').innerHTML = html; 
-
-      //save the last link that the user visit for after load the web if the user loaded the web
-      sessionHistory.push(url);
-      localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
-      closeMenu(); //close the menu of apps
-    })
-    .catch(error => {
-      console.error('Error al cargar contenido:', error);
-    });
-  } else {
-    console.error('URL inválida proporcionada a nextWeb');
-  }
-}
-
 function nextWeb(url) {
   if (typeof url === 'string' && url.trim() !== '') {
     fetch(url, {
@@ -74,37 +44,38 @@ function nextWeb(url) {
       return response.text();
     })
     .then(html => {
-      // Crear un DOM temporal para procesar el HTML
+      // Parse the HTML
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
 
-      // Actualizar el contenido visual
+      // Update main-content
       const mainContent = doc.getElementById('main-content');
       document.getElementById('main-content').innerHTML = mainContent ? mainContent.innerHTML : html;
 
-      // Procesar y cargar todos los <script> que vengan
+      // Remove old dynamic scripts
+      document.querySelectorAll('script[data-dynamic-script]').forEach(script => script.remove());
+
+      // Add new scripts
       const scripts = doc.querySelectorAll('script');
       scripts.forEach(oldScript => {
         const newScript = document.createElement('script');
+        newScript.setAttribute('data-dynamic-script', 'true'); // mark it
 
         if (oldScript.src) {
-          // Si es <script src="...">
           newScript.src = oldScript.src;
-          newScript.async = false; // para mantener orden
+          newScript.async = false;
         } else {
-          // Si es <script> inline
           newScript.textContent = oldScript.textContent;
         }
 
-        // Insertamos el script en el body
         document.body.appendChild(newScript);
       });
 
-      // Guardar historial
+      // Save sessionHistory
       sessionHistory.push(url);
       localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
 
-      closeMenu(); // cerrar el menú de apps
+      closeMenu();
     })
     .catch(error => {
       console.error('Error al cargar contenido:', error);

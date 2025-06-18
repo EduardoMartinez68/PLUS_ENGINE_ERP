@@ -1,26 +1,293 @@
-<br><br>
-<div class="container">
-    <div class="status-ribbon">Terminado</div>
+<style>
+  :root {
+    --accent: #4e94f3;
+    --column-bg: #f5f5f5;
+    --card-bg: #ffffff;
+    --priority-low: #d7f7c2;
+    --priority-medium: #ffe8a2;
+    --priority-high: #ffb3b3;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --progress-color: #4CAF50;
+  }
 
+  .crm-board {
+    display: flex;
+    gap: 2rem;
+    overflow-x: auto;
+  }
 
-    <div class="section-title">Informacion del Expediente</div>
-    <hr>
-    {% include 'partials/forms.html' %}
+  .column {
+    flex: 1;
+    background: var(--column-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow);
+    padding: 1.2rem;
+    min-width: 320px;
+  }
 
-    <div class="tabs">
-        <div class="tab-buttons">
-        <button class="active" onclick="openTab(event, 'partes')" data-i18n="partes">Partes Involucradas</button>
-        <button onclick="openTab(event, 'files')" data-i18n="files">Documentación</button>
-        <button onclick="openTab(event, 'calendar')" data-i18n="calendar">Calendario / Citas</button>
-        <button onclick="openTab(event, 'invoices')" data-i18n="invoices">Facturas</button>
-        <button onclick="openTab(event, 'note')" data-i18n="note">Notas</button>
+  .column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-bar {
+    height: 8px;
+    border-radius: 6px;
+    background-color: #d4d4d4;
+    margin-bottom: 0.7rem;
+    overflow: hidden;
+  }
+
+  .progress {
+    background-color: var(--progress-color);
+    height: 100%;
+    transition: width 0.4s ease;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border-left: 5px solid var(--progress-color);
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s ease;
+    position: relative;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+  }
+
+  .card.dragging {
+    opacity: 0.9;
+    transform: scale(1.02);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .card h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    color: #333;
+  }
+
+  .card .info-group {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #555;
+  }
+
+  .card .info-group strong {
+    font-weight: 600;
+    color: #222;
+    display: inline-block;
+    width: 130px;
+  }
+
+  .priority-label {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #333;
+    margin-top: 0.8rem;
+  }
+
+  .priority-label.low {
+    background-color: var(--priority-low);
+  }
+
+  .priority-label.medium {
+    background-color: var(--priority-medium);
+  }
+
+  .priority-label.high {
+    background-color: var(--priority-high);
+  }
+
+  .card .menu {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    cursor: pointer;
+  }
+
+  .menu-options {
+    display: none;
+    position: absolute;
+    top: 1.8rem;
+    right: 0;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px var(--shadow);
+    z-index: 10;
+  }
+
+  .menu-options button {
+    padding: 0.6rem 1rem;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  .menu-options button:hover {
+    background-color: #f1f1f1;
+  }
+</style>
+<br>
+<!---
+<h2>CRM Minimalista</h2>
+--->
+
+{% include 'partials/navbarHome.html' %}
+{% include 'partials/messagePops.html' %}
+
+<!---
+  <button
+    onclick="showAlert('info', 'Información', 'Este es un mensaje informativo.', 'Detalle técnico: código 1001')">Info</button>
+  <button onclick="showAlert('alert', '¡Alerta!', 'Ha ocurrido un error.', 'Stack trace...')">Alerta</button>
+  <button onclick="showAlert('normal', 'Normal', 'Mensaje normal.', 'Detalles aquí...')">Normal</button>
+  <button
+    onclick="showAlert('question', '¿Está seguro?', '¿Desea eliminar este caso?')">Question</button>
+--->
+<br>
+<div class="crm-board">
+  <div class="column" data-status="nuevo">
+    <div class="column-header">
+      <div style="flex:1">
+        <div class="progress-bar">
+          <div class="progress" style="width: 33%"></div>
         </div>
-
-        {% include 'partials/parties_involved.html' %}
-        {% include 'partials/files.html' %}
-        {% include 'partials/calendar.html' %}
-        {% include 'partials/commissions.html' %}
-        {% include 'partials/note.html' %}
+        <h3>Nuevo</h3>
+      </div>
+      <div class="menu">⋮
+        <div class="menu-options">
+          <button>Ver</button>
+          <button>Editar</button>
+          <button>Eliminar</button>
+        </div>
+      </div>
+    </div>
+    <div class="card" draggable="true">
+      <h4>Reunión Inicial</h4>
+      <div class="info-group"><strong>Acme Corp</strong></div>
+      <div class="info-group"><strong>$5,000</strong> 2024-08-20</div>
+      <span class="priority-label high">Alta prioridad</span>
+      <div class="menu">⋮
+        <div class="menu-options">
+          <button>Ver</button>
+          <button>Editar</button>
+          <button>Eliminar</button>
+        </div>
+      </div>
     </div>
 
+  </div>
+  <div class="column" data-status="en-proceso">
+    <div class="column-header">
+      <div style="flex:1">
+        <div class="progress-bar">
+          <div class="progress" style="width: 0%"></div>
+        </div>
+        <h3>En Proceso</h3>
+      </div>
+      <div class="menu">⋮
+        <div class="menu-options">
+          <button>Ver</button>
+          <button>Editar</button>
+          <button>Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="column" data-status="ganado">
+    <div class="column-header">
+      <div style="flex:1">
+        <div class="progress-bar">
+          <div class="progress" style="width: 0%"></div>
+        </div>
+        <h3>Ganado</h3>
+      </div>
+      <div class="menu">⋮
+        <div class="menu-options">
+          <button>Ver</button>
+          <button>Editar</button>
+          <button>Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+  const cards = document.querySelectorAll('.card');
+  const columns = document.querySelectorAll('.column');
+
+  cards.forEach(card => {
+    card.addEventListener('dragstart', e => {
+      e.dataTransfer.effectAllowed = "move";
+      card.classList.add('dragging');
+    });
+
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      updateProgress();
+    });
+  });
+
+  columns.forEach(column => {
+    column.addEventListener('dragover', e => {
+      e.preventDefault();
+      const dragging = document.querySelector('.dragging');
+      const afterElement = getDragAfterElement(column, e.clientY);
+      if (afterElement == null) {
+        column.appendChild(dragging);
+      } else {
+        column.insertBefore(dragging, afterElement);
+      }
+    });
+  });
+
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.card:not(.dragging)')];
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  document.querySelectorAll('.menu').forEach(menu => {
+    menu.addEventListener('click', (e) => {
+      const options = menu.querySelector('.menu-options');
+      document.querySelectorAll('.menu-options').forEach(m => m.style.display = 'none');
+      if (options) options.style.display = 'block';
+      e.stopPropagation();
+    });
+  });
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.menu-options').forEach(menu => menu.style.display = 'none');
+  });
+
+  function updateProgress() {
+    const total = document.querySelectorAll('.card').length;
+    document.querySelectorAll('.column').forEach(col => {
+      const cardsInCol = col.querySelectorAll('.card').length;
+      const progress = col.querySelector('.progress');
+      if (progress) progress.style.width = `${(cardsInCol / total) * 100}%`;
+    });
+  }
+
+  updateProgress();
+</script>
