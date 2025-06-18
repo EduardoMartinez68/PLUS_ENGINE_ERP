@@ -9,12 +9,6 @@ openBtn.addEventListener('click', () => {
   //overlay.classList.add('active');
 });
 
-closeBtn.addEventListener('click', () => {
-  closeMenu();
-  //sidebar.classList.remove('open');
-  //overlay.classList.remove('active');
-});
-
 overlay.addEventListener('click', () => {
   sidebar.classList.remove('open');
   overlay.classList.remove('active');
@@ -31,10 +25,45 @@ function filterApps() {
   });
 }
 
-function nextWeb(url){
+
+//this is for save the history that the user visit after
+let sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || []; 
+
+//this function is for load the web that need
+function nextWeb(url) {
   if (typeof url === 'string' && url.trim() !== '') {
-    window.location.href = url;
+    fetch(url, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(html => {
+      //update the container of the web like if was SAP
+      document.getElementById('main-content').innerHTML = html; 
+
+      //save the last link that the user visit for after load the web if the user loaded the web
+      sessionHistory.push(url);
+      localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
+      closeMenu(); //close the menu of apps
+    })
+    .catch(error => {
+      console.error('Error al cargar contenido:', error);
+    });
   } else {
     console.error('URL inválida proporcionada a nextWeb');
   }
+}
+
+//her we will see if the user have links save in the cache
+const lastPage = sessionHistory.length > 0 ? sessionHistory[sessionHistory.length - 1] : '/';
+
+//if the user not is in tha last web, we will load the container
+if (location.pathname !== lastPage) {
+  nextWeb(lastPage);
 }

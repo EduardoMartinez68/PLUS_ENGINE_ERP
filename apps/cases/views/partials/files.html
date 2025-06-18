@@ -1,0 +1,101 @@
+<style>
+<style>
+  .docs-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .docs-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background: #f7f8fa;
+    border-radius: 8px;
+  }
+
+  .docs-list .doc-name {
+    flex: 1;
+    margin-right: 10px;
+  }
+
+  .docs-list .download-link {
+    margin-right: 10px;
+    text-decoration: none;
+    font-size: 18px;
+  }
+
+  .add-doc-form input {
+    padding: 6px;
+    margin-right: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .add-doc-form button {
+    padding: 6px 12px;
+    background-color: #2a395b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .add-doc-form button:hover {
+    background-color: #1e2d48;
+  }
+</style>
+
+</style>
+<div class="tab-content" id="files">
+  <div class="add-doc-form" style="margin-top: 15px;">
+    <input type="text" id="docName" placeholder="Nombre del documento" />
+    <input type="url" id="docLink" placeholder="https://ejemplo.com/documento.pdf" />
+    <button onclick="addDoc()">Agregar</button>
+  </div>
+  <br>
+  <ul class="docs-list" id="docsList">
+    <li>
+      <span class="doc-name">Demanda inicial - PDF</span>
+      <a href="#" class="download-link" target="_blank"><i class="fi fi-rr-download"></i></a>
+      <button onclick="deleteDoc(this)" class="delete-btn"><i class="fi fi-ss-trash"></i></button>
+    </li>
+    <li>
+      <span class="doc-name">Contrato firmado - PDF</span>
+      <a href="#" class="download-link" target="_blank"><i class="fi fi-rr-download"></i></a>
+      <button onclick="deleteDoc(this)" class="delete-btn"><i class="fi fi-ss-trash"></i></button>
+    </li>
+    <li>
+      <span class="doc-name">Oficio recibido - PDF</span>
+      <a href="#" class="download-link" target="_blank"><i class="fi fi-rr-download"></i></a>
+      <button onclick="deleteDoc(this)" class="delete-btn"><i class="fi fi-ss-trash"></i></button>
+    </li>
+  </ul>
+</div>
+
+<script>
+  function deleteDoc(btn) {
+    const item = btn.closest('li');
+    item.remove();
+  }
+
+  function addDoc() {
+    const name = document.getElementById('docName').value.trim();
+    const link = document.getElementById('docLink').value.trim();
+
+    if (name && link) {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="doc-name">${name}</span>
+        <a href="${link}" class="download-link" target="_blank"><i class="fi fi-rr-download"></i></a>
+        <button onclick="deleteDoc(this)" class="delete-btn"><i class="fi fi-ss-trash"></i></button>
+      `;
+      document.getElementById('docsList').appendChild(li);
+      document.getElementById('docName').value = '';
+      document.getElementById('docLink').value = '';
+    } else {
+      alert("Por favor, ingresa un nombre y un enlace válido.");
+    }
+  }
+</script>

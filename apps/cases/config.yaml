@@ -1,5 +1,5 @@
-name: "app1"
+name: "casos"
 icon: "app1/icon.webp"
-path: "/app1"
+path: "/cases"
 dbInit: true
 permissionsFile: 'permissions.json'

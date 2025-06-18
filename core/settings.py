@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from core.readApps import APPS_FOLDER
 
 # Ruta base
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,7 +41,13 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ BASE_DIR / 'core/templates' ],
+        'DIRS': [ 
+            #this is for load the templates of the web ERP
+            BASE_DIR / 'core/templates' , 
+
+            #this is for load all the templates(views) of all the apps
+            *[(folder / 'views') for folder in APPS_FOLDER]
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

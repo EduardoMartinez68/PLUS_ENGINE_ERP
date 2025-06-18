@@ -1,0 +1,51 @@
+<div class="tab-content active" id="partes">
+  <table id="partesTable">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Rol</th>
+        <th>Contacto</th>
+        <th>Notas</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="text" value="Juan Pérez" /></td>
+        <td><input type="text" value="Cliente" /></td>
+        <td><input type="email" value="juan@example.com" /></td>
+        <td><input type="text" value="Dueño de empresa XYZ" /></td>
+        <td><button class="delete-btn" onclick="deleteRow(this)"><i class="fi fi-ss-trash"></i></button></td>
+      </tr>
+      <tr>
+        <td><input type="text" value="Laura Gómez" /></td>
+        <td><input type="text" value="Demandada" /></td>
+        <td><input type="email" value="laura@example.com" /></td>
+        <td><input type="text" value="Representante legal" /></td>
+        <td><button class="delete-btn" onclick="deleteRow(this)"><i class="fi fi-ss-trash"></i></button></td>
+      </tr>
+    </tbody>
+  </table>
+  <br>
+  <button id="addRowBtn" class="btn btn-normal">Agregar Nuevo</button>
+</div>
+
+<script>
+  function deleteRow(btn) {
+    const row = btn.closest('tr');
+    row.remove();
+  }
+
+  document.getElementById('addRowBtn').addEventListener('click', () => {
+    const tbody = document.querySelector('#partesTable tbody');
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+      <td><input type="text" placeholder="Nombre" /></td>
+      <td><input type="text" placeholder="Rol" /></td>
+      <td><input type="email" placeholder="Correo" /></td>
+      <td><input type="text" placeholder="Notas" /></td>
+      <td><button class="delete-btn" onclick="deleteRow(this)"><i class="fi fi-ss-trash"></i></button></td>
+    `;
+    tbody.appendChild(newRow);
+  });
+</script>

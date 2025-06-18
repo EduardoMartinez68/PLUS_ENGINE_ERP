@@ -1,8 +1,11 @@
 import psycopg2
 import os
 import yaml
+from pathlib import Path
 
 APPS_CACHE = []
+APPS_FOLDER=[]
+
 conn_params = {
     'host': 'localhost',
     'port': 5432,
@@ -25,6 +28,8 @@ def read_all_my_apps():
                 pathFile=os.path.join(path_app, 'config.yaml')
                 config=read_the_config_of_the_app(pathFile) #her we will read the file of config and get his data
                 apps.append(config) #save the data of the app
+
+                APPS_FOLDER.append(path_app)
 
     sortApps=sort_all_apps_based_on_their_dependencies(apps)
     run_the_sql_of_the_database_of_all_the_apps(sortApps,apps_dir)
@@ -120,9 +125,11 @@ def read_the_config_of_the_app(pathFile):
             return {
                 'name': config.get('name', ''),
                 'icon': config.get('icon', ''),
+                'path': config.get('path', ''),
                 'depends': config.get('depends', [])
             }
 
 
 #save all the apps in cache for not read forever all the apps. Only read all the apps when run the server
 APPS_CACHE = read_all_my_apps()
+APPS_FOLDER = [Path(folder) for folder in APPS_FOLDER] #her we will conver the string to path
