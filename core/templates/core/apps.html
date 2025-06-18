@@ -1,0 +1,39 @@
+<div id="appMenu" class="app-menu-overlay hidden">
+  <div class="menu-header">
+    <input type="text" id="searchInput" oninput="filterApps()" placeholder="">
+    <button class="close-btn" onclick="closeMenu()">✕</button>
+  </div>
+
+  <div class="apps-grid">
+    <div class="app-container" onclick="nextWeb('/links/home')">
+      <div class="app-box">
+        <img src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png" alt="icon" loading="lazy">
+      </div>
+      <p class="app-name"></p>
+    </div>
+
+    {% load static %}
+    {% for app in apps %}
+    <div class="app-container" onclick="nextWeb('{{ app.path }}')">
+      <div class="app-box">
+        <img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy">
+      </div>
+      <p class="app-name">{{ app.name }}</p>
+    </div>
+    {% endfor %}
+
+    <div class="app-container">
+      <div class="app-box">
+        <img src="https://cdn-icons-png.flaticon.com/512/1170/1170584.png" alt="">
+      </div>
+      <p class="app-name"></p>
+    </div>
+
+    <div class="app-container" onclick="nextWeb('/logout')">
+      <div class="app-box">
+        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" alt="" loading="lazy">
+      </div>
+      <p class="app-name"></p>
+    </div>
+  </div>
+</div>

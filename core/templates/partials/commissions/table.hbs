@@ -1,0 +1,89 @@
+<style>
+
+  .totals {
+    margin-top: 20px;
+    text-align: right;
+    font-size: 1.2em;
+    font-weight: 600;
+  }
+
+  .totals span {
+    display: block;
+  }
+</style>
+
+<div class="tab-content" id="invoices">
+
+  <table id="invoiceTable">
+    <thead>
+      <tr>
+        <th>Concepto</th>
+        <th>Cantidad</th>
+        <th>Precio Unitario</th>
+        <th>Impuesto (%)</th>
+        <th>Importe</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="invoiceBody">
+      <!-- Filas dinámicas -->
+    </tbody>
+  </table>
+
+  <button onclick="addRow()" class="btn btn-add">+ Agregar línea</button>
+
+  <div class="totals" id="totalAmount">
+    <span id="baseAmount">Base Imponible: $0.00</span>
+    <span id="totalWithTax">Total: $0.00</span>
+  </div>
+</div>
+
+<script>
+  function addRow(concept = '', quantity = 1, price = 0, tax = 0) {
+    const tbody = document.getElementById('invoiceBody');
+    const row = document.createElement('tr');
+
+    row.innerHTML = `
+      <td><input type="text" value="${concept}" placeholder="Ej: Consultoría"></td>
+      <td><input type="number" value="${quantity}" step="1" min="1" onchange="updateTotals()"></td>
+      <td><input type="number" value="${price}" step="0.01" min="0" onchange="updateTotals()"></td>
+      <td><input type="number" value="${tax}" step="0.01" min="0" onchange="updateTotals()"></td>
+      <td class="subtotal">$0.00</td>
+      <td><button class="delete-btn" onclick="removeRow(this)">✕</button></td>
+    `;
+
+    tbody.appendChild(row);
+    updateTotals();
+  }
+
+  function removeRow(button) {
+    button.closest('tr').remove();
+    updateTotals();
+  }
+
+  function updateTotals() {
+    const rows = document.querySelectorAll('#invoiceBody tr');
+    let baseImponible = 0;
+    let total = 0;
+
+    rows.forEach(row => {
+      const qty = parseFloat(row.children[1].querySelector('input').value) || 0;
+      const price = parseFloat(row.children[2].querySelector('input').value) || 0;
+      const tax = parseFloat(row.children[3].querySelector('input').value) || 0;
+
+      const lineBase = qty * price;
+      const lineTax = lineBase * (tax / 100);
+      const lineTotal = lineBase + lineTax;
+
+      row.children[4].textContent = `$${lineTotal.toFixed(2)}`;
+      baseImponible += lineBase;
+      total += lineTotal;
+    });
+
+    document.getElementById('baseAmount').textContent = `Base Imponible: $${baseImponible.toFixed(2)}`;
+    document.getElementById('totalWithTax').textContent = `Total: $${total.toFixed(2)}`;
+  }
+
+  // Agrega una fila inicial
+  addRow();
+</script>

@@ -1,0 +1,5 @@
+name: "app1"
+icon: "app1/icon.webp"
+path: "/app1"
+dbInit: true
+permissionsFile: 'permissions.json'

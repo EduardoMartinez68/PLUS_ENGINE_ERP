@@ -1,0 +1,127 @@
+<header class="top-navbar">
+  <div class="navbar-content">
+    <button id="openSidebarBtn" class="hamburger-btn">☰</button>
+    <h1 class="logo-title">PLUS Firma</h1>
+  </div>
+</header>
+<div id="overlay" class="overlay"></div>
+
+<!-- Sidebar elegante -->
+<nav id="sidebar" class="sidebar">
+  <button id="closeSidebarBtn" class="close-btn">×</button>
+  <ul class="nav-links">
+    <li><a href="#">Inicio</a></li>
+    <li><a href="#">Casos</a></li>
+    <li><a href="#">Clientes</a></li>
+    <li><a href="#">Calendario</a></li>
+    <li><a href="#">Configuración</a></li>
+  </ul>
+</nav>
+
+
+<!---->
+<div id="appMenu" class="app-menu-overlay hidden">
+  <div class="menu-header">
+    <input type="text" id="searchInput" oninput="filterApps()" placeholder="{{t 'app_global.search_app'}}">
+    <button class="close-btn" onclick="closeMenu()">✕</button>
+  </div>
+
+  <div class="apps-grid">
+    <div class="app-container" onclick="nextWeb('/links/home')">
+      <div class="app-box">
+        <img src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png" alt="app-home" loading="lazy">
+      </div>
+      <p class="app-name">{{t 'app_global.home'}}</p>
+    </div>
+
+    {{#each apps}}
+    <div class="app-container" onclick="nextWeb('{{path}}')">
+      <div class="app-box">
+        <img src="{{icon}}" alt="{{name}}" loading="lazy">
+      </div>
+      <p class="app-name">{{name}}</p>
+    </div>
+    {{/each}}
+    
+    <div class="app-container">
+      <div class="app-box">
+        <img src="https://cdn-icons-png.flaticon.com/512/1170/1170584.png" alt="Configuración">
+      </div>
+      <p class="app-name">{{t 'app_global.setting'}}</p>
+    </div>
+    <div class="app-container" onclick="nextWeb('{{path}}')">
+      <div class="app-box">
+        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" alt="app-home" loading="lazy">
+      </div>
+      <p class="app-name">{{t 'app_global.logout'}}</p>
+    </div>
+  </div>
+</div>
+
+<!----
+<div id="appMenu" class="app-menu-overlay hidden">
+  <div class="menu-header">
+    <input type="text" id="searchInput" oninput="filterApps()" placeholder="Buscar app...">
+    <button class="close-btn" onclick="closeMenu()">✕</button>
+  </div>
+
+  <div class="apps-grid">
+    <div class="app-container">
+      <div class="app-box">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135710.png" alt="Casos" loading="lazy">
+      </div>
+      <p class="app-name">Expedientes</p>
+    </div>
+
+
+    <div class="app-container">
+      <div class="app-box">
+        <img src="https://cdn-icons-png.flaticon.com/512/6073/6073874.png" alt="Clientes">
+      </div>
+      <p class="app-name">Clientes</p>
+    </div>
+
+    <div class="app-container">
+      <div class="app-box">
+        <img src="https://cdn-icons-png.flaticon.com/512/4348/4348758.png" alt="Agenda">
+      </div>
+      <p class="app-name">Agenda</p>
+    </div>
+
+    <div class="app-container">
+      <div class="app-box">
+        <img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="Documentos">
+      </div>
+      <p class="app-name">Documentos</p>
+    </div>
+
+    <div class="app-container">
+      <div class="app-box">
+        <img src="https://cdn-icons-png.flaticon.com/512/6785/6785175.png" alt="Facturación">
+      </div>
+      <p class="app-name">Facturación</p>
+    </div>
+
+    <div class="app-container">
+      <div class="app-box">
+        <img src="https://cdn-icons-png.flaticon.com/256/8655/8655451.png" alt="Tareas">
+      </div>
+      <p class="app-name">Tareas</p>
+    </div>
+
+    <div class="app-container">
+      <div class="app-box">
+        <img src="https://cdn-icons-png.flaticon.com/512/1182/1182718.png" alt="Notificaciones">
+      </div>
+      <p class="app-name">Notificaciones</p>
+    </div>
+
+    <div class="app-container">
+      <div class="app-box">
+        <img src="https://cdn-icons-png.flaticon.com/512/1170/1170584.png" alt="Configuración">
+      </div>
+      <p class="app-name">Configuración</p>
+    </div>
+  </div>
+</div>
+--->

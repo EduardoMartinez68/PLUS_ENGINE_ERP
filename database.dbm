@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="0.7.0">
+<database name="new_database">
+</database>
+
+<schema name="public" protected="true" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<schema name="company" fill-color="#e1e1e1">
+</schema>
+
+<sequence name="branch"
+	 start="1" increment="1"
+	 min-value="0" max-value="2147483647"
+	 cache="1" cycle="false">
+	<schema name="public"/>
+</sequence>
+
+<table name="users">
+	<schema name="public"/>
+	<position x="663" y="731"/>
+	<column name="id" not-null="true">
+		<type name="bigserial"/>
+	</column>
+	<column name="path_photo">
+		<type name="text"/>
+	</column>
+	<column name="name" not-null="true" default-value="600">
+		<type name="varchar"/>
+	</column>
+	<column name="email" not-null="true">
+		<type name="text"/>
+	</column>
+	<column name="password" not-null="true">
+		<type name="text"/>
+	</column>
+	<constraint name="id_key_users" type="pk-constr" factor="10" table="public.users">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="company">
+	<schema name="company"/>
+	<position x="679" y="184"/>
+	<column name="id" not-null="true">
+		<type name="bigserial"/>
+	</column>
+	<column name="name">
+		<type name="varchar" length="300"/>
+	</column>
+	<constraint name="id_key_company" type="pk-constr" factor="10" table="company.company">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="branch">
+	<schema name="company"/>
+	<position x="669" y="439"/>
+	<column name="id" not-null="true">
+		<type name="bigserial"/>
+	</column>
+	<constraint name="id_key_branch" type="pk-constr" factor="10" table="company.branch">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="company_has_many_branch" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="1" constr-indexes="1"
+	 src-table="company.company"
+	 dst-table="company.branch"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="company_has_many_users" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="5" constr-indexes="1"
+	 src-table="company.company"
+	 dst-table="public.users"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="branch_has_many_users" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="6" constr-indexes="2"
+	 src-table="company.branch"
+	 dst-table="public.users"
+	 src-required="false" dst-required="false"/>
+
+<schema name="branch" fill-color="#e1e1e1">
+</schema>
+
+<schema name="cases" fill-color="#e1e1e1">
+</schema>
+
+<table name="cases">
+	<schema name="cases"/>
+	<position x="1441" y="426"/>
+	<column name="id" not-null="true">
+		<type name="bigserial"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="300"/>
+	</column>
+	<column name="active" not-null="true" default-value="true">
+		<type name="boolean"/>
+	</column>
+	<constraint name="id_key_cases" type="pk-constr" factor="10" table="cases.cases">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="stages">
+	<schema name="cases"/>
+	<position x="1117" y="423"/>
+	<column name="id" not-null="true">
+		<type name="bigserial"/>
+	</column>
+	<column name="name">
+		<type name="varchar" length="100"/>
+	</column>
+	<column name="number" not-null="true" default-value="0">
+		<type name="smallint"/>
+	</column>
+	<constraint name="id_key_stages" type="pk-constr" factor="10" table="cases.stages">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="stages_has_many_cases" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="3" constr-indexes="1"
+	 src-table="cases.stages"
+	 dst-table="cases.cases"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="branch_has_many_stages" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="3" constr-indexes="1"
+	 src-table="company.branch"
+	 dst-table="cases.stages"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="users_has_many_cases" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="4" constr-indexes="2"
+	 src-table="public.users"
+	 dst-table="cases.cases"
+	 src-required="false" dst-required="false"/>
+
+</dbmodel>

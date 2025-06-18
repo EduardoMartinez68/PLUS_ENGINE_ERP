@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="{{currentLocale}}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>PLUS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <!--icons-->
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css'>
+    <link rel='stylesheet'
+        href='https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-straight/css/uicons-solid-straight.css'>
+    <link rel='stylesheet'
+        href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link rel='stylesheet'
+        href='https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+
+
+    <!--our styles-->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/subMenuApp.css' %}">
+</head>
+
+<body>
+    <!--this is for transform the date to lenguace human and get the language of the buttons and other message in the web-->
+    <script src="{% static 'js/languaceUI.js' %}"></script>
+
+    <!---her we will load the UI basic-->
+    {% include 'core/navbar.html' %}
+    {% include 'core/apps.html' %}
+    {% include 'core/messagePop.html' %}
+    <br><br>
+
+    <!---her is the container of all the apps-->
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+
+
+
+    <!---js for the UI-->
+    <script src="{% static 'js/navbar.js' %}" defer></script>
+    <script src="{% static 'js/shortcuts.js' %}" defer></script>
+    <script src="{% static 'js/tabs.js' %}" defer></script>
+    <script src="{% static 'js/selectStatus.js' %}" defer></script>
+</body>
+
+</html>
