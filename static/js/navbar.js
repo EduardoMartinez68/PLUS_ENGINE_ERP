@@ -30,7 +30,7 @@ function filterApps() {
 let sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || []; 
 
 //this function is for load the web that need
-function nextWeb(url) {
+function nextWeb2(url) {
   if (typeof url === 'string' && url.trim() !== '') {
     fetch(url, {
       headers: {
@@ -59,6 +59,61 @@ function nextWeb(url) {
     console.error('URL inválida proporcionada a nextWeb');
   }
 }
+
+function nextWeb(url) {
+  if (typeof url === 'string' && url.trim() !== '') {
+    fetch(url, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(html => {
+      // Crear un DOM temporal para procesar el HTML
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // Actualizar el contenido visual
+      const mainContent = doc.getElementById('main-content');
+      document.getElementById('main-content').innerHTML = mainContent ? mainContent.innerHTML : html;
+
+      // Procesar y cargar todos los <script> que vengan
+      const scripts = doc.querySelectorAll('script');
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement('script');
+
+        if (oldScript.src) {
+          // Si es <script src="...">
+          newScript.src = oldScript.src;
+          newScript.async = false; // para mantener orden
+        } else {
+          // Si es <script> inline
+          newScript.textContent = oldScript.textContent;
+        }
+
+        // Insertamos el script en el body
+        document.body.appendChild(newScript);
+      });
+
+      // Guardar historial
+      sessionHistory.push(url);
+      localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
+
+      closeMenu(); // cerrar el menú de apps
+    })
+    .catch(error => {
+      console.error('Error al cargar contenido:', error);
+    });
+  } else {
+    console.error('URL inválida proporcionada a nextWeb');
+  }
+}
+
 
 //her we will see if the user have links save in the cache
 const lastPage = sessionHistory.length > 0 ? sessionHistory[sessionHistory.length - 1] : '/';

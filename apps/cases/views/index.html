@@ -1,19 +1,19 @@
 <br><br>
 <div class="container">
-    <div class="status-ribbon">HOLA</div>
+    <div class="status-ribbon">Terminado</div>
 
 
-    <div class="section-title">HOLA</div>
+    <div class="section-title">Informacion del Expediente</div>
     <hr>
     {% include 'partials/forms.html' %}
 
     <div class="tabs">
         <div class="tab-buttons">
-            <button class="active" onclick="openTab(event, 'partes')">Partes Involucradas</button>
-            <button onclick="openTab(event, 'files')">Documentación</button>
-            <button onclick="openTab(event, 'calendar')">Calendario / Citas</button>
-            <button onclick="openTab(event, 'invoices')">Facturas</button>
-            <button onclick="openTab(event, 'note')">Notas</button>
+        <button class="active" onclick="openTab(event, 'partes')" data-i18n="partes">Partes Involucradas</button>
+        <button onclick="openTab(event, 'files')" data-i18n="files">Documentación</button>
+        <button onclick="openTab(event, 'calendar')" data-i18n="calendar">Calendario / Citas</button>
+        <button onclick="openTab(event, 'invoices')" data-i18n="invoices">Facturas</button>
+        <button onclick="openTab(event, 'note')" data-i18n="note">Notas</button>
         </div>
 
         {% include 'partials/parties_involved.html' %}
