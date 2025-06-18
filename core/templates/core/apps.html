@@ -14,7 +14,7 @@
 
     {% load static %}
     {% for app in apps %}
-    <div class="app-container" onclick="nextWeb('{{ app.path }}')">
+    <div class="app-container" onclick="nextWeb('{{ app.path }}{{ app.path }}')">
       <div class="app-box">
         <img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy">
       </div>

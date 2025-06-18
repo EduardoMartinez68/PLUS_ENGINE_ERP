@@ -1,7 +1,10 @@
 import os
 from pathlib import Path
 from core.readApps import APPS_FOLDER
+from core.updateAllTheFilesOfTheApps import *
 
+
+#------------------------------------------------------run server---------------------------------------------
 # Ruta base
 BASE_DIR = Path(__file__).resolve().parent.parent
 
