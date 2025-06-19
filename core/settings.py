@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'database'
     
 ]+APPS_NAME #your apps ERP
 print(INSTALLED_APPS)
@@ -74,7 +74,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 # Base de datos PostgreSQL
-
 DATABASES = {
     'default': {
         

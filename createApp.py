@@ -35,7 +35,7 @@ permissionsFile: 'permissions.json'
         f.write("-- SQL statements for database setup go here\n")
 
     # Crear icon.webp vacío (puedes reemplazar luego el archivo real)
-    with open(os.path.join(base_path, 'icon.webp'), 'wb') as f:
+    with open(os.path.join(base_path, 'static','icon.webp'), 'wb') as f:
         pass
     
     base_path_config = os.path.join(base_path, 'config')

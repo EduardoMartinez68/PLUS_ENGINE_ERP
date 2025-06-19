@@ -47,7 +47,7 @@ def create_the_body_of_the_database_of_the_erp():
     cur = conn.cursor()
 
     #get the body of the database
-    sql_path = os.path.join(os.getcwd(), 'database.sql')
+    sql_path = os.path.join(os.getcwd(),'database', 'database.sql')
 
     #we will see if exist the file database
     if os.path.exists(sql_path):

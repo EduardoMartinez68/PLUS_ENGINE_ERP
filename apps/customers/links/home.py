@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Customer
+from database.models import Customer
 
 
 def customers_home(request):

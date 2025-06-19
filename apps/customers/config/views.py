@@ -1,5 +1,5 @@
 #PLUS Power by {ED} Software Developer
-from .models import Customer
+from database.models import Customer
 from django.shortcuts import render
 def customers_home(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
