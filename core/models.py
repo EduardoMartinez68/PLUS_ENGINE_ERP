@@ -18,6 +18,7 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+
     path_photo = models.TextField(blank=True, null=True)
     username = models.CharField(max_length=600)
     email = models.EmailField(unique=True)
@@ -31,7 +32,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['usermane']
+    REQUIRED_FIELDS = ['username']
 
 
     def __str__(self):
@@ -40,3 +41,24 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
             db_table = 'users' 
+
+
+
+class Company(models.Model):
+    name = models.CharField(max_length=300)
+
+    class Meta:
+        db_table = '"company"."company"'
+
+    def __str__(self):
+        return self.name
+
+
+class Branch(models.Model):
+    id_company = models.ForeignKey(Company, on_delete=models.CASCADE, db_column='id_company', related_name='branches')
+
+    class Meta:
+        db_table = '"company"."branch"'
+
+    def __str__(self):
+        return f'Branch {self.id} - Company {self.id_company_id}'

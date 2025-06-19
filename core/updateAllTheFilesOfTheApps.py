@@ -15,7 +15,7 @@ def generate_views_and_urls(app_path):
     function_blocks = []
     urlpatterns = []
 
-    views_header = "#PLUS Power by {ED} Software Developer\n"
+    views_header = "#PLUS Power by {ED} Software Developer\nfrom django.contrib.auth.decorators import login_required\n"
 
     for filename in os.listdir(links_path):
         if filename.endswith('.py'):
@@ -44,7 +44,7 @@ def generate_views_and_urls(app_path):
                     func_code = '\n'.join(func_lines)
 
                     #Now we generate the extended function with the AJAX if
-                    new_func = f"def {func_name}(request):\n"
+                    new_func = f"@login_required(login_url='login')\ndef {func_name}(request):\n"
                     new_func += "    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':\n"
 
                     # We indented the original code one level higher for AJAX
