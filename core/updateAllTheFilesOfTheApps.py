@@ -57,6 +57,7 @@ def generate_views_and_urls(app_path):
 
                     # Generate URL path
                     url_path = func_name.replace('_home', '')
+
                     if url_path == '':
                         url_path = ''
                     urlpatterns.append(f"    path('{url_path}', views.{func_name}, name='{func_name}'),\n")

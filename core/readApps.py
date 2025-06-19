@@ -32,11 +32,40 @@ def read_all_my_apps():
                 APPS_FOLDER.append(path_app)
 
     sortApps=sort_all_apps_based_on_their_dependencies(apps)
+    create_the_body_of_the_database_of_the_erp()
     run_the_sql_of_the_database_of_all_the_apps(sortApps,apps_dir)
 
     print(f"{len(apps)} apps load was success")
     
     return apps
+
+
+def create_the_body_of_the_database_of_the_erp():
+    #connect with the DB
+    conn = psycopg2.connect(**conn_params)
+    cur = conn.cursor()
+
+    #get the body of the database
+    sql_path = os.path.join(os.getcwd(), 'database.sql')
+
+    #we will see if exist the file database
+    if os.path.exists(sql_path):
+        print(f"Run the body of the database")
+        with open(sql_path, 'r', encoding='utf-8') as f:
+            sql = f.read()
+
+        try:
+            cur.execute(sql)
+            conn.commit()
+            print(f"Body of the database run with success.")
+        except Exception as e:
+            conn.rollback()
+            print(f"Error to run the body of the SQL {e}")
+    else:
+        print(f"Not exist the file SQL for create the body of the database")
+
+    cur.close()
+    conn.close()
 
 
 def run_the_sql_of_the_database_of_all_the_apps(sorted_apps, base_dir):
@@ -77,7 +106,6 @@ def run_the_sql_of_the_database_of_all_the_apps(sorted_apps, base_dir):
 
     cur.close()
     conn.close()
-
 
 def sort_all_apps_based_on_their_dependencies(apps):
     # Filtramos None y preparamos dict para acceso rápido

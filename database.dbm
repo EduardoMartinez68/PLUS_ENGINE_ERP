@@ -162,4 +162,63 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="cases.cases"
 	 src-required="false" dst-required="false"/>
 
+<schema name="customer" fill-color="#e1e1e1">
+</schema>
+
+<table name="customer">
+	<schema name="customer"/>
+	<position x="661" y="1155"/>
+	<column name="id" not-null="true">
+		<type name="bigserial"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="300"/>
+	</column>
+	<column name="email">
+		<type name="text"/>
+	</column>
+	<column name="this_customer_is_a_company" not-null="true" default-value="false">
+		<type name="boolean"/>
+	</column>
+	<column name="company_name">
+		<type name="varchar" length="255"/>
+	</column>
+	<column name="rfc">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="curp">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="phone">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="cellphone">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="website">
+		<type name="text"/>
+	</column>
+	<column name="creation_date" not-null="true" default-value="CURRENT_TIMESTAMP">
+		<type name="timestamp"/>
+	</column>
+	<column name="country">
+		<type name="varchar" length="100"/>
+	</column>
+	<column name="status" not-null="true" default-value="true">
+		<type name="boolean"/>
+	</column>
+	<constraint name="id_key_customer" type="pk-constr" factor="10" table="customer.customer">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="branch_has_many_customer" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="1" constr-indexes="1"
+	 src-table="company.branch"
+	 dst-table="customer.customer"
+	 src-required="false" dst-required="false"/>
+
 </dbmodel>

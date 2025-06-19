@@ -1,0 +1,5 @@
+name: "customers"
+icon: "/customers/static/icon.png"
+path: "/customers"
+dbInit: true
+permissionsFile: 'permissions.json'

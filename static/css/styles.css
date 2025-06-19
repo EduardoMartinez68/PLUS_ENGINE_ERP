@@ -55,6 +55,16 @@ header {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
 }
 
+.container-section{
+  position: relative;
+  width: 90%;
+  margin: 20px auto;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
 .section-title {
   font-weight: 600;
   font-size: 1.2em;
@@ -156,7 +166,8 @@ input.case-title-input::placeholder {
   font-weight: 400;
 }
 
-/* NUEVO: mejora en tablas */
+
+/*---------------------------------------------------NUEVO: mejora en tablas */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -189,7 +200,8 @@ tbody tr:hover {
 }
 
 
-/*LIST*/
+
+/*------------------------------------------------------------------------------------------LIST*/
 ul.docs-list {
   list-style: none;
   padding-left: 0;
@@ -221,6 +233,11 @@ ul.docs-list li a:hover {
   transition: background 0.3s;
   color: white;
   margin-right: 0.5rem;
+}
+
+.btn-navbar{
+  background-color: transparent;
+  color: #475467;
 }
 
 .btn-add {

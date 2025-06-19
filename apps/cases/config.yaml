@@ -1,5 +1,6 @@
-name: "casos"
-icon: "/cases/icon.webp"
+name: "cases"
+icon: "/cases/static/icon.webp"
 path: "/cases"
+depends: ["customers"]
 dbInit: true
 permissionsFile: 'permissions.json'
