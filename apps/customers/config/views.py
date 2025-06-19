@@ -1,4 +1,5 @@
 #PLUS Power by {ED} Software Developer
+from django.contrib.auth.decorators import login_required
 from database.models import Customer
 from django.shortcuts import render
 def customers_home(request):

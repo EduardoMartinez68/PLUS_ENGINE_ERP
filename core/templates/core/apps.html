@@ -5,12 +5,6 @@
   </div>
 
   <div class="apps-grid">
-    <div class="app-container" onclick="nextWeb('/home')">
-      <div class="app-box">
-        <img src="https://cdn-icons-png.flaticon.com/512/7598/7598650.png" alt="icon" loading="lazy">
-      </div>
-      <p class="app-name"></p>
-    </div>
 
     {% load static %}
     {% for app in apps %}
@@ -29,11 +23,14 @@
       <p class="app-name"></p>
     </div>
 
-    <div class="app-container" onclick="nextWeb('/logout')">
-      <div class="app-box">
-        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" alt="" loading="lazy">
-      </div>
-      <p class="app-name"></p>
-    </div>
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button class="btn app-container" type="submit" style="background-color: transparent;">
+        <div class="app-box">
+          <img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" alt="" loading="lazy">
+        </div>
+        <p class="app-name">Cerrar sesión</p>
+      </button>
+    </form>
   </div>
 </div>

@@ -40,14 +40,18 @@ END$$;
 
 -- Crear tabla public.users si no existe
 CREATE TABLE IF NOT EXISTS public.users (
-    id bigserial NOT NULL,
+    id bigserial NOT NULL PRIMARY KEY,
     path_photo text,
-    name varchar(600) NOT NULL,
-    email text NOT NULL,
-    password text NOT NULL,
+    username varchar(600) NOT NULL,
+    email varchar(254) NOT NULL UNIQUE,
+    password varchar(128) NOT NULL,  -- Django usa hasta 128 caracteres para el hash de password
     id_company bigint,
     id_branch bigint,
-    CONSTRAINT id_key_users PRIMARY KEY (id)
+    is_active boolean NOT NULL DEFAULT true,
+    is_staff boolean NOT NULL DEFAULT false,
+    is_superuser boolean NOT NULL DEFAULT false,
+    last_login timestamp with time zone,
+    date_joined timestamp with time zone NOT NULL DEFAULT now()
 );
 
 -- Agregar FK de users -> company

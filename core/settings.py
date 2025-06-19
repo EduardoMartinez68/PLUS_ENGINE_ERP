@@ -26,10 +26,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'database'
-    
+    'database',
+    'core'
 ]+APPS_NAME #your apps ERP
-print(INSTALLED_APPS)
 
 
 # Middleware (procesos entre request y response)
@@ -111,12 +110,18 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+
 # Archivos estáticos (CSS, JS)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
     BASE_DIR / 'apps',
 ]
+
+#setting login
+AUTH_USER_MODEL = 'core.CustomUser' #this is the model that need the login of the user
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
 
 # files upload for the user (for example PDFs)
 MEDIA_URL = '/media/'

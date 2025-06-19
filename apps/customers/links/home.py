@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from database.models import Customer
+from django.contrib.auth.decorators import login_required
 
-
+@login_required(login_url='login')
 def customers_home(request):
     id_branch = 1  # por ejemplo, el branch que quieres filtrar
 
