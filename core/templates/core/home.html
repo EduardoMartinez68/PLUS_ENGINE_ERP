@@ -34,6 +34,17 @@
     {% include 'core/messagePop.html' %}
     <br><br>
 
+    <!--message flask-->
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <!---her is the container of all the apps-->
     <main id="main-content">
         {% block content %}{% endblock %}

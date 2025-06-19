@@ -1,0 +1,19 @@
+{% load static %}
+<br>
+
+{% include 'partialsCustomers/navbarHome.html' %}
+<form action="/customers/add_customer" method="post">
+    {% csrf_token %}
+    <div class="container">
+        <div class="tabs">
+            <div class="tab-buttons">
+                <button class="active" onclick="openTab(event, 'form1')" data-i18n="partes">Informacion General</button>
+                <button onclick="openTab(event, 'form2')" data-i18n="files">Informacion empresa</button>
+            </div>
+
+            {% include 'partialsCustomers/customerForm1.html' %}
+            {% include 'partialsCustomers/customerForm2.html' %}
+            <button class="btn btn-add btn-success" style="width: 100%;">Crear</button>
+        </div>
+    </div>
+</form>

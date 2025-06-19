@@ -55,7 +55,7 @@ header {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
 }
 
-.container-section{
+.container-section {
   position: relative;
   width: 90%;
   margin: 20px auto;
@@ -167,6 +167,65 @@ input.case-title-input::placeholder {
 }
 
 
+/*------------------------------------------------------------------*/
+/* Estilo para el switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  /* gris por default */
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.switch .slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.2s;
+  border-radius: 50%;
+}
+
+/* Cuando el switch está "checked" */
+.switch input:checked+.slider {
+  background-color: var(--primary-light);
+  /* verde activo */
+}
+
+.switch input:checked+.slider:before {
+  transform: translateX(24px);
+}
+
+/* Redondeado (por si quieres que sea "round") */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
 /*---------------------------------------------------NUEVO: mejora en tablas */
 table {
   width: 100%;
@@ -235,7 +294,7 @@ ul.docs-list li a:hover {
   margin-right: 0.5rem;
 }
 
-.btn-navbar{
+.btn-navbar {
   background-color: transparent;
   color: #475467;
 }
@@ -266,6 +325,10 @@ ul.docs-list li a:hover {
 
 .btn-normal {
   background-color: var(--primary);
+}
+
+.btn-success {
+  width: 100%;
 }
 
 .btn-normal:hover {
