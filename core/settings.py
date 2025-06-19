@@ -1,8 +1,13 @@
 import os
 from pathlib import Path
-from core.readApps import APPS_FOLDER
+from core.readApps import APPS_FOLDER, APPS_NAME
 from core.updateAllTheFilesOfTheApps import *
-
+print("""
+    -----------------------------------------------------------------
+    PLUS Power By {ED} Software Developer
+    The server is run
+    -----------------------------------------------------------------
+""""")
 
 #------------------------------------------------------run server---------------------------------------------
 # Ruta base
@@ -22,8 +27,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Tus apps ERP
-]
+    
+]+APPS_NAME #your apps ERP
+print(INSTALLED_APPS)
+
 
 # Middleware (procesos entre request y response)
 MIDDLEWARE = [
@@ -70,12 +77,16 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
+        
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'plus_erp',
         'USER': 'postgres',
         'PASSWORD': 'bobesponja48',
         'HOST': 'localhost',  # or the IP of your server
         'PORT': '5432',
+        'OPTIONS': {
+            'options': '-c search_path=customer,public',
+        },
     }
 }
 

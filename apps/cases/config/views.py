@@ -1,5 +1,5 @@
+#PLUS Power by {ED} Software Developer
 from django.shortcuts import render
-
 def cases_home(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return render(request, 'index.html')

@@ -5,6 +5,7 @@ from pathlib import Path
 
 APPS_CACHE = []
 APPS_FOLDER=[]
+APPS_NAME=[]
 
 conn_params = {
     'host': 'localhost',
@@ -28,7 +29,7 @@ def read_all_my_apps():
                 pathFile=os.path.join(path_app, 'config.yaml')
                 config=read_the_config_of_the_app(pathFile) #her we will read the file of config and get his data
                 apps.append(config) #save the data of the app
-
+                APPS_NAME.append(f'apps.{name}')
                 APPS_FOLDER.append(path_app)
 
     sortApps=sort_all_apps_based_on_their_dependencies(apps)

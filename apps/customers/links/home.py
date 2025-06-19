@@ -1,5 +1,11 @@
 from django.shortcuts import render
+from .models import Customer
 
 
 def customers_home(request):
-    return render(request, 'customers.html')
+    id_branch = 1  # por ejemplo, el branch que quieres filtrar
+
+    # Traer los primeros 20 resultados de ese branch ordenados por ID
+    customers = Customer.objects.filter(id_branch=id_branch).order_by('id')[:20]
+
+    return render(request, 'customers.html', {'customers': customers})

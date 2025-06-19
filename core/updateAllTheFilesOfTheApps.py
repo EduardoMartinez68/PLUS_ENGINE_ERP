@@ -15,7 +15,7 @@ def generate_views_and_urls(app_path):
     function_blocks = []
     urlpatterns = []
 
-    views_header = "from django.shortcuts import render\n\n"
+    views_header = "#PLUS Power by {ED} Software Developer\n"
 
     for filename in os.listdir(links_path):
         if filename.endswith('.py'):
@@ -28,12 +28,16 @@ def generate_views_and_urls(app_path):
 
             # Traverse all nodes to find functions
             for node in tree.body:
-                if isinstance(node, ast.FunctionDef):
-                    func_name = node.name
+                lines = source.splitlines()
 
+                if isinstance(node, (ast.Import, ast.ImportFrom)):
+                    import_line = lines[node.lineno - 1]
+                    function_blocks.insert(0, import_line + "\n")
+                elif isinstance(node, ast.FunctionDef):
+                    func_name = node.name
+                    
                     # Extract the function's source code (simple, with ast)
                     # This is a bit complex, here's a quick way:
-                    lines = source.splitlines()
                     func_lines = lines[node.lineno-1 : node.end_lineno]
 
                     # Original indentation (we assume it starts at column 0)
@@ -61,6 +65,7 @@ def generate_views_and_urls(app_path):
                     if url_path == '':
                         url_path = ''
                     urlpatterns.append(f"    path('{url_path}', views.{func_name}, name='{func_name}'),\n")
+
 
     # save all the data of the vies in the file views.py
     with open(views_path, 'w', encoding='utf-8') as f_views:
