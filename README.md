@@ -1,5 +1,5 @@
 # PLUS ERP - Sistema Mexicano para Mexicanos 🇲🇽.
-![PLUS ERP company](web_git/companies.png)
+![PLUS ERP company](web_git/companies.webp)
 
 **PLUS** es un ERP moderno, minimalista y elegante, inspirado en soluciones como Odoo, pero adaptado a las necesidades reales en México y América Latina.
 
@@ -19,7 +19,7 @@ Había muchísimas incompatibilidades, no entendía el código que escribían ot
 Pasé días — sí, días enteros — intentando cambiar el nombre del módulo "Proyectos" por "Casos" ⚖️... ¿el resultado? ¡Jamás lo logré! 😂
 
 Así que me harté, respiré profundo, y decidí crear mi propio ENGINE ERP... with blackjack and hookers 🃏🍸 — bueno, en realidad, con código limpio y pensado para que cualquier negocio en México pudiera usarlo sin dolores de cabeza 🙌.
-![PLUS ERP momo](web_git/momo.jpg)
+![PLUS ERP momo](web_git/momo.webp)
 
 👉 Nota personal:
 
@@ -31,8 +31,8 @@ Pero hay algo que siempre me pasa como programador: cuando uso una herramienta, 
 Así nació este proyecto: no como un "competidor" de Odoo, sino como una alternativa más simple, más enfocada, hecha desde cero con mucho cariño por alguien que quería entender cada línea de su propio ERP. Ahora El plan es crear un ENGINE super facil, creado para que incluso programadores inexpertos puedan crear sus propias apps para empresas. Ahora en mi ENGINE es super facil cambiar el nombre de las apps ya que solo necesitas un solo clic jaja tambien queria que las dependencias fueran extremadamente facil de agregar y que fuera mas facil de personalizar para otras personas. 
 
 El objetivo de PLUS es ser un **engine abierto** y extensible para que otros programadores, despachos y estudios jurídicos puedan adaptarlo a su realidad, aportar mejoras y evolucionarlo en comunidad.
-![PLUS ERP login](web_git/login.png)
-![PLUS ERP supplies](web_git/supplies.png)
+![PLUS ERP login](web_git/login.webp)
+![PLUS ERP supplies](web_git/supplies.webp)
 ---
 
 ## ✨ Características principales (planes a futuro)
@@ -57,7 +57,7 @@ El objetivo de PLUS es ser un **engine abierto** y extensible para que otros pro
 - 🚧 Integración con calendario Google/Outlook
 
 ---
-![PLUS ERP dashboard](web_git/dashboard.png)
+![PLUS ERP dashboard](web_git/dashboard.webp)
 
 ## 📜 Condiciones de Uso y Filosofía de Código Abierto
 
