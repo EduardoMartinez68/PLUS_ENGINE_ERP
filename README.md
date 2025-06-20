@@ -184,5 +184,71 @@ update_table_with_seeker(
     delay = 500   // (opcional, int) Tiempo de espera en ms antes de enviar la búsqueda (default: 500)
 )
 ```
+
+### 🔍 Ejemplo completo: Búsqueda en tiempo real en tabla HTML
+
+Ejemplo de cómo implementar una búsqueda en tiempo real en una tabla HTML, con conexión a un servidor en Python (Django), utilizando la función `update_table_with_seeker()`.
+
+### 🖥️ 1️⃣ Código HTML
+
+```html
+<input type="text" class="search-input-in-form" id="serach-customers"
+    placeholder="Buscar clientes por email o nombre...">
+
+<table id="table-customer">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Celular</th>
+            <th>Nombre Empresa</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Los resultados se insertarán automáticamente aquí -->
+    </tbody>
+</table>
+```
+
+### 🖥️ 1️⃣ Código JS para llamar a la función
+```js
+update_table_with_seeker(
+    'serach-customers', // ID del input (campo de búsqueda)
+    'table-customer',   // ID de la tabla HTML
+    ['name', 'email', 'phone', 'cellphone', 'company_name'], // columnas que se mostrarán
+    'customers/search_customers' // URL del endpoint en el servidor
+);
+```
+
+### 🖥️ 1️⃣ Código Python en tu servidor
+```py
+@csrf_exempt
+def search_customers(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        query = data.get('query', '').strip()
+
+        # Filtrar los clientes cuyo nombre o email contengan la consulta (insensible a mayúsculas/minúsculas)
+        customers = Customer.objects.filter(
+            Q(name__icontains=query) | Q(email__icontains=query)
+        ).order_by('name')[:20]  # Limitar a 20 resultados
+
+        # Construir la respuesta
+        result_list = []
+        for c in customers:
+            result_list.append({
+                'name': c.name,
+                'email': c.email,
+                'phone': c.phone,
+                'cellphone': c.cellphone,
+                'company_name': c.company_name
+            })
+
+        return JsonResponse({'success': True, 'results': result_list})
+    else:
+        return JsonResponse({'message': 'Método no permitido'}, status=405)
+```
 ---
 
