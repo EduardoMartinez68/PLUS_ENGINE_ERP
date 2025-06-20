@@ -94,36 +94,6 @@ Porque la magia del código abierto es la colaboración. Al compartir tu conocim
 Espero que **PLUS ERP** inspire a otros desarrolladores mexicanos y latinoamericanos a crear más herramientas pensadas para nuestro contexto, idioma, empresas y necesidades 🎉. Siempre he pensado que nuestro proposito como programadores es crear Tecnología con un toque de magia ❤️
 
 
----
-### 👉 ¿Cómo actualizar tablas con la ayuda de un motor de búsqueda?
-
-![PLUS ERP dashboard](web_git/update_table.webp)
-# 🔍 update_table_with_seeker()
-
-Función JavaScript para actualizar una tabla HTML en tiempo real a medida que el usuario escribe en un campo de búsqueda (input), obteniendo datos dinámicos desde el servidor.
-
----
-
-## 📄 Resumen
-
-`update_table_with_seeker` permite mejorar la experiencia de usuario permitiendo búsquedas en tiempo real sobre una tabla, sin necesidad de recargar la página.
-
-Ideal para integraciones tipo CRM, sistemas administrativos, buscadores de clientes, productos, empleados, etc.
-
----
-
-## ⚙️ Parámetros
-
-```js
-update_table_with_seeker(
-    inputId,      // (string) ID del campo de búsqueda (input)
-    tableId,      // (string) ID de la tabla HTML que se actualizará
-    columns,      // (array) Lista de columnas a mostrar, en el mismo orden que la tabla
-    searchUrl,    // (string) URL de la API o endpoint que devolverá los resultados
-    delay = 500   // (opcional, int) Tiempo de espera en ms antes de enviar la búsqueda (default: 500)
-)
-
-
 
 ---
 
@@ -151,5 +121,71 @@ PLUS ERP es un sistema modular, basado en python :
 - **Base de datos:** PostgreSQL
 - **Arquitectura:** MVC ligera
 - **Estilo:** CSS propio con prefijos `sub-menu-app-` para evitar colisiones
+```
 
+---
+---
+---
+### Manual de funciones
+## ⚠️ show_alert()
+
+Función JavaScript para mostrar ventanas emergentes (popups) de alerta en la interfaz.  
+Permite mostrar diferentes tipos de mensajes al usuario: **información, éxito, error, pregunta**, etc.
+
+`show_alert()` actualiza dinámicamente una ventana de alerta personalizada en el HTML, cambiando su texto, íconos, colores y botones, según el tipo de mensaje que deseamos mostrar.
+
+# ⚙️ Parámetros
+
+```js
+show_alert(
+    type,           // (string) Tipo de alerta: 'info', 'success', 'alert', 'question'
+    title,          // (string) Título que se mostrará en la alerta
+    description,    // (string) Texto descriptivo del mensaje
+    readmoreText    // (string, opcional) Texto adicional para mostrar más detalles (por ejemplo: errores técnicos)
+)
+```
+---
+## 🔔 show_notification()
+
+Función JavaScript para mostrar notificaciones flotantes de tipo *toast*.  
+Ideal para informar rápidamente al usuario sobre el resultado de una acción: éxito, error, advertencia, etc.
+
+# 📄 Resumen
+
+`show_notification()` crea dinámicamente una pequeña tarjeta de notificación que aparece en la interfaz durante unos segundos, con iconos y estilos personalizados según el tipo de mensaje.
+
+
+# ⚙️ Parámetros
+
+```js
+show_notification(
+    type = 'info',    // (string) Tipo de notificación: 'success', 'error', 'warning', 'info'
+    message = '',     // (string) Texto a mostrar en la notificación
+    duration = 4000   // (int) Tiempo en milisegundos que se mostrará (default: 4000 ms)
+)
+```
+---
+## 🔍 update_table_with_seeker()
+# 👉 ¿Cómo actualizar tablas con la ayuda de un motor de búsqueda?
+
+Función JavaScript para actualizar una tabla HTML en tiempo real a medida que el usuario escribe en un campo de búsqueda (input), obteniendo datos dinámicos desde el servidor.
+
+# 📄 Resumen
+
+`update_table_with_seeker` permite mejorar la experiencia de usuario permitiendo búsquedas en tiempo real sobre una tabla, sin necesidad de recargar la página.
+
+Ideal para integraciones tipo CRM, sistemas administrativos, buscadores de clientes, productos, empleados, etc.
+
+# ⚙️ Parámetros
+
+```js
+update_table_with_seeker(
+    inputId,      // (string) ID del campo de búsqueda (input)
+    tableId,      // (string) ID de la tabla HTML que se actualizará
+    columns,      // (array) Lista de columnas a mostrar, en el mismo orden que la tabla
+    searchUrl,    // (string) URL de la API o endpoint que devolverá los resultados
+    delay = 500   // (opcional, int) Tiempo de espera en ms antes de enviar la búsqueda (default: 500)
+)
+```
+---
 
