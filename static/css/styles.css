@@ -680,6 +680,10 @@ ul.docs-list li a:hover {
 }
 
 /* Icon colors */
+.sub-menu-app-pop-success .sub-menu-app-pop-icon {
+  color: #3bf673;
+}
+
 .sub-menu-app-pop-info .sub-menu-app-pop-icon {
   color: #3B82F6;
 }
@@ -782,4 +786,32 @@ ul.docs-list li a:hover {
 
 .smart-select-option:hover {
   background-color: #f0f0f0;
+}
+
+/**-----------------------------------------screen load----------------------------------
+*/
+/* Pantalla de carga */
+#loadingOverlay {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+}
+
+#loadingOverlay .spinner {
+    border: 8px solid rgba(255, 255, 255, 0.2);
+    border-top: 8px solid #ffffff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }

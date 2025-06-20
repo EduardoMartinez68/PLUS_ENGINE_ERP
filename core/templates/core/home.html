@@ -27,23 +27,19 @@
 <body>
     <!--this is for transform the date to lenguace human and get the language of the buttons and other message in the web-->
     <script src="{% static 'js/languaceUI.js' %}"></script>
+    
 
     <!---her we will load the UI basic-->
     {% include 'core/navbar.html' %}
     {% include 'core/apps.html' %}
     {% include 'core/messagePop.html' %}
-    <br><br>
 
-    <!--message flask-->
-    {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+    <!----load screen---->
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <br><br>
 
     <!---her is the container of all the apps-->
     <main id="main-content">
@@ -56,9 +52,10 @@
     <script src="https://unpkg.com/i18next@22.4.11/i18next.min.js"></script>
 
     <!---js for the UI-->
+    <script src="{% static 'js/sendDataToTheServer.js' %}" defer></script>
     <script src="{% static 'js/navbar.js' %}" defer></script>
     <script src="{% static 'js/shortcuts.js' %}" defer></script>
-    <script src="{% static 'js/tabs.js' %}" defer></script>
+    <script src="{% static 'js/styles.js' %}" defer></script>
     <script src="{% static 'js/selectStatus.js' %}" defer></script>
 </body>
 

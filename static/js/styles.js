@@ -28,7 +28,7 @@ function hidePop(idOverlay) {
 
 
 /**----------------------------------alert POP----------------------**/
-function showAlert(type, title, description, readmoreText = '') {
+function show_alert(type, title, description, readmoreText = '') {
   const overlay = document.getElementById('alert-overlay');
   const pop = document.getElementById('alert-pop');
   const titleEl = document.getElementById('alert-title');
@@ -42,6 +42,7 @@ function showAlert(type, title, description, readmoreText = '') {
 
   //icon for type
   if (type === 'info') iconEl.innerHTML = '<i class="fi fi-sr-info"></i>';
+  else if (type === 'success') iconEl.innerHTML = '<i class="fi fi-sr-check-circle"></i>';
   else if (type === 'alert') iconEl.innerHTML = '<i class="fi fi-sr-exclamation"></i>';
   else if (type === 'question') iconEl.innerHTML = '<i class="fi fi-sr-interrogation"></i>';
   else iconEl.innerHTML = '';
