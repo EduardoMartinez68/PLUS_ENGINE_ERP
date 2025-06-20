@@ -767,6 +767,83 @@ ul.docs-list li a:hover {
 }
 
 
+/**--------------------------------------notification
+*/
+.notification-alert-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification-alert {
+    min-width: 280px;
+    max-width: 400px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    color: #fff;
+    font-size: 15px;
+    font-family: Arial, sans-serif;
+    opacity: 0;
+    transform: translateX(100%);
+    animation: slideIn 0.4s forwards;
+    position: relative;
+}
+
+.notification-alert.success {
+    background-color: #28a745;
+}
+
+.notification-alert.error {
+    background-color: #dc3545;
+}
+
+.notification-alert.warning {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.notification-alert.info {
+    background-color: #17a2b8;
+}
+
+.notification-alert .icon {
+    font-size: 22px;
+}
+
+.notification-alert .close-btn {
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    color: inherit;
+    cursor: pointer;
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOut {
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+
 /**-------------------------------------select search
 */
 .smart-select-dropdown {

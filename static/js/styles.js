@@ -100,6 +100,34 @@ function show_alert(type, title, description, readmoreText = '') {
   overlay.style.display = 'flex';
 }
 
+
+function show_notification(type = 'info', message = '', duration = 4000) {
+    const container = document.getElementById('notifications-container');
+
+    const icons = {
+        success: '<i class="fi fi-sr-check-circle"></i>',
+        error: '<i class="fi fi-sr-cross-circle"></i>',
+        warning: '<i class="fi fi-sr-exclamation"></i>',
+        info: '<i class="fi fi-sr-info"></i>'
+    };
+
+    const alert = document.createElement('div');
+    alert.className = `notification-alert ${type}`;
+    alert.innerHTML = `
+        <div class="icon">${icons[type] || icons['info']}</div>
+        <div class="message">${message}</div>
+        <button class="close-btn" onclick="this.parentElement.style.animation='slideOut 0.4s forwards'; setTimeout(()=>this.parentElement.remove(),400);">&times;</button>
+    `;
+
+    container.appendChild(alert);
+
+    setTimeout(() => {
+        alert.style.animation = 'slideOut 0.4s forwards';
+        setTimeout(() => alert.remove(), 400);
+    }, duration);
+}
+
+
 function hideAlert() {
   const overlay = document.getElementById('alert-overlay');
   overlay.style.display = 'none';

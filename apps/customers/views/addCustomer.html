@@ -30,7 +30,8 @@
 
         //we will see if we can add the new customer
         if (result.success) {
-            show_alert('success', 'Cliente guardado', 'El cliente fue guardado con éxito')
+            //show_alert('success', 'Cliente guardado', 'El cliente fue guardado con éxito')
+            show_notification('success', 'El cliente fue guardado con éxito');
             this.reset();
         } else {
             show_alert('alert', 'Error', 'No se pudo agregar al cliente.', (result.error || 'No se pudo guardar'))
