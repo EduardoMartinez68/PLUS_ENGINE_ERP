@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from database.models import Customer
 from django.contrib import messages
 from datetime import datetime
+from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
@@ -68,3 +69,30 @@ def add_customer(request):
 
 
     return render(request, 'addCustomer.html')
+
+
+
+@csrf_exempt
+
+def search_customers(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        query = data.get('query', '').strip()
+
+        customers = Customer.objects.filter(
+            Q(name__icontains=query) | Q(email__icontains=query)
+        ).order_by('name')[:20]
+
+        result_list = []
+        for c in customers:
+            result_list.append({
+                'name': c.name,
+                'email': c.email,
+                'phone': c.phone,
+                'cellphone': c.cellphone,
+                'company_name': c.company_name
+            })
+
+        return JsonResponse({'success': True,'results': result_list})
+    else:
+        return JsonResponse({'error': 'Método no permitido'}, status=405)

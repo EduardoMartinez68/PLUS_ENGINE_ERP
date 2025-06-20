@@ -1,7 +1,11 @@
-async function send_message_to_the_server(url, data = {}) {
+async function send_message_to_the_server(url, data = {}, with_load=true) {
     // Mostrar overlay
     const screenLoad=document.getElementById('loadingOverlay')
-    screenLoad.style.display = 'flex';
+    if(with_load){
+        screenLoad.style.display = 'flex';
+    }
+    
+
     try {
         const response = await fetch(url, {
             method: 'POST',
@@ -24,10 +28,10 @@ async function send_message_to_the_server(url, data = {}) {
         return { success: false, error: error.message };
 
     } finally {
-        // Ocultar overlay
         screenLoad.style.display = 'none';
     }
 }
+
 
 // Función para obtener CSRF token (Django)
 function getCSRFToken() {

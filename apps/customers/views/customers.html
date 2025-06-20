@@ -4,11 +4,12 @@
 <div class="container-section">
     <div class="row">
         <div class="col-12">
-            <input type="text" class="search-input-in-form" placeholder="Buscar clientes por email o nombre...">
+            <input type="text" class="search-input-in-form" id="serach-customers"
+                placeholder="Buscar clientes por email o nombre...">
         </div>
     </div>
 
-    <table>
+    <table id="table-customer">
         <thead>
             <tr>
                 <th>Nombre</th>
@@ -16,6 +17,7 @@
                 <th>Teléfono</th>
                 <th>Celular</th>
                 <th>Nombre Empresa</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -26,6 +28,7 @@
                 <td>{{ customer.phone }}</td>
                 <td>{{ customer.cellphone }}</td>
                 <td>{{ customer.company_name }}</td>
+                <th><button class="btn btn-edit"><i class="fi fi-sr-pencil"></i></button></th>
             </tr>
             {% endfor %}
         </tbody>
@@ -34,3 +37,9 @@
 
 
 </div>
+
+<script>
+    update_table_with_seeker('serach-customers','table-customer','customers/search_customers');
+</script>
+
+

@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 from datetime import datetime
 from django.contrib import messages
 from database.models import Customer
@@ -126,4 +127,51 @@ def add_customer(request):
     
     
         return render(request, 'addCustomer.html')
+
+@login_required(login_url='login')
+def search_customers(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == 'POST':
+            data = json.loads(request.body)
+            query = data.get('query', '').strip()
+    
+            customers = Customer.objects.filter(
+                Q(name__icontains=query) | Q(email__icontains=query)
+            ).order_by('name')[:20]
+    
+            result_list = []
+            for c in customers:
+                result_list.append({
+                    'name': c.name,
+                    'email': c.email,
+                    'phone': c.phone,
+                    'cellphone': c.cellphone,
+                    'company_name': c.company_name
+                })
+    
+            return JsonResponse({'success': True,'results': result_list})
+        else:
+            return JsonResponse({'error': 'Método no permitido'}, status=405)
+    else:
+        if request.method == 'POST':
+            data = json.loads(request.body)
+            query = data.get('query', '').strip()
+    
+            customers = Customer.objects.filter(
+                Q(name__icontains=query) | Q(email__icontains=query)
+            ).order_by('name')[:20]
+    
+            result_list = []
+            for c in customers:
+                result_list.append({
+                    'name': c.name,
+                    'email': c.email,
+                    'phone': c.phone,
+                    'cellphone': c.cellphone,
+                    'company_name': c.company_name
+                })
+    
+            return JsonResponse({'success': True,'results': result_list})
+        else:
+            return JsonResponse({'error': 'Método no permitido'}, status=405)
 
