@@ -126,7 +126,7 @@ PLUS ERP es un sistema modular, basado en python :
 ---
 ---
 ---
-### Manual de funciones
+# Manual de funciones
 ## ⚠️ show_alert()
 
 Función JavaScript para mostrar ventanas emergentes (popups) de alerta en la interfaz.  
@@ -134,7 +134,7 @@ Permite mostrar diferentes tipos de mensajes al usuario: **información, éxito,
 
 `show_alert()` actualiza dinámicamente una ventana de alerta personalizada en el HTML, cambiando su texto, íconos, colores y botones, según el tipo de mensaje que deseamos mostrar.
 
-# ⚙️ Parámetros
+### ⚙️ Parámetros
 
 ```js
 show_alert(
@@ -150,12 +150,10 @@ show_alert(
 Función JavaScript para mostrar notificaciones flotantes de tipo *toast*.  
 Ideal para informar rápidamente al usuario sobre el resultado de una acción: éxito, error, advertencia, etc.
 
-# 📄 Resumen
-
 `show_notification()` crea dinámicamente una pequeña tarjeta de notificación que aparece en la interfaz durante unos segundos, con iconos y estilos personalizados según el tipo de mensaje.
 
 
-# ⚙️ Parámetros
+### ⚙️ Parámetros
 
 ```js
 show_notification(
@@ -166,17 +164,16 @@ show_notification(
 ```
 ---
 ## 🔍 update_table_with_seeker()
-# 👉 ¿Cómo actualizar tablas con la ayuda de un motor de búsqueda?
+### 👉 ¿Cómo actualizar tablas con la ayuda de un motor de búsqueda?
 
 Función JavaScript para actualizar una tabla HTML en tiempo real a medida que el usuario escribe en un campo de búsqueda (input), obteniendo datos dinámicos desde el servidor.
 
-# 📄 Resumen
 
 `update_table_with_seeker` permite mejorar la experiencia de usuario permitiendo búsquedas en tiempo real sobre una tabla, sin necesidad de recargar la página.
 
 Ideal para integraciones tipo CRM, sistemas administrativos, buscadores de clientes, productos, empleados, etc.
 
-# ⚙️ Parámetros
+### ⚙️ Parámetros
 
 ```js
 update_table_with_seeker(
