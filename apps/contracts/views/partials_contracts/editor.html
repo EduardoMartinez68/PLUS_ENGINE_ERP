@@ -2,30 +2,88 @@
 
 <!-- Place the following <script> and <textarea> tags your HTML's <body> -->
 <script>
-  tinymce.init({
-    selector: 'textarea',
-    language: userLang.substring(0, 2),
-    plugins: [
-      // Core editing features
-      'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
-      // Your account includes a free trial of TinyMCE premium features
-      // Try the most popular premium features until Jul 4, 2025:
-      'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
-    ],
-    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-    tinycomments_mode: 'embedded',
-    tinycomments_author: 'Author name',
-    mergetags_list: [
-      { value: 'First.Name', title: 'First Name' },
-      { value: 'Email', title: 'Email' },
-    ],
-    ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
-  });
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${now.getMonth() + 1}`;  // Ej: "2025-6"
+
+    // Leer contador y mes guardado
+    let loads = localStorage.getItem('tinymce_loads') || 0;
+    let storedMonth = localStorage.getItem('tinymce_month');
+
+    // Si es un mes nuevo, reiniciar el contador
+    if (storedMonth !== currentMonth) {
+        loads = 0;
+        storedMonth = currentMonth;
+        localStorage.setItem('tinymce_month', storedMonth);
+    }
+
+    if (loads < 100) {
+        loads++;
+        localStorage.setItem('tinymce_loads', loads);
+        tinymce.init({
+            selector: 'textarea',
+            language: userLang.substring(0, 2),
+            plugins: [
+                // Core editing features
+                'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+                // Your account includes a free trial of TinyMCE premium features
+                // Try the most popular premium features until Jul 4, 2025:
+                'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
+            ],
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+
+            //her exist the tags that the user would add
+            mergetags_list: [
+                // Datos del cliente
+                { value: 'Cliente.Nombre', title: 'Nombre del Cliente' },
+                { value: 'Cliente.Apellido', title: 'Apellido del Cliente' },
+                { value: 'Cliente.Direccion', title: 'Dirección del Cliente' },
+                { value: 'Cliente.Telefono', title: 'Teléfono del Cliente' },
+                { value: 'Cliente.Email', title: 'Email del Cliente' },
+                { value: 'Cliente.RFC', title: 'RFC del Cliente' },
+                { value: 'Cliente.Curp', title: 'CURP del Cliente' },
+
+                // Datos de la contraparte
+                { value: 'Contraparte.Nombre', title: 'Nombre de la Contraparte' },
+                { value: 'Contraparte.Apellido', title: 'Apellido de la Contraparte' },
+                { value: 'Contraparte.Direccion', title: 'Dirección de la Contraparte' },
+
+                // Datos del abogado o despacho
+                { value: 'Abogado.Nombre', title: 'Nombre del Abogado' },
+                { value: 'Abogado.Cedula', title: 'Cédula Profesional' },
+                { value: 'Abogado.Telefono', title: 'Teléfono del Abogado' },
+                { value: 'Abogado.Email', title: 'Email del Abogado' },
+                { value: 'Despacho.Nombre', title: 'Nombre del Despacho' },
+                { value: 'Despacho.Direccion', title: 'Dirección del Despacho' },
+
+                // Datos de documentos
+                { value: 'Documento.Fecha', title: 'Fecha del Documento' },
+                { value: 'Documento.Lugar', title: 'Lugar de Firma' },
+                { value: 'Documento.Folio', title: 'Folio del Documento' },
+
+                // Datos de contratos
+                { value: 'Contrato.FechaInicio', title: 'Fecha de Inicio del Contrato' },
+                { value: 'Contrato.FechaFin', title: 'Fecha de Fin del Contrato' },
+                { value: 'Contrato.Monto', title: 'Monto del Contrato' },
+                { value: 'Contrato.Moneda', title: 'Moneda del Contrato' },
+
+                // Variables generales
+                { value: 'Fecha.Actual', title: 'Fecha Actual' },
+                { value: 'Ciudad', title: 'Ciudad' }
+            ],
+
+            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+        });
+    }
+    else {
+        show_alert('alert','Error con el editor','Has alcanzado el límite de uso mensual del editor.')
+    }
 </script>
 
 
 <form action="/tu-url/" method="post">
-<textarea>
+    <textarea>
   Escribe tu primer contrato en PLUS
 </textarea>
 </form>

@@ -1,7 +1,15 @@
 <br>
 {% include 'partials_contracts/navbarContacts.html' %}
 
-<h2>Editor de contratos</h2>
+
+<div class="container-section">
+<h2>Crea un nuevo Contrato</h2>
+<hr>
+<div>
+    <label>Nombre del contrato</label>
+    <input type="text" name="name" class="case-title-input" placeholder="Nombre del contrato..." required />
+</div>
+<h3>Editor de contratos</h3>
 <div class="row">
     <div class="col-10">
         {% include 'partials_contracts/editor.html' %}
@@ -16,4 +24,6 @@
             <button onclick="insertVar('email')">Email</button>
         </div>
     </div>
+</div>
+
 </div>
