@@ -1,4 +1,13 @@
-function update_table_with_seeker(inputId, tableId, searchUrl, delay = 500) {
+function update_table_with_seeker(inputId, tableId, columns, searchUrl, delay = 500) {
+    /**
+      inputId=the id of the search input
+      tableId=the table that we will update
+      columns=the name of the columns with which we save the database. must be the same amount of col as the table
+      searchUrl=the url where we will search the information of the table
+      delay=the time that would like delay 
+     */
+
+      
     //first we will get the input that the user is using for write
     const input = document.getElementById(inputId);
     const tableBody = document.querySelector(`#${tableId} tbody`); //get the tabla of the UI
@@ -32,16 +41,32 @@ function update_table_with_seeker(inputId, tableId, searchUrl, delay = 500) {
                     if (data.results && data.results.length > 0) {
 
                         //if exist container, we will show in the table
-                        data.results.forEach(customer => {
+                        data.results.forEach(dataFromTheServer => {
                             const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${customer.name}</td>
-                                <td>${customer.email}</td>
-                                <td>${customer.phone || ''}</td>
-                                <td>${customer.cellphone || ''}</td>
-                                <td>${customer.company_name || ''}</td>
-                                <th><button class="btn btn-edit"><i class="fi fi-sr-pencil"></i></button></th>
+                            /*
+                            her we will create all the cell that the programmer would like show
+                            the server sent us data, and with help of the variable columns we will can get the data
+                            what would like in screen. 
+                            */
+                            columns.forEach(col => {
+                                //we will read all the col that woudl like show, and get the information from the
+                                //list that the server send
+                                const td = document.createElement('td');
+                                td.textContent = dataFromTheServer[col] || '';
+                                row.appendChild(td);
+                            });
+
+
+                            //now her create other row for if the programmer would like add button for edit
+                            const actionTd = document.createElement('td');
+                            actionTd.innerHTML = `
+                                <button class="btn btn-edit">
+                                    <i class="fi fi-sr-pencil"></i>
+                                </button>
                             `;
+
+                            //add the button of edit
+                            row.appendChild(actionTd);
 
                             //add the container to the table
                             tableBody.appendChild(row);
@@ -52,8 +77,8 @@ function update_table_with_seeker(inputId, tableId, searchUrl, delay = 500) {
                     }
                 }
                 else {
-                    console.error('Error en la búsqueda:', error);
-                    show_alert('alert', 'Error', 'Error en la búsqueda desde el servidor. Intentalo otra vez.', error)
+                    console.error('Error en la búsqueda:', data.message);
+                    show_alert('alert', 'Error', 'Error en la búsqueda desde el servidor. Intentalo otra vez.', data.message)
                     tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:red;">Error en la búsqueda</td></tr>';
                 }
 

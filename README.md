@@ -93,6 +93,38 @@ Porque la magia del código abierto es la colaboración. Al compartir tu conocim
 
 Espero que **PLUS ERP** inspire a otros desarrolladores mexicanos y latinoamericanos a crear más herramientas pensadas para nuestro contexto, idioma, empresas y necesidades 🎉. Siempre he pensado que nuestro proposito como programadores es crear Tecnología con un toque de magia ❤️
 
+
+---
+### 👉 ¿Cómo actualizar tablas con la ayuda de un motor de búsqueda?
+
+![PLUS ERP dashboard](web_git/update_table.webp)
+# 🔍 update_table_with_seeker()
+
+Función JavaScript para actualizar una tabla HTML en tiempo real a medida que el usuario escribe en un campo de búsqueda (input), obteniendo datos dinámicos desde el servidor.
+
+---
+
+## 📄 Resumen
+
+`update_table_with_seeker` permite mejorar la experiencia de usuario permitiendo búsquedas en tiempo real sobre una tabla, sin necesidad de recargar la página.
+
+Ideal para integraciones tipo CRM, sistemas administrativos, buscadores de clientes, productos, empleados, etc.
+
+---
+
+## ⚙️ Parámetros
+
+```js
+update_table_with_seeker(
+    inputId,      // (string) ID del campo de búsqueda (input)
+    tableId,      // (string) ID de la tabla HTML que se actualizará
+    columns,      // (array) Lista de columnas a mostrar, en el mismo orden que la tabla
+    searchUrl,    // (string) URL de la API o endpoint que devolverá los resultados
+    delay = 500   // (opcional, int) Tiempo de espera en ms antes de enviar la búsqueda (default: 500)
+)
+
+
+
 ---
 
 ## 📦 Instalación técnica
@@ -119,4 +151,5 @@ PLUS ERP es un sistema modular, basado en python :
 - **Base de datos:** PostgreSQL
 - **Arquitectura:** MVC ligera
 - **Estilo:** CSS propio con prefijos `sub-menu-app-` para evitar colisiones
+
 

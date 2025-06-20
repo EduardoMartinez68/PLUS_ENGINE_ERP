@@ -95,4 +95,4 @@ def search_customers(request):
 
         return JsonResponse({'success': True,'results': result_list})
     else:
-        return JsonResponse({'error': 'Método no permitido'}, status=405)
+        return JsonResponse({'message': 'Método no permitido'}, status=405)

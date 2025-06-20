@@ -39,7 +39,12 @@
 </div>
 
 <script>
-    update_table_with_seeker('serach-customers','table-customer','customers/search_customers');
+    update_table_with_seeker(
+        'serach-customers', //the id of the input that is a seeker
+        'table-customer', //the id of the table that would like update
+        ['name', 'email', 'phone', 'cellphone', 'company_name'] //These are the name of the columns that exist in our database 
+        ,'customers/search_customers' //this is the url where get the answer of the server 
+    );
 </script>
 
 
