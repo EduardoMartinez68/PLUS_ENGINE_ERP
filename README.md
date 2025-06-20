@@ -122,7 +122,177 @@ PLUS ERP es un sistema modular, basado en python :
 - **Arquitectura:** MVC ligera
 - **Estilo:** CSS propio con prefijos `sub-menu-app-` para evitar colisiones
 ```
+---
+## 🚀 Crear una nueva app
+Ejecuta el siguiente comando en la terminal del proyecto:
 
+```bash
+python createApp.py
+```
+Te preguntara por el nombre de tu nueva app y la vas a crear dentro de la carpeta llamada apps. 
+
+### 📁 Estructura del proyecto
+```plaintext
+PLUS ERP/
+├── createApp.py
+├── apps/
+│   │ 
+│   ├── my_app/
+│       └── config.yamal
+│       └── config
+│       └── links/      
+│       └── locale/   
+│       └── static/   
+│       └── views/   
+│       └── db.sql   
+├── core/
+├── database/
+├── media/
+├── static/
+├── .env
+├── manager.py
+```
+
+### 📁 Configuraciones de la App
+Una de las cosas más importantes es tu archivo de configuración, donde vendrán las características de las vistas de tu app. Aquí te recomiendo que lo dejes como lo creaste y que solo cambies el ícono si quieres, y las dependencias que te servirán si es que tu app depende de otras apps de tu ERP. 
+
+```yamal
+name: "my_app"
+icon: "/my_app/static/icon.webp"
+path: "/my_app"
+depends: ["other_app"]
+dbInit: true
+permissionsFile: 'permissions.json'
+```
+
+Si tu app no depende de ninguna otra elimina el campo. 
+```yamal
+name: "my_app"
+icon: "/my_app/static/icon.webp"
+path: "/my_app"
+dbInit: true
+permissionsFile: 'permissions.json'
+```
+## BASE DE DATOS
+Este ERP usa PostgreSQL como base de datos principal.  
+En todas tus apps tendrás un archivo `db.sql` donde crearás la estructura básica de la tabla de esa app; incluso puedes crear tu propio schema si lo deseas.  
+Ten en cuenta que este archivo se volverá a cargar cada vez que se reinicie el servidor, así que aquí puedes agregar actualizaciones y cláusulas para evitar errores.
+
+
+### EJEMPLO
+```sql
+-- Crear esquema si no existe
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = 'customer') THEN
+        EXECUTE 'CREATE SCHEMA customer';
+    END IF;
+END$$;
+
+-- Crear tabla si no existe
+CREATE TABLE IF NOT EXISTS customer.customer (
+    id bigserial NOT NULL,
+    id_branch bigint,
+    name varchar(300) NOT NULL,
+    email text,
+    this_customer_is_a_company boolean NOT NULL DEFAULT false,
+    company_name varchar(255),
+    rfc varchar(50),
+    curp varchar(50),
+    phone varchar(50),
+    cellphone varchar(50),
+    website text,
+    creation_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    country varchar(100),
+    status boolean NOT NULL DEFAULT true,
+    CONSTRAINT id_key_customer PRIMARY KEY (id)
+);
+
+-- Agregar la FK solo si no existe (esto es más elegante)
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'branch_fk'
+          AND table_schema = 'customer'
+          AND table_name = 'customer'
+    ) THEN
+        ALTER TABLE customer.customer
+        ADD CONSTRAINT branch_fk FOREIGN KEY (id_branch)
+        REFERENCES company.branch (id)
+        MATCH FULL
+        ON DELETE SET NULL
+        ON UPDATE CASCADE;
+    END IF;
+END$$;
+```
+
+
+## RUTAS/LINKS/URLS
+Lo más importante sera donde vas a programar tus rutas y eso sera dentro de la carpeta **links**. Este ERP tiene un esqueleto usando Django pero para automatizar la carga de las urls, views y models construir scripts que las crean automaticamente. Mis scripts leen todos los archivos que estan dentro de la carpeta **links** de todas las apps y construyen el archivo completo de las urls.py y views.py para guardarlas en la carpeta **config** de tu app. 
+
+### Ejemplo
+Esto es un archivo que se guarda dentro de la carpeta **links**
+```py
+from django.shortcuts import render
+
+def cases_home(request):
+    return render(request, 'index.html')
+
+
+def left_out(request):
+    return render(request, 'index.html')
+
+
+def case_home_2(request):
+    return render(request, 'index.html')
+```
+
+Cuando se recarga el servidor este va a leer completamente de nuevo todos los archivos, modelos, vistas y bases de datos y crearlas en tu carpeta **config** de tu app.
+### urls.py
+```py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('cases', views.cases_home, name='cases_home'),
+    path('left_out', views.left_out, name='left_out'),
+    path('case_2', views.case_home_2, name='case_home_2'),
+]
+
+```
+### views.py
+```py
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+@login_required(login_url='login')
+def cases_home(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'index.html')
+    else:
+        return render(request, 'index.html')
+
+@login_required(login_url='login')
+def left_out(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'index.html')
+    else:
+        return render(request, 'index.html')
+
+@login_required(login_url='login')
+def case_home_2(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'index.html')
+    else:
+        return render(request, 'index.html')
+```
+
+Como puedes ver, los archivos se reescribieron, incluso ya con la cláusula de que el usuario debe tener una sesión iniciada en el ERP para poder acceder al resto de las características.  
+También, si no quieres que cierta app necesite que estés logueado para verla, puedes desactivar esa función en el archivo **config.yaml** de tu app.
+
+
+---
+---
 ---
 ---
 ---
