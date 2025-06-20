@@ -129,7 +129,7 @@ Ejecuta el siguiente comando en la terminal del proyecto:
 ```bash
 python createApp.py
 ```
-Te preguntara por el nombre de tu nueva app y la vas a crear dentro de la carpeta llamada apps. 
+Te preguntara por el nombre de tu nueva app y python la va a crear dentro de la carpeta llamada apps. 
 
 ### 📁 Estructura del proyecto
 ```plaintext
@@ -139,7 +139,7 @@ PLUS ERP/
 │   │ 
 │   ├── my_app/
 │       └── config.yamal
-│       └── config
+│       └── config/
 │       └── links/      
 │       └── locale/   
 │       └── static/   
@@ -153,7 +153,7 @@ PLUS ERP/
 ├── manager.py
 ```
 
-### 📁 Configuraciones de la App
+### 📁 Configuración de la App
 Una de las cosas más importantes es tu archivo de configuración, donde vendrán las características de las vistas de tu app. Aquí te recomiendo que lo dejes como lo creaste y que solo cambies el ícono si quieres, y las dependencias que te servirán si es que tu app depende de otras apps de tu ERP. 
 
 ```yamal

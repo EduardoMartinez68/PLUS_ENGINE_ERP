@@ -1,4 +1,5 @@
 name: "cases"
+appName: "casos"
 icon: "/cases/static/icon.webp"
 path: "/cases"
 depends: ["customers"]

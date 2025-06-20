@@ -1,0 +1,19 @@
+<br>
+{% include 'partials_contracts/navbarContacts.html' %}
+
+<h2>Editor de contratos</h2>
+<div class="row">
+    <div class="col-10">
+        {% include 'partials_contracts/editor.html' %}
+    </div>
+    <div class="col-2">
+        <!-- Botones de variables -->
+        <div class="variable-toolbar">
+            <button onclick="insertVar('nombre_cliente ')">Nombre del Cliente</button>
+            <button onclick="insertVar('direccion')">Dirección</button>
+            <button onclick="insertVar('fecha')">Fecha</button>
+            <button onclick="insertVar('telefono')">Teléfono</button>
+            <button onclick="insertVar('email')">Email</button>
+        </div>
+    </div>
+</div>

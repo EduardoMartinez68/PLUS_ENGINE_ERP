@@ -153,6 +153,7 @@ def read_the_config_of_the_app(pathFile):
             config = yaml.safe_load(f)
             return {
                 'name': config.get('name', ''),
+                'appName': config.get('appName', ''),
                 'icon': config.get('icon', ''),
                 'path': config.get('path', ''),
                 'depends': config.get('depends', [])

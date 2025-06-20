@@ -10,9 +10,9 @@
     {% for app in apps %}
     <div class="app-container" onclick="nextWeb('{{ app.path }}{{ app.path }}')">
       <div class="app-box">
-        <img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy">
+        <img src="{% static app.icon %}" alt="{{ app.appName }}" loading="lazy">
       </div>
-      <p class="app-name">{{ app.name }}</p>
+      <p class="app-name">{{ app.appName }}</p>
     </div>
     {% endfor %}
 

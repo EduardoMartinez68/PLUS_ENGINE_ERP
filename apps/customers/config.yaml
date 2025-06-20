@@ -1,4 +1,5 @@
 name: "customers"
+appName: "Empleados"
 icon: "/customers/static/icon.png"
 path: "/customers"
 dbInit: true

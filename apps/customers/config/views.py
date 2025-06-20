@@ -151,7 +151,7 @@ def search_customers(request):
     
             return JsonResponse({'success': True,'results': result_list})
         else:
-            return JsonResponse({'error': 'Método no permitido'}, status=405)
+            return JsonResponse({'message': 'Método no permitido'}, status=405)
     else:
         if request.method == 'POST':
             data = json.loads(request.body)
@@ -173,5 +173,5 @@ def search_customers(request):
     
             return JsonResponse({'success': True,'results': result_list})
         else:
-            return JsonResponse({'error': 'Método no permitido'}, status=405)
+            return JsonResponse({'message': 'Método no permitido'}, status=405)
 
