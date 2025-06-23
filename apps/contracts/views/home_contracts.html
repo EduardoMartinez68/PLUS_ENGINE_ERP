@@ -1,29 +1,94 @@
 <br>
+
 {% include 'partials_contracts/navbarContacts.html' %}
+  <style>
+    .grid-files {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
 
+    .card-file {
+      background-color: #fff;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: border-color 0.3s ease;
+      cursor: default;
+      user-select: none;
+    }
 
-<div class="container-section">
-<h2>Crea un nuevo Contrato</h2>
-<hr>
-<div>
-    <label>Nombre del contrato</label>
-    <input type="text" name="name" class="case-title-input" placeholder="Nombre del contrato..." required />
-</div>
-<h3>Editor de contratos</h3>
-<div class="row">
-    <div class="col-10">
-        {% include 'partials_contracts/editor.html' %}
-    </div>
-    <div class="col-2">
-        <!-- Botones de variables -->
-        <div class="variable-toolbar">
-            <button onclick="insertVar('nombre_cliente ')">Nombre del Cliente</button>
-            <button onclick="insertVar('direccion')">Dirección</button>
-            <button onclick="insertVar('fecha')">Fecha</button>
-            <button onclick="insertVar('telefono')">Teléfono</button>
-            <button onclick="insertVar('email')">Email</button>
+    .card-file:hover {
+      border-color: #666;
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      font-size: 1rem;
+      color: #444;
+    }
+
+    .file-info i {
+      font-style: normal;
+      font-size: 1.3rem;
+      color: #888;
+      user-select: none;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    button.eliminar {
+      border-color: #c0392b;
+      color: #c0392b;
+    }
+
+    button.eliminar:hover {
+      background-color: #fcebea;
+      color: #922b21;
+      border-color: #922b21;
+    }
+
+    @media (max-width: 800px) {
+      .grid-files {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .grid-files {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+ 
+  <div class="container-section" role="main">
+    <h1>Mis Contratos</h1>
+
+    <div class="grid-files" aria-label="Lista de archivos">
+
+      {% for contract in contracts %}
+      <div class="card-file" tabindex="0">
+        <div class="file-info">
+          <i class="fi fi-sr-document-signed" aria-hidden="true"></i>
+          <span>{{ contract.title }}</span>
         </div>
+        <div class="buttons">
+          <button class="editar" type="button" aria-label="Editar Archivo1.pdf">Editar</button>
+          <button class="eliminar" type="button" aria-label="Eliminar Archivo1.pdf">Eliminar</button>
+        </div>
+      </div>
+    {% empty %}
+      <p>No tienes contratos aún.</p>
+    {% endfor %}
     </div>
-</div>
-
-</div>
+  </div>

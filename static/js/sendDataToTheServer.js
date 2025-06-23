@@ -1,10 +1,10 @@
-async function send_message_to_the_server(url, data = {}, with_load=true) {
+async function send_message_to_the_server(url, data = {}, with_load = true) {
     // Mostrar overlay
-    const screenLoad=document.getElementById('loadingOverlay')
-    if(with_load){
+    const screenLoad = document.getElementById('loadingOverlay')
+    if (with_load) {
         screenLoad.style.display = 'flex';
     }
-    
+
 
     try {
         const response = await fetch(url, {
@@ -70,10 +70,27 @@ async function send_form_to_the_server(formId, url) {
     }
 
     const data = formToJSON(form);
-    return await send_message_to_the_server(url,data)
+    return await send_message_to_the_server(url, data)
 }
 
+//this function is for create a form that send the information to the server
+//it will add an event listener to the form with the id 'id_form' for that the proggramer only add the if of the form and his id for get infrmation 
+async function create_form_for_send_the_server(id_form, url) {
+    document.getElementById(id_form).addEventListener('submit', async function (e) {
+        e.preventDefault(); //this is for that the form not load the web
 
+        //send the information to the server and get his answer
+        const result = await send_form_to_the_server(id_form, url);
+
+        //we will see if we can add the new customer
+        if (result.success) {
+            show_notification('success', result.message || 'Información guardada correctamente');
+            this.reset();
+        } else {
+            show_alert('alert', 'Error', result.message || 'No se pudo agregar al servidor.', (result.error || 'No se pudo guardar'))
+        }
+    });
+}
 
 
 send_message_to_the_server();

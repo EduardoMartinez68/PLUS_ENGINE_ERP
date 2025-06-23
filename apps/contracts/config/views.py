@@ -1,10 +1,115 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
+from datetime import datetime
+from django.contrib import messages
+from .models import Contracts
+from django.shortcuts import render, redirect
 from django.shortcuts import render
 @login_required(login_url='login')
 def contracts_home(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render(request, 'home_contracts.html')
+        user_id = request.user.id
+        # get the first 20 contarcts of the user
+        # we will order by creation_date desc
+        contracts = Contracts.objects.filter(user_id=user_id).order_by('-creation_date')[:20]
+        
+        context = {
+            'contracts': contracts
+        }
+        return render(request, 'home_contracts.html', context)
     else:
-        return render(request, 'home_contracts.html')
+        user_id = request.user.id
+        # get the first 20 contarcts of the user
+        # we will order by creation_date desc
+        contracts = Contracts.objects.filter(user_id=user_id).order_by('-creation_date')[:20]
+        
+        context = {
+            'contracts': contracts
+        }
+        return render(request, 'home_contracts.html', context)
+
+@login_required(login_url='login')
+def add_contract(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == 'POST':
+            try:
+                data = json.loads(request.body)  # El body lo mandas en JSON con fetch
+    
+                # Extraer los datos del JSON
+                name = data.get('name', '').strip()
+    
+                #we will see if the user add the name of the contract
+                if not name:
+                    return JsonResponse({'success': False, 'message': 'El nombre del contrato es obligatorio.','error': ''}, status=400)
+    
+                #now we will save the contract
+                user_id= request.user.id
+                id_branch = request.user.id_branch
+                container_editor = data.get('container_editor', '').strip()
+                creation_date = datetime.now()
+    
+                #her we will add the new contract to the database
+    
+                contract = Contracts(
+                    user_id = user_id,
+                    title=name,
+                    content_html=container_editor,
+                    active=True,
+                    creation_date=creation_date
+                )
+                contract.save()
+    
+                return JsonResponse({'success': True, 'message': 'Contrato agregado exitosamente.'})
+    
+            except Exception as e:
+                print('--------------------- ERROR to save the add_contract---------------------')
+                print(e)
+                return JsonResponse({'success': False, 'message':'El contrato no pudo guardarse.','error': f'Error al crear el contrato: {e}'}, status=500)
+    
+    
+    
+        return render(request, 'add_contracts.html')
+    else:
+        if request.method == 'POST':
+            try:
+                data = json.loads(request.body)  # El body lo mandas en JSON con fetch
+    
+                # Extraer los datos del JSON
+                name = data.get('name', '').strip()
+    
+                #we will see if the user add the name of the contract
+                if not name:
+                    return JsonResponse({'success': False, 'message': 'El nombre del contrato es obligatorio.','error': ''}, status=400)
+    
+                #now we will save the contract
+                user_id= request.user.id
+                id_branch = request.user.id_branch
+                container_editor = data.get('container_editor', '').strip()
+                creation_date = datetime.now()
+    
+                #her we will add the new contract to the database
+    
+                contract = Contracts(
+                    user_id = user_id,
+                    title=name,
+                    content_html=container_editor,
+                    active=True,
+                    creation_date=creation_date
+                )
+                contract.save()
+    
+                return JsonResponse({'success': True, 'message': 'Contrato agregado exitosamente.'})
+    
+            except Exception as e:
+                print('--------------------- ERROR to save the add_contract---------------------')
+                print(e)
+                return JsonResponse({'success': False, 'message':'El contrato no pudo guardarse.','error': f'Error al crear el contrato: {e}'}, status=500)
+    
+    
+    
+        return render(request, 'add_contracts.html')
 

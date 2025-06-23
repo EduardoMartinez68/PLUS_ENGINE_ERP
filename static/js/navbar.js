@@ -30,61 +30,64 @@ function filterApps() {
 let sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || []; 
 
 //this function is for load the web that need
-function nextWeb(url) {
+async function nextWeb(url) {
   if (typeof url === 'string' && url.trim() !== '') {
-    fetch(url, {
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    })
-    .then(response => {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+
       if (!response.ok) {
         throw new Error(`HTTP error ${response.status}`);
       }
-      return response.text();
-    })
-    .then(html => {
-      // Parse the HTML
+
+      const html = await response.text();
+
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
 
-      // Update main-content
       const mainContent = doc.getElementById('main-content');
       document.getElementById('main-content').innerHTML = mainContent ? mainContent.innerHTML : html;
 
-      // Remove old dynamic scripts
+      // Remover scripts dinámicos antiguos
       document.querySelectorAll('script[data-dynamic-script]').forEach(script => script.remove());
 
-      // Add new scripts
+
+      // Añadir nuevos scripts con for...of (permite usar await si quieres)
       const scripts = doc.querySelectorAll('script');
-      scripts.forEach(oldScript => {
+      for (const oldScript of scripts) {
         const newScript = document.createElement('script');
-        newScript.setAttribute('data-dynamic-script', 'true'); // mark it
+        newScript.setAttribute('data-dynamic-script', 'true');
 
         if (oldScript.src) {
           newScript.src = oldScript.src;
           newScript.async = false;
+          // Si quieres esperar que se cargue el script:
+          await new Promise(resolve => {
+            newScript.onload = resolve;
+            newScript.onerror = resolve;
+          });
         } else {
           newScript.textContent = oldScript.textContent;
         }
 
         document.body.appendChild(newScript);
-      });
+      }
 
-      // Save sessionHistory
       sessionHistory.push(url);
       localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
 
       closeMenu();
-    })
-    .catch(error => {
+
+    } catch (error) {
       console.error('Error al cargar contenido:', error);
-    });
+    }
   } else {
     console.error('URL inválida proporcionada a nextWeb');
   }
 }
-
 
 //her we will see if the user have links save in the cache
 const lastPage = sessionHistory.length > 0 ? sessionHistory[sessionHistory.length - 1] : '/';

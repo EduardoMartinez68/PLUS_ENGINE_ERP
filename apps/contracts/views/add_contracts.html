@@ -1,0 +1,27 @@
+<br>
+{% include 'partials_contracts/navbarContacts.html' %}
+
+<form action="/contracts/add_contract" id="formCreateContract" method="post">
+    {% csrf_token %}    
+    <div class="container-section">
+        <h2>Crea un nuevo Contrato</h2>
+        <hr>
+        <div>
+            <label>Nombre del contrato</label>
+            <input type="text" name="name" class="case-title-input" placeholder="Nombre del contrato..." required />
+        </div>
+        <h3>Editor de contratos</h3>
+        <div class="row">
+            <div class="col">
+                {% include 'partials_contracts/editor.html' %}
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-add btn-success">Guardar Contrato</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    create_form_for_send_the_server('formCreateContract', '/contracts/add_contract');
+</script>

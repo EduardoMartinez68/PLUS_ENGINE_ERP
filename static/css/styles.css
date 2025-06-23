@@ -79,7 +79,7 @@ header {
   margin-bottom: 20px;
 }
 
-input,
+input, textarea,
 select {
   width: 100%;
   padding: 8px 4px;
@@ -92,6 +92,7 @@ select {
   outline: none;
   transition: border-color 0.3s;
 }
+
 
 input:focus,
 select:focus {
@@ -282,6 +283,24 @@ ul.docs-list li a:hover {
 }
 
 /* === BUTTONS === */
+button {
+  background: none;
+  border: 1.2px solid #999;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+button:hover {
+  background-color: #eee;
+  border-color: #555;
+}
+
 .btn {
   display: inline-block;
   padding: 10px 18px;

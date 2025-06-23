@@ -4,7 +4,8 @@ from core.readApps import APPS_FOLDER, APPS_NAME
 from core.updateAllTheFilesOfTheApps import *
 print("""
     -----------------------------------------------------------------
-    PLUS Power By {ED} Software Developer
+    PLUS ERP
+    Power By {ED} Software Developer
     The server is run
     -----------------------------------------------------------------
 """"")
