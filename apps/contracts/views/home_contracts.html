@@ -73,7 +73,7 @@
  
   <div class="container-section" role="main">
     <h1>Mis Contratos</h1>
-
+    <hr>
     <div class="grid-files" aria-label="Lista de archivos">
 
       {% for contract in contracts %}
@@ -83,7 +83,7 @@
           <span>{{ contract.title }}</span>
         </div>
         <div class="buttons">
-          <button class="editar" type="button" aria-label="Editar Archivo1.pdf">Editar</button>
+          <button class="editar" type="button" aria-label="Editar Archivo1.pdf" onclick="nextWeb('/contracts/edit_contract/{{ contract.id }}')">Editar</button>
           <button class="eliminar" type="button" aria-label="Eliminar Archivo1.pdf">Eliminar</button>
         </div>
       </div>

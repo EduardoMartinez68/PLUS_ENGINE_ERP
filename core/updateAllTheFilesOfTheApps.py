@@ -36,6 +36,9 @@ def generate_views_and_urls(app_path):
                 elif isinstance(node, ast.FunctionDef):
                     func_name = node.name
                     
+                    #we will see the variable that need the function
+                    args = [arg.arg for arg in node.args.args]
+
                     # Extract the function's source code (simple, with ast)
                     # This is a bit complex, here's a quick way:
                     func_lines = lines[node.lineno-1 : node.end_lineno]
@@ -44,7 +47,8 @@ def generate_views_and_urls(app_path):
                     func_code = '\n'.join(func_lines)
 
                     #Now we generate the extended function with the AJAX if
-                    new_func = f"@login_required(login_url='login')\ndef {func_name}(request):\n"
+                    args_str = ', '.join(args)
+                    new_func = f"@login_required(login_url='login')\ndef {func_name}({args_str}):\n"
                     new_func += "    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':\n"
 
                     # We indented the original code one level higher for AJAX
@@ -62,9 +66,23 @@ def generate_views_and_urls(app_path):
                     # Generate URL path
                     url_path = func_name.replace('_home', '')
 
+                    #her we will save all the parameters of the function
+                    # For simplicity, we assume all parameters are integers
+                    param_parts = []
+                    for arg in args[1:]:  # Ignore 'request'
+                        # For simplicity, I put all of them as <int:param>
+                        param_parts.append(f"<int:{arg}>")
+
+
+                    # Build the URL part
+                    if param_parts:
+                        param_url = '/' + '/'.join(param_parts)
+                    else:
+                        param_url = ''
+
                     if url_path == '':
                         url_path = ''
-                    urlpatterns.append(f"    path('{url_path}', views.{func_name}, name='{func_name}'),\n")
+                    urlpatterns.append(f"    path('{url_path}{param_url}/', views.{func_name}, name='{func_name}'),\n")
 
 
     # save all the data of the vies in the file views.py

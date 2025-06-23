@@ -113,3 +113,82 @@ def add_contract(request):
     
         return render(request, 'add_contracts.html')
 
+@login_required(login_url='login')
+def edit_contract(request, contract_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == 'POST':
+            try:
+                data = json.loads(request.body)  # El body viene en JSON con fetch
+    
+                # Extraer datos del JSON
+                name = data.get('name', '').strip()
+                container_editor = data.get('container_editor', '').strip()
+    
+                # Verificar que haya nombre
+                if not name:
+                    return JsonResponse({'success': False, 'message': 'El nombre del contrato es obligatorio.', 'error': ''}, status=400)
+    
+                # Buscar el contrato existente
+                try:
+                    contract = Contracts.objects.get(id=contract_id, user_id=request.user.id)
+                except Contracts.DoesNotExist:
+                    return JsonResponse({'success': False, 'message': 'Contrato no encontrado.', 'error': ''}, status=404)
+    
+                # Actualizar los campos
+                contract.title = name
+                contract.content_html = container_editor
+                contract.save()
+    
+                return JsonResponse({'success': True, 'message': 'Contrato editado exitosamente.'})
+    
+            except Exception as e:
+                print('--------------------- ERROR edit_contract ---------------------')
+                print(e)
+                return JsonResponse({'success': False, 'message': 'Error al editar el contrato.', 'error': str(e)}, status=500)
+    
+        # Si es GET, mostrar el formulario de edición
+        try:
+            contract = Contracts.objects.get(id=contract_id, user_id=request.user.id)
+        except Contracts.DoesNotExist:
+            return HttpResponse("Contrato no encontrado.", status=404)
+    
+        return render(request, 'edit_contracts.html', {'contract': contract})
+    else:
+        if request.method == 'POST':
+            try:
+                data = json.loads(request.body)  # El body viene en JSON con fetch
+    
+                # Extraer datos del JSON
+                name = data.get('name', '').strip()
+                container_editor = data.get('container_editor', '').strip()
+    
+                # Verificar que haya nombre
+                if not name:
+                    return JsonResponse({'success': False, 'message': 'El nombre del contrato es obligatorio.', 'error': ''}, status=400)
+    
+                # Buscar el contrato existente
+                try:
+                    contract = Contracts.objects.get(id=contract_id, user_id=request.user.id)
+                except Contracts.DoesNotExist:
+                    return JsonResponse({'success': False, 'message': 'Contrato no encontrado.', 'error': ''}, status=404)
+    
+                # Actualizar los campos
+                contract.title = name
+                contract.content_html = container_editor
+                contract.save()
+    
+                return JsonResponse({'success': True, 'message': 'Contrato editado exitosamente.'})
+    
+            except Exception as e:
+                print('--------------------- ERROR edit_contract ---------------------')
+                print(e)
+                return JsonResponse({'success': False, 'message': 'Error al editar el contrato.', 'error': str(e)}, status=500)
+    
+        # Si es GET, mostrar el formulario de edición
+        try:
+            contract = Contracts.objects.get(id=contract_id, user_id=request.user.id)
+        except Contracts.DoesNotExist:
+            return HttpResponse("Contrato no encontrado.", status=404)
+    
+        return render(request, 'edit_contracts.html', {'contract': contract})
+
