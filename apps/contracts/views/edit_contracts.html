@@ -1,14 +1,15 @@
 <br>
 {% include 'partials_contracts/navbarContacts.html' %}
 
-<form action="/contracts/edit_contract" id="formEditContract" method="post">
+<form action="/contracts/edit_contract/{{ contract.id }}" id="formEditContract" method="post">
     {% csrf_token %}    
     <div class="container-section">
         <h2>Edita tu Contrato</h2>
+        <input type="hidden" id="contract_id" name="contract_id" value="{{ contract.id }}">
         <hr>
         <div>
             <label>Nombre del contrato</label>
-            <input type="text" name="name" class="case-title-input" placeholder="Nombre del contrato..." required />
+            <input type="text" name="name" class="case-title-input" placeholder="Nombre del contrato..." required value="{{ contract.title }}" />
         </div>
         <h3>Editor de contratos</h3>
         <div class="row">
@@ -23,5 +24,6 @@
 </form>
 
 <script>
-    create_form_for_send_the_server('formEditContract', '/contracts/edit_contract');
+    const id_contrct = document.getElementById('contract_id').value;
+    create_form_for_send_the_server('formEditContract', `/contracts/edit_contract/${id_contrct}/`);
 </script>

@@ -4,7 +4,7 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
-from datetime import datetime
+from django.utils import timezone
 from django.contrib import messages
 from .models import Contracts
 from django.shortcuts import render, redirect
@@ -50,7 +50,7 @@ def add_contract(request):
                 user_id= request.user.id
                 id_branch = request.user.id_branch
                 container_editor = data.get('container_editor', '').strip()
-                creation_date = datetime.now()
+                creation_date = timezone.now()
     
                 #her we will add the new contract to the database
     
@@ -89,7 +89,7 @@ def add_contract(request):
                 user_id= request.user.id
                 id_branch = request.user.id_branch
                 container_editor = data.get('container_editor', '').strip()
-                creation_date = datetime.now()
+                creation_date = timezone.now()
     
                 #her we will add the new contract to the database
     
@@ -144,7 +144,7 @@ def edit_contract(request, contract_id):
             except Exception as e:
                 print('--------------------- ERROR edit_contract ---------------------')
                 print(e)
-                return JsonResponse({'success': False, 'message': 'Error al editar el contrato.', 'error': str(e)}, status=500)
+                return JsonResponse({'success': False, 'message': 'Error al editar el contrato.', 'error': e}, status=500)
     
         # Si es GET, mostrar el formulario de edición
         try:
@@ -182,7 +182,7 @@ def edit_contract(request, contract_id):
             except Exception as e:
                 print('--------------------- ERROR edit_contract ---------------------')
                 print(e)
-                return JsonResponse({'success': False, 'message': 'Error al editar el contrato.', 'error': str(e)}, status=500)
+                return JsonResponse({'success': False, 'message': 'Error al editar el contrato.', 'error': e}, status=500)
     
         # Si es GET, mostrar el formulario de edición
         try:
