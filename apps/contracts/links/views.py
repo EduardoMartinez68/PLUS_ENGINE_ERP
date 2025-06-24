@@ -102,3 +102,34 @@ def edit_contract(request, contract_id):
         return HttpResponse("Contrato no encontrado.", status=404)
 
     return render(request, 'edit_contracts.html', {'contract': contract})
+
+
+
+
+
+
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from xhtml2pdf import pisa
+from django.shortcuts import get_object_or_404
+from io import BytesIO
+
+def download_contract(request, contract_id):
+    contract = get_object_or_404(Contracts, id=contract_id, user_id=request.user.id)
+
+    # Renderiza el HTML con la plantilla y el contrato
+    html_string = render_to_string('pdf_template.html', {'contract': contract})
+
+    # Crear un objeto BytesIO para guardar el PDF en memoria
+    result = BytesIO()
+
+    # Convertir HTML a PDF usando pisa
+    pdf = pisa.pisaDocument(BytesIO(html_string.encode('UTF-8')), dest=result)
+
+    if pdf.err:
+        return HttpResponse('Error al generar el PDF', status=500)
+
+    # Retornar el PDF generado
+    response = HttpResponse(result.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Contrato_{contract.id}.pdf"'
+    return response
