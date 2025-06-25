@@ -106,6 +106,18 @@ def edit_contract(request, contract_id):
 
 
 
+import re
+
+def detect_type_input(request,label):
+    if "date" in label or "Fecha.Actual" in label or "Fecha" in label:
+        return "date"
+    elif "Monto" in label or "Total" in label:
+        return "Number"
+    else:
+        return "text"
+    
+
+
 
 
 from django.http import HttpResponse
@@ -113,6 +125,60 @@ from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from django.shortcuts import get_object_or_404
 from io import BytesIO
+
+
+@csrf_exempt
+def form_contract(request, contract_id):
+
+    #get the information of the file
+    contract = get_object_or_404(Contracts, id=contract_id, user_id=request.user.id)
+
+    #her we will get all the labels of the document for after create the form
+    text_html=contract.content_html
+    labels=re.findall(r'\{\{(.*?)\}\}',text_html)
+
+
+    if request.method == 'POST':
+        data=json.loads(request.body)
+        for label in labels: 
+            value=data.get(label,'')
+            
+            text_html=text_html.replace(f'{{{{{label}}}}}',value)
+
+        #we will create a object BytesIO for save the PDF in memory
+        result = BytesIO()
+
+        # convert the HTML to PDF use pisa (her we use the value remplace in the text_html)
+        pdf = pisa.pisaDocument(BytesIO(text_html.encode('UTF-8')), dest=result)
+
+        # Check if there was an error during PDF generation
+        if pdf.err:
+            return HttpResponse('Error al generar el PDF', status=500)
+
+        #return the PDF as a response
+        response = HttpResponse(result.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{contract.title}.pdf"'
+        return response
+    
+    #if not is a for post, we will show the inputs of the file
+    #now we create a list of inputs for the form
+    inputs=[]
+    labels_seen = set() #this is to avoid duplicate labels
+    for label in labels:
+        if label not in labels_seen:
+            labels_seen.add(label)
+            input={
+                "name":label,
+                "label":label.replace('.',' '),
+                "type":detect_type_input(request,label),
+                "value":""
+            }
+
+            inputs.append(input)
+
+    return render(request, 'form_contracts.html', {'contract': contract,'inputs':inputs})
+
+
 
 def download_contract(request, contract_id):
     contract = get_object_or_404(Contracts, id=contract_id, user_id=request.user.id)
