@@ -43,41 +43,69 @@ def search_contracts(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == 'POST':
             data = json.loads(request.body)
-            query = data.get('query', '').strip()
+            print(data)
+            all_filters = data.get('allFilters', [])
+            query = all_filters[0].strip() if len(all_filters) > 0 else ''
+            status = all_filters[1].strip().lower() if len(all_filters) > 1 else ''
     
             contracts = Contracts.objects.filter(
                 Q(title__icontains=query) | Q(content_html__icontains=query)
-            ).order_by('title')[:20]
+            )
     
-            result_list = []
-            for c in contracts:
-                result_list.append({
+            # add the filter for status
+            if status == 'true':
+                contracts = contracts.filter(active=True)
+            elif status == 'false':
+                contracts = contracts.filter(active=False)
+    
+            # We order and limit results
+            contracts = contracts.order_by('title')[:20]
+    
+            # We generate the response
+            result_list = [
+                {
                     'id': c.id,
                     'title': c.title,
                     'creation_date': c.creation_date
-                })
+                }
+                for c in contracts
+            ]
     
-            return JsonResponse({'success': True,'results': result_list})
+            return JsonResponse({'success': True, 'results': result_list})
         else:
             return JsonResponse({'message': 'Método no permitido'}, status=405)
     else:
         if request.method == 'POST':
             data = json.loads(request.body)
-            query = data.get('query', '').strip()
+            print(data)
+            all_filters = data.get('allFilters', [])
+            query = all_filters[0].strip() if len(all_filters) > 0 else ''
+            status = all_filters[1].strip().lower() if len(all_filters) > 1 else ''
     
             contracts = Contracts.objects.filter(
                 Q(title__icontains=query) | Q(content_html__icontains=query)
-            ).order_by('title')[:20]
+            )
     
-            result_list = []
-            for c in contracts:
-                result_list.append({
+            # add the filter for status
+            if status == 'true':
+                contracts = contracts.filter(active=True)
+            elif status == 'false':
+                contracts = contracts.filter(active=False)
+    
+            # We order and limit results
+            contracts = contracts.order_by('title')[:20]
+    
+            # We generate the response
+            result_list = [
+                {
                     'id': c.id,
                     'title': c.title,
                     'creation_date': c.creation_date
-                })
+                }
+                for c in contracts
+            ]
     
-            return JsonResponse({'success': True,'results': result_list})
+            return JsonResponse({'success': True, 'results': result_list})
         else:
             return JsonResponse({'message': 'Método no permitido'}, status=405)
 

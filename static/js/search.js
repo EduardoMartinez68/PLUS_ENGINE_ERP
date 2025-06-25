@@ -87,9 +87,9 @@ function update_table_with_seeker(inputId, tableId, columns, searchUrl, delay = 
     });
 }
 
-function update_field_with_seeker(inputId, fieldId, divHtml, searchUrl, delay = 500) {
+function update_field_with_seeker(inputsId, fieldId, divHtml, searchUrl, delay = 500) {
     /**
-      inputId=the id of the search input
+      inputsId=this is a array of all the inputs of filter fot search the objects. inputsId[0] is the id of the search input
       fieldId=the field that we will update
       card=the name of the columns with which we save the database. must be the same amount of col as the table
       searchUrl=the url where we will search the information of the table
@@ -97,6 +97,7 @@ function update_field_with_seeker(inputId, fieldId, divHtml, searchUrl, delay = 
      */
 
     //first we will get the input that the user is using for write
+    const inputId = Array.isArray(inputsId) ? inputsId[0] : inputsId; //her we will see if the user send a array or a string
     const input = document.getElementById(inputId);
     const field = document.getElementById(fieldId);
 
@@ -117,8 +118,27 @@ function update_field_with_seeker(inputId, fieldId, divHtml, searchUrl, delay = 
             if (query !== lastQuery) {
                 lastQuery = query;
 
-                //send a message to the server for get the answer 
-                const data = await send_message_to_the_server(searchUrl, { query }, false)
+                //after that we send the information to the server, we will see if the user send more inputs for filter
+                const allFilters=[query]; //we will save the first input that is the search input
+                let data;
+
+                if (Array.isArray(inputsId) && inputsId.length > 1) {
+                    for (let i = 1; i < inputsId.length; i++) {
+                        const additionalFilters = document.getElementById(inputsId[i]); //get the additional filters if exist
+                        if (additionalFilters) { //we will see if the additional filters exist
+
+                            //get the value of the additional filters
+                            const additionalQuery = additionalFilters.value.trim();
+                            allFilters.push(additionalQuery);  //save the additional filters in the array that send to the server
+                        }
+                    }
+                    //send a message to the server for get the answer
+                    data = await send_message_to_the_server(searchUrl, { allFilters }, false)
+                }
+                else{
+                    //send a message to the server for get the answer
+                    data = await send_message_to_the_server(searchUrl, { query }, false)
+                }
 
                 //we will see if the server can answer with the information or exist a error
                 if (data.success) {

@@ -76,9 +76,16 @@
   <hr>
 
   <div class="row">
-    <div class="col-12">
+    <div class="col-10">
       <input type="text" class="search-input-in-form" id="search-contracts"
         placeholder="Buscar contratos por título...">
+    </div>
+    <div class="col">
+      <select id="select-status">
+        <option value="true">Activo</option>
+        <option value="false">Desactivados</option>
+        <option value="">todos</option>
+      </select>
     </div>
   </div>
   <br>
@@ -121,10 +128,10 @@
     </div>`;
 
   update_field_with_seeker(
-    'search-contracts', // id del input de búsqueda
-    'field-contracts',  // id del contenedor a actualizar
-    divHtml,            // plantilla con placeholders
-    'contracts/search_contracts/' // url para la búsqueda
+    ['search-contracts', 'select-status'], // id of the input of the seeker
+    'field-contracts',  // id of the container to update
+    divHtml,            // template with placeholders
+    'contracts/search_contracts/' // url for the search
   );
 })();
 </script>
