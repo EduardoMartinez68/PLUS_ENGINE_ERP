@@ -422,3 +422,112 @@ def search_customers(request):
 ```
 ---
 
+## 🔔 update_field_with_seeker()
+Función JavaScript para actualizar campos con tarjetas en tu HTML.  
+Ideal automatizar las actualizaciones de campos en tu html. Se debera programar el Backend. 
+
+```js
+update_field_with_seeker(
+    inputsId,      // (array) ID de los campo de búsqueda (input, select, etc.). inputsId[0] is the id of the search inpu
+    fieldId,      // (string) the field id that we will update
+    divHtml,      // (string) El codigo en html que se remplazara en el campo. 
+    searchUrl,    // (string) URL de la API o endpoint que devolverá los resultados
+    delay = 500   // (opcional, int) Tiempo de espera en ms antes de enviar la búsqueda (default: 500)
+)
+```
+
+
+### 🔍 Ejemplo completo: Búsqueda en tiempo real para actualizar campos en tabla HTML
+Ejemplo de cómo implementar una búsqueda en tiempo real en un campo en HTML, con conexión a un servidor en Python (Django), utilizando la función `update_field_with_seeker()`.
+
+### 🖥️ 1️⃣ Código HTML
+
+```html
+
+  <div class="row">
+    <div class="col-10">
+        <!--Este es el buscador-->
+      <input type="text" class="search-input-in-form" id="search-contracts"
+        placeholder="Buscar contratos por título...">
+    </div>
+    <div class="col">
+      <!--Este es un select-->
+      <select id="select-status">
+        <option value="true">Activo</option>
+        <option value="false">Desactivados</option>
+        <option value="">todos</option>
+      </select>
+    </div>
+  </div>
+  <br>
+
+
+  <div class="grid-files" aria-label="Lista de archivos" id="field-contracts">
+        <!--aqui estaran todos los divs que traeras desde el servidor-->
+  </div>
+```
+
+### 🖥️ 1️⃣ Código JS para llamar a la función
+```js
+(() => {
+  const divHtml = `
+    <div class="card-file" tabindex="0">
+      <div class="file-info">
+        <i class="fi fi-sr-document-signed" aria-hidden="true"></i>
+        <span>{ title }</span>
+      </div>
+      <div class="buttons">
+        <button class="button" type="button" onclick="nextWeb('/contracts/form_contract/{ id }')">Usar</button>
+        <button class="button" type="button" onclick="nextWeb('/contracts/edit_contract/{ id }')">Editar</button>
+      </div>
+    </div>`;
+
+  update_field_with_seeker(
+    ['search-contracts', 'select-status'], // id of the input of the seeker
+    'field-contracts',  // id of the container to update
+    divHtml,            // template with placeholders
+    'contracts/search_contracts/' // url for the search
+  );
+})();
+```
+
+### 🖥️ 1️⃣ Código Python en tu servidor
+```py
+@csrf_exempt
+def search_contracts(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        all_filters = data.get('allFilters', [])
+        query = all_filters[0].strip() if len(all_filters) > 0 else ''
+        status = all_filters[1].strip().lower() if len(all_filters) > 1 else ''
+
+        contracts = Contracts.objects.filter(
+            Q(title__icontains=query) | Q(content_html__icontains=query)
+        )
+
+        # add the filter for status
+        if status == 'true':
+            contracts = contracts.filter(active=True)
+        elif status == 'false':
+            contracts = contracts.filter(active=False)
+
+        # We order and limit results
+        contracts = contracts.order_by('title')[:20]
+
+        # We generate the response
+        result_list = [
+            {
+                'id': c.id,
+                'title': c.title,
+                'creation_date': c.creation_date
+            }
+            for c in contracts
+        ]
+
+        return JsonResponse({'success': True, 'results': result_list})
+    else:
+        return JsonResponse({'message': 'Método no permitido'}, status=405)
+```
+
+![PLUS ERP update_field_with_seeker](web_git/update_field_with_seeker.webp)
+---

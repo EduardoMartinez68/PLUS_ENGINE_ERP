@@ -43,7 +43,6 @@ def search_contracts(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == 'POST':
             data = json.loads(request.body)
-            print(data)
             all_filters = data.get('allFilters', [])
             query = all_filters[0].strip() if len(all_filters) > 0 else ''
             status = all_filters[1].strip().lower() if len(all_filters) > 1 else ''
@@ -77,7 +76,6 @@ def search_contracts(request):
     else:
         if request.method == 'POST':
             data = json.loads(request.body)
-            print(data)
             all_filters = data.get('allFilters', [])
             query = all_filters[0].strip() if len(all_filters) > 0 else ''
             status = all_filters[1].strip().lower() if len(all_filters) > 1 else ''

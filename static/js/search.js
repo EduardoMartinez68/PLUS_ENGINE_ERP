@@ -91,7 +91,6 @@ function update_field_with_seeker(inputsId, fieldId, divHtml, searchUrl, delay =
     /**
       inputsId=this is a array of all the inputs of filter fot search the objects. inputsId[0] is the id of the search input
       fieldId=the field that we will update
-      card=the name of the columns with which we save the database. must be the same amount of col as the table
       searchUrl=the url where we will search the information of the table
       delay=the time that would like delay 
      */
