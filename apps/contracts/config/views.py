@@ -201,7 +201,6 @@ def edit_contract(request, contract_id):
 @login_required(login_url='login')
 def detect_type_input(request, label):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        print(f"Detecting type for label: {label}")
         if "date" in label or "Fecha.Actual" in label or "Fecha" in label:
             return "date"
         elif "Monto" in label or "Total" in label:
@@ -209,7 +208,6 @@ def detect_type_input(request, label):
         else:
             return "text"
     else:
-        print(f"Detecting type for label: {label}")
         if "date" in label or "Fecha.Actual" in label or "Fecha" in label:
             return "date"
         elif "Monto" in label or "Total" in label:

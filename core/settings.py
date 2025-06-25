@@ -2,6 +2,10 @@ import os
 from pathlib import Path
 from core.readApps import APPS_FOLDER, APPS_NAME
 from core.updateAllTheFilesOfTheApps import *
+# load the variables in the file .env
+from dotenv import load_dotenv
+load_dotenv()
+
 print("""
     -----------------------------------------------------------------
     PLUS ERP
@@ -15,7 +19,8 @@ print("""
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Seguridad
-SECRET_KEY = 'tu-clave-secreta-aqui'  # en producción usar un .env
+secret_key = os.getenv('SECRET_KEY')
+SECRET_KEY = secret_key if secret_key else 'tu-clave-secreta-aqui'
 DEBUG = True
 ALLOWED_HOSTS = []
 
@@ -73,16 +78,22 @@ TEMPLATES = [
 # WSGI (para producción)
 WSGI_APPLICATION = 'core.wsgi.application'
 
+# read the variables
+db_host = os.getenv('DB_HOST')
+db_user = os.getenv('DB_USER')
+db_pass = os.getenv('DB_PASS')
+db_name = os.getenv('DB_NAME')
+db_port = os.getenv('DB_PORT')
+
 # Base de datos PostgreSQL
 DATABASES = {
     'default': {
-        
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'plus_erp',
-        'USER': 'postgres',
-        'PASSWORD': 'bobesponja48',
-        'HOST': 'localhost',  # or the IP of your server
-        'PORT': '5432',
+        'NAME': db_name,
+        'USER': db_user,
+        'PASSWORD': db_pass,
+        'HOST': db_host,
+        'PORT': db_port,
         'OPTIONS': {
             'options': '-c search_path=customer,public',
         },

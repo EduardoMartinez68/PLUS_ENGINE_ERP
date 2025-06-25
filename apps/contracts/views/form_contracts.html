@@ -1,7 +1,7 @@
 <br>
 {% include 'partials_contracts/navbarContacts.html' %}
 <div class="container">
-    <form action="" method="post" id="formDowloadContracts">
+    <form method="post" id="formDowloadContracts">
         <input type="hidden" id="contract_id" name="contract_id" value="{{ contract.id }}">
         {% csrf_token %}    
         {% for inputData in inputs %}
@@ -12,20 +12,16 @@
         <br>
         {% endfor %}
         <br>
-        <button class="btn btn-normal">Generar</button>
+        <button class="btn btn-normal" onclick="create_pdf()" type="button">Generar</button>
     </form>
 </div>
 
 <script>
-    const id_contrct = document.getElementById('contract_id').value;
-    create_form_for_send_the_server_pdf('formDowloadContracts', `/contracts/form_contract/${id_contrct}/`);
-
-    async function create_form_for_send_the_server_pdf(id_form, url) {
-        document.getElementById(id_form).addEventListener('submit', async function (e) {
-            e.preventDefault(); // para que no recargue la página
+    async function create_pdf(){
+        const id_contrct = document.getElementById('contract_id').value;
 
             // Leer los datos del formulario
-            const form = document.getElementById(id_form);
+            const form = document.getElementById(`formDowloadContracts`);
             const formData = new FormData(form);
             const data = {};
             formData.forEach((value, key) => {
@@ -33,7 +29,7 @@
             });
 
             // Enviar la info al servidor y obtener el PDF
-            const result = await send_message_and_download_pdf(url, data);
+            const result = await send_message_and_download_pdf(`/contracts/form_contract/${id_contrct}/`, data);
 
             // Mostrar resultado
             if (result.success) {
@@ -42,7 +38,6 @@
             } else {
                 show_alert('alert', 'Error', 'No se pudo generar el contrato en el servidor.', (result.error || 'No se pudo generar el contrato en el servidor.'));
             }
-        });
     }
 
     async function send_message_and_download_pdf(url, data = {}, with_load = true) {
