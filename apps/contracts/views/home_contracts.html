@@ -1,98 +1,130 @@
 <br>
 
 {% include 'partials_contracts/navbarContacts.html' %}
-  <style>
+<style>
+  .grid-files {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .card-file {
+    background-color: #fff;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    padding: 18px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.3s ease;
+    cursor: default;
+    user-select: none;
+  }
+
+  .card-file:hover {
+    border-color: #666;
+  }
+
+  .file-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    font-size: 1rem;
+    color: #444;
+  }
+
+  .file-info i {
+    font-style: normal;
+    font-size: 1.3rem;
+    color: #888;
+    user-select: none;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  button.eliminar {
+    border-color: #c0392b;
+    color: #c0392b;
+  }
+
+  button.eliminar:hover {
+    background-color: #fcebea;
+    color: #922b21;
+    border-color: #922b21;
+  }
+
+  @media (max-width: 800px) {
     .grid-files {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
+      grid-template-columns: repeat(2, 1fr);
     }
+  }
 
-    .card-file {
-      background-color: #fff;
-      border: 1.5px solid #ddd;
-      border-radius: 8px;
-      padding: 18px 22px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: border-color 0.3s ease;
-      cursor: default;
-      user-select: none;
+  @media (max-width: 480px) {
+    .grid-files {
+      grid-template-columns: 1fr;
     }
+  }
+</style>
 
-    .card-file:hover {
-      border-color: #666;
-    }
 
-    .file-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 500;
-      font-size: 1rem;
-      color: #444;
-    }
+<div class="container-section" role="main">
+  <h1>Mis Contratos</h1>
+  <hr>
 
-    .file-info i {
-      font-style: normal;
-      font-size: 1.3rem;
-      color: #888;
-      user-select: none;
-    }
-
-    .buttons {
-      display: flex;
-      gap: 10px;
-    }
-
-    button.eliminar {
-      border-color: #c0392b;
-      color: #c0392b;
-    }
-
-    button.eliminar:hover {
-      background-color: #fcebea;
-      color: #922b21;
-      border-color: #922b21;
-    }
-
-    @media (max-width: 800px) {
-      .grid-files {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 480px) {
-      .grid-files {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-
- 
-  <div class="container-section" role="main">
-    <h1>Mis Contratos</h1>
-    <hr>
-    <div class="grid-files" aria-label="Lista de archivos">
-
-      {% for contract in contracts %}
-      <div class="card-file" tabindex="0">
-        <div class="file-info">
-          <i class="fi fi-sr-document-signed" aria-hidden="true"></i>
-          <span>{{ contract.title }}</span>
-        </div>
-        <div class="buttons">
-          <!--
-          <a href="/contracts/download_contract/{{ contract.id }}" target="_blank">Descargar</a>
-          --->
-          <button class="button" type="button" aria-label="Editar Archivo1.pdf" onclick="nextWeb('/contracts/form_contract/{{ contract.id }}')">Usar</button>
-          <button class="button" type="button" aria-label="Editar Archivo1.pdf" onclick="nextWeb('/contracts/edit_contract/{{ contract.id }}')">Editar</button>
-          <button class="button eliminar" type="button" aria-label="Eliminar Archivo1.pdf">Eliminar</button>
-        </div>
-      </div>
-    {% empty %}
-      <p>No tienes contratos aún.</p>
-    {% endfor %}
+  <div class="row">
+    <div class="col-12">
+      <input type="text" class="search-input-in-form" id="search-contracts"
+        placeholder="Buscar contratos por título...">
     </div>
   </div>
+  <br>
+  <div class="grid-files" aria-label="Lista de archivos" id="field-contracts">
+
+    {% for contract in contracts %}
+    <div class="card-file" tabindex="0">
+      <div class="file-info">
+        <i class="fi fi-sr-document-signed" aria-hidden="true"></i>
+        <span>{{ contract.title }}</span>
+      </div>
+      <div class="buttons">
+        <!--
+          <a href="/contracts/download_contract/{{ contract.id }}" target="_blank">Descargar</a>
+          --->
+        <button class="button" type="button" aria-label="Editar Archivo1.pdf"
+          onclick="nextWeb('/contracts/form_contract/{{ contract.id }}')">Usar</button>
+        <button class="button" type="button" aria-label="Editar Archivo1.pdf"
+          onclick="nextWeb('/contracts/edit_contract/{{ contract.id }}')">Editar</button>
+      </div>
+    </div>
+    {% empty %}
+    <p>No tienes contratos aún.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+(() => {
+  const divHtml = `
+    <div class="card-file" tabindex="0">
+      <div class="file-info">
+        <i class="fi fi-sr-document-signed" aria-hidden="true"></i>
+        <span>{ title }</span>
+      </div>
+      <div class="buttons">
+        <button class="button" type="button" onclick="nextWeb('/contracts/form_contract/{ id }')">Usar</button>
+        <button class="button" type="button" onclick="nextWeb('/contracts/edit_contract/{ id }')">Editar</button>
+      </div>
+    </div>`;
+
+  update_field_with_seeker(
+    'search-contracts', // id del input de búsqueda
+    'field-contracts',  // id del contenedor a actualizar
+    divHtml,            // plantilla con placeholders
+    'contracts/search_contracts/' // url para la búsqueda
+  );
+})();
+</script>

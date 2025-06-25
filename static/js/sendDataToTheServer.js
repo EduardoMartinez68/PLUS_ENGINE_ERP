@@ -1,5 +1,5 @@
 async function send_message_to_the_server(url, data = {}, with_load = true) {
-    // Mostrar overlay
+    // show the overlay
     const screenLoad = document.getElementById('loadingOverlay')
     if (with_load) {
         screenLoad.style.display = 'flex';

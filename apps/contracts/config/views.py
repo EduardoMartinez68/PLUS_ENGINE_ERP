@@ -21,7 +21,7 @@ def contracts_home(request):
         user_id = request.user.id
         # get the first 20 contarcts of the user
         # we will order by creation_date desc
-        contracts = Contracts.objects.filter(user_id=user_id).order_by('-creation_date')[:20]
+        contracts = Contracts.objects.filter(user_id=user_id, active=True).order_by('-creation_date')[:20]
         
         context = {
             'contracts': contracts
@@ -31,7 +31,7 @@ def contracts_home(request):
         user_id = request.user.id
         # get the first 20 contarcts of the user
         # we will order by creation_date desc
-        contracts = Contracts.objects.filter(user_id=user_id).order_by('-creation_date')[:20]
+        contracts = Contracts.objects.filter(user_id=user_id, active=True).order_by('-creation_date')[:20]
         
         context = {
             'contracts': contracts
@@ -39,13 +39,57 @@ def contracts_home(request):
         return render(request, 'home_contracts.html', context)
 
 @login_required(login_url='login')
+def search_contracts(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == 'POST':
+            data = json.loads(request.body)
+            query = data.get('query', '').strip()
+    
+            contracts = Contracts.objects.filter(
+                Q(title__icontains=query) | Q(content_html__icontains=query)
+            ).order_by('title')[:20]
+    
+            result_list = []
+            for c in contracts:
+                result_list.append({
+                    'id': c.id,
+                    'title': c.title,
+                    'creation_date': c.creation_date
+                })
+    
+            return JsonResponse({'success': True,'results': result_list})
+        else:
+            return JsonResponse({'message': 'Método no permitido'}, status=405)
+    else:
+        if request.method == 'POST':
+            data = json.loads(request.body)
+            query = data.get('query', '').strip()
+    
+            contracts = Contracts.objects.filter(
+                Q(title__icontains=query) | Q(content_html__icontains=query)
+            ).order_by('title')[:20]
+    
+            result_list = []
+            for c in contracts:
+                result_list.append({
+                    'id': c.id,
+                    'title': c.title,
+                    'creation_date': c.creation_date
+                })
+    
+            return JsonResponse({'success': True,'results': result_list})
+        else:
+            return JsonResponse({'message': 'Método no permitido'}, status=405)
+
+@login_required(login_url='login')
 def add_contract(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == 'POST':
             try:
-                data = json.loads(request.body)  # El body lo mandas en JSON con fetch
+                data = json.loads(request.body)  #convert the body to JSON
     
-                # Extraer los datos del JSON
+                #get the data of the  JSON
+                #we will get the name of the contract
                 name = data.get('name', '').strip()
     
                 #we will see if the user add the name of the contract
@@ -59,7 +103,6 @@ def add_contract(request):
                 creation_date = timezone.now()
     
                 #her we will add the new contract to the database
-    
                 contract = Contracts(
                     user_id = user_id,
                     title=name,
@@ -82,9 +125,10 @@ def add_contract(request):
     else:
         if request.method == 'POST':
             try:
-                data = json.loads(request.body)  # El body lo mandas en JSON con fetch
+                data = json.loads(request.body)  #convert the body to JSON
     
-                # Extraer los datos del JSON
+                #get the data of the  JSON
+                #we will get the name of the contract
                 name = data.get('name', '').strip()
     
                 #we will see if the user add the name of the contract
@@ -98,7 +142,6 @@ def add_contract(request):
                 creation_date = timezone.now()
     
                 #her we will add the new contract to the database
-    
                 contract = Contracts(
                     user_id = user_id,
                     title=name,
@@ -124,25 +167,28 @@ def edit_contract(request, contract_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == 'POST':
             try:
-                data = json.loads(request.body)  # El body viene en JSON con fetch
+                data = json.loads(request.body)  #convert the body to JSON
     
-                # Extraer datos del JSON
+                #get the data of the  JSON
                 name = data.get('name', '').strip()
                 container_editor = data.get('container_editor', '').strip()
+                is_active = data.get('is_active', False)
     
-                # Verificar que haya nombre
+                #we will see if the contract have a name for that the user can identify it
                 if not name:
                     return JsonResponse({'success': False, 'message': 'El nombre del contrato es obligatorio.', 'error': ''}, status=400)
     
-                # Buscar el contrato existente
+                #search the contracts in the database
                 try:
                     contract = Contracts.objects.get(id=contract_id, user_id=request.user.id)
-                except Contracts.DoesNotExist:
+                except Contracts.DoesNotExist: 
+                    #if the contract not exist, return a error
                     return JsonResponse({'success': False, 'message': 'Contrato no encontrado.', 'error': ''}, status=404)
     
-                # Actualizar los campos
+                #update the information
                 contract.title = name
                 contract.content_html = container_editor
+                contract.active = is_active
                 contract.save()
     
                 return JsonResponse({'success': True, 'message': 'Contrato editado exitosamente.'})
@@ -152,35 +198,39 @@ def edit_contract(request, contract_id):
                 print(e)
                 return JsonResponse({'success': False, 'message': 'Error al editar el contrato.', 'error': e}, status=500)
     
-        # Si es GET, mostrar el formulario de edición
+        # if is GET, we will show the form of edit
         try:
             contract = Contracts.objects.get(id=contract_id, user_id=request.user.id)
         except Contracts.DoesNotExist:
             return HttpResponse("Contrato no encontrado.", status=404)
+    
     
         return render(request, 'edit_contracts.html', {'contract': contract})
     else:
         if request.method == 'POST':
             try:
-                data = json.loads(request.body)  # El body viene en JSON con fetch
+                data = json.loads(request.body)  #convert the body to JSON
     
-                # Extraer datos del JSON
+                #get the data of the  JSON
                 name = data.get('name', '').strip()
                 container_editor = data.get('container_editor', '').strip()
+                is_active = data.get('is_active', False)
     
-                # Verificar que haya nombre
+                #we will see if the contract have a name for that the user can identify it
                 if not name:
                     return JsonResponse({'success': False, 'message': 'El nombre del contrato es obligatorio.', 'error': ''}, status=400)
     
-                # Buscar el contrato existente
+                #search the contracts in the database
                 try:
                     contract = Contracts.objects.get(id=contract_id, user_id=request.user.id)
-                except Contracts.DoesNotExist:
+                except Contracts.DoesNotExist: 
+                    #if the contract not exist, return a error
                     return JsonResponse({'success': False, 'message': 'Contrato no encontrado.', 'error': ''}, status=404)
     
-                # Actualizar los campos
+                #update the information
                 contract.title = name
                 contract.content_html = container_editor
+                contract.active = is_active
                 contract.save()
     
                 return JsonResponse({'success': True, 'message': 'Contrato editado exitosamente.'})
@@ -190,30 +240,14 @@ def edit_contract(request, contract_id):
                 print(e)
                 return JsonResponse({'success': False, 'message': 'Error al editar el contrato.', 'error': e}, status=500)
     
-        # Si es GET, mostrar el formulario de edición
+        # if is GET, we will show the form of edit
         try:
             contract = Contracts.objects.get(id=contract_id, user_id=request.user.id)
         except Contracts.DoesNotExist:
             return HttpResponse("Contrato no encontrado.", status=404)
     
+    
         return render(request, 'edit_contracts.html', {'contract': contract})
-
-@login_required(login_url='login')
-def detect_type_input(request, label):
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        if "date" in label or "Fecha.Actual" in label or "Fecha" in label:
-            return "date"
-        elif "Monto" in label or "Total" in label:
-            return "Number"
-        else:
-            return "text"
-    else:
-        if "date" in label or "Fecha.Actual" in label or "Fecha" in label:
-            return "date"
-        elif "Monto" in label or "Total" in label:
-            return "Number"
-        else:
-            return "text"
 
 @login_required(login_url='login')
 def form_contract(request, contract_id):
@@ -249,6 +283,15 @@ def form_contract(request, contract_id):
             response['Content-Disposition'] = f'attachment; filename="{contract.title}.pdf"'
             return response
         
+    
+        def detect_type_input(label):
+            if "date" in label or "Fecha.Actual" in label or "Fecha" in label:
+                return "date"
+            elif "Monto" in label or "Total" in label:
+                return "Number"
+            else:
+                return "text"
+            
         #if not is a for post, we will show the inputs of the file
         #now we create a list of inputs for the form
         inputs=[]
@@ -259,7 +302,7 @@ def form_contract(request, contract_id):
                 input={
                     "name":label,
                     "label":label.replace('.',' '),
-                    "type":detect_type_input(request,label),
+                    "type":detect_type_input(label),
                     "value":""
                 }
     
@@ -298,6 +341,15 @@ def form_contract(request, contract_id):
             response['Content-Disposition'] = f'attachment; filename="{contract.title}.pdf"'
             return response
         
+    
+        def detect_type_input(label):
+            if "date" in label or "Fecha.Actual" in label or "Fecha" in label:
+                return "date"
+            elif "Monto" in label or "Total" in label:
+                return "Number"
+            else:
+                return "text"
+            
         #if not is a for post, we will show the inputs of the file
         #now we create a list of inputs for the form
         inputs=[]
@@ -308,7 +360,7 @@ def form_contract(request, contract_id):
                 input={
                     "name":label,
                     "label":label.replace('.',' '),
-                    "type":detect_type_input(request,label),
+                    "type":detect_type_input(label),
                     "value":""
                 }
     

@@ -391,3 +391,10 @@ function create_all_the_select() {
 
 
 create_all_the_select();
+
+
+
+///---------------------------------------------
+async function create_search_bar(searchId,link){
+  
+}

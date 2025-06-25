@@ -2,6 +2,7 @@
 
 <!-- Place the following <script> and <textarea> tags your HTML's <body> -->
 <script>
+(() => {
     const now = new Date();
     const currentMonth = `${now.getFullYear()}-${now.getMonth() + 1}`;  // Ej: "2025-6"
 
@@ -79,6 +80,7 @@
     else {
         show_alert('alert', 'Error con el editor', 'Has alcanzado el límite de uso mensual del editor.')
     }
+})();
 </script>
 
 
