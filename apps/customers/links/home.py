@@ -34,7 +34,7 @@ def edit_customer(request, id_customer):
                 cellphone = data.get('cellphone', '').strip()
                 website = data.get('website', '').strip()
                 country = data.get('country', '').strip()
-                status = data.get('status') in [True, 'true', 'on', '1']
+                status = data.get('this_customer_is_a_company') in [True, 'true', 'on', '1']
 
                 if not name:
                     return JsonResponse({'success': False, 'message': 'El nombre del cliente es obligatorio.', 'error': ''}, status=400)
@@ -135,11 +135,18 @@ def add_customer(request):
 def search_customers(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        query = data.get('query', '').strip()
+        all_filters = data.get('allFilters', [])
+        query = all_filters[0].strip() if len(all_filters) > 0 else ''
+        status = all_filters[1].strip().lower() if len(all_filters) > 1 else ''
 
         customers = Customer.objects.filter(
             Q(name__icontains=query) | Q(email__icontains=query)
-        ).order_by('name')[:20]
+        )
+
+        if status == 'true':
+            customers = customers.filter(status=True)
+        elif status == 'false':
+            customers = customers.filter(status=False)
 
         result_list = []
         for c in customers:

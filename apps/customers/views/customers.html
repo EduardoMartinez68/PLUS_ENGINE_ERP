@@ -3,9 +3,18 @@
 <br>
 <div class="container-section">
     <div class="row">
-        <div class="col-12">
-            <input type="text" class="search-input-in-form" id="serach-customers"
+        <div class="col-10">
+            <label for="">Buscar un Cliente</label>
+            <input type="text" class="search-input-in-form" id="search-customers"
                 placeholder="Buscar clientes por email o nombre...">
+        </div>
+        <div class="col">
+        <label for="">Estado del Contrato</label>
+        <select id="select-status">
+            <option value="true">Activo</option>
+            <option value="false">Desactivados</option>
+            <option value="">Todos</option>
+        </select>
         </div>
     </div>
 
@@ -50,7 +59,7 @@
     `;
 
   update_container_with_seeker(
-    'serach-customers', // id of the input of the seeker
+    ['search-customers','select-status'], // id of the input of the seeker
     'container-table',  // id of the container to update
     divHtml,            // template with placeholders
     'customers/search_customers/' // url for the search
