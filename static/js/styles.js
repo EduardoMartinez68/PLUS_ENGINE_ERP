@@ -394,7 +394,85 @@ create_all_the_select();
 
 
 
-///---------------------------------------------
-async function create_search_bar(searchId,link){
-  
+///---------------------------function for css and js for help to the programmers to work in the frontend------------------
+//this function is for auto resize the textarea when the user write in the textarea
+function form_auto_resize(id_textarea){
+  const textarea = document.getElementById(id_textarea); //get the textarea that we will resize
+  if (textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
 }
+
+//this function is for add a short cut in the app that the programmer would like add.
+function add_short_cut(keyCombo, callback){
+  //keyCombo= the combination of the keys that the user will use for do the short cut example Control+S
+  //callback= the function that we will execute when the user do the short cut
+
+
+  //we will convert the combination of the keys in a set of key normal
+  const combo = keyCombo.toLowerCase().split('+').map(k => k.trim());
+
+  //we listen the event keydown global
+  document.addEventListener('keydown', function (event) {
+      const keysPressed = [];
+
+      if (event.ctrlKey) keysPressed.push('control');
+      if (event.altKey) keysPressed.push('alt');
+      if (event.shiftKey) keysPressed.push('shift');
+      if (event.metaKey) keysPressed.push('meta'); // Para MacOS Command key
+
+      const key = event.key.toLowerCase();
+
+
+      // Avoid duplicating if it is already a modifier
+      if (!['control', 'alt', 'shift', 'meta'].includes(key)) {
+          keysPressed.push(key);
+      }
+
+      // Check if all keys match
+      const match = combo.every(k => keysPressed.includes(k)) && keysPressed.length === combo.length;
+      if (match) {
+          event.preventDefault(); // prevent default actions like Ctrl+S
+          callback(event);
+      }
+  });
+}
+
+//this function is for add a class to a element when the user do click in other element 
+function toggle_class_on_click(triggerSelector, targetSelector, className) {
+  //triggerSelector= the selector of the element that we will use for do click
+  //targetSelector= the selector of the element that we will add the class
+  //className= the class that we will add to the targetSelector
+
+  //her we will get all the elemet that have the selector triggerSelector and targetSelector
+  const triggerElement = document.querySelector(triggerSelector);
+  const targetElement = document.querySelector(targetSelector);
+
+  //if not exist the element, we will not do nothing
+  if (triggerElement && targetElement) {
+    //if exist a element, so we will add the event listener
+    //when the user do click in the triggerElement, we will add or remove the className in the targetElement
+    triggerElement.addEventListener('click', function() {
+      targetElement.classList.toggle(className);
+    });
+  }
+}
+
+/*
+this is for add a function when the user do click in a element in the web.
+this function is for attach a click event to an element with a specific selector
+and execute a callback function when the element is clicked.
+*/
+function attach_click(triggerSelector, callback) {
+  //triggerSelector= the selector of the element that we will use for do click
+  //callback= the function that we will execute when the user do click in the element
+
+  //her we will get all the element that have the selector triggerSelector
+  const triggerElement = document.querySelector(triggerSelector);
+  if (triggerElement) {
+    //if exist a element with the selector, we will add the event listener
+    triggerElement.addEventListener('click', callback);
+  }
+}
+
