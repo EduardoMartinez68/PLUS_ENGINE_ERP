@@ -20,7 +20,7 @@
                 <th></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="container-table">
             {% for customer in customers %}
             <tr>
                 <td>{{ customer.name }}</td>
@@ -28,7 +28,7 @@
                 <td>{{ customer.phone }}</td>
                 <td>{{ customer.cellphone }}</td>
                 <td>{{ customer.company_name }}</td>
-                <th><button class="btn btn-edit"><i class="fi fi-sr-pencil"></i></button></th>
+                <th><button class="btn btn-normal" type="button" onclick="nextWeb('customers/edit_customer/{{ customer.id }}/')"><i class="fi fi-sr-pencil"></i></button></th>
             </tr>
             {% endfor %}
         </tbody>
@@ -39,12 +39,24 @@
 </div>
 
 <script>
-    update_table_with_seeker(
-        'serach-customers', //the id of the input that is a seeker
-        'table-customer', //the id of the table that would like update
-        ['name', 'email', 'phone', 'cellphone', 'company_name'] //These are the name of the columns that exist in our database 
-        ,'customers/search_customers/' //this is the url where get the answer of the server 
-    );
+(() => {
+  const divHtml = `
+        <td>{ name }</td>
+        <td>{ email }</td>
+        <td>{ phone }</td>
+        <td>{ cellphone }</td>
+        <td>{ company_name }</td>
+        <th><button class="btn btn-normal" type="button" onclick="nextWeb('customers/edit_customer/{ id }/')"><i class="fi fi-sr-pencil"></i></button></th>
+    `;
+
+  update_container_with_seeker(
+    'serach-customers', // id of the input of the seeker
+    'container-table',  // id of the container to update
+    divHtml,            // template with placeholders
+    'customers/search_customers/' // url for the search
+  );
+})();
 </script>
+
 
 

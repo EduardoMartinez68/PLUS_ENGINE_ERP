@@ -5,10 +5,12 @@ import os
 
 #when tis we will read our file .env
 from dotenv import load_dotenv 
+from django.contrib.auth.decorators import login_required
+
 load_dotenv()
 KEY_TINYMCE = os.getenv('KEY_TINYMCE')
 
-
+@login_required(login_url='login')
 def home(request):
     apps = APPS_CACHE
     return render(request, 'core/home.html',{'apps': apps,'KEY_TINYMCE':KEY_TINYMCE})

@@ -1,5 +1,6 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -13,17 +14,128 @@ def customers_home(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         id_branch = request.user.id_branch
     
-        # Traer los primeros 20 resultados de ese branch ordenados por ID
-        customers = Customer.objects.filter(id_branch=id_branch).order_by('id')[:20]
+        # get the first 20 answers from the branch ordered by ID and that his status is True
+        customers = Customer.objects.filter(id_branch=id_branch, status=True).order_by('id')[:20]
     
         return render(request, 'customers.html', {'customers': customers})
     else:
         id_branch = request.user.id_branch
     
-        # Traer los primeros 20 resultados de ese branch ordenados por ID
-        customers = Customer.objects.filter(id_branch=id_branch).order_by('id')[:20]
+        # get the first 20 answers from the branch ordered by ID and that his status is True
+        customers = Customer.objects.filter(id_branch=id_branch, status=True).order_by('id')[:20]
     
         return render(request, 'customers.html', {'customers': customers})
+
+@login_required(login_url='login')
+def edit_customer(request, id_customer):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == 'POST':
+                try:
+                    data = json.loads(request.body)
+    
+                    name = data.get('name', '').strip()
+                    email = data.get('email', '').strip()
+                    is_company = data.get('this_customer_is_a_company') in [True, 'true', 'on', '1']
+                    company_name = data.get('company_name', '').strip()
+                    rfc = data.get('rfc', '').strip()
+                    curp = data.get('curp', '').strip()
+                    phone = data.get('phone', '').strip()
+                    cellphone = data.get('cellphone', '').strip()
+                    website = data.get('website', '').strip()
+                    country = data.get('country', '').strip()
+                    status = data.get('status') in [True, 'true', 'on', '1']
+    
+                    if not name:
+                        return JsonResponse({'success': False, 'message': 'El nombre del cliente es obligatorio.', 'error': ''}, status=400)
+    
+                    try:
+                        customer = Customer.objects.get(id=id_customer, id_branch=request.user.id_branch)
+                    except Customer.DoesNotExist:
+                        return JsonResponse({'success': False, 'message': 'Cliente no encontrado.', 'error': ''}, status=404)
+    
+                    # Actualizar campos
+                    customer.name = name
+                    customer.email = email
+                    customer.this_customer_is_a_company = is_company
+                    customer.company_name = company_name
+                    customer.rfc = rfc
+                    customer.curp = curp
+                    customer.phone = phone
+                    customer.cellphone = cellphone
+                    customer.website = website
+                    customer.country = country
+                    customer.status = status
+                    customer.save()
+    
+                    return JsonResponse({'success': True, 'message': 'Cliente editado exitosamente.'})
+    
+                except Exception as e:
+                    print('--------------------- ERROR edit_customer ---------------------')
+                    print(e)
+                    return JsonResponse({'success': False, 'message': 'Error al editar el cliente.', 'error': str(e)}, status=500)
+    
+    
+        # GET
+        try:
+            customer = Customer.objects.get(id=id_customer)
+        except Customer.DoesNotExist:
+            return HttpResponse("Cliente no encontrado.", status=404)
+    
+        return render(request, 'formCustomer.html', {'customer': customer})
+    else:
+        if request.method == 'POST':
+                try:
+                    data = json.loads(request.body)
+    
+                    name = data.get('name', '').strip()
+                    email = data.get('email', '').strip()
+                    is_company = data.get('this_customer_is_a_company') in [True, 'true', 'on', '1']
+                    company_name = data.get('company_name', '').strip()
+                    rfc = data.get('rfc', '').strip()
+                    curp = data.get('curp', '').strip()
+                    phone = data.get('phone', '').strip()
+                    cellphone = data.get('cellphone', '').strip()
+                    website = data.get('website', '').strip()
+                    country = data.get('country', '').strip()
+                    status = data.get('status') in [True, 'true', 'on', '1']
+    
+                    if not name:
+                        return JsonResponse({'success': False, 'message': 'El nombre del cliente es obligatorio.', 'error': ''}, status=400)
+    
+                    try:
+                        customer = Customer.objects.get(id=id_customer, id_branch=request.user.id_branch)
+                    except Customer.DoesNotExist:
+                        return JsonResponse({'success': False, 'message': 'Cliente no encontrado.', 'error': ''}, status=404)
+    
+                    # Actualizar campos
+                    customer.name = name
+                    customer.email = email
+                    customer.this_customer_is_a_company = is_company
+                    customer.company_name = company_name
+                    customer.rfc = rfc
+                    customer.curp = curp
+                    customer.phone = phone
+                    customer.cellphone = cellphone
+                    customer.website = website
+                    customer.country = country
+                    customer.status = status
+                    customer.save()
+    
+                    return JsonResponse({'success': True, 'message': 'Cliente editado exitosamente.'})
+    
+                except Exception as e:
+                    print('--------------------- ERROR edit_customer ---------------------')
+                    print(e)
+                    return JsonResponse({'success': False, 'message': 'Error al editar el cliente.', 'error': str(e)}, status=500)
+    
+    
+        # GET
+        try:
+            customer = Customer.objects.get(id=id_customer)
+        except Customer.DoesNotExist:
+            return HttpResponse("Cliente no encontrado.", status=404)
+    
+        return render(request, 'formCustomer.html', {'customer': customer})
 
 @login_required(login_url='login')
 def add_customer(request):
@@ -76,7 +188,7 @@ def add_customer(request):
     
     
     
-        return render(request, 'addCustomer.html')
+        return render(request, 'formCustomer.html')
     else:
         if request.method == 'POST':
             try:
@@ -126,7 +238,7 @@ def add_customer(request):
     
     
     
-        return render(request, 'addCustomer.html')
+        return render(request, 'formCustomer.html')
 
 @login_required(login_url='login')
 def search_customers(request):
@@ -142,6 +254,7 @@ def search_customers(request):
             result_list = []
             for c in customers:
                 result_list.append({
+                    'id': c.id,
                     'name': c.name,
                     'email': c.email,
                     'phone': c.phone,
@@ -164,6 +277,7 @@ def search_customers(request):
             result_list = []
             for c in customers:
                 result_list.append({
+                    'id': c.id,
                     'name': c.name,
                     'email': c.email,
                     'phone': c.phone,

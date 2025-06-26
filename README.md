@@ -7,6 +7,10 @@ PLUS está diseñado para resolver los problemas cotidianos que enfrentan abogad
 
 Tecnología con un toque de magia ❤️
 ---
+### Link para el manual del programador
+https://eduardomartinez68.github.io/EduardoMartinez68/
+
+---
 ## 👤 Sobre el autor
 
 **Nombre:** Martínez Ortiz Eduardo Antonio  

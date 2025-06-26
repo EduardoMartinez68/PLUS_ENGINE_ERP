@@ -11,7 +11,7 @@ function openTab(evt, tabName) {
 }
 
 /**----------------------------------MESSAGE POP----------------------**/
-function showPop(idOverlay) {
+function show_pop(idOverlay) {
   const overlay = document.getElementById(idOverlay);
   if (overlay) {
     overlay.style.display = 'flex';

@@ -2,34 +2,34 @@
   <div class="form-grid">
     <div>
       <label>Nombre del Cliente</label>
-      <input type="text" name="name" class="case-title-input" placeholder="Nombre del cliente" required />
+      <input type="text" name="name" class="case-title-input" placeholder="Nombre del cliente" required value="{{customer.name}}" maxlength="300"/>
     </div>
     <div></div>
     <div>
       <label>Email</label>
-      <input type="email" name="email" placeholder="Correo electrónico" />
+      <input type="email" name="email" placeholder="Correo electrónico" value="{{customer.email}}" />
     </div>
     <div>
       <label>Cliente Activo</label>
       <label class="switch">
-          <input type="checkbox" name="this_customer_is_a_company" id="isCompanySwitch" />
+          <input type="checkbox" name="this_customer_is_a_company" id="isCompanySwitch" {% if customer.status %}checked{% endif %} />
           <span class="slider round"></span>
       </label>
       <input type="hidden" id="statusValue" name="status" value="true" />
     </div>
     <div>
       <label>Teléfono</label>
-      <input type="text" name="phone" placeholder="Teléfono" />
+      <input type="text" name="phone" placeholder="Teléfono" value="{{customer.phone}}" maxlength="15"/>
     </div>
 
     <div>
       <label>Celular</label>
-      <input type="text" name="cellphone" placeholder="Celular" />
+      <input type="text" name="cellphone" placeholder="Celular" value="{{customer.cellphone}}"  maxlength="15"/>
     </div>
 
     <div>
       <label>País</label>
-      <input type="text" name="country" placeholder="País" />
+      <input type="text" name="country" placeholder="País" value="{{customer.country}}" maxlength="100" />
     </div>
   </div>
 </div>

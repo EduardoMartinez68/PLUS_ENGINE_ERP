@@ -77,14 +77,16 @@
 
   <div class="row">
     <div class="col-10">
+      <label for="">Busca un contrato</label>
       <input type="text" class="search-input-in-form" id="search-contracts"
         placeholder="Buscar contratos por título...">
     </div>
     <div class="col">
+      <label for="">Estado del Contrato</label>
       <select id="select-status">
-        <option value="true">Contratos Activo</option>
-        <option value="false">Contratos Desactivados</option>
-        <option value="">todos</option>
+        <option value="true">Activo</option>
+        <option value="false">Desactivados</option>
+        <option value="">Todos</option>
       </select>
     </div>
   </div>
@@ -127,11 +129,12 @@
       </div>
     </div>`;
 
-  update_field_with_seeker(
+  update_container_with_seeker(
     ['search-contracts', 'select-status'], // id of the input of the seeker
     'field-contracts',  // id of the container to update
     divHtml,            // template with placeholders
-    'contracts/search_contracts/' // url for the search
+    'contracts/search_contracts/', // url for the search
+    'div'
   );
 })();
 </script>
