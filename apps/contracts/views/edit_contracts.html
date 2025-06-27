@@ -31,6 +31,8 @@
 </form>
 
 <script>
-    const id_contrct = document.getElementById('contract_id').value;
-    create_form_for_send_the_server('formEditContract', `/contracts/edit_contract/${id_contrct}/`);
+(() => {
+    const id_contract = document.getElementById('contract_id').value;
+    create_form_for_send_the_server('formEditContract', `/contracts/edit_contract/${id_contract}/`);
+})();
 </script>

@@ -1,0 +1,96 @@
+<form id="tareaAbogadoForm" class="p-4 rounded shadow" style="max-width: 700px; margin: auto; background: #fff;">
+  <h2 class="mb-4 text-center">📌 Nueva Tarea Legal</h2>
+
+  <!-- Título -->
+  <div class="mb-3">
+    <label for="titulo" class="form-label">Título de la tarea</label>
+    <input type="text" class="form-control" id="titulo" required>
+  </div>
+
+  <!-- Descripción -->
+  <div class="mb-3">
+    <label for="descripcion" class="form-label">Descripción / Detalles</label>
+    <textarea class="form-control" id="descripcion" rows="3"></textarea>
+  </div>
+
+  <!-- Fecha y hora -->
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label for="fechaInicio" class="form-label">Fecha y hora de inicio</label>
+      <input type="datetime-local" class="form-control" id="fechaInicio" required>
+    </div>
+    <div class="col-md-6">
+      <label for="duracion" class="form-label">Duración (en minutos)</label>
+      <input type="number" class="form-control" id="duracion" placeholder="Ej. 60">
+    </div>
+  </div>
+
+  <!-- Tipo de tarea -->
+  <div class="mb-3 mt-3">
+    <label for="tipoTarea" class="form-label">Tipo de tarea</label>
+    <select class="form-select" id="tipoTarea">
+      <option value="audiencia">Audiencia</option>
+      <option value="reunion">Reunión</option>
+      <option value="llamada">Llamada</option>
+      <option value="redaccion">Redacción de documentos</option>
+      <option value="otro">Otro</option>
+    </select>
+  </div>
+
+  <!-- Cliente o caso -->
+  <div class="mb-3">
+    <label for="cliente" class="form-label">Cliente o caso relacionado</label>
+    <input type="text" class="form-control" id="cliente">
+  </div>
+
+  <!-- Recordatorio -->
+  <div class="mb-3">
+    <label for="recordatorio" class="form-label">¿Cuánto antes recordar?</label>
+    <select class="form-select" id="recordatorio">
+      <option value="none">Sin recordatorio</option>
+      <option value="15">15 minutos antes</option>
+      <option value="60">1 hora antes</option>
+      <option value="1440">1 día antes</option>
+    </select>
+  </div>
+
+  <!-- Método de recordatorio -->
+  <div class="mb-3">
+    <label class="form-label">Vía de recordatorio</label>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="recordatorioApp" checked>
+      <label class="form-check-label" for="recordatorioApp">Notificación en app</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="recordatorioEmail">
+      <label class="form-check-label" for="recordatorioEmail">Correo electrónico</label>
+    </div>
+  </div>
+
+  <!-- Correo adicional -->
+  <div class="mb-3">
+    <label for="emailExtra" class="form-label">Enviar aviso a otro correo (opcional)</label>
+    <input type="email" class="form-control" id="emailExtra" placeholder="ej: asistente@bufete.com">
+  </div>
+
+  <!-- Prioridad -->
+  <div class="mb-3">
+    <label for="prioridad" class="form-label">Prioridad</label>
+    <select class="form-select" id="prioridad">
+      <option value="alta">Alta</option>
+      <option value="media" selected>Media</option>
+      <option value="baja">Baja</option>
+    </select>
+  </div>
+
+  <!-- Notas privadas -->
+  <div class="mb-3">
+    <label for="notas" class="form-label">Notas privadas</label>
+    <textarea class="form-control" id="notas" rows="2"></textarea>
+  </div>
+
+  <!-- Botón -->
+  <div class="d-grid">
+    <button type="submit" class="btn btn-dark">Guardar tarea</button>
+  </div>
+</form>

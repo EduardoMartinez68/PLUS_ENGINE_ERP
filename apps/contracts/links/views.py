@@ -109,6 +109,9 @@ def edit_contract(request, contract_id):
             name = data.get('name', '').strip()
             container_editor = data.get('container_editor', '').strip()
             is_active = data.get('is_active', False)
+            # Convertir "on" a booleano en caso de que venga como texto
+            if isinstance(is_active, str):
+                is_active = is_active.lower() in ['true', '1', 'on']
 
             #we will see if the contract have a name for that the user can identify it
             if not name:

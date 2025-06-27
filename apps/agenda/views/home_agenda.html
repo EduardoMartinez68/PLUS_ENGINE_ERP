@@ -1,0 +1,170 @@
+<!-- Google Fonts: Serif para títulos y Sans Serif para texto -->
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet" />
+
+<style>
+    /* Contenedor */
+    #calendar {
+        max-width: 960px;
+        margin: 0 auto 2rem;
+        background: #ffffff;
+        color:var(--primary-light);
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        padding: 1rem;
+    }
+
+    /* Botones minimalistas */
+    .fc .fc-toolbar-chunk {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .fc .fc-button {
+        font-weight: 600;
+        font-size: 0.9rem;
+        background: transparent;
+        border: none;
+        color: #4a4a4a;
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+    }
+
+    .fc .fc-button:hover {
+        background-color: rgba(30, 30, 30, 0.05);
+        color:var(--primary-light);
+    }
+
+    .fc .fc-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(30, 30, 30, 0.1);
+    }
+
+    .fc .fc-button.fc-button-active {
+        background-color: #e0e0e2;
+        color: #1a1a1a;
+    }
+
+    /* Vista de día y eventos */
+    .fc .fc-timegrid-event {
+        border: none;
+        border-radius: 8px;
+        background-color: #2c3e50;
+        color: #ffffff;
+        padding: 0.25rem 0.5rem;
+        box-shadow: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    /* Eventos de lista */
+    .fc .fc-list-event {
+        border-bottom: none;
+        padding: 0.5rem 0;
+        font-size: 0.9rem;
+    }
+
+    .fc .fc-list-event:hover {
+        background-color: #f2f2f2;
+        color:var(--primary-light);
+    }
+
+    /* Cabeceras de días */
+    .fc .fc-col-header-cell-cushion {
+        font-family: 'Merriweather', serif;
+        font-weight: 600;
+        font-size: 1rem;
+        color: #1a1a1a;
+    }
+
+    /* Cuadrícula ligera */
+    .fc .fc-daygrid-day-frame {
+        border: none;
+    }
+
+    .fc .fc-scrollgrid-section>td {
+        border: none;
+    }
+
+    .fc .fc-scrollgrid {
+        border: none;
+    }
+</style>
+<br>
+{% include 'partials_agenda/navbar.html' %}
+<br>
+<div id="calendar"></div>
+
+<script>
+  // Función para cargar un script externo
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      // Verifica si ya está cargado
+      if (document.querySelector(`script[src="${src}"]`)) {
+        resolve();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = false;
+      script.onload = () => resolve();
+      script.onerror = () => reject(`No se pudo cargar el script ${src}`);
+      document.head.appendChild(script);
+    });
+  }
+
+  // Cargar FullCalendar y luego iniciar
+  async function initCalendar() {
+    try {
+      await loadScript('https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js');
+
+      const calendarEl = document.getElementById('calendar');
+      const userLang = navigator.language || navigator.userLanguage || 'es';
+
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        locale: userLang,
+        initialView: 'timeGridWeek',
+        themeSystem: 'standard',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay,listYear'
+        },
+        selectable: true,
+        editable: true,
+        select(info) {
+
+          const title = prompt('Nuevo pendiente:');
+          
+          if (title) {
+            calendar.addEvent({
+              title,
+              start: info.start,
+              end: info.end,
+              allDay: info.allDay
+            });
+          }
+
+
+          calendar.unselect();
+        },
+        eventClick(info) {
+          if (confirm('¿Deseas eliminar este pendiente?')) {
+            info.event.remove();
+          }
+        },
+        events: []
+      });
+
+      calendar.render();
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // Ejecutar
+  initCalendar();
+</script>

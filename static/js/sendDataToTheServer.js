@@ -85,7 +85,7 @@ async function create_form_for_send_the_server(id_form, url) {
         //we will see if we can add the new customer
         if (result.success) {
             show_notification('success', result.message || 'Información guardada correctamente');
-            this.reset();
+            //this.reset();
         } else {
             show_alert('alert', 'Error', result.message || 'No se pudo agregar al servidor.', (result.error || 'No se pudo guardar'))
         }

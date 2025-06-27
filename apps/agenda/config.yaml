@@ -1,0 +1,6 @@
+name: "agenda"
+appName: "agenda"
+icon: "agenda/static/icon.webp"
+path: "/agenda"
+dbInit: true
+permissionsFile: 'permissions.json'
