@@ -476,3 +476,21 @@ function attach_click(triggerSelector, callback) {
   }
 }
 
+function load_script(src) {
+  return new Promise((resolve, reject) => {
+    //we will check if the script already exist in the document
+    if (document.querySelector(`script[src="${src}"]`)) {
+      resolve();
+      return;
+    }
+
+
+    //if not exist the script, we will create a new script element and add it to the document
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = false;
+    script.onload = () => resolve();
+    script.onerror = () => reject(`The script could not be loaded ${src}`);
+    document.head.appendChild(script);
+  });
+}

@@ -1,9 +1,8 @@
-<!-- Google Fonts: Serif para títulos y Sans Serif para texto -->
 <!-- FullCalendar CSS -->
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet" />
 
 <style>
-    /* Contenedor */
+    /* container */
     #calendar {
         max-width: 960px;
         margin: 0 auto 2rem;
@@ -91,34 +90,22 @@
         border: none;
     }
 </style>
+
+
+
 <br>
 {% include 'partials_agenda/navbar.html' %}
+{% include 'partials_agenda/messagePopAddQuote.html' %}
 <br>
 <div id="calendar"></div>
 
+
+
 <script>
-  // Función para cargar un script externo
-  function loadScript(src) {
-    return new Promise((resolve, reject) => {
-      // Verifica si ya está cargado
-      if (document.querySelector(`script[src="${src}"]`)) {
-        resolve();
-        return;
-      }
-
-      const script = document.createElement('script');
-      script.src = src;
-      script.async = false;
-      script.onload = () => resolve();
-      script.onerror = () => reject(`No se pudo cargar el script ${src}`);
-      document.head.appendChild(script);
-    });
-  }
-
-  // Cargar FullCalendar y luego iniciar
+  //load the FullCalendar and after run the calendar
   async function initCalendar() {
     try {
-      await loadScript('https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js');
+      await load_script('https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js');
 
       const calendarEl = document.getElementById('calendar');
       const userLang = navigator.language || navigator.userLanguage || 'es';
@@ -165,6 +152,6 @@
     }
   }
 
-  // Ejecutar
+  // run the calendar initialization
   initCalendar();
 </script>

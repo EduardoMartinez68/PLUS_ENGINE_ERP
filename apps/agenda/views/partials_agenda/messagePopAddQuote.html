@@ -1,0 +1,18 @@
+<div class="sub-menu-app-pop-overlay" id="pop-quote">
+<button class="sub-menu-app-pop-close" onclick="hideAlert()">&times;</button>
+
+    <div class="container">
+        <form id="tareaAbogadoForm">
+            <div class="tabs">
+                <div class="tab-buttons">
+                    <button class="active" onclick="openTab(event, 'form1')" data-i18n="partes" type="button">Informacion General</button>
+                    <button onclick="openTab(event, 'form2')" data-i18n="files" type="button">Informacion Addicional</button>
+                </div>
+
+                {% include 'partials_agenda/form1.html' %}
+                {% include 'partials_agenda/form2.html' %}
+                <button class="btn btn-add btn-success" style="width: 100%;">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>

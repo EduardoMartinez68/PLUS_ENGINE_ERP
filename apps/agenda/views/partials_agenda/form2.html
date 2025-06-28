@@ -1,0 +1,81 @@
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<div class="tab-content" id="form2">
+        <div>
+            <label>Recordar por Correo electrónico</label>
+            <label class="switch">
+                <input type="checkbox" name="this_customer_is_a_company" id="isCompanySwitch" />
+                <span class="slider round"></span>
+            </label>
+            <input type="hidden" id="statusValue" name="status" value="true" />
+        </div>
+        <br>
+        <div>
+            <label for="emailExtra" class="form-label">Enviar aviso a otro correo (opcional)</label>
+            <input type="email" id="emailExtra" placeholder="ej: asistente@bufete.com">
+        </div>
+
+
+    <hr>
+    <div>
+        <label for="">Descripción / Detalles</label>
+        <div id="quill-container"></div>
+    </div>
+    <div class="form-grid">
+        <!-- Título -->
+        <div>
+            <input class="case-title-input" disabled>
+        </div>
+        <div></div>
+    </div>
+</div>
+
+
+<script>
+(() => {
+  async function loadQuillInShadowDOM() {
+    const container = document.getElementById('quill-container');
+
+    // Crear Shadow DOM
+    const shadow = container.attachShadow({ mode: 'open' });
+
+    // Crear contenedor HTML interno
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
+      <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css">
+      <div id="toolbar">
+          <select class="ql-font"></select>
+          <select class="ql-size"></select>
+          <button class="ql-bold"></button>
+          <button class="ql-italic"></button>
+          <button class="ql-underline"></button>
+          <select class="ql-color"></select>
+          <button class="ql-list" value="ordered"></button>
+          <button class="ql-list" value="bullet"></button>
+      </div>
+      <div id="editor" style="height:200px; background:white;"></div>
+    `;
+
+    shadow.appendChild(wrapper);
+
+    // Cargar script de Quill si no está cargado
+    if (!window.Quill) {
+      await new Promise(resolve => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.quilljs.com/1.3.6/quill.js';
+        script.onload = resolve;
+        document.body.appendChild(script);
+      });
+    }
+
+    // Inicializar Quill dentro del Shadow DOM
+    new Quill(shadow.querySelector('#editor'), {
+      theme: 'snow',
+      modules: {
+        toolbar: shadow.querySelector('#toolbar')
+      }
+    });
+  }
+
+  loadQuillInShadowDOM();
+})();
+</script>
