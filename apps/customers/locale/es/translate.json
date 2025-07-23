@@ -8,5 +8,18 @@
   "table-email": "Email",
   "table-phone": "Teléfono",
   "table-cellphone": "Celular",
-  "table-company-name": "Nombre Empresa"
+  "table-company-name": "Nombre Empresa",
+
+
+  "form1-label-name": "Nombre del Cliente",
+  "form1-placeholder-name": "Nombre del cliente",
+  "form1-label-email": "Email",
+  "form1-placeholder-email": "Correo electrónico",
+  "form1-label-status": "Cliente Activo",
+  "form1-label-phone": "Teléfono",
+  "form1-placeholder-phone": "Teléfono",
+  "form1-label-cellphone": "Celular",
+  "form1-placeholder-cellphone": "Celular",
+  "form1-label-country": "País",
+  "form1-placeholder-country": "País"
 }

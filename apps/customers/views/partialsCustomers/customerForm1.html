@@ -1,16 +1,22 @@
 <div class="tab-content active" id="form1">
   <div class="form-grid">
     <div>
-      <label>Nombre del Cliente</label>
-      <input type="text" name="name" class="case-title-input" placeholder="Nombre del cliente" required value="{{customer.name}}" maxlength="300"/>
+      <label t="form1-label-name">Nombre del Cliente</label>
+      <input type="text" name="name" class="case-title-input" 
+             placeholder="Nombre del cliente" 
+             t-placeholder="form1-placeholder-name"
+             required value="{{customer.name}}" maxlength="300"/>
     </div>
     <div></div>
     <div>
-      <label>Email</label>
-      <input type="email" name="email" placeholder="Correo electrónico" value="{{customer.email}}" />
+      <label t="form1-label-email">Email</label>
+      <input type="email" name="email" 
+             placeholder="Correo electrónico" 
+             t-placeholder="form1-placeholder-email"
+             value="{{customer.email}}" />
     </div>
     <div>
-      <label>Cliente Activo</label>
+      <label t="form1-label-status">Cliente Activo</label>
       <label class="switch">
           <input type="checkbox" name="this_customer_is_a_company" id="isCompanySwitch" {% if customer.status %}checked{% endif %} />
           <span class="slider round"></span>
@@ -18,18 +24,27 @@
       <input type="hidden" id="statusValue" name="status" value="true" />
     </div>
     <div>
-      <label>Teléfono</label>
-      <input type="text" name="phone" placeholder="Teléfono" value="{{customer.phone}}" maxlength="15"/>
+      <label t="form1-label-phone">Teléfono</label>
+      <input type="text" name="phone" 
+             placeholder="Teléfono" 
+             t-placeholder="form1-placeholder-phone"
+             value="{{customer.phone}}" maxlength="15"/>
     </div>
 
     <div>
-      <label>Celular</label>
-      <input type="text" name="cellphone" placeholder="Celular" value="{{customer.cellphone}}"  maxlength="15"/>
+      <label t="form1-label-cellphone">Celular</label>
+      <input type="text" name="cellphone" 
+             placeholder="Celular" 
+             t-placeholder="form1-placeholder-cellphone"
+             value="{{customer.cellphone}}" maxlength="15"/>
     </div>
 
     <div>
-      <label>País</label>
-      <input type="text" name="country" placeholder="País" value="{{customer.country}}" maxlength="100" />
+      <label t="form1-label-country">País</label>
+      <input type="text" name="country" 
+             placeholder="País" 
+             t-placeholder="form1-placeholder-country"
+             value="{{customer.country}}" maxlength="100" />
     </div>
   </div>
 </div>

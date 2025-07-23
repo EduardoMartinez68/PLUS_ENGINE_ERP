@@ -106,18 +106,18 @@ if (location.pathname !== lastPage) {
 
 
 function get_path_of_the_app(url){
-  const firstSegment = '/' + url.split('/')[1];
-  return firstSegment;
+  const parts = url.replace(/^\/+|\/+$/g, '').split('/');
+  return parts[0] || '';
 }
 
 
 function get_path_of_the_file_translate_of_the_app(url){
   const basePathTranslate=get_path_of_the_app(url); //get the path of the app
   const language = lenguaceUser; //get the language of the user
-
+  
   //if exit the path of the app we will load the translate.json
   if (basePathTranslate) { 
-    const pathTranslate = `static${basePathTranslate.replace(/\/?$/, '/') }locale/${language}/translate.json`;
+    const pathTranslate = `static/${basePathTranslate}/locale/${language}/translate.json`;
     console.log('Path translate:', pathTranslate);
     return pathTranslate;
   } else {
