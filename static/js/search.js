@@ -75,13 +75,17 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, del
                 });
             } else {
                 //if exist an answer, we will show a message to the user
-                field.innerHTML = '<tr><td colspan="6" style="text-align:center;">No se encontraron resultados</td></tr>';
+                const answer=t("info.no_results");
+                field.innerHTML = `<tr><td colspan="6" style="text-align:center;">${answer}</td></tr>`;
             }
         } else {
             console.error('Error en la búsqueda:', data.message);
-            show_alert('alert', 'Error', 'Error en la búsqueda desde el servidor. Inténtalo otra vez.', data.message);
-            field.innerHTML = '<tr><td colspan="6" style="text-align:center;color:red;">Error en la búsqueda</td></tr>';
+            const answer=t("info.no_results");
+            show_alert('alert', 'Error', `${answer}`, data.message);
+            field.innerHTML = `<tr><td colspan="6" style="text-align:center;color:red;">${answer}</td></tr>`;
         }
+
+        translate_dynamic_content(field); //translate the dynamic content of the field
     }
 
 
@@ -98,6 +102,10 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, del
             }
         }
     }
+
+
+
+    
 }
 
 

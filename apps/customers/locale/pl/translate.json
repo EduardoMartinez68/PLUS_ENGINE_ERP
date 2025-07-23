@@ -1,0 +1,12 @@
+{
+  "navbar-customers": "Moi klienci",
+  "navbar-add": "Nowy klient +",
+  "label-search-home": "Szukaj klienta",
+  "placeholder-search-home": "Szukaj klientów po e-mailu lub imieniu...",
+  "label-status-contract": "Status klienta",
+  "table-name": "Imię i nazwisko",
+  "table-email": "E-mail",
+  "table-phone": "Telefon",
+  "table-cellphone": "Komórka",
+  "table-company-name": "Nazwa firmy"
+}

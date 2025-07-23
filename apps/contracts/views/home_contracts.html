@@ -72,17 +72,17 @@
 
 
 <div class="container-section" role="main">
-  <h1 data-i18n="language.welcome">Mis Contratos</h1>
+  <h1 t="title-home">Mis Contratos</h1>
   <hr>
 
   <div class="row">
     <div class="col-10">
-      <label for="">Busca un contrato</label>
+      <label for="" t="label-search-home">Busca un contrato</label>
       <input type="text" class="search-input-in-form" id="search-contracts"
-        placeholder="Buscar contratos por título...">
+        placeholder="Buscar contratos por título..." t-placeholder="placeholder-input-search-home">
     </div>
     <div class="col">
-      <label for="">Estado del Contrato</label>
+      <label for="" t="label-status-contract">Estado del Contrato</label>
       <select id="select-status">
         <option value="true">Activo</option>
         <option value="false">Desactivados</option>
@@ -104,9 +104,9 @@
           <a href="/contracts/download_contract/{{ contract.id }}" target="_blank">Descargar</a>
           --->
         <button class="button" type="button" aria-label="Editar Archivo1.pdf"
-          onclick="nextWeb('/contracts/form_contract/{{ contract.id }}')">Usar</button>
+          onclick="nextWeb('/contracts/form_contract/{{ contract.id }}')" t="use">Usar</button>
         <button class="button" type="button" aria-label="Editar Archivo1.pdf"
-          onclick="nextWeb('/contracts/edit_contract/{{ contract.id }}')">Editar</button>
+          onclick="nextWeb('/contracts/edit_contract/{{ contract.id }}')" t="edit">Editar</button>
       </div>
     </div>
     {% empty %}
@@ -124,8 +124,8 @@
         <span>{ title }</span>
       </div>
       <div class="buttons">
-        <button class="button" type="button" onclick="nextWeb('/contracts/form_contract/{ id }')">Usar</button>
-        <button class="button" type="button" onclick="nextWeb('/contracts/edit_contract/{ id }')">Editar</button>
+        <button class="button" type="button" onclick="nextWeb('/contracts/form_contract/{ id }')" t="use">Usar</button>
+        <button class="button" type="button" onclick="nextWeb('/contracts/edit_contract/{ id }')" t="edit">Editar</button>
       </div>
     </div>`;
 

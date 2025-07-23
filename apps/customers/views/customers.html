@@ -4,12 +4,12 @@
 <div class="container-section">
     <div class="row">
         <div class="col-10">
-            <label for="">Buscar un Cliente</label>
+            <label for="" t="label-search-home">Buscar un Cliente</label>
             <input type="text" class="search-input-in-form" id="search-customers"
-                placeholder="Buscar clientes por email o nombre...">
+                placeholder="Buscar clientes por email o nombre..." t-placeholder="placeholder-search-home">
         </div>
         <div class="col">
-        <label for="">Estado del Cliente</label>
+        <label for="" t="label-status-contract">Estado del Cliente</label>
         <select id="select-status">
             <option value="true">Activos</option>
             <option value="false">Desactivados</option>
@@ -21,11 +21,11 @@
     <table id="table-customer">
         <thead>
             <tr>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Teléfono</th>
-                <th>Celular</th>
-                <th>Nombre Empresa</th>
+                <th t="table-name">Nombre</th>
+                <th t="table-email">Email</th>
+                <th t="table-phone">Teléfono</th>
+                <th t="table-cellphone">Celular</th>
+                <th t="table-company-name">Nombre Empresa</th>
                 <th></th>
             </tr>
         </thead>

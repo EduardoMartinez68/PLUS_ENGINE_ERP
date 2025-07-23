@@ -1,29 +1,30 @@
 //This function is for load all the translations of the app of the ERP, this function is called forever that the user change the language or load the web
 ///example: load the language spanish to the app 'sales'
 //load_language('/apps/sales/translate.json');
+let translateOld={};
 function load_language(langUrl) {
-  console.log('load translate from:', langUrl);
   fetch(langUrl)
     .then(res => res.json())
     .then(translations => {
+        translateOld=  translations; //save the translations in the variable translateOld
       // Translate the container (textContent)
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
+      document.querySelectorAll('[t]').forEach(el => {
+        const key = el.getAttribute('t');
         if (translations[key]) {
           el.textContent = translations[key];
         }
       });
 
       // Translate the placeholders of the inputs
-      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-i18n-placeholder');
+      document.querySelectorAll('[t-placeholder]').forEach(el => {
+        const key = el.getAttribute('t-placeholder');
         if (translations[key]) {
           el.setAttribute('placeholder', translations[key]);
         }
       });
 
-      //this is for translate the attributes of the elements that have the attribute data-i18n-attr
-      document.querySelectorAll('[data-i18n-attr]').forEach(el => {
+      //this is for translate the attributes of the elements that have the attribute t-attr
+      document.querySelectorAll('[t-attr]').forEach(el => {
         translate_attributes(el, translations);
       });
 
@@ -47,7 +48,7 @@ function load_language(langUrl) {
     </label-info>
 */
 function translate_attributes(element, translations) {
-  const attrList = element.getAttribute('data-i18n-attr');
+  const attrList = element.getAttribute('t-attr');
   if (!attrList) return;
 
   attrList.split(',').forEach(attr => {
@@ -86,14 +87,21 @@ let LANG = {
     "info.sending": "Enviando...",
     "info.confirm_delete": "¿Estás seguro de que deseas eliminar esto?",
     "info.welcome": "Bienvenido",
-    "info.logout": "Cerrar sesión"
+    "info.logout": "Cerrar sesión",
+    "info.searching": "Buscando...",
+    "info.no_results": "No se encontraron resultados",
+    "info.loading_data": "Cargando datos..."
   },
 
-  "pl": {
-    "success.saved": "Zapisano pomyślnie",
-    "success.updated": "Zaktualizowano pomyślnie",
+
+
+
+
+    "pl": {
+    "success.saved": "Pomyślnie zapisano",
+    "success.updated": "Pomyślnie zaktualizowano",
     "success.deleted": "Pomyślnie usunięto",
-    "success.sent": "Wysłano e-mail",
+    "success.sent": "E-mail wysłany",
     "success.added": "Pomyślnie dodano",
 
     "error.failed_delete": "Nie udało się usunąć",
@@ -104,21 +112,45 @@ let LANG = {
     "error.general": "Wystąpił błąd",
 
     "warning.unsaved_changes": "Masz niezapisane zmiany",
-    "warning.permanent_action": "Ta akcja jest nieodwracalna",
+    "warning.permanent_action": "Ta czynność jest nieodwracalna",
     "warning.no_results": "Nie znaleziono wyników",
 
     "info.loading": "Ładowanie...",
     "info.sending": "Wysyłanie...",
     "info.confirm_delete": "Czy na pewno chcesz to usunąć?",
     "info.welcome": "Witamy",
-    "info.logout": "Wyloguj się"
-  }
+    "info.logout": "Wyloguj się",
+    "info.searching": "Wyszukiwanie...",
+    "info.no_results": "Nie znaleziono wyników",
+    "info.loading_data": "Ładowanie danych..."
+    }
 };
+
+//this function is for translate the new container that the user load in the app, when serach in a table, get information from the server, etc.
+function translate_dynamic_content(container) {
+  container.querySelectorAll('[t]').forEach(el => {
+    const key = el.getAttribute('t');
+    if (translateOld[key]) {
+      el.textContent = translateOld[key];
+    }
+  });
+
+  container.querySelectorAll('[t-placeholder]').forEach(el => {
+    const key = el.getAttribute('t-placeholder');
+    if (translateOld[key]) {
+      el.setAttribute('placeholder', translateOld[key]);
+    }
+  });
+
+  container.querySelectorAll('[t-attr]').forEach(el => {
+    translate_attributes(el, translateOld);
+  });
+}
 
 
 //the user can add more languages to the app, for example:
 // LANG['es'] = { "success.saved": "Guardado con éxito", ... };
-let currentLang = 'es'; //get the lenguace of the user
+let lenguaceUser = 'pl'; //get the lenguace of the user
 function t(key, listLanguage = LANG) {
-  return listLanguage[currentLang][key] || key;
+  return listLanguage[lenguaceUser][key] || key;
 }
