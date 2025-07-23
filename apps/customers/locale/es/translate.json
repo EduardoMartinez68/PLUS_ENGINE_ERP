@@ -11,6 +11,12 @@
   "table-company-name": "Nombre Empresa",
 
 
+  "save": "Guardar",
+  "cancel": "Cancelar",
+  
+   "info-general"   : "Información General",
+   "info-empresa"   : "Información de la Empresa",
+
   "form1-label-name": "Nombre del Cliente",
   "form1-placeholder-name": "Nombre del cliente",
   "form1-label-email": "Email",
@@ -21,5 +27,16 @@
   "form1-label-cellphone": "Celular",
   "form1-placeholder-cellphone": "Celular",
   "form1-label-country": "País",
-  "form1-placeholder-country": "País"
-}
+  "form1-placeholder-country": "País",
+
+
+    "form2-label-is_company": "¿Este cliente es una empresa?",
+    "form2-label-company_name": "Nombre de la Empresa",
+    "form2-placeholder-company_name": "Nombre de la empresa",
+    "form2-label-website": "Sitio Web",
+    "form2-placeholder-website": "Sitio web",
+    "form2-label-rfc": "RFC",
+    "form2-placeholder-rfc": "RFC",
+    "form2-label-curp": "CURP",
+    "form2-placeholder-curp": "CURP"
+    }
