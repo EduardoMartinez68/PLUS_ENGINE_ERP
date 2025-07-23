@@ -51,11 +51,11 @@ async function nextWeb(url) {
       const mainContent = doc.getElementById('main-content');
       document.getElementById('main-content').innerHTML = mainContent ? mainContent.innerHTML : html;
 
-      // Remover scripts dinámicos antiguos
+      // remove the old dynamic scripts
       document.querySelectorAll('script[data-dynamic-script]').forEach(script => script.remove());
 
 
-      // Añadir nuevos scripts con for...of (permite usar await si quieres)
+      // Add new scripts with for...of (allows using await if you want)
       const scripts = doc.querySelectorAll('script');
       for (const oldScript of scripts) {
         const newScript = document.createElement('script');
@@ -64,7 +64,7 @@ async function nextWeb(url) {
         if (oldScript.src) {
           newScript.src = oldScript.src;
           newScript.async = false;
-          // Si quieres esperar que se cargue el script:
+          // If you want to wait for the script to load:
           await new Promise(resolve => {
             newScript.onload = resolve;
             newScript.onerror = resolve;
@@ -79,8 +79,15 @@ async function nextWeb(url) {
       sessionHistory.push(url);
       localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
 
-      closeMenu();
+      //translate the language of the app
+      const pathTranslate= get_path_of_the_file_translate_of_the_app(url);
+      load_language(pathTranslate);
 
+      //update all the labels that the programmer do with the syntax of the ERP, to the labels that the user can see
+      transform_my_labels_erp(); 
+
+
+      closeMenu();
     } catch (error) {
       console.error('Error al cargar contenido:', error);
     }
@@ -95,4 +102,25 @@ const lastPage = sessionHistory.length > 0 ? sessionHistory[sessionHistory.lengt
 //if the user not is in tha last web, we will load the container
 if (location.pathname !== lastPage) {
   nextWeb(lastPage);
+}
+
+
+function get_path_of_the_app(url){
+  const firstSegment = '/' + url.split('/')[1];
+  return firstSegment;
+}
+
+
+function get_path_of_the_file_translate_of_the_app(url){
+  const basePathTranslate=get_path_of_the_app(url); //get the path of the app
+  const language = 'es'; //get the language of the user
+
+  //if exit the path of the app we will load the translate.json
+  if (basePathTranslate) { 
+    const pathTranslate = `static${basePathTranslate.replace(/\/?$/, '/') }locale/${language}/translate.json`;
+    return pathTranslate;
+  } else {
+    console.error('No se pudo obtener el path base de la app.');
+    return null;
+  }
 }

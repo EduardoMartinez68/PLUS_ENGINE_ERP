@@ -494,3 +494,51 @@ function load_script(src) {
     document.head.appendChild(script);
   });
 }
+
+
+
+/**----------------------------------show message label----------------------**/
+function transform_my_labels_erp(){
+  //this function is for transform the labels that have the tag info-label in the web
+  //this is for add a icon with a tooltip when the user do hover over the icon
+  create_info_labels();
+}
+
+
+
+function create_info_labels() {
+  const tooltip = document.createElement("div");
+  tooltip.className = "erp-tooltip";
+  document.body.appendChild(tooltip);
+
+  document.querySelectorAll("info-label").forEach(el => {
+      const labelText = el.getAttribute("label") || "";
+      const message = el.getAttribute("message") || "";
+
+      const label = document.createElement("label");
+      label.classList.add("info-label-generated");
+
+      const span = document.createElement("span");
+      span.textContent = labelText;
+
+      const icon = document.createElement("i");
+      icon.className = "fi fi-sr-interrogation";
+
+      // Tooltip sobre el ícono
+      icon.addEventListener("mouseenter", () => {
+          tooltip.textContent = message;
+          tooltip.style.opacity = "1";
+      });
+      icon.addEventListener("mousemove", (e) => {
+          tooltip.style.left = (e.pageX + 15) + "px";
+          tooltip.style.top = (e.pageY - 30) + "px";
+      });
+      icon.addEventListener("mouseleave", () => {
+          tooltip.style.opacity = "0";
+      });
+
+      label.appendChild(span);
+      label.appendChild(icon);
+      el.replaceWith(label);
+  });
+}

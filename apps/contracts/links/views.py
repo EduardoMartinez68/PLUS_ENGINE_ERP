@@ -20,6 +20,17 @@ def contracts_home(request):
     return render(request, 'home_contracts.html', context)
 
 
+def locale(request):
+    user_id = request.user.id
+    # get the first 20 contarcts of the user
+    # we will order by creation_date desc
+    contracts = Contracts.objects.filter(user_id=user_id, active=True).order_by('-creation_date')[:20]
+    
+    context = {
+        'contracts': contracts
+    }
+    return render(request, 'home_contracts.html', context)
+
 @csrf_exempt
 def search_contracts(request):
     if request.method == 'POST':

@@ -39,6 +39,29 @@ def contracts_home(request):
         return render(request, 'home_contracts.html', context)
 
 @login_required(login_url='login')
+def locale(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        user_id = request.user.id
+        # get the first 20 contarcts of the user
+        # we will order by creation_date desc
+        contracts = Contracts.objects.filter(user_id=user_id, active=True).order_by('-creation_date')[:20]
+        
+        context = {
+            'contracts': contracts
+        }
+        return render(request, 'home_contracts.html', context)
+    else:
+        user_id = request.user.id
+        # get the first 20 contarcts of the user
+        # we will order by creation_date desc
+        contracts = Contracts.objects.filter(user_id=user_id, active=True).order_by('-creation_date')[:20]
+        
+        context = {
+            'contracts': contracts
+        }
+        return render(request, 'home_contracts.html', context)
+
+@login_required(login_url='login')
 def search_contracts(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == 'POST':
