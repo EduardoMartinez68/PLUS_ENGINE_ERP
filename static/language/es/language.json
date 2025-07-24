@@ -1,0 +1,35 @@
+ {
+    "success.saved": "Guardado con éxito",
+    "success.updated": "Actualizado correctamente",
+    "success.deleted": "Eliminado con éxito",
+    "success.sent": "Correo enviado",
+    "success.added": "Agregado correctamente",
+
+    "error.failed_delete": "No se pudo eliminar",
+    "error.failed_save": "No se pudo guardar",
+    "error.not_found": "No encontrado",
+    "error.unauthorized": "No autorizado",
+    "error.required_fields": "Todos los campos son obligatorios",
+    "error.general": "Ocurrió un error",
+
+    "warning.unsaved_changes": "Tienes cambios sin guardar",
+    "warning.permanent_action": "Esta acción es permanente",
+    "warning.no_results": "No se encontraron resultados",
+
+    "info.loading": "Cargando...",
+    "info.sending": "Enviando...",
+    "info.confirm_delete": "¿Estás seguro de que deseas eliminar esto?",
+    "info.welcome": "Bienvenido",
+    "info.logout": "Cerrar sesión",
+    "info.searching": "Buscando...",
+    "info.no_results": "No se encontraron resultados",
+    "info.loading_data": "Cargando datos...",
+
+    "menu.search": "Buscar una app...",
+    "app.agenda": "Agenda",
+    "app.cases": "Casos",
+    "app.contracts": "Contratos",
+    "app.customers": "Clientes",
+    "app.settings": "Configuraciones",
+    "app.exit": "Salir"
+}

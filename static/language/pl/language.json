@@ -1,0 +1,35 @@
+ {
+    "success.saved": "Pomyślnie zapisano",
+    "success.updated": "Pomyślnie zaktualizowano",
+    "success.deleted": "Pomyślnie usunięto",
+    "success.sent": "E-mail wysłany",
+    "success.added": "Pomyślnie dodano",
+
+    "error.failed_delete": "Nie udało się usunąć",
+    "error.failed_save": "Nie udało się zapisać",
+    "error.not_found": "Nie znaleziono",
+    "error.unauthorized": "Brak autoryzacji",
+    "error.required_fields": "Wszystkie pola są wymagane",
+    "error.general": "Wystąpił błąd",
+
+    "warning.unsaved_changes": "Masz niezapisane zmiany",
+    "warning.permanent_action": "Ta czynność jest nieodwracalna",
+    "warning.no_results": "Nie znaleziono wyników",
+
+    "info.loading": "Ładowanie...",
+    "info.sending": "Wysyłanie...",
+    "info.confirm_delete": "Czy na pewno chcesz to usunąć?",
+    "info.welcome": "Witamy",
+    "info.logout": "Wyloguj się",
+    "info.searching": "Wyszukiwanie...",
+    "info.no_results": "Nie znaleziono wyników",
+    "info.loading_data": "Ładowanie danych...",
+
+    "menu.search": "Szukaj aplikacji...",
+    "app.agenda": "plan zadań",
+    "app.cases": "Sprawy",
+    "app.contracts": "Kontrakty",
+    "app.customers": "Klienci",
+    "app.settings": "Ustawienia",
+    "app.exit": "Wyloguj się"
+}

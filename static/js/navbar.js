@@ -113,7 +113,7 @@ function get_path_of_the_app(url){
 
 function get_path_of_the_file_translate_of_the_app(url){
   const basePathTranslate=get_path_of_the_app(url); //get the path of the app
-  const language = lenguaceUser; //get the language of the user
+  const language = languageUser; //get the language of the user
   
   //if exit the path of the app we will load the translate.json
   if (basePathTranslate) { 

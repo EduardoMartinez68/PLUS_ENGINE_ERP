@@ -1,39 +1,49 @@
 //This function is for load all the translations of the app of the ERP, this function is called forever that the user change the language or load the web
 ///example: load the language spanish to the app 'sales'
 //load_language('/apps/sales/translate.json');
+let languageUser = 'pl'; //get the language of the user example (es,pl,en,fr,etc)
 let translateOld={};
+let lastUrl=''; //here we will save the last loaded URL for avoid loading the same URL again
 function load_language(langUrl) {
+  //her we will check if the langUrl is equal to the lastUrl, if it is equal we will not load the language again
+  if (lastUrl === langUrl) {
+    //if we have save the translation of the web, we will apply the translation to the web evit load the language again
+    apply_translation_to_the_web(translateOld);
+    return;
+  }
+
+  //if we not have save the language, will load the language
   fetch(langUrl)
     .then(res => res.json())
     .then(translations => {
-        translateOld=  translations; //save the translations in the variable translateOld
-      // Translate the container (textContent)
-      document.querySelectorAll('[t]').forEach(el => {
-        const key = el.getAttribute('t');
-        if (translations[key]) {
-          el.textContent = translations[key];
-        }
-      });
-
-      // Translate the placeholders of the inputs
-      document.querySelectorAll('[t-placeholder]').forEach(el => {
-        const key = el.getAttribute('t-placeholder');
-        if (translations[key]) {
-          el.setAttribute('placeholder', translations[key]);
-        }
-      });
-
-      //this is for translate the attributes of the elements as info-label
-      document.querySelectorAll('info-label').forEach(el => {
-        translate_attributes(el, translations);
-      });
-
+      translateOld=translations; //save the translations in the variable translateOld
+      apply_translation_to_the_web(translations); //now translate the web with the new translations
+      lastUrl = langUrl; //save the last loaded URL
     })
     .catch(err => {
-      console.error('Error cargando idioma:', err);
+      console.error('Error to load the language:', err);
     });
 }
 
+//this function is for translate the web with the translations loaded or saved. The function is called when the user load the web or change the language
+function apply_translation_to_the_web(translations) {
+  //get all the elements that have the attribute t 
+  document.querySelectorAll('[t]').forEach(el => {
+    const key = el.getAttribute('t'); //get the key of the translation
+    if (translations[key]) el.textContent = translations[key]; //translate the text of the element
+  });
+
+  //get all the elements that have the attribute t-placeholder, normally this attribute is used for input, textarea, etc.
+  document.querySelectorAll('[t-placeholder]').forEach(el => {
+    const key = el.getAttribute('t-placeholder'); //get the key of the translation
+    if (translations[key]) el.setAttribute('placeholder', translations[key]); //translate the placeholder of the element
+  });
+
+  //translate the attributes of the elements that have the attribute <info-label>
+  document.querySelectorAll('info-label').forEach(el => {
+    translate_attributes(el, translations);
+  });
+}
 
 /*
     this function is for translate the attributes of the elements that have the attribute data-i18n-attr
@@ -67,83 +77,24 @@ this function is for translate the text that the programmer do with the alert wi
 alert(t("language.error_occurred"));
 console.log(t("language.loading"));
 */
-let LANG = {
-  "es": {
-    "success.saved": "Guardado con éxito",
-    "success.updated": "Actualizado correctamente",
-    "success.deleted": "Eliminado con éxito",
-    "success.sent": "Correo enviado",
-    "success.added": "Agregado correctamente",
+async function get_language_ERP() {
+  try {
+    const res = await fetch(`/static/language/${languageUser}/language.json`);
+    const translations = await res.json();
+    return translations;
+  } catch (err) {
+    console.error('Error to load the language:', err);
+    return {};
+  }
+}
 
-    "error.failed_delete": "No se pudo eliminar",
-    "error.failed_save": "No se pudo guardar",
-    "error.not_found": "No encontrado",
-    "error.unauthorized": "No autorizado",
-    "error.required_fields": "Todos los campos son obligatorios",
-    "error.general": "Ocurrió un error",
+//her we will load the language of the ERP, this function is called when the user load the web or change the language
+let LANG={};
+get_language_ERP().then(languages => {
+  LANG=languages; //save the translations in the variable LANG
+  translate_menu_apps(); // Call this function for translate the menu apps when load the language
+});
 
-    "warning.unsaved_changes": "Tienes cambios sin guardar",
-    "warning.permanent_action": "Esta acción es permanente",
-    "warning.no_results": "No se encontraron resultados",
-
-    "info.loading": "Cargando...",
-    "info.sending": "Enviando...",
-    "info.confirm_delete": "¿Estás seguro de que deseas eliminar esto?",
-    "info.welcome": "Bienvenido",
-    "info.logout": "Cerrar sesión",
-    "info.searching": "Buscando...",
-    "info.no_results": "No se encontraron resultados",
-    "info.loading_data": "Cargando datos...",
-
-    "menu.search": "Buscar una app...",
-    "app.agenda": "Agenda",
-    "app.cases": "Casos",
-    "app.contracts": "Contratos",
-    "app.customers": "Clientes",
-    "app.settings": "Configuraciones",
-    "app.exit": "Salir"
-  },
-
-
-
-
-
-    "pl": {
-    "success.saved": "Pomyślnie zapisano",
-    "success.updated": "Pomyślnie zaktualizowano",
-    "success.deleted": "Pomyślnie usunięto",
-    "success.sent": "E-mail wysłany",
-    "success.added": "Pomyślnie dodano",
-
-    "error.failed_delete": "Nie udało się usunąć",
-    "error.failed_save": "Nie udało się zapisać",
-    "error.not_found": "Nie znaleziono",
-    "error.unauthorized": "Brak autoryzacji",
-    "error.required_fields": "Wszystkie pola są wymagane",
-    "error.general": "Wystąpił błąd",
-
-    "warning.unsaved_changes": "Masz niezapisane zmiany",
-    "warning.permanent_action": "Ta czynność jest nieodwracalna",
-    "warning.no_results": "Nie znaleziono wyników",
-
-    "info.loading": "Ładowanie...",
-    "info.sending": "Wysyłanie...",
-    "info.confirm_delete": "Czy na pewno chcesz to usunąć?",
-    "info.welcome": "Witamy",
-    "info.logout": "Wyloguj się",
-    "info.searching": "Wyszukiwanie...",
-    "info.no_results": "Nie znaleziono wyników",
-    "info.loading_data": "Ładowanie danych...",
-
-    "menu.search": "Szukaj aplikacji...",
-    "app.agenda": "plan zadań",
-    "app.cases": "Sprawy",
-    "app.contracts": "Kontrakty",
-    "app.customers": "Klienci",
-    "app.settings": "Ustawienia",
-    "app.exit": "Wyloguj się"
-    }
-};
 
 //this function is for translate the new container that the user load in the app, when serach in a table, get information from the server, etc.
 function translate_dynamic_content(container) {
@@ -168,27 +119,35 @@ function translate_dynamic_content(container) {
 
 
 //the user can add more languages to the app, for example:
-// LANG['es'] = { "success.saved": "Guardado con éxito", ... };
-let lenguaceUser = 'pl'; //get the lenguace of the user
 function t(key, listLanguage = LANG) {
-  return listLanguage[lenguaceUser][key] || key;
+  // Check if the key exists in the provided listLanguage
+  //if not exist in the listLanguage, we will return the key
+  return listLanguage[key] || key;
 }
 
 function translate_text(key) {
+  // Check if the key exists in the provided listLanguage
+  //if not exist in the listLanguage, we will return the key
   return translateOld[key] || key;
 }
 
-
-function traslate_menu_apps(){
+//this functions is for translate the menu of the apps, this function is called when the user load the web or change the language
+function translate_menu_apps(){
+  //get the list of the apps in the menu
   const menuApps = document.querySelectorAll('.app-name');
-  const searchApp=document.getElementById('searchInput');
-  searchApp.setAttribute('placeholder', LANG[lenguaceUser]['menu.search']);
+  const searchApp=document.getElementById('searchInput'); //get the search input
 
+  //update the placeholder of the search input
+  searchApp.setAttribute('placeholder', LANG['menu.search']);
+
+  //here we will translate all the apps that be in the menu
   menuApps.forEach(app => {
-    const key = 'app.'+app.textContent.trim();
-    if (key && LANG[lenguaceUser][key]) {
-      app.textContent = LANG[lenguaceUser][key];
+    const key = 'app.'+app.textContent.trim(); //create the key for the translation
+
+    //we will check if exist the key in the translations, if exist we will translate the app
+    //if not exist we will not translate the app and we will keep the original text
+    if (key && LANG[key]) {
+      app.textContent = LANG[key];
     }
   });
 }
-traslate_menu_apps();
