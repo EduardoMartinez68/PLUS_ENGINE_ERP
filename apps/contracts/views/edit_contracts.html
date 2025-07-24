@@ -4,28 +4,30 @@
 <form action="/contracts/edit_contract/{{ contract.id }}" id="formEditContract" method="post">
     {% csrf_token %}    
     <div class="container-section">
-        <h2>Edita tu Contrato</h2>
+         <h2 t="edit-contract-title">Edita tu Contrato</h2>
         <input type="hidden" id="contract_id" name="contract_id" value="{{ contract.id }}">
         <hr>
         <div>
-            <label>Nombre del contrato</label>
-            <input type="text" name="name" class="case-title-input" placeholder="Nombre del contrato..." required value="{{ contract.title }}" />
+            <label t="edit-contract-label-name">Nombre del contrato</label>
+            <input type="text" name="name" class="case-title-input"
+                   placeholder="Nombre del contrato..." t-placeholder="edit-contract-placeholder-name"
+                   required value="{{ contract.title }}" />
         </div>
         <div>
-            <label>¿Este contrato esta activo?</label>
+            <label t="edit-contract-label-active">¿Este contrato está activo?</label>
             <label class="switch">
                 <input type="checkbox" name="is_active" id="isActiveSwitch" {% if contract.active %}checked{% endif %} />
                 <span class="slider round"></span>
             </label>
         </div>
-        <h3>Editor de contratos</h3>
+        <h3 t="edit-contract-subtitle-editor">Editor de contratos</h3>
         <div class="row">
             <div class="col">
                 {% include 'partials_contracts/editor.html' %}
             </div>
         </div>
         <div>
-            <button class="btn btn-add btn-success">Guardar Contrato</button>
+            <button class="btn btn-add btn-success" t="edit-contract-button-save">Guardar Contrato</button>
         </div>
     </div>
 </form>

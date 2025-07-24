@@ -23,8 +23,8 @@ function load_language(langUrl) {
         }
       });
 
-      //this is for translate the attributes of the elements that have the attribute t-attr
-      document.querySelectorAll('[t-attr]').forEach(el => {
+      //this is for translate the attributes of the elements as info-label
+      document.querySelectorAll('info-label').forEach(el => {
         translate_attributes(el, translations);
       });
 
@@ -48,16 +48,19 @@ function load_language(langUrl) {
     </label-info>
 */
 function translate_attributes(element, translations) {
-  const attrList = element.getAttribute('t-attr');
-  if (!attrList) return;
+  console.log('translate_attributes', element, translations);
+  const keyLabel = element.getAttribute('label');
+  if (keyLabel && translations[keyLabel]) {
+    element.setAttribute('label', translations[keyLabel]);
+  }
 
-  attrList.split(',').forEach(attr => {
-    const key = element.getAttribute(attr);
-    if (translations[key]) {
-      element.setAttribute(attr, translations[key]);
-    }
-  });
+  const keyMessage = element.getAttribute('message');
+  if (keyMessage && translations[keyMessage]) {
+    element.setAttribute('message', translations[keyMessage]);
+  }
+  
 }
+
 
 /*
 this function is for translate the text that the programmer do with the alert with help of the alert of the ERP or message pop to the user EXAMPLE:
@@ -90,7 +93,15 @@ let LANG = {
     "info.logout": "Cerrar sesión",
     "info.searching": "Buscando...",
     "info.no_results": "No se encontraron resultados",
-    "info.loading_data": "Cargando datos..."
+    "info.loading_data": "Cargando datos...",
+
+    "menu.search": "Buscar una app...",
+    "app.agenda": "Agenda",
+    "app.cases": "Casos",
+    "app.contracts": "Contratos",
+    "app.customers": "Clientes",
+    "app.settings": "Configuraciones",
+    "app.exit": "Salir"
   },
 
 
@@ -122,7 +133,15 @@ let LANG = {
     "info.logout": "Wyloguj się",
     "info.searching": "Wyszukiwanie...",
     "info.no_results": "Nie znaleziono wyników",
-    "info.loading_data": "Ładowanie danych..."
+    "info.loading_data": "Ładowanie danych...",
+
+    "menu.search": "Szukaj aplikacji...",
+    "app.agenda": "plan zadań",
+    "app.cases": "Sprawy",
+    "app.contracts": "Kontrakty",
+    "app.customers": "Klienci",
+    "app.settings": "Ustawienia",
+    "app.exit": "Wyloguj się"
     }
 };
 
@@ -142,8 +161,8 @@ function translate_dynamic_content(container) {
     }
   });
 
-  container.querySelectorAll('[t-attr]').forEach(el => {
-    translate_attributes(el, translateOld);
+  container.querySelectorAll('info-label').forEach(el => {
+    translate_attributes(el, translations);
   });
 }
 
@@ -154,3 +173,22 @@ let lenguaceUser = 'pl'; //get the lenguace of the user
 function t(key, listLanguage = LANG) {
   return listLanguage[lenguaceUser][key] || key;
 }
+
+function translate_text(key) {
+  return translateOld[key] || key;
+}
+
+
+function traslate_menu_apps(){
+  const menuApps = document.querySelectorAll('.app-name');
+  const searchApp=document.getElementById('searchInput');
+  searchApp.setAttribute('placeholder', LANG[lenguaceUser]['menu.search']);
+
+  menuApps.forEach(app => {
+    const key = 'app.'+app.textContent.trim();
+    if (key && LANG[lenguaceUser][key]) {
+      app.textContent = LANG[lenguaceUser][key];
+    }
+  });
+}
+traslate_menu_apps();

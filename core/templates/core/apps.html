@@ -1,6 +1,6 @@
 <div id="appMenu" class="app-menu-overlay hidden">
   <div class="menu-header">
-    <input type="text" id="searchInput" oninput="filterApps()" placeholder="Buscar una app...">
+    <input type="text" id="searchInput" oninput="filterApps()" placeholder="Buscar una app..." t="menu.search">
     <button class="close-btn" onclick="closeMenu()">✕</button>
   </div>
 
@@ -10,9 +10,9 @@
     {% for app in apps %}
     <div class="app-container" onclick="nextWeb('{{ app.path }}{{ app.path }}')">
       <div class="app-box">
-        <img src="{% static app.icon %}" alt="{{ app.appName }}" loading="lazy">
+        <img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy">
       </div>
-      <p class="app-name">{{ app.appName }}</p>
+      <p class="app-name">{{ app.name }}</p>
     </div>
     {% endfor %}
 
@@ -20,7 +20,7 @@
       <div class="app-box">
         <img src="https://cdn-icons-png.flaticon.com/512/1170/1170584.png" alt="">
       </div>
-      <p class="app-name">Configuraciones</p>
+      <p class="app-name">settings</p>
     </div>
 
     <form method="post" action="{% url 'logout' %}">
@@ -29,7 +29,7 @@
         <div class="app-box">
           <img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" alt="" loading="lazy">
         </div>
-        <p class="app-name">Salir</p>
+        <p class="app-name">exit</p>
       </button>
     </form>
   </div>

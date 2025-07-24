@@ -5,5 +5,24 @@
   "placeholder-input-search-home": "Szukaj umów po tytule...",
   "label-status-contract": "Status umowy",
   "use": "Użyj",
-  "edit": "Edytuj"
+  "edit": "Edytuj",
+  "create": "Utwórz",
+
+
+
+
+
+
+
+
+
+
+
+
+  "edit-contract-title": "Edytuj swój kontrakt",
+  "edit-contract-label-name": "Nazwa kontraktu",
+  "edit-contract-placeholder-name": "Wpisz nazwę kontraktu...",
+  "edit-contract-label-active": "Czy ten kontrakt jest aktywny?",
+  "edit-contract-subtitle-editor": "Edytor kontraktów",
+  "edit-contract-button-save": "Zapisz kontrakt"
 }

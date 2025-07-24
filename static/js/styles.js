@@ -512,14 +512,21 @@ function create_info_labels() {
   document.body.appendChild(tooltip);
 
   document.querySelectorAll("info-label").forEach(el => {
-      const labelText = el.getAttribute("label") || "";
-      const message = el.getAttribute("message") || "";
+    //get the information of the label that the user would like show in the tooltip
+      const keyLabelText = el.getAttribute("label") || "";
+      const labelText = translate_text(keyLabelText); //her we will watch if the label have a translation in the app
 
+      //get the information of the message that the user would like show in the tooltip
+      const keyMessage = el.getAttribute("message") || "";
+      const message = translate_text(keyMessage); //now we will watch if the message have a translation in the app
       const label = document.createElement("label");
       label.classList.add("info-label-generated");
+      //label.setAttribute('t', keyMessage); //save the label text for translate after
 
       const span = document.createElement("span");
+      //span.setAttribute('t', keyLabelText); //save the label text for translate after
       span.textContent = labelText;
+      
 
       const icon = document.createElement("i");
       icon.className = "fi fi-sr-interrogation";
