@@ -58,7 +58,6 @@ function apply_translation_to_the_web(translations) {
     </label-info>
 */
 function translate_attributes(element, translations) {
-  console.log('translate_attributes', element, translations);
   const keyLabel = element.getAttribute('label');
   if (keyLabel && translations[keyLabel]) {
     element.setAttribute('label', translations[keyLabel]);

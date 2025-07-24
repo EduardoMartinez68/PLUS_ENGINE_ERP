@@ -1,5 +1,110 @@
+/*---------------------------------------------class labels---------------------------------------------*/
+
+class InfoLabel extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    // Crear tooltip global si no existe aún
+    if (!document.querySelector('.erp-tooltip')) {
+      const tooltip = document.createElement("div");
+      tooltip.className = "erp-tooltip";
+      tooltip.style.position = "absolute";
+      tooltip.style.pointerEvents = "none";
+      tooltip.style.opacity = "0";
+      tooltip.style.transition = "opacity 0.3s ease";
+      tooltip.style.background = "#333";
+      tooltip.style.color = "#fff";
+      tooltip.style.padding = "5px 10px";
+      tooltip.style.borderRadius = "5px";
+      tooltip.style.fontSize = "12px";
+      document.body.appendChild(tooltip);
+    }
+
+    const tooltip = document.querySelector('.erp-tooltip');
+
+    const keyLabelText = this.getAttribute("label") || "";
+    const keyMessage = this.getAttribute("message") || "";
+
+    const labelText = typeof translate_text === "function" ? translate_text(keyLabelText) : keyLabelText;
+    const message = typeof translate_text === "function" ? translate_text(keyMessage) : keyMessage;
+
+    const label = document.createElement("label");
+    label.classList.add("info-label-generated");
+
+    const span = document.createElement("span");
+    span.textContent = labelText;
+
+    const icon = document.createElement("i");
+    icon.className = "fi fi-sr-interrogation"; // Puedes cambiar el ícono
+
+    // Evento tooltip
+    icon.addEventListener("mouseenter", () => {
+      tooltip.textContent = message;
+      tooltip.style.opacity = "1";
+    });
+
+    icon.addEventListener("mousemove", (e) => {
+      tooltip.style.left = (e.pageX + 15) + "px";
+      tooltip.style.top = (e.pageY - 30) + "px";
+    });
+
+    icon.addEventListener("mouseleave", () => {
+      tooltip.style.opacity = "0";
+    });
+
+    label.appendChild(span);
+    label.appendChild(icon);
+
+    this.replaceWith(label);
+  }
+}
+
+
+class MessagePop extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    const title = this.getAttribute('title') || '';
+    const translatedTitle = translate_text(title); // Translate the title if needed
+
+    //get the name of the pop, this is for identify the pop when the user do click in the button close
+    const name = this.getAttribute('name') || 'pop-default';
+
+    //get the size of the pop
+    const width = this.getAttribute('width') || '600px';
+    const height = this.getAttribute('height') || '400px';
+
+    //get the container of the element, this can be a element or HTML
+    const content = this.innerHTML.trim();
+
+    //If only exist text, save this in a label <p>
+    const wrappedContent = content.startsWith('<') ? content : `<p>${content}</p>`;
+
+    //here create the internal HTML
+    this.innerHTML = `
+        <div id="${name}" class="my-pop">
+          <div class="my-pop-content-wrapper">
+            <div class="my-pop-header">
+              <h4 class="my-pop-title" t="${translatedTitle}">${translatedTitle}</h4>
+              <button class="close-btn" onclick="close_my_pop('${name}')" type="button">×</button>
+            </div>
+            <div class="my-pop-content">
+              ${wrappedContent}
+            </div>
+          </div>
+        </div>
+      `;
+  }
+}
+
+
+
 /**----------------------------------TABS----------------------**/
-function openTab(evt, tabName) {
+function open_tab(evt, tabName) {
   const tabs = document.querySelectorAll('.tab-content');
   const buttons = document.querySelectorAll('.tab-buttons button');
 
@@ -19,7 +124,7 @@ function show_pop(idOverlay) {
 }
 
 // Función para ocultar popup
-function hidePop(idOverlay) {
+function hide_pop(idOverlay) {
   const overlay = document.getElementById(idOverlay);
   if (overlay) {
     overlay.style.display = 'none';
@@ -102,29 +207,29 @@ function show_alert(type, title, description, readmoreText = '') {
 
 
 function show_notification(type = 'info', message = '', duration = 4000) {
-    const container = document.getElementById('notifications-container');
+  const container = document.getElementById('notifications-container');
 
-    const icons = {
-        success: '<i class="fi fi-sr-check-circle"></i>',
-        error: '<i class="fi fi-sr-cross-circle"></i>',
-        warning: '<i class="fi fi-sr-exclamation"></i>',
-        info: '<i class="fi fi-sr-info"></i>'
-    };
+  const icons = {
+    success: '<i class="fi fi-sr-check-circle"></i>',
+    error: '<i class="fi fi-sr-cross-circle"></i>',
+    warning: '<i class="fi fi-sr-exclamation"></i>',
+    info: '<i class="fi fi-sr-info"></i>'
+  };
 
-    const alert = document.createElement('div');
-    alert.className = `notification-alert ${type}`;
-    alert.innerHTML = `
+  const alert = document.createElement('div');
+  alert.className = `notification-alert ${type}`;
+  alert.innerHTML = `
         <div class="icon">${icons[type] || icons['info']}</div>
         <div class="message">${message}</div>
         <button class="close-btn" onclick="this.parentElement.style.animation='slideOut 0.4s forwards'; setTimeout(()=>this.parentElement.remove(),400);">&times;</button>
     `;
 
-    container.appendChild(alert);
+  container.appendChild(alert);
 
-    setTimeout(() => {
-        alert.style.animation = 'slideOut 0.4s forwards';
-        setTimeout(() => alert.remove(), 400);
-    }, duration);
+  setTimeout(() => {
+    alert.style.animation = 'slideOut 0.4s forwards';
+    setTimeout(() => alert.remove(), 400);
+  }, duration);
 }
 
 
@@ -183,7 +288,7 @@ function createSmartSelect({ element, fetchUrl, createUrl, placeholder }) {
     timeout = setTimeout(async () => {
       //first we will see if the input is empty
       //this is for avoid unnecessary server searches
-      if(query==''){
+      if (query == '') {
         dropdownEl.innerHTML = ''; //hidden the answer of the server
         return;
       }
@@ -197,7 +302,7 @@ function createSmartSelect({ element, fetchUrl, createUrl, placeholder }) {
 
       //if not is equal to the former word, update the lastQuery and send the application to the server for get the new fata
       lastQuery = query; //update the last query
-      const newData=await get_the_new_data_of_the_select_search(fetchUrl,query); 
+      const newData = await get_the_new_data_of_the_select_search(fetchUrl, query);
       create_option_of_the_select(element, dropdownEl, newData, query, createUrl);
     }, 400);
   });
@@ -226,7 +331,7 @@ async function get_the_new_data_of_the_select_search(fetchUrl, query) {
   ];
 }
 
-function addItemWithSelec(dropdownEl,createUrl, lastQuery){
+function addItemWithSelec(dropdownEl, createUrl, lastQuery) {
   dropdownEl.style.display = 'none'; //hidden the answer
 }
 
@@ -238,7 +343,7 @@ function create_option_of_the_select(element, dropdownEl, newDataSelect, lastQue
   //her we will see if not exist answer from the server
   if (newDataSelect.length === 0) {
     //now see if exist a link for add a new item 
-    if(createUrl=='' || !createUrl){
+    if (createUrl == '' || !createUrl) {
       //if not exist the link for create the URL, this select only is for search or for add this item need most requirements and the programmer 
       //need show a message pop most complete. Now show a message saying there are no results
       const createBtn = document.createElement('label');
@@ -254,13 +359,13 @@ function create_option_of_the_select(element, dropdownEl, newDataSelect, lastQue
       createBtn.style.color = '#333';
       createBtn.style.fontSize = '14px';
       createBtn.style.textAlign = 'left';
-    }else{
+    } else {
       //if exist, this function is for create the button that the user use for add a new item in the database of the select 
-      add_the_button_for_create_a_new_item_in_the_select_search(dropdownEl,createUrl,lastQuery);
+      add_the_button_for_create_a_new_item_in_the_select_search(dropdownEl, createUrl, lastQuery);
     }
   } else {
     //if the server send answer, we will show all the item that the server send
-    add_all_the_answer_that_the_server_send(element,dropdownEl,newDataSelect);
+    add_all_the_answer_that_the_server_send(element, dropdownEl, newDataSelect);
   }
 
   //update the position of the dropdown
@@ -271,66 +376,66 @@ function create_option_of_the_select(element, dropdownEl, newDataSelect, lastQue
   dropdownEl.style.display = 'block';
 }
 
-function add_all_the_answer_that_the_server_send(element,dropdownEl,newDataSelect){
-    //read all the answer of the server for add all the answer of the server in the select
-    newDataSelect.forEach(item => {
-      //--this is for the styles css of the answer
-      const optionEl = document.createElement('div');
-      optionEl.className = 'smart-select-option';
-      optionEl.style.padding = '12px 16px';
-      optionEl.style.cursor = 'pointer';
-      optionEl.style.borderBottom = '1px solid #f1f1f1';
-      optionEl.style.transition = 'background 0.2s ease';
-      optionEl.style.userSelect = 'none';
+function add_all_the_answer_that_the_server_send(element, dropdownEl, newDataSelect) {
+  //read all the answer of the server for add all the answer of the server in the select
+  newDataSelect.forEach(item => {
+    //--this is for the styles css of the answer
+    const optionEl = document.createElement('div');
+    optionEl.className = 'smart-select-option';
+    optionEl.style.padding = '12px 16px';
+    optionEl.style.cursor = 'pointer';
+    optionEl.style.borderBottom = '1px solid #f1f1f1';
+    optionEl.style.transition = 'background 0.2s ease';
+    optionEl.style.userSelect = 'none';
 
-      //css hover
-      optionEl.onmouseenter = function () {
-        optionEl.style.background = '#f9f9f9';
-      };
-
-      optionEl.onmouseleave = function () {
-        optionEl.style.background = '#fff';
-      };
-
-      //update the text of the text of the option
-      optionEl.textContent = item.name;
-
-      //this function is for hidden the answer of the select when the user do click in a option
-      optionEl.onclick = function () {
-        element.value = item.name; //get the value
-        dropdownEl.style.display = 'none'; //hidden the answer
-
-        const event = new CustomEvent('smart-select-selected', { detail: item });
-        element.dispatchEvent(event);
-      };
-
-      dropdownEl.appendChild(optionEl);
-    });
-}
-
-function add_the_button_for_create_a_new_item_in_the_select_search(dropdownEl,createUrl,lastQuery){
-    //when not exist a answer of the server is because not exist the item and we can create. 
-    const createBtn = document.createElement('button');
-    createBtn.className = 'smart-select-create-btn';
-
-    createBtn.textContent = `+ ${shortButtons[langCode][2]} "${lastQuery}"`;
-    createBtn.style.display = 'block';
-    createBtn.style.width = '100%';
-    createBtn.style.padding = '12px 16px';
-    createBtn.style.border = 'none';
-    createBtn.style.background = '#f0f0f0';
-    createBtn.style.cursor = 'pointer';
-    createBtn.style.color = '#333';
-    createBtn.style.fontSize = '14px';
-    createBtn.style.textAlign = 'left';
-
-    // On click → call your function. This is for save the new item that to the user would like add. 
-    createBtn.onclick = function () {
-      addItemWithSelec(dropdownEl, createUrl, lastQuery);
+    //css hover
+    optionEl.onmouseenter = function () {
+      optionEl.style.background = '#f9f9f9';
     };
 
-    //add the button
-    dropdownEl.appendChild(createBtn);
+    optionEl.onmouseleave = function () {
+      optionEl.style.background = '#fff';
+    };
+
+    //update the text of the text of the option
+    optionEl.textContent = item.name;
+
+    //this function is for hidden the answer of the select when the user do click in a option
+    optionEl.onclick = function () {
+      element.value = item.name; //get the value
+      dropdownEl.style.display = 'none'; //hidden the answer
+
+      const event = new CustomEvent('smart-select-selected', { detail: item });
+      element.dispatchEvent(event);
+    };
+
+    dropdownEl.appendChild(optionEl);
+  });
+}
+
+function add_the_button_for_create_a_new_item_in_the_select_search(dropdownEl, createUrl, lastQuery) {
+  //when not exist a answer of the server is because not exist the item and we can create. 
+  const createBtn = document.createElement('button');
+  createBtn.className = 'smart-select-create-btn';
+
+  createBtn.textContent = `+ ${shortButtons[langCode][2]} "${lastQuery}"`;
+  createBtn.style.display = 'block';
+  createBtn.style.width = '100%';
+  createBtn.style.padding = '12px 16px';
+  createBtn.style.border = 'none';
+  createBtn.style.background = '#f0f0f0';
+  createBtn.style.cursor = 'pointer';
+  createBtn.style.color = '#333';
+  createBtn.style.fontSize = '14px';
+  createBtn.style.textAlign = 'left';
+
+  // On click → call your function. This is for save the new item that to the user would like add. 
+  createBtn.onclick = function () {
+    addItemWithSelec(dropdownEl, createUrl, lastQuery);
+  };
+
+  //add the button
+  dropdownEl.appendChild(createBtn);
 }
 
 
@@ -360,7 +465,7 @@ function create_all_the_select() {
       if (reference) {
         //Check if a hidden item already exists to avoid duplication
         let hiddenInput = inputEl.parentElement.querySelector(`input[type="hidden"][name="${reference}"]`);
-        
+
         //if not exist the hidden input, we will create
         if (!hiddenInput) {
           //create the input hidden, this input is the that have the information that save in the database when send the form to the server
@@ -396,7 +501,7 @@ create_all_the_select();
 
 ///---------------------------function for css and js for help to the programmers to work in the frontend------------------
 //this function is for auto resize the textarea when the user write in the textarea
-function form_auto_resize(id_textarea){
+function form_auto_resize(id_textarea) {
   const textarea = document.getElementById(id_textarea); //get the textarea that we will resize
   if (textarea) {
     textarea.style.height = 'auto';
@@ -405,7 +510,7 @@ function form_auto_resize(id_textarea){
 }
 
 //this function is for add a short cut in the app that the programmer would like add.
-function add_short_cut(keyCombo, callback){
+function add_short_cut(keyCombo, callback) {
   //keyCombo= the combination of the keys that the user will use for do the short cut example Control+S
   //callback= the function that we will execute when the user do the short cut
 
@@ -415,27 +520,27 @@ function add_short_cut(keyCombo, callback){
 
   //we listen the event keydown global
   document.addEventListener('keydown', function (event) {
-      const keysPressed = [];
+    const keysPressed = [];
 
-      if (event.ctrlKey) keysPressed.push('control');
-      if (event.altKey) keysPressed.push('alt');
-      if (event.shiftKey) keysPressed.push('shift');
-      if (event.metaKey) keysPressed.push('meta'); // Para MacOS Command key
+    if (event.ctrlKey) keysPressed.push('control');
+    if (event.altKey) keysPressed.push('alt');
+    if (event.shiftKey) keysPressed.push('shift');
+    if (event.metaKey) keysPressed.push('meta'); // Para MacOS Command key
 
-      const key = event.key.toLowerCase();
+    const key = event.key.toLowerCase();
 
 
-      // Avoid duplicating if it is already a modifier
-      if (!['control', 'alt', 'shift', 'meta'].includes(key)) {
-          keysPressed.push(key);
-      }
+    // Avoid duplicating if it is already a modifier
+    if (!['control', 'alt', 'shift', 'meta'].includes(key)) {
+      keysPressed.push(key);
+    }
 
-      // Check if all keys match
-      const match = combo.every(k => keysPressed.includes(k)) && keysPressed.length === combo.length;
-      if (match) {
-          event.preventDefault(); // prevent default actions like Ctrl+S
-          callback(event);
-      }
+    // Check if all keys match
+    const match = combo.every(k => keysPressed.includes(k)) && keysPressed.length === combo.length;
+    if (match) {
+      event.preventDefault(); // prevent default actions like Ctrl+S
+      callback(event);
+    }
   });
 }
 
@@ -453,7 +558,7 @@ function toggle_class_on_click(triggerSelector, targetSelector, className) {
   if (triggerElement && targetElement) {
     //if exist a element, so we will add the event listener
     //when the user do click in the triggerElement, we will add or remove the className in the targetElement
-    triggerElement.addEventListener('click', function() {
+    triggerElement.addEventListener('click', function () {
       targetElement.classList.toggle(className);
     });
   }
@@ -498,54 +603,26 @@ function load_script(src) {
 
 
 /**----------------------------------show message label----------------------**/
-function transform_my_labels_erp(){
+function transform_my_labels_erp() {
   //this function is for transform the labels that have the tag info-label in the web
   //this is for add a icon with a tooltip when the user do hover over the icon
-  create_info_labels();
+  //create_info_labels();
+  //customElements.define("info-label", InfoLabel);
+  if (!customElements.get("message-pop")) {
+    customElements.define("info-label", InfoLabel);
+  }
+  if (!customElements.get("message-pop")) {
+    customElements.define("message-pop", MessagePop);
+  }
 }
 
+/**---------------------------------SHOW MESSAGE POP PERSONALITY----------------------------- */
+function open_my_pop(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'flex';
+}
 
-
-function create_info_labels() {
-  const tooltip = document.createElement("div");
-  tooltip.className = "erp-tooltip";
-  document.body.appendChild(tooltip);
-
-  document.querySelectorAll("info-label").forEach(el => {
-    //get the information of the label that the user would like show in the tooltip
-      const keyLabelText = el.getAttribute("label") || "";
-      const labelText = translate_text(keyLabelText); //her we will watch if the label have a translation in the app
-
-      //get the information of the message that the user would like show in the tooltip
-      const keyMessage = el.getAttribute("message") || "";
-      const message = translate_text(keyMessage); //now we will watch if the message have a translation in the app
-      const label = document.createElement("label");
-      label.classList.add("info-label-generated");
-      //label.setAttribute('t', keyMessage); //save the label text for translate after
-
-      const span = document.createElement("span");
-      //span.setAttribute('t', keyLabelText); //save the label text for translate after
-      span.textContent = labelText;
-      
-
-      const icon = document.createElement("i");
-      icon.className = "fi fi-sr-interrogation";
-
-      // Tooltip sobre el ícono
-      icon.addEventListener("mouseenter", () => {
-          tooltip.textContent = message;
-          tooltip.style.opacity = "1";
-      });
-      icon.addEventListener("mousemove", (e) => {
-          tooltip.style.left = (e.pageX + 15) + "px";
-          tooltip.style.top = (e.pageY - 30) + "px";
-      });
-      icon.addEventListener("mouseleave", () => {
-          tooltip.style.opacity = "0";
-      });
-
-      label.appendChild(span);
-      label.appendChild(icon);
-      el.replaceWith(label);
-  });
+function close_my_pop(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'none';
 }

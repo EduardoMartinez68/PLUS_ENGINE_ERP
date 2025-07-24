@@ -75,11 +75,30 @@
   <h1 t="title-home">Mis Contratos</h1>
   <hr>
 
+
+
+
+
+
+<message-pop title="label-search-home" name="pop-data-facture">
+  <p t="placeholder-input-search-home">Hola mundo</p>
+</message-pop>
+
+<button onclick="show_pop('pop-data-facture')">open pop</button>
+
+<info-label label="label-search-home"
+  message="placeholder-input-search-home">
+</info-label>
+
+
+
+
+
   <div class="row">
     <div class="col-10">
       <label for="" t="label-search-home">Busca un contrato</label>
-      <input type="text" class="search-input-in-form" id="search-contracts"
-        placeholder="Buscar contratos por título..." t-placeholder="placeholder-input-search-home">
+      <input type="text" class="search-input-in-form" id="search-contracts" placeholder="Buscar contratos por título..."
+        t-placeholder="placeholder-input-search-home">
     </div>
     <div class="col">
       <label for="" t="label-status-contract">Estado del Contrato</label>
@@ -116,8 +135,8 @@
 </div>
 
 <script>
-(() => {
-  const divHtml = `
+  (() => {
+    const divHtml = `
     <div class="card-file" tabindex="0">
       <div class="file-info">
         <i class="fi fi-sr-document-signed" aria-hidden="true"></i>
@@ -129,12 +148,12 @@
       </div>
     </div>`;
 
-  update_container_with_seeker(
-    ['search-contracts', 'select-status'], // id of the input of the seeker
-    'field-contracts',  // id of the container to update
-    divHtml,            // template with placeholders
-    'contracts/search_contracts/', // url for the search
-    'div'
-  );
-})();
+    update_container_with_seeker(
+      ['search-contracts', 'select-status'], // id of the input of the seeker
+      'field-contracts',  // id of the container to update
+      divHtml,            // template with placeholders
+      'contracts/search_contracts/', // url for the search
+      'div'
+    );
+  })();
 </script>

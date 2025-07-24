@@ -86,13 +86,12 @@ async function nextWeb(url) {
       //update all the labels that the programmer do with the syntax of the ERP, to the labels that the user can see
       transform_my_labels_erp(); 
 
-
       closeMenu();
     } catch (error) {
-      console.error('Error al cargar contenido:', error);
+      console.error('Error to load the container of the body:', error);
     }
   } else {
-    console.error('URL inválida proporcionada a nextWeb');
+    console.error('Invalid URL provided to nextWeb');
   }
 }
 
@@ -118,10 +117,9 @@ function get_path_of_the_file_translate_of_the_app(url){
   //if exit the path of the app we will load the translate.json
   if (basePathTranslate) { 
     const pathTranslate = `static/${basePathTranslate}/locale/${language}/translate.json`;
-    console.log('Path translate:', pathTranslate);
     return pathTranslate;
   } else {
-    console.error('No se pudo obtener el path base de la app.');
+    console.error('Not able to obtain the base path of the app.');
     return null;
   }
 }

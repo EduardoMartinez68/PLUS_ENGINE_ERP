@@ -962,3 +962,81 @@ hr{
 .info-label-generated i:hover {
     color: #3f3f3f;
 }
+
+
+
+/*MESSAGE POP PERSONALITY*/
+/*MY POPS*/
+.my-pop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+    z-index: 9000;
+}
+
+.my-pop-content {
+    background-color: #ffffff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    min-width: 300px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+
+.my-pop-content-wrapper {
+    position: relative;
+}
+
+
+.my-pop-header {
+    position: relative;
+    background-color: var(--primary);
+    /* Azul bootstrap */
+    color: white;
+    padding: 1rem 2rem;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Ajusta el título */
+.my-pop-title {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+/* Ajusta el botón cerrar para que esté en el header y se vea blanco */
+.my-pop-header .close-btn {
+    color: white;
+    font-size: 1.5rem;
+    position: static;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.3s ease;
+}
+
+.my-pop-header .close-btn:hover {
+    color: #d1d1d1;
+}
+
+/* Ajusta el contenedor para que el contenido no se superponga */
+.my-pop-content {
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    padding: 20px 20px 30px 20px;
+}
