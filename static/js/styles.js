@@ -101,7 +101,181 @@ class MessagePop extends HTMLElement {
   }
 }
 
+class InputField extends HTMLElement {
+  constructor() {
+    super();
+  }
 
+  connectedCallback() {
+    const labelText = this.getAttribute("label") || "";
+    const name = this.getAttribute("name") || "";
+    const type = this.getAttribute("type") || "text";
+    const placeholder = this.getAttribute("placeholder") || labelText;
+    const required = this.hasAttribute("required");
+    const maxLength = this.getAttribute("maxlength") || "";
+    const tKey = `form1-label-${name}`;
+    const tPlaceholderKey = `form1-placeholder-${name}`;
+
+    const label = document.createElement("label");
+    label.setAttribute("t", tKey);
+    label.textContent = typeof translate_text === "function" ? translate_text(tKey) : labelText;
+
+    const input = document.createElement("input");
+    input.type = type;
+    input.name = name;
+    input.placeholder = typeof translate_text === "function" ? translate_text(tPlaceholderKey) : placeholder;
+    input.setAttribute("t-placeholder", tPlaceholderKey);
+    if (required) input.required = true;
+    if (maxLength) input.maxLength = maxLength;
+    input.value = `{{customer.${name}}}`;
+
+    const wrapper = document.createElement("div");
+    wrapper.appendChild(label);
+    wrapper.appendChild(input);
+
+    this.replaceWith(wrapper);
+  }
+}
+
+class ConfirmButton extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    //get the message and onclick attributes
+    const textTitle = this.getAttribute("title") || "";
+    const title = translateOld[textTitle] || textTitle; //here we will translate the title if exist in the dictionary
+
+    const textMessage = this.getAttribute("message") || "Are you sure?";
+    const message = translateOld[textMessage] || textMessage; //here we will translate the message if exist in the dictionary
+    const onclickAttr = this.getAttribute("onclick");
+    const buttonText = this.textContent.trim();
+
+    const button = document.createElement("button");
+    button.textContent = buttonText;
+    button.classList.add("confirm-button");
+
+    button.addEventListener("click", () => {
+      this.showPopup(title, message, onclickAttr);
+    });
+
+    this.replaceWith(button);
+  }
+
+  showPopup(title, message, onclickAttr) {
+    const overlay = document.createElement("div");
+    overlay.className = "confirm-popup-overlay";
+
+    const popup = document.createElement("div");
+    popup.className = "confirm-popup";
+
+    const iconCircle = document.createElement("div");
+    iconCircle.className = "icon-circle";
+    iconCircle.textContent = "?";
+
+
+    const titleElement = document.createElement("h4");
+    titleElement.textContent = title;
+
+    const msg = document.createElement("p");
+    msg.textContent = message;
+
+    const buttons = document.createElement("div");
+    buttons.className = "popup-buttons";
+
+    const acceptBtn = document.createElement("button");
+    acceptBtn.textContent = LANG['message.success'] || "Ok"; //get the translated text for the accept button
+    console.log(LANG)
+    acceptBtn.className = "popup-accept";
+
+    const cancelBtn = document.createElement("button");
+    cancelBtn.textContent = LANG['message.cancel'] || "Cancel"; //get the translated text for the cancel button
+    cancelBtn.className = "popup-cancel";
+
+    cancelBtn.onclick = () => overlay.remove();
+
+    acceptBtn.onclick = () => {
+      overlay.remove();
+      const functionName = onclickAttr.replace(/\(\)/, "");
+      if (onclickAttr && typeof window[functionName] === "function") {
+        window[functionName]();
+      } else {
+        console.warn(`The function "${functionName}" was not found in window.`);
+      }
+    };
+
+    buttons.appendChild(acceptBtn);
+    buttons.appendChild(cancelBtn);
+    popup.appendChild(iconCircle);
+    popup.appendChild(msg);
+    popup.appendChild(buttons);
+    overlay.appendChild(popup);
+    document.body.appendChild(overlay);
+  }
+}
+
+
+class ConfirmDialog {
+  static show(title,message) {
+    return new Promise((resolve) => {
+      const overlay = document.createElement("div");
+      overlay.className = "confirm-popup-overlay";
+
+      const popup = document.createElement("div");
+      popup.className = "confirm-popup";
+
+      //here we will create the icon circle and the title and message of the popup
+      const iconCircle = document.createElement("div");
+      iconCircle.className = "icon-circle";
+      iconCircle.textContent = "?";
+
+      //add the title and message to the popup
+      const titleElement = document.createElement("h4");
+      titleElement.textContent = translateOld[title] || title; //get the translated title if exists in the dictionary
+
+      const msg = document.createElement("p");
+      msg.textContent = translateOld[message] || message; //get the translated message if exists in the dictionary;
+
+      //now we will create the buttons of the popup
+      //these buttons are for accept or cancel the action that the user do
+      const buttons = document.createElement("div");
+      buttons.className = "popup-buttons";
+
+      const acceptBtn = document.createElement("button");
+      acceptBtn.textContent = LANG['message.success'] || "Ok"; //get the translated text for the accept button
+      acceptBtn.className = "popup-accept";
+
+      const cancelBtn = document.createElement("button");
+      cancelBtn.textContent = LANG['message.cancel'] || "Cancel"; //get the translated text for the cancel button
+      cancelBtn.className = "popup-cancel";
+
+      cancelBtn.onclick = () => {
+        overlay.remove();
+        resolve(false);
+      };
+
+      acceptBtn.onclick = () => {
+        overlay.remove();
+        resolve(true);
+      };
+
+      buttons.appendChild(acceptBtn);
+      buttons.appendChild(cancelBtn);
+      popup.appendChild(iconCircle);
+      popup.appendChild(titleElement);
+      popup.appendChild(msg);
+      popup.appendChild(buttons);
+      overlay.appendChild(popup);
+      document.body.appendChild(overlay);
+    });
+  }
+}
+
+async function show_message_question(title, message) {
+  const result = await ConfirmDialog.show(title, message);
+  return result;
+}
 
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
@@ -608,11 +782,19 @@ function transform_my_labels_erp() {
   //this is for add a icon with a tooltip when the user do hover over the icon
   //create_info_labels();
   //customElements.define("info-label", InfoLabel);
-  if (!customElements.get("message-pop")) {
+  if (!customElements.get("info-label")) {
     customElements.define("info-label", InfoLabel);
   }
   if (!customElements.get("message-pop")) {
     customElements.define("message-pop", MessagePop);
+  }
+
+  if (!customElements.get("input-field")) {
+    customElements.define("input-field", InputField);
+  }
+
+  if (!customElements.get("confirm-button")) {
+    customElements.define("confirm-button", ConfirmButton);
   }
 }
 

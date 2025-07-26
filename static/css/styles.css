@@ -1040,3 +1040,85 @@ hr{
     border-bottom-right-radius: 6px;
     padding: 20px 20px 30px 20px;
 }
+
+
+/*------------------------------------------------------------------------message pop for question------------------------------------------------------------------------*/
+  .confirm-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5000;
+  }
+
+  .confirm-popup {
+    background: #fff;
+    padding: 30px 35px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    font-family: "Segoe UI", Roboto, sans-serif;
+  }
+
+  .confirm-popup .icon-circle {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 20px auto;
+    background-color: #e0e0e0;
+    color: #555;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 24px;
+    user-select: none;
+  }
+
+  .confirm-popup p {
+    margin-bottom: 25px;
+    font-size: 15px;
+    color: #333;
+  }
+
+  .confirm-popup .popup-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .confirm-popup button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+    min-width: 100px;
+  }
+
+  .popup-accept {
+    background-color: #27ae60;
+    color: white;
+  }
+
+  .popup-accept:hover {
+    background-color: #219653;
+  }
+
+  .popup-cancel {
+    background-color: #e74c3c;
+    color: white;
+  }
+
+  .popup-cancel:hover {
+    background-color: #c0392b;
+  }
