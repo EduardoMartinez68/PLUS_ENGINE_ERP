@@ -1,5 +1,4 @@
 /*---------------------------------------------class labels---------------------------------------------*/
-
 class InfoLabel extends HTMLElement {
   constructor() {
     super();
@@ -24,16 +23,20 @@ class InfoLabel extends HTMLElement {
 
     const tooltip = document.querySelector('.erp-tooltip');
 
+    //get the information that the programmer add to the label
     const keyLabelText = this.getAttribute("label") || "";
     const keyMessage = this.getAttribute("message") || "";
 
-    const labelText = typeof translate_text === "function" ? translate_text(keyLabelText) : keyLabelText;
-    const message = typeof translate_text === "function" ? translate_text(keyMessage) : keyMessage;
+    //her we will translate the text that the programmer add the label
+    const labelText = translate_text(keyLabelText);
+    const message = translate_text(keyMessage);
 
     const label = document.createElement("label");
     label.classList.add("info-label-generated");
+    //label.setAttribute("t", keyLabelText);
 
     const span = document.createElement("span");
+    span.setAttribute("t", keyLabelText);
     span.textContent = labelText;
 
     const icon = document.createElement("i");
@@ -101,34 +104,77 @@ class MessagePop extends HTMLElement {
   }
 }
 
+/*
+<input-field 
+label="email"  //lo que dira el label (esto es obligatorio)
+name="escribe tu email" //el nombre con que se guardara the input
+placeholder="escribe tu email" //lo que dira el placeholder del input
+
+type="email"  //el tipo de input que vas a crear
+id="" //el id con el que se guardara el input
+></input-field>
+*/
 class InputField extends HTMLElement {
   constructor() {
     super();
   }
 
   connectedCallback() {
-    const labelText = this.getAttribute("label") || "";
+    //get the information that the user add to the label
+    const labelTextInfo = this.getAttribute("label") || "";
+    const labelText = translate_text(labelTextInfo);
+
+    //her is the name with the that the programmer would like send this information to the server
     const name = this.getAttribute("name") || "";
+
+    //her we will see the option that the programmer would like show
     const type = this.getAttribute("type") || "text";
-    const placeholder = this.getAttribute("placeholder") || labelText;
+
+    //now we will see if the programmer add a placeholder to the label
+    const placeHolderText=this.getAttribute("placeholder"); 
+    let placeholder='';
+    if(placeHolderText){
+      placeholder = translate_text(placeHolderText); //translate the text of the placeholder
+    }else{
+      //if the programmer not add a placeholder, we will show for default the information of the label
+      placeholder=labelText;
+    }
+    
+
+    //her we will watch if the input is required or have a max or min of length
     const required = this.hasAttribute("required");
     const maxLength = this.getAttribute("maxlength") || "";
-    const tKey = `form1-label-${name}`;
-    const tPlaceholderKey = `form1-placeholder-${name}`;
+    const minLength = this.getAttribute("minlength") || "";
 
+    //her we will add the information of translate to the input
     const label = document.createElement("label");
-    label.setAttribute("t", tKey);
-    label.textContent = typeof translate_text === "function" ? translate_text(tKey) : labelText;
+    label.setAttribute("t", labelTextInfo); //add the information of translate
+    label.textContent = labelText; //add the information that was translate
 
+
+    //create the input and add his information
     const input = document.createElement("input");
     input.type = type;
     input.name = name;
-    input.placeholder = typeof translate_text === "function" ? translate_text(tPlaceholderKey) : placeholder;
+
+    //first we will see if exist the information of translate of the placeholder, if not exist save the information of the label for translate after 
+    //save the information of translate of the placeholder
+    const tPlaceholderKey = (!placeHolderText || placeHolderText.trim() === '') 
+      ? labelTextInfo 
+      : placeHolderText; 
+    input.placeholder =  placeholder;
     input.setAttribute("t-placeholder", tPlaceholderKey);
+
+    //config the setting of the input
     if (required) input.required = true;
     if (maxLength) input.maxLength = maxLength;
-    input.value = `{{customer.${name}}}`;
+    if (minLength) input.maxLength = minLength;
 
+    //get the value that the user add to the label
+    const value = this.getAttribute("value") || "";
+    input.value = value;
+
+    //add the all the labels to a div and the add to the web
     const wrapper = document.createElement("div");
     wrapper.appendChild(label);
     wrapper.appendChild(input);
@@ -215,7 +261,6 @@ class ConfirmButton extends HTMLElement {
   }
 }
 
-
 class ConfirmDialog {
   static show(title,message) {
     return new Promise((resolve) => {
@@ -275,6 +320,97 @@ class ConfirmDialog {
 async function show_message_question(title, message) {
   const result = await ConfirmDialog.show(title, message);
   return result;
+}
+
+
+
+
+class AppMenu extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    const container = document.createElement('nav');
+    container.className = 'sub-menu-app-nav';
+
+    const inner = document.createElement('div');
+    inner.className = 'sub-menu-app-nav-container';
+
+    //search all the <sub-menu> son
+    const items = this.querySelectorAll('sub-menu');
+    items.forEach(item => {
+      //get the name of the sub menu
+      const nameSubMenu = item.getAttribute('name') || '';
+      const name = translate_text(nameSubMenu); //now we will translate the container
+
+      const link = item.getAttribute('link') || '#';
+      const btnClass = item.getAttribute('class') || 'btn-navbar';
+
+      const navItem = document.createElement('div');
+      navItem.className = 'sub-menu-app-nav-item';
+
+      //her we will create the link
+      const a = document.createElement('a');
+      a.className = 'sub-menu-app-nav-link sub-menu-app-link-base';
+      a.setAttribute('onclick', `nextWeb('${link}')`);
+
+      //now we will create the menu
+      const button = document.createElement('button');
+      button.className = `btn ${btnClass}`;
+      button.setAttribute('t', name);
+      button.textContent = name;
+
+      //add the container to the menu
+      a.appendChild(button);
+      navItem.appendChild(a);
+      inner.appendChild(navItem);
+    });
+
+    container.appendChild(inner);
+    this.replaceWith(container);
+  }
+}
+
+class KeyBind extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    const combo = (this.getAttribute("combo") || "").toLowerCase().replace(/\s+/g, '');
+    const actionName = this.getAttribute("action");
+
+    if (!combo || !actionName) return;
+
+    // Separar teclas (por ejemplo: shift+v)
+    const keys = combo.split('+');
+    const pressedKeys = new Set();
+
+    const onKeyDown = (e) => {
+      pressedKeys.add(e.key.toLowerCase());
+
+      const allKeysPressed = keys.every(k => pressedKeys.has(k.toLowerCase()));
+      if (allKeysPressed) {
+        if (typeof window[actionName] === 'function') {
+          window[actionName]();
+        } else {
+          console.warn(`Función '${actionName}' no encontrada en window`);
+        }
+        pressedKeys.clear(); // evitar repeticiones rápidas
+      }
+    };
+
+    const onKeyUp = (e) => {
+      pressedKeys.delete(e.key.toLowerCase());
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+
+    // Eliminar el nodo del DOM para que no estorbe visualmente
+    this.style.display = "none";
+  }
 }
 
 /**----------------------------------TABS----------------------**/
@@ -795,6 +931,14 @@ function transform_my_labels_erp() {
 
   if (!customElements.get("confirm-button")) {
     customElements.define("confirm-button", ConfirmButton);
+  }
+
+  if (!customElements.get("app-menu")) {
+    customElements.define("app-menu", AppMenu);
+  }
+
+  if (!customElements.get("key-bind")) {
+    customElements.define("key-bind", KeyBind);
   }
 }
 
