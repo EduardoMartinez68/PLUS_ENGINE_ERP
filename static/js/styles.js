@@ -131,15 +131,15 @@ class InputField extends HTMLElement {
     const type = this.getAttribute("type") || "text";
 
     //now we will see if the programmer add a placeholder to the label
-    const placeHolderText=this.getAttribute("placeholder"); 
-    let placeholder='';
-    if(placeHolderText){
+    const placeHolderText = this.getAttribute("placeholder");
+    let placeholder = '';
+    if (placeHolderText) {
       placeholder = translate_text(placeHolderText); //translate the text of the placeholder
-    }else{
+    } else {
       //if the programmer not add a placeholder, we will show for default the information of the label
-      placeholder=labelText;
+      placeholder = labelText;
     }
-    
+
 
     //her we will watch if the input is required or have a max or min of length
     const required = this.hasAttribute("required");
@@ -159,10 +159,10 @@ class InputField extends HTMLElement {
 
     //first we will see if exist the information of translate of the placeholder, if not exist save the information of the label for translate after 
     //save the information of translate of the placeholder
-    const tPlaceholderKey = (!placeHolderText || placeHolderText.trim() === '') 
-      ? labelTextInfo 
-      : placeHolderText; 
-    input.placeholder =  placeholder;
+    const tPlaceholderKey = (!placeHolderText || placeHolderText.trim() === '')
+      ? labelTextInfo
+      : placeHolderText;
+    input.placeholder = placeholder;
     input.setAttribute("t-placeholder", tPlaceholderKey);
 
     //config the setting of the input
@@ -262,7 +262,7 @@ class ConfirmButton extends HTMLElement {
 }
 
 class ConfirmDialog {
-  static show(title,message) {
+  static show(title, message) {
     return new Promise((resolve) => {
       const overlay = document.createElement("div");
       overlay.className = "confirm-popup-overlay";
@@ -412,6 +412,98 @@ class KeyBind extends HTMLElement {
     this.style.display = "none";
   }
 }
+
+
+class PlusModules extends HTMLElement {
+  connectedCallback() {
+    //hwe we will read the atribute 'col' and we will calculate the propotion of the modules
+    const col = parseInt(this.getAttribute('col')) || 4;
+    const colSidebar = Math.max(1, Math.min(col, 11));
+    const colContent = 12 - colSidebar;
+
+    const modules = Array.from(this.querySelectorAll('plus-module'));
+    const names = modules.map(m => m.getAttribute('name'));
+    const icons = modules.map(m => m.getAttribute('icon') || '');
+    const contents = modules.map(m => m.innerHTML);
+
+    //clear the container for show a new layaout
+    this.innerHTML = '';
+
+    //make a sidebar
+    const sidebar = document.createElement('div');
+    sidebar.className = 'plus-modules-sidebar';
+    sidebar.style.width = `${(colSidebar / 12) * 100}%`;
+
+    const ul = document.createElement('ul');
+
+    //her we will read all the moduels and we will create all his container
+    names.forEach((name, i) => {
+      const li = document.createElement('li');
+      li.className = i === 0 ? 'active' : ''; //we will see if this module this active
+      li.dataset.index = i;
+
+      //create the icon if exist for the proggramer
+      const iconSpan = document.createElement('span');
+      iconSpan.className = 'plus-modules-icon';
+      iconSpan.innerHTML = icons[i];
+
+      li.appendChild(iconSpan);
+
+      //add the text that the user would like translate
+      const translateText = window.translate_text(name) //her we will translate the text if exist in the dictonary
+      const p = document.createElement('p');
+      p.textContent = translateText;
+      p.setAttribute('t',name); //save the index fortranslate the text after if the user recharge the web
+
+      //save the icon and the text
+      li.appendChild(p);
+      ul.appendChild(li);
+    });
+
+    sidebar.appendChild(ul); //add the module to the list of modules
+
+    // Crear contenido
+    const content = document.createElement('div');
+    content.className = 'plus-modules-content';
+    content.style.width = `${(colContent / 12) * 100}%`;
+
+    const panel = document.createElement('div');
+    panel.className = 'plus-modules-module-panel';
+    panel.innerHTML = contents[0];
+    content.appendChild(panel);
+
+    // add to the DOM
+    this.classList.add('plus-modules-host');
+    this.appendChild(sidebar);
+    this.appendChild(content);
+
+    //Click events for tabs
+    ul.querySelectorAll('li').forEach(li => {
+      li.addEventListener('click', () => {
+        ul.querySelectorAll('li').forEach(i => i.classList.remove('active'));
+        li.classList.add('active');
+        const index = li.dataset.index;
+        panel.innerHTML = contents[index];
+      });
+    });
+  }
+}
+
+customElements.define('plus-modules', PlusModules);
+
+class PlusModule extends HTMLElement {
+  connectedCallback() {
+    this.classList.add('plus-modules-module');
+  }
+}
+
+customElements.define('plus-module', PlusModule);
+
+
+
+
+
+
 
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
@@ -939,6 +1031,14 @@ function transform_my_labels_erp() {
 
   if (!customElements.get("key-bind")) {
     customElements.define("key-bind", KeyBind);
+  }
+
+  if (!customElements.get("plus-modules")) {
+    customElements.define("plus-modules", PlusModules);
+  }
+
+  if (!customElements.get("plus-module")) {
+    customElements.define("plus-module", PlusModule);
   }
 }
 

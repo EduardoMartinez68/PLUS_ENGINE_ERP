@@ -4,26 +4,40 @@
 
 
 <div class="container-section">
-    <input-field label="label-search-home" type="email" name="search-1" placeholder="placeholder-search-home"></input-field>
 
-    <message-pop title="label-search-home" name="pop-data-facture">
-        <p t="placeholder-search-home"></p>
-    </message-pop>
+  <plus-modules>
+    <plus-module name="Inputs" icon="<i class='fi fi-sr-shopping-cart'></i>">
+        <input-field label="label-search-home" type="email" name="search-1" placeholder="placeholder-search-home"></input-field>
+        <confirm-button 
+          title="Delete Product" 
+          message="Are you sure you want to delete this product?" 
+          onclick="deleteProduct()">
+          Delete
+        </confirm-button>
+    </plus-module>
 
-    <button onclick="show_pop('pop-data-facture')">open pop</button>
+    <plus-module name="Clientes" icon="👨‍💼">
+      <message-pop title="label-search-home" name="pop-data-facture">
+          <p t="placeholder-search-home"></p>
+      </message-pop>
+      <button onclick="show_pop('pop-data-facture')">open pop</button>
+    </plus-module>
 
-    <info-label label="label-search-home"
-    message="placeholder-search-home">
-    </info-label>
+    <plus-module name="label-search-home">
+      <info-label label="label-search-home"
+      message="placeholder-search-home">
+      </info-label>
+    </plus-module>
+  </plus-modules>
+
+
 
     <key-bind combo="Shift+V" action="abrir_menu"></key-bind>
     <key-bind combo="Shift+p" action="abrir_menu"></key-bind>
-  <confirm-button 
-    title="Delete Product" 
-    message="Are you sure you want to delete this product?" 
-    onclick="deleteProduct()">
-    Delete
-  </confirm-button>
+
+
+
+
   <br><br>
   
     <div class="row">

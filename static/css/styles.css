@@ -1122,3 +1122,85 @@ hr{
   .popup-cancel:hover {
     background-color: #c0392b;
   }
+
+  /*------------------------------------MODULES with col------------------------*/
+.plus-modules-host {
+  --highlight-color: #E6F3FF;
+  --highlight-border: #C2D9EC;
+  --icon-color: #3C6A90;
+  --bg-panel: #ffffff;
+  --border-color: #dcdcdc;
+  --font-color: #222;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  height: 100vh;
+  background: #f4f4f4;
+  color: var(--font-color);
+}
+
+.plus-modules-sidebar {
+  width:100%; /* se calculará desde JS */;
+  padding: 1rem;
+  border-right: 1px solid var(--border-color);
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.plus-modules-content {
+  width:100%; /* se calculará desde JS */;
+  padding: 2rem;
+  background: transparent;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.plus-modules-sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.plus-modules-sidebar li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: #fff;
+  margin-bottom: 10px;
+}
+
+.plus-modules-sidebar li:hover {
+  background: #f0f0f0;
+}
+
+.plus-modules-sidebar li.active {
+  background: var(--highlight-color);
+  border: 1px solid var(--highlight-border);
+  font-weight: 600;
+}
+
+.plus-modules-sidebar li .plus-modules-icon {
+  color: var(--icon-color);
+  display: inline-flex;
+  align-items: center;
+}
+
+.plus-modules-module-panel {
+  padding: 1rem;
+  border-radius: 3px;
+}
+
+.plus-modules-module-panel h2 {
+  margin-top: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.plus-modules-module-panel p {
+  font-size: 14px;
+  line-height: 1.6;
+}
