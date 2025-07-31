@@ -2,18 +2,20 @@
 {% include 'partialsCustomers/navbarHome.html' %}
 <br>
 
-
-<div class="container-section">
-
   <plus-modules>
     <plus-module name="Inputs" icon="<i class='fi fi-sr-shopping-cart'></i>">
-        <input-field label="label-search-home" type="email" name="search-1" placeholder="placeholder-search-home"></input-field>
+
+
+        <input-field label="label-search-home" type="email" name="search-1" placeholder="placeholder-search-home" required message-label="placeholder-search-home"></input-field>
+
+        <br>
         <confirm-button 
           title="Delete Product" 
           message="Are you sure you want to delete this product?" 
           onclick="deleteProduct()">
           Delete
         </confirm-button>
+
     </plus-module>
 
     <plus-module name="Clientes" icon="👨‍💼">
@@ -34,6 +36,9 @@
 
     <key-bind combo="Shift+V" action="abrir_menu"></key-bind>
     <key-bind combo="Shift+p" action="abrir_menu"></key-bind>
+
+<div class="container-section">
+
 
 
 

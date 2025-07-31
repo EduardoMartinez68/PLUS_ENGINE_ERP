@@ -127,8 +127,12 @@ class InputField extends HTMLElement {
     //her is the name with the that the programmer would like send this information to the server
     const name = this.getAttribute("name") || "";
 
-    //her we will see the option that the programmer would like show
-    const type = this.getAttribute("type") || "text";
+    //her we will see the option that the programmer would like show. 
+    //Also we will to valid the type of data that the user added for avoid an error 
+    const validTypes = ["text", "email", "password", "number", "date", "tel"];
+    const type = validTypes.includes(this.getAttribute("type"))  //her we willl see if the type that the user added, exist in our list of inputs types
+      ? this.getAttribute("type") 
+      : "text"; //for default is a input type text
 
     //now we will see if the programmer add a placeholder to the label
     const placeHolderText = this.getAttribute("placeholder");
@@ -148,14 +152,29 @@ class InputField extends HTMLElement {
 
     //her we will add the information of translate to the input
     const label = document.createElement("label");
+
+    //this class is for when the input be required, the input can show a indicator to the user  
+    label.classList.add("input-label");
+
     label.setAttribute("t", labelTextInfo); //add the information of translate
     label.textContent = labelText; //add the information that was translate
 
-
     //create the input and add his information
     const input = document.createElement("input");
+    input.classList.add("input-field");
+    
+    
     input.type = type;
     input.name = name;
+
+    //her we will add more atributes to the input only if the user would like do 
+    const pattern = this.getAttribute("pattern");
+    const readOnly = this.hasAttribute("readonly");
+    const disabled = this.hasAttribute("disabled");
+
+    if (pattern) input.pattern = pattern;
+    if (readOnly) input.readOnly = true;
+    if (disabled) input.disabled = true;
 
     //first we will see if exist the information of translate of the placeholder, if not exist save the information of the label for translate after 
     //save the information of translate of the placeholder
@@ -168,15 +187,58 @@ class InputField extends HTMLElement {
     //config the setting of the input
     if (required) input.required = true;
     if (maxLength) input.maxLength = maxLength;
-    if (minLength) input.maxLength = minLength;
+    if (minLength) input.minLength = minLength;
 
     //get the value that the user add to the label
     const value = this.getAttribute("value") || "";
     input.value = value;
 
+    //add a event of input for know if the user is writing in the input only if the input be required
+    if(required){
+        const validateInput = () => {
+          //her we will see if exist container in the input
+          if (input.value.trim() !== '') {
+            //if the input have a value, we will show to user that all is success
+            label.classList.remove("plus-input-label-error");
+            input.classList.remove("plus-input-error");
+
+            label.classList.add("plus-input-label-success");
+            input.classList.add("plus-input-success");
+          } else {
+            //if the input is void, we will show to user that this input is required
+            label.classList.add("plus-input-label-error");
+            input.classList.add("plus-input-error");
+
+            label.classList.remove("plus-input-label-success");
+            input.classList.remove("plus-input-success");
+          }
+        };
+
+        input.addEventListener('input', validateInput); //this is when the user is writing in the input
+        input.addEventListener('blur', validateInput); // This is when the user out of the input without write nothing
+    }
+
     //add the all the labels to a div and the add to the web
     const wrapper = document.createElement("div");
-    wrapper.appendChild(label);
+    wrapper.classList.add("input-wrapper");
+
+    //her we will see if the user would like add a message most to the label 
+    const existMessageLabel=this.hasAttribute("message-label");
+    if(existMessageLabel){
+
+      //if exist a message label, we will add a label <message-label>
+      const messageLabel=this.getAttribute("message-label");
+      const labelMessage=document.createElement("info-label");
+      labelMessage.setAttribute('label',labelTextInfo);
+      labelMessage.setAttribute('message',messageLabel);
+
+      wrapper.appendChild(labelMessage);
+    }
+    else{
+      wrapper.appendChild(label);
+    }
+
+
     wrapper.appendChild(input);
 
     this.replaceWith(wrapper);
