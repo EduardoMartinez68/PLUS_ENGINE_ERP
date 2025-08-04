@@ -1,228 +1,229 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
-  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-straight/css/uicons-regular-straight.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>App Store Moderna</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: "Segoe UI", sans-serif;
-      background-color: #f4f4f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
+      font-family: 'Helvetica Neue', sans-serif;
+      background-color: #f9f9fa;
+      color: #111;
     }
 
-    .plus-select-wrapper {
-      position: relative;
-      width: 300px;
+    header {
+      padding: 2rem 1rem 1rem;
+      text-align: center;
     }
 
-    .plus-select-select {
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 12px 16px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: box-shadow 0.3s;
-    }
-
-    .plus-select-select:hover {
-      box-shadow: 0 0 0 3px rgba(93, 135, 255, 0.2);
-    }
-
-    .plus-select-popup {
-      position: absolute;
-      top: 0;
-      left: calc(100% + 12px);
-      width: 260px;
-      background-color: white;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      z-index: 10;
-      display: none;
-      flex-direction: column;
-      padding: 10px;
-    }
-
-    .plus-select-popup.active {
-      display: flex;
-    }
-
-    .plus-select-search-wrapper {
-      display: flex;
-      align-items: center;
-      border: 1px solid #bbb;
-      border-radius: 6px;
-      padding: 5px 8px;
-      margin-bottom: 8px;
-      background-color: #f9f9f9;
-    }
-
-    .plus-select-search-wrapper i {
-      color: #666;
-      margin-right: 6px;
-      font-size: 16px;
-    }
-
-    .plus-select-search-wrapper input {
-      flex: 1;
+    header input[type="text"] {
+      width: 100%;
+      max-width: 500px;
+      padding: 0.75rem 1.2rem;
+      font-size: 1rem;
       border: none;
-      outline: none;
-      background: transparent;
-      font-size: 14px;
+      border-radius: 12px;
+      background-color: #eaeaea;
+      transition: all 0.3s ease;
     }
 
-    .plus-select-option {
-      padding: 10px;
-      border-radius: 5px;
+    header input[type="text"]:focus {
+      background-color: #fff;
+      outline: 2px solid #0071e3;
+    }
+
+    .app-list {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .app-list {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .app-list {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 1400px) {
+      .app-list {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .app-card {
+      display: flex;
+      align-items: flex-start;
+      background-color: #fff;
+      border-radius: 16px;
+      padding: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      gap: 1rem;
+      flex-direction: row;
+    }
+
+    .app-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      object-fit: cover;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    .app-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+    }
+
+    .app-text {
+      margin-bottom: 1rem;
+    }
+
+    .app-name {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+    }
+
+    .app-description {
+      font-size: 0.92rem;
+      color: #555;
+    }
+
+    .download-btn {
+      align-self: flex-start;
+      background: #1649FF;
+      color: white;
+      border: none;
+      border-radius: 100px;
+      padding: 0.5rem 1.2rem;
+      font-size: 0.85rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: background-color 0.3s ease;
     }
 
-    .plus-select-option:hover {
-      background-color: #f0f0f0;
-    }
-
-    .plus-select-icon {
-      font-size: 18px;
-      color: #666;
-      margin-left: 8px;
+    .download-btn:hover {
+      background: #0f35c5;
     }
 
     @media (max-width: 600px) {
-      .plus-select-wrapper {
-        width: 90%;
+      .app-card {
+        flex-direction: column;
+        align-items: flex-start;
       }
 
-      .plus-select-popup {
-        left: 0;
-        top: 60px;
-        width: 100%;
+      .app-icon {
+        margin-bottom: 0.8rem;
+      }
+
+      .download-btn {
+        align-self: stretch;
+        text-align: center;
       }
     }
   </style>
 </head>
 <body>
-<plus-select title="Tipo de documento" name="tipo_documento" requerid>
-  <option value="contrato">Contrato</option>
-  <option value="juicio">Juicio</option>
-  <option value="testamento">Testamento</option>
-</plus-select>
 
+  <header>
+    <input type="text" id="searchInput" placeholder="Buscar apps...">
+  </header>
 
-    <script>
-class PlusSelect extends HTMLElement {
-  constructor() {
-    super();
-  }
+  <div class="app-list" id="appList">
 
-  connectedCallback() {
-    const title = this.getAttribute('title') || 'Seleccionar opción';
-    const name = this.getAttribute('name') || '';
-    const isRequired = this.hasAttribute('requerid');
+    <!-- App 1 -->
+    <div class="app-card">
+      <img class="app-icon" src="https://play-lh.googleusercontent.com/pEZvyjV4HNa9dwxYB4g-YzRVmbtNEwKdo_YpGbkDucVftFAx93gXrXYJYnTaT8TaDg" alt="Icono App">
+      <div class="app-info">
+        <div class="app-text">
+          <div class="app-name">Notas Pro</div>
+          <div class="app-description">Toma notas elegantes y sincroniza tus ideas en la nube.</div>
+        </div>
+        <button class="download-btn">Descargar</button>
+      </div>
+    </div>
 
-    // Crear wrapper principal
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('plus-select-wrapper');
+    <!-- App 2 -->
+    <div class="app-card">
+      <img class="app-icon" src="https://play-lh.googleusercontent.com/pEZvyjV4HNa9dwxYB4g-YzRVmbtNEwKdo_YpGbkDucVftFAx93gXrXYJYnTaT8TaDg" alt="Icono App">
+      <div class="app-info">
+        <div class="app-text">
+          <div class="app-name">Calendario Zen</div>
+          <div class="app-description">Organiza tu tiempo de forma tranquila y efectiva.</div>
+        </div>
+        <button class="download-btn">Descargar</button>
+      </div>
+    </div>
 
-    // Crear contenedor select visible
-    const select = document.createElement('div');
-    select.classList.add('plus-select-select');
-    select.innerHTML = `
-      <span class="plus-select-selected-text">${title}</span>
-      <i class="fi fi-rr-angle-small-right plus-select-icon"></i>
-    `;
+    <!-- App 3 -->
+    <div class="app-card">
+      <img class="app-icon" src="https://play-lh.googleusercontent.com/pEZvyjV4HNa9dwxYB4g-YzRVmbtNEwKdo_YpGbkDucVftFAx93gXrXYJYnTaT8TaDg" alt="Icono App">
+      <div class="app-info">
+        <div class="app-text">
+          <div class="app-name">Música Flow</div>
+          <div class="app-description">Explora música sin interrupciones con diseño fluido.</div>
+        </div>
+        <button class="download-btn">Descargar</button>
+      </div>
+    </div>
 
-    // Crear popup de opciones
-    const popup = document.createElement('div');
-    popup.classList.add('plus-select-popup');
+    <!-- App 4 -->
+    <div class="app-card">
+      <img class="app-icon" src="https://play-lh.googleusercontent.com/pEZvyjV4HNa9dwxYB4g-YzRVmbtNEwKdo_YpGbkDucVftFAx93gXrXYJYnTaT8TaDg" alt="Icono App">
+      <div class="app-info">
+        <div class="app-text">
+          <div class="app-name">Finanzas Lite</div>
+          <div class="app-description">Administra tu dinero con claridad y estilo moderno.</div>
+        </div>
+        <button class="download-btn">Descargar</button>
+      </div>
+    </div>
 
-    // Crear contenedor de búsqueda
-    const searchWrapper = document.createElement('div');
-    searchWrapper.classList.add('plus-select-search-wrapper');
-    searchWrapper.innerHTML = `
-      <i class="fi fi-rs-search"></i>
-      <input type="text" placeholder="Buscar...">
-    `;
-    const searchInput = searchWrapper.querySelector('input');
+    <!-- App 5 -->
+    <div class="app-card">
+      <img class="app-icon" src="https://play-lh.googleusercontent.com/pEZvyjV4HNa9dwxYB4g-YzRVmbtNEwKdo_YpGbkDucVftFAx93gXrXYJYnTaT8TaDg" alt="Icono App">
+      <div class="app-info">
+        <div class="app-text">
+          <div class="app-name">Viajes GO</div>
+          <div class="app-description">Planea y reserva viajes con una interfaz limpia y clara.</div>
+        </div>
+        <button class="download-btn">Descargar</button>
+      </div>
+    </div>
 
-    // Crear contenedor de opciones dinámicamente desde las <option>
-    const slotOptions = this.querySelectorAll('option');
-    const options = [];
+  </div>
 
-    slotOptions.forEach(opt => {
-      const div = document.createElement('div');
-      div.classList.add('plus-select-option');
-      div.textContent = opt.textContent;
-      div.dataset.value = opt.getAttribute('value') || opt.textContent;
-      options.push(div);
-      popup.appendChild(div);
-    });
+  <script>
+    const input = document.getElementById("searchInput");
+    const appCards = document.querySelectorAll(".app-card");
 
-    // Insertar búsqueda antes de las opciones
-    popup.insertBefore(searchWrapper, popup.firstChild);
-
-    // Crear input oculto
-    const hiddenInput = document.createElement('input');
-    hiddenInput.type = 'hidden';
-    hiddenInput.name = name;
-    if (isRequired) hiddenInput.required = true;
-
-    // Evento de clic en el select visible
-    select.addEventListener('click', () => {
-      popup.classList.toggle('active');
-      searchInput.focus();
-    });
-
-    // Evento clic en opciones
-    options.forEach(opt => {
-      opt.addEventListener('click', () => {
-        select.querySelector('.plus-select-selected-text').textContent = opt.textContent;
-        hiddenInput.value = opt.dataset.value;
-        popup.classList.remove('active');
-        searchInput.value = '';
-        filterOptions('');
+    input.addEventListener("input", () => {
+      const filter = input.value.toLowerCase();
+      appCards.forEach(card => {
+        const name = card.querySelector(".app-name").textContent.toLowerCase();
+        const desc = card.querySelector(".app-description").textContent.toLowerCase();
+        const match = name.includes(filter) || desc.includes(filter);
+        card.style.display = match ? "flex" : "none";
       });
     });
+  </script>
 
-    // Filtrado
-    searchInput.addEventListener('input', e => {
-      filterOptions(e.target.value.toLowerCase());
-    });
-
-    function filterOptions(term) {
-      options.forEach(opt => {
-        opt.style.display = opt.textContent.toLowerCase().includes(term) ? 'block' : 'none';
-      });
-    }
-
-    // Cerrar si hace clic fuera
-    document.addEventListener('click', (e) => {
-      if (!wrapper.contains(e.target)) {
-        popup.classList.remove('active');
-      }
-    });
-
-    // Montar estructura final
-    wrapper.appendChild(select);
-    wrapper.appendChild(popup);
-    wrapper.appendChild(hiddenInput);
-
-    this.replaceWith(wrapper);
-  }
-}
-
-customElements.define('plus-select', PlusSelect);
-
-    </script>
 </body>
 </html>
