@@ -2,6 +2,7 @@
     "message.title": "Confirmación",
     "message.success": "Aceptar",
     "message.cancel": "Cancelar",
+    "message.search": "Buscar...",
 
     "success.saved": "Guardado con éxito",
     "success.updated": "Actualizado correctamente",

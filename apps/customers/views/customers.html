@@ -2,40 +2,52 @@
 {% include 'partialsCustomers/navbarHome.html' %}
 <br>
 
-  <plus-modules>
-    <plus-module name="Inputs" icon="<i class='fi fi-sr-shopping-cart'></i>">
+<plus-modules>
+  <plus-module name="Inputs" icon="<i class='fi fi-sr-shopping-cart'></i>">
 
 
-        <input-field label="label-search-home" type="email" name="search-1" placeholder="placeholder-search-home" required message-label="placeholder-search-home"></input-field>
+    <input-field label="label-search-home" type="email" name="search-1" placeholder="placeholder-search-home" required
+      message-label="placeholder-search-home"></input-field>
 
-        <br>
-        <confirm-button 
-          title="Delete Product" 
-          message="Are you sure you want to delete this product?" 
-          onclick="deleteProduct()">
-          Delete
-        </confirm-button>
+    <br>
+    <confirm-button title="Delete Product" message="Are you sure you want to delete this product?"
+      onclick="deleteProduct()">
+      Delete
+    </confirm-button>
 
-    </plus-module>
+  </plus-module>
 
-    <plus-module name="Clientes" icon="👨‍💼">
-      <message-pop title="label-search-home" name="pop-data-facture">
-          <p t="placeholder-search-home"></p>
-      </message-pop>
-      <button onclick="show_pop('pop-data-facture')">open pop</button>
-    </plus-module>
+  <plus-module name="Clientes" icon="👨‍💼">
+    <message-pop title="label-search-home" name="pop-data-facture">
+      <p t="placeholder-search-home"></p>
+    </message-pop>
+    <button onclick="show_pop('pop-data-facture')">open pop</button>
+  </plus-module>
 
-    <plus-module name="label-search-home">
-      <info-label label="label-search-home"
-      message="placeholder-search-home">
-      </info-label>
-    </plus-module>
-  </plus-modules>
+  <plus-module name="label-search-home">
+    <info-label label="label-search-home" message="placeholder-search-home">
+    </info-label>
+  </plus-module>
 
+  <plus-module name="Inputs" icon="<i class='fi fi-sr-shopping-cart'></i>">
 
 
-    <key-bind combo="Shift+V" action="abrir_menu"></key-bind>
-    <key-bind combo="Shift+p" action="abrir_menu"></key-bind>
+
+    <plus-select label="label-search-home" message="placeholder-search-home" name="tipo_documento" requerid>
+      <option value="contrato" t="placeholder-search-home">Contrato</option>
+      <option value="juicio" t="placeholder-search-home">Juicio</option>
+      <option value="testamento" t="placeholder-search-home">Testamento</option>
+    </plus-select>
+
+
+  </plus-module>
+</plus-modules>
+
+
+
+
+<key-bind combo="Shift+V" action="abrir_menu"></key-bind>
+<key-bind combo="Shift+p" action="abrir_menu"></key-bind>
 
 <div class="container-section">
 
@@ -44,55 +56,57 @@
 
 
   <br><br>
-  
-    <div class="row">
-        <div class="col-10">
-            <label for="" t="label-search-home">Buscar un Cliente</label>
-            <input type="text" class="search-input-in-form" id="search-customers"
-                placeholder="Buscar clientes por email o nombre..." t-placeholder="placeholder-search-home">
-        </div>
-        <div class="col">
-        <label for="" t="label-status-contract">Estado del Cliente</label>
-        <select id="select-status">
-            <option value="true">Activos</option>
-            <option value="false">Desactivados</option>
-            <option value="">Todos</option>
-        </select>
-        </div>
-    </div>
 
-    <table id="table-customer">
-        <thead>
-            <tr>
-                <th t="table-name">Name</th>
-                <th t="table-email">E-mail</th>
-                <th t="table-phone">Cellphone</th>
-                <th t="table-cellphone">Phone</th>
-                <th t="table-company-name">Company Name</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody id="container-table">
-            {% for customer in customers %}
-            <tr>
-                <td>{{ customer.name }}</td>
-                <td>{{ customer.email }}</td>
-                <td>{{ customer.phone }}</td>
-                <td>{{ customer.cellphone }}</td>
-                <td>{{ customer.company_name }}</td>
-                <th><button class="btn btn-normal" type="button" onclick="nextWeb('customers/edit_customer/{{ customer.id }}/')"><i class="fi fi-sr-pencil"></i></button></th>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+  <div class="row">
+    <div class="col-10">
+      <label for="" t="label-search-home">Buscar un Cliente</label>
+      <input type="text" class="search-input-in-form" id="search-customers"
+        placeholder="Buscar clientes por email o nombre..." t-placeholder="placeholder-search-home">
+    </div>
+    <div class="col">
+      <label for="" t="label-status-contract">Estado del Cliente</label>
+      <select id="select-status">
+        <option value="true">Activos</option>
+        <option value="false">Desactivados</option>
+        <option value="">Todos</option>
+      </select>
+    </div>
+  </div>
+
+  <table id="table-customer">
+    <thead>
+      <tr>
+        <th t="table-name">Name</th>
+        <th t="table-email">E-mail</th>
+        <th t="table-phone">Cellphone</th>
+        <th t="table-cellphone">Phone</th>
+        <th t="table-company-name">Company Name</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="container-table">
+      {% for customer in customers %}
+      <tr>
+        <td>{{ customer.name }}</td>
+        <td>{{ customer.email }}</td>
+        <td>{{ customer.phone }}</td>
+        <td>{{ customer.cellphone }}</td>
+        <td>{{ customer.company_name }}</td>
+        <th><button class="btn btn-normal" type="button"
+            onclick="nextWeb('customers/edit_customer/{{ customer.id }}/')"><i class="fi fi-sr-pencil"></i></button>
+        </th>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
 
 
 </div>
 
 <script>
-(() => {
-  const divHtml = `
+  (() => {
+    const divHtml = `
         <td>{ name }</td>
         <td>{ email }</td>
         <td>{ phone }</td>
@@ -101,19 +115,16 @@
         <th><button class="btn btn-normal" type="button" onclick="nextWeb('customers/edit_customer/{ id }/')"><i class="fi fi-sr-pencil"></i></button></th>
     `;
 
-  update_container_with_seeker(
-    ['search-customers','select-status'], // id of the input of the seeker
-    'container-table',  // id of the container to update
-    divHtml,            // template with placeholders
-    'customers/search_customers/' // url for the search
-  );
-})();
+    update_container_with_seeker(
+      ['search-customers', 'select-status'], // id of the input of the seeker
+      'container-table',  // id of the container to update
+      divHtml,            // template with placeholders
+      'customers/search_customers/' // url for the search
+    );
+  })();
 </script>
 <script>
-function abrir_menu() {
-  alert("¡Menú abierto!");
-}
+  function abrir_menu() {
+    alert("¡Menú abierto!");
+  }
 </script>
-
-
-

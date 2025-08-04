@@ -566,7 +566,144 @@ customElements.define('plus-module', PlusModule);
 
 
 
+class PlusSelect extends HTMLElement {
+  constructor() {
+    super();
+  }
 
+  connectedCallback() {
+    //get the information that the programmer added to the select
+    const textLabel=this.getAttribute('label') || '';
+    const textLabelTranslate=window.translate_text(textLabel); //translate the text of the label
+
+    const name = this.getAttribute('name') || '';
+    const isRequired = this.hasAttribute('requerid');
+
+    //create a label of text of that the user can know that need do
+    const thisLabelHaveAMessage=this.getAttribute('message');
+    let label;
+
+    //her we will know if the programmer need show a message to the user
+    if(thisLabelHaveAMessage){
+      //if the programmer need show a messga, we will to create the special label when the information that need
+      label = document.createElement('info-label');
+      label.setAttribute('label',textLabel)
+      label.setAttribute('message',thisLabelHaveAMessage)
+    }else{
+      //if the programmer not need show a message, we will create a message normal
+      label = document.createElement('label');
+      label.setAttribute('t',textLabel);
+      label.textContent=textLabelTranslate;
+    }
+
+
+
+    //Create main wrapper
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('plus-select-wrapper');
+
+    //Create select visible container
+    const select = document.createElement('div');
+    select.classList.add('plus-select-select');
+    select.innerHTML = `
+      <span class="plus-select-selected-text">${textLabelTranslate}</span>
+      <i class="fi fi-rr-angle-small-right plus-select-icon"></i>
+    `;
+
+    //Create options popup
+    const popup = document.createElement('div');
+    popup.classList.add('plus-select-popup');
+
+    // Create the container of the seeker 
+    const searchWrapper = document.createElement('div');
+    searchWrapper.classList.add('plus-select-search-wrapper');
+    const txtSearch=t('message.search') || 'search...'; //get the translate global of a seeker
+    searchWrapper.innerHTML = `
+      <i class="fi fi-rs-search"></i>
+      <input type="text" placeholder="${txtSearch}">
+    `;
+    const searchInput = searchWrapper.querySelector('input');
+
+    //Create the container of the <option>
+    const slotOptions = this.querySelectorAll('option');
+    const options = [];
+
+    slotOptions.forEach(opt => {
+      //get the text of the iformation
+      const optionText=opt.getAttribute('t');
+      let textTranlate=opt.textContent;
+
+      //we will see if the proggramer need translate this option
+      if(optionText){
+        textTranlate=window.translate_text(optionText); //translate the text that exist 
+      }
+
+
+      //her we will create the container of the div of the options
+      const div = document.createElement('div');
+      div.classList.add('plus-select-option');
+
+      div.textContent = textTranlate; //update the text that we will show in the option
+      div.dataset.value = opt.getAttribute('value') || textTranlate; //add the value
+
+      //add the option to the select
+      options.push(div);
+      popup.appendChild(div);
+    });
+
+    // Insertar búsqueda antes de las opciones
+    popup.insertBefore(searchWrapper, popup.firstChild);
+
+    // Crear input oculto
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = name;
+    if (isRequired) hiddenInput.required = true;
+
+    // Evento de clic en el select visible
+    select.addEventListener('click', () => {
+      popup.classList.toggle('active');
+      searchInput.focus();
+    });
+
+    // Evento clic en opciones
+    options.forEach(opt => {
+      opt.addEventListener('click', () => {
+        select.querySelector('.plus-select-selected-text').textContent = opt.textContent;
+        hiddenInput.value = opt.dataset.value;
+        popup.classList.remove('active');
+        searchInput.value = '';
+        filterOptions('');
+      });
+    });
+
+    // Filtrado
+    searchInput.addEventListener('input', e => {
+      filterOptions(e.target.value.toLowerCase());
+    });
+
+    function filterOptions(term) {
+      options.forEach(opt => {
+        opt.style.display = opt.textContent.toLowerCase().includes(term) ? 'block' : 'none';
+      });
+    }
+
+    // Cerrar si hace clic fuera
+    document.addEventListener('click', (e) => {
+      if (!wrapper.contains(e.target)) {
+        popup.classList.remove('active');
+      }
+    });
+
+    // Montar estructura final
+    wrapper.appendChild(label);
+    wrapper.appendChild(select);
+    wrapper.appendChild(popup);
+    wrapper.appendChild(hiddenInput);
+
+    this.replaceWith(wrapper);
+  }
+}
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
   const tabs = document.querySelectorAll('.tab-content');
@@ -1101,6 +1238,10 @@ function transform_my_labels_erp() {
 
   if (!customElements.get("plus-module")) {
     customElements.define("plus-module", PlusModule);
+  }
+
+  if (!customElements.get("plus-select")) {
+    customElements.define("plus-select", PlusSelect);
   }
 }
 
