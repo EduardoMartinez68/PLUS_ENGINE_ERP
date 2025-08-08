@@ -5,7 +5,7 @@ class InfoLabel extends HTMLElement {
   }
 
   connectedCallback() {
-    // Crear tooltip global si no existe aún
+    // Create global tooltip if it doesn't exist yet
     if (!document.querySelector('.erp-tooltip')) {
       const tooltip = document.createElement("div");
       tooltip.className = "erp-tooltip";
@@ -704,6 +704,74 @@ class PlusSelect extends HTMLElement {
     this.replaceWith(wrapper);
   }
 }
+
+class PlusSwitch extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    //first we will get the text that the user would like show in the switch 
+    const text=this.getAttribute('text') || ''; //first we will get the text that the user have save in the label
+    const t=this.getAttribute('t') || text; //if the user would like add the label of translate , else save the text that added in the atributte text
+    const textTranlsate=window.translate_text(t); //her translate the text. This allows trasnlate the text of two forms
+    
+
+    const name = this.getAttribute('name') || ''; //get the name for if the switch is in a form 
+
+    //we will see if the proggramer would like that the switch is selected 
+    const valueCheck=this.getAttribute('checked');
+    const isChecked = (valueCheck=='True' || valueCheck=='true' || valueCheck || valueCheck=='1' || valueCheck==1); 
+
+    // Create parent container
+    const container = document.createElement('div');
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('plus-switch');
+
+    //now before creating the label
+    let labelText = document.createElement('span');
+    labelText.classList.add('plus-switch-label');
+    labelText.setAttribute('t',t);
+    labelText.textContent=textTranlsate;
+
+    //we will see if the proggramer wants show a label with message. The label with message is show 
+    const labelTitle = this.getAttribute('lable') || text;
+    const message = this.getAttribute('message');
+    if(message){
+      //if the programmer need show a messga, we will to create the special label when the information that need
+      const infoLabel = document.createElement('info-label');
+      infoLabel.setAttribute('label',labelTitle);
+      infoLabel.setAttribute('message',message);
+
+      container.appendChild(infoLabel);
+    }
+
+    // Create visual switch
+    const switchContainer = document.createElement('label');
+    switchContainer.classList.add('plus-switch-toggle');
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = isChecked;
+    checkbox.name = name;
+
+    const slider = document.createElement('span');
+    slider.classList.add('plus-switch-slider');
+
+    switchContainer.appendChild(checkbox);
+    switchContainer.appendChild(slider);
+
+    // Adding elements to the wrapper
+    wrapper.appendChild(labelText);
+    wrapper.appendChild(switchContainer);
+
+    container.appendChild(wrapper);
+
+    // Replace the original label
+    this.replaceWith(container);
+  }
+}
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
   const tabs = document.querySelectorAll('.tab-content');
@@ -1243,8 +1311,31 @@ function transform_my_labels_erp() {
   if (!customElements.get("plus-select")) {
     customElements.define("plus-select", PlusSelect);
   }
+
+  if (!customElements.get("plus-switch")) {
+    customElements.define("plus-switch", PlusSwitch);
+  }
 }
 
+/**---------------------------------TAB----------------------------- */
+function openTab(evt, tabId) {
+  // Oculta todo el contenido de las pestañas
+  const tabContents = document.querySelectorAll('.tab-content');
+  tabContents.forEach(content => content.classList.remove('active'));
+
+  // Quita la clase 'active' de todos los botones
+  const tabButtons = document.querySelectorAll('.tab-buttons button');
+  tabButtons.forEach(button => button.classList.remove('active'));
+
+  // Muestra la pestaña seleccionada
+  const selectedTab = document.getElementById(tabId);
+  if (selectedTab) {
+    selectedTab.classList.add('active');
+  }
+
+  // Marca el botón presionado como activo
+  evt.currentTarget.classList.add('active');
+}
 /**---------------------------------SHOW MESSAGE POP PERSONALITY----------------------------- */
 function open_my_pop(id) {
   const el = document.getElementById(id);
