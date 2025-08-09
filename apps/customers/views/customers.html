@@ -3,6 +3,13 @@
 <br>
 
 <plus-modules>
+  <plus-module name="Ayuda">
+
+    <plus-help title="¿Cómo cobrar con recibo?" data='ayuda-recibo' t="label-search-home"></plus-help>
+
+
+  </plus-module>
+
   <plus-module name="Inputs" icon="<i class='fi fi-sr-shopping-cart'></i>">
 
 
@@ -33,7 +40,8 @@
 
     <div class="row">
       <div class="col-5">
-            <plus-switch text="label-search-home" name="notificaciones" checked="true" message="placeholder-search-home"></plus-switch>
+        <plus-switch text="label-search-home" name="notificaciones" checked="true"
+          message="placeholder-search-home"></plus-switch>
       </div>
     </div>
     <plus-switch text="label-search-home" name="notificaciones" checked="false"></plus-switch>
@@ -48,7 +56,6 @@
   </plus-module>
 
 
-  
 </plus-modules>
 
 
@@ -129,10 +136,40 @@
       divHtml,            // template with placeholders
       'customers/search_customers/' // url for the search
     );
+
+
+    //her we will create the information of the help
+    //her is for save the information of the data
+    PLUS_HELP_DATA = {};
+
+    //FORM 1
+    /*
+    const help = new StepHelp('ayuda-recibo');
+    help.title = translate_text('label-search-home');
+    help.message = 'Haz clic en Agregar productos y selecciona los productos del recibo.';
+    help.image = '';
+    help.video = 'dQw4w9WgXcQ';
+    */
+
+  
+    //FORM 2
+    const help = new CreateHelp('ayuda-recibo'); //her we will to create a help
+
+    //her we will add a step of the help
+    help.add_step({
+      title: 'titulo',
+      message: "Busca al cliente en la barra superior e ingresa a su perfil."
+    });
+
+    help.add_step({
+      title: translate_text('label-search-home'),
+      message: "Busca al cliente en la barra superior e ingresa a su perfil."
+    });
+    
+    help.title = 'Titulo amigos';
+    help.message = 'Haz clic en Agregar productos y selecciona los productos del recibo.';
+    help.image = '';
+    help.video = 'dQw4w9WgXcQ';
+    help.save_help_data();
   })();
-</script>
-<script>
-  function abrir_menu() {
-    alert("¡Menú abierto!");
-  }
 </script>

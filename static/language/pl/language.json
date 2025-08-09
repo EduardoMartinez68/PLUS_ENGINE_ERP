@@ -29,6 +29,12 @@
     "info.searching": "Wyszukiwanie...",
     "info.no_results": "Nie znaleziono wyników",
     "info.loading_data": "Ładowanie danych...",
+    "info.help": "Potrzebujesz pomocy?",
+    "info.not_exist_information_of_help":"Nie znaleziono informacji pomocniczych.",
+    "info.after":"Następny",
+    "info.former":"Dawny",
+    "info.step":"Krok",
+    "info.of":"z",
 
     "menu.search": "Szukaj aplikacji...",
     "app.agenda": "plan zadań",

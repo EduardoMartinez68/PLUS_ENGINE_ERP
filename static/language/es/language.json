@@ -29,6 +29,12 @@
     "info.searching": "Buscando...",
     "info.no_results": "No se encontraron resultados",
     "info.loading_data": "Cargando datos...",
+    "info.help": "¿Necesitas ayuda?",
+    "info.not_exist_information_of_help":"No se encontró información de ayuda.",
+    "info.after":"Siguiente",
+    "info.former":"Anterior",
+    "info.step":"Paso",
+    "info.of":"de",
 
     "menu.search": "Buscar una app...",
     "app.agenda": "Agenda",

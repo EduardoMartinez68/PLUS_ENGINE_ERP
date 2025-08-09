@@ -131,7 +131,7 @@ class InputField extends HTMLElement {
     //Also we will to valid the type of data that the user added for avoid an error 
     const validTypes = ["text", "email", "password", "number", "date", "tel"];
     const type = validTypes.includes(this.getAttribute("type"))  //her we willl see if the type that the user added, exist in our list of inputs types
-      ? this.getAttribute("type") 
+      ? this.getAttribute("type")
       : "text"; //for default is a input type text
 
     //now we will see if the programmer add a placeholder to the label
@@ -162,8 +162,8 @@ class InputField extends HTMLElement {
     //create the input and add his information
     const input = document.createElement("input");
     input.classList.add("input-field");
-    
-    
+
+
     input.type = type;
     input.name = name;
 
@@ -194,28 +194,28 @@ class InputField extends HTMLElement {
     input.value = value;
 
     //add a event of input for know if the user is writing in the input only if the input be required
-    if(required){
-        const validateInput = () => {
-          //her we will see if exist container in the input
-          if (input.value.trim() !== '') {
-            //if the input have a value, we will show to user that all is success
-            label.classList.remove("plus-input-label-error");
-            input.classList.remove("plus-input-error");
+    if (required) {
+      const validateInput = () => {
+        //her we will see if exist container in the input
+        if (input.value.trim() !== '') {
+          //if the input have a value, we will show to user that all is success
+          label.classList.remove("plus-input-label-error");
+          input.classList.remove("plus-input-error");
 
-            label.classList.add("plus-input-label-success");
-            input.classList.add("plus-input-success");
-          } else {
-            //if the input is void, we will show to user that this input is required
-            label.classList.add("plus-input-label-error");
-            input.classList.add("plus-input-error");
+          label.classList.add("plus-input-label-success");
+          input.classList.add("plus-input-success");
+        } else {
+          //if the input is void, we will show to user that this input is required
+          label.classList.add("plus-input-label-error");
+          input.classList.add("plus-input-error");
 
-            label.classList.remove("plus-input-label-success");
-            input.classList.remove("plus-input-success");
-          }
-        };
+          label.classList.remove("plus-input-label-success");
+          input.classList.remove("plus-input-success");
+        }
+      };
 
-        input.addEventListener('input', validateInput); //this is when the user is writing in the input
-        input.addEventListener('blur', validateInput); // This is when the user out of the input without write nothing
+      input.addEventListener('input', validateInput); //this is when the user is writing in the input
+      input.addEventListener('blur', validateInput); // This is when the user out of the input without write nothing
     }
 
     //add the all the labels to a div and the add to the web
@@ -223,18 +223,18 @@ class InputField extends HTMLElement {
     wrapper.classList.add("input-wrapper");
 
     //her we will see if the user would like add a message most to the label 
-    const existMessageLabel=this.hasAttribute("message-label");
-    if(existMessageLabel){
+    const existMessageLabel = this.hasAttribute("message-label");
+    if (existMessageLabel) {
 
       //if exist a message label, we will add a label <message-label>
-      const messageLabel=this.getAttribute("message-label");
-      const labelMessage=document.createElement("info-label");
-      labelMessage.setAttribute('label',labelTextInfo);
-      labelMessage.setAttribute('message',messageLabel);
+      const messageLabel = this.getAttribute("message-label");
+      const labelMessage = document.createElement("info-label");
+      labelMessage.setAttribute('label', labelTextInfo);
+      labelMessage.setAttribute('message', messageLabel);
 
       wrapper.appendChild(labelMessage);
     }
-    else{
+    else {
       wrapper.appendChild(label);
     }
 
@@ -515,7 +515,7 @@ class PlusModules extends HTMLElement {
       const translateText = window.translate_text(name) //her we will translate the text if exist in the dictonary
       const p = document.createElement('p');
       p.textContent = translateText;
-      p.setAttribute('t',name); //save the index fortranslate the text after if the user recharge the web
+      p.setAttribute('t', name); //save the index fortranslate the text after if the user recharge the web
 
       //save the icon and the text
       li.appendChild(p);
@@ -573,27 +573,27 @@ class PlusSelect extends HTMLElement {
 
   connectedCallback() {
     //get the information that the programmer added to the select
-    const textLabel=this.getAttribute('label') || '';
-    const textLabelTranslate=window.translate_text(textLabel); //translate the text of the label
+    const textLabel = this.getAttribute('label') || '';
+    const textLabelTranslate = window.translate_text(textLabel); //translate the text of the label
 
     const name = this.getAttribute('name') || '';
     const isRequired = this.hasAttribute('requerid');
 
     //create a label of text of that the user can know that need do
-    const thisLabelHaveAMessage=this.getAttribute('message');
+    const thisLabelHaveAMessage = this.getAttribute('message');
     let label;
 
     //her we will know if the programmer need show a message to the user
-    if(thisLabelHaveAMessage){
+    if (thisLabelHaveAMessage) {
       //if the programmer need show a messga, we will to create the special label when the information that need
       label = document.createElement('info-label');
-      label.setAttribute('label',textLabel)
-      label.setAttribute('message',thisLabelHaveAMessage)
-    }else{
+      label.setAttribute('label', textLabel)
+      label.setAttribute('message', thisLabelHaveAMessage)
+    } else {
       //if the programmer not need show a message, we will create a message normal
       label = document.createElement('label');
-      label.setAttribute('t',textLabel);
-      label.textContent=textLabelTranslate;
+      label.setAttribute('t', textLabel);
+      label.textContent = textLabelTranslate;
     }
 
 
@@ -617,7 +617,7 @@ class PlusSelect extends HTMLElement {
     // Create the container of the seeker 
     const searchWrapper = document.createElement('div');
     searchWrapper.classList.add('plus-select-search-wrapper');
-    const txtSearch=t('message.search') || 'search...'; //get the translate global of a seeker
+    const txtSearch = t('message.search') || 'search...'; //get the translate global of a seeker
     searchWrapper.innerHTML = `
       <i class="fi fi-rs-search"></i>
       <input type="text" placeholder="${txtSearch}">
@@ -630,12 +630,12 @@ class PlusSelect extends HTMLElement {
 
     slotOptions.forEach(opt => {
       //get the text of the iformation
-      const optionText=opt.getAttribute('t');
-      let textTranlate=opt.textContent;
+      const optionText = opt.getAttribute('t');
+      let textTranlate = opt.textContent;
 
       //we will see if the proggramer need translate this option
-      if(optionText){
-        textTranlate=window.translate_text(optionText); //translate the text that exist 
+      if (optionText) {
+        textTranlate = window.translate_text(optionText); //translate the text that exist 
       }
 
 
@@ -712,16 +712,16 @@ class PlusSwitch extends HTMLElement {
 
   connectedCallback() {
     //first we will get the text that the user would like show in the switch 
-    const text=this.getAttribute('text') || ''; //first we will get the text that the user have save in the label
-    const t=this.getAttribute('t') || text; //if the user would like add the label of translate , else save the text that added in the atributte text
-    const textTranlsate=window.translate_text(t); //her translate the text. This allows trasnlate the text of two forms
-    
+    const text = this.getAttribute('text') || ''; //first we will get the text that the user have save in the label
+    const t = this.getAttribute('t') || text; //if the user would like add the label of translate , else save the text that added in the atributte text
+    const textTranlsate = window.translate_text(t); //her translate the text. This allows trasnlate the text of two forms
+
 
     const name = this.getAttribute('name') || ''; //get the name for if the switch is in a form 
 
     //we will see if the proggramer would like that the switch is selected 
-    const valueCheck=this.getAttribute('checked');
-    const isChecked = (valueCheck=='True' || valueCheck=='true' || valueCheck || valueCheck=='1' || valueCheck==1); 
+    const valueCheck = this.getAttribute('checked');
+    const isChecked = (valueCheck == 'True' || valueCheck == 'true' || valueCheck || valueCheck == '1' || valueCheck == 1);
 
     // Create parent container
     const container = document.createElement('div');
@@ -732,17 +732,17 @@ class PlusSwitch extends HTMLElement {
     //now before creating the label
     let labelText = document.createElement('span');
     labelText.classList.add('plus-switch-label');
-    labelText.setAttribute('t',t);
-    labelText.textContent=textTranlsate;
+    labelText.setAttribute('t', t);
+    labelText.textContent = textTranlsate;
 
     //we will see if the proggramer wants show a label with message. The label with message is show 
     const labelTitle = this.getAttribute('lable') || text;
     const message = this.getAttribute('message');
-    if(message){
+    if (message) {
       //if the programmer need show a messga, we will to create the special label when the information that need
       const infoLabel = document.createElement('info-label');
-      infoLabel.setAttribute('label',labelTitle);
-      infoLabel.setAttribute('message',message);
+      infoLabel.setAttribute('label', labelTitle);
+      infoLabel.setAttribute('message', message);
 
       container.appendChild(infoLabel);
     }
@@ -772,6 +772,175 @@ class PlusSwitch extends HTMLElement {
     this.replaceWith(container);
   }
 }
+
+class PlusHelp extends HTMLElement {
+  constructor() {
+    super();
+    this.currentStep = 0;
+  }
+
+  connectedCallback() {
+    //first we will get the title of the help 
+    const title = this.getAttribute('title') || window.t('info.help'); //if the user not added the title, we will show a text for default
+    const t = this.getAttribute('t') || title; //first we will see if the proggramer need translate this text
+    const titleTranslate = window.translate_text(t); //translate the title
+
+    const dataKey = this.getAttribute('data') || 'default-help';
+
+    //create a button for help to the user
+    const button = document.createElement('button');
+    button.textContent = titleTranslate;
+    button.classList.add('plus-help-button');
+
+    //her we will create the pop for show help
+    const popup = document.createElement('div');
+    popup.classList.add('plus-help-popup', 'plus-help-hidden');
+
+    const textButtonAfter = window.t('info.after');
+    const textButtonFormer = window.t('info.former');
+    popup.innerHTML = `
+        <div class="plus-help-header">
+          <span class="plus-help-title">${title}</span>
+          <button class="plus-help-close">X</button>
+        </div>
+        <div class="plus-help-progress" id="plus-help-progress"></div>
+        <div class="plus-help-step-container" id="plus-help-content"></div>
+        <div class="plus-help-footer">
+          <button class="plus-help-nav" id="plus-help-prev">← ${textButtonFormer}</button>
+          <span id="plus-help-status">Paso 1</span>
+          <button class="plus-help-nav" id="plus-help-next">${textButtonAfter} →</button>
+        </div>
+      `;
+
+    button.addEventListener('click', () => {
+      popup.classList.remove('plus-help-hidden');
+      this.loadHelpContent(dataKey);
+    });
+
+    popup.querySelector('.plus-help-close').addEventListener('click', () => {
+      popup.classList.add('plus-help-hidden');
+      this.currentStep = 0;
+    });
+
+    this.appendChild(button);
+    this.appendChild(popup);
+  }
+
+  loadHelpContent(key) {
+    this.helpData = window.PLUS_HELP_DATA?.[key]?.steps || [];
+    this.totalSteps = this.helpData.length;
+    this.renderStep();
+  }
+
+  renderStep() {
+    const content = this.querySelector('#plus-help-content');
+    const progress = this.querySelector('#plus-help-progress');
+    const status = this.querySelector('#plus-help-status');
+    const prevBtn = this.querySelector('#plus-help-prev');
+    const nextBtn = this.querySelector('#plus-help-next');
+
+    const not_exist_information_of_help = t('info.not_exist_information_of_help');
+    if (!this.helpData.length) {
+      content.innerHTML = `<p>${not_exist_information_of_help}</p>`;
+      return;
+    }
+
+    const step = this.helpData[this.currentStep];
+
+    // Actualiza contenido
+    content.innerHTML = `
+        <div class="plus-help-step">
+          <h3>${step.title}</h3>
+          <p>${step.text}</p>
+          ${step.image ? `<img loading="lazy" src="${step.image}" class="loadzy plus-help-img" alt="Paso">` : ''}
+          ${step.video ? `<iframe class="plus-help-video" loading="lazy" src="https://www.youtube.com/embed/${step.video}" frameborder="0" allowfullscreen></iframe>` : ''}
+        </div>
+      `;
+
+    // Actualiza barra de pasos
+    progress.innerHTML = this.helpData.map((s, i) => `
+        <div class="plus-help-progress-item ${i === this.currentStep ? 'active' : ''} ${i < this.currentStep ? 'done' : ''}">
+          ${i + 1}
+        </div>
+      `).join('');
+
+    // Actualiza estado
+    const textStep = t('info.step') || 'Step';
+    const textOF = t('info.of') || 'of';
+    status.textContent = `${textStep} ${this.currentStep + 1} ${textOF} ${this.totalSteps}`;
+
+    // Botones
+    prevBtn.disabled = this.currentStep === 0;
+    nextBtn.disabled = this.currentStep === this.totalSteps - 1;
+
+    prevBtn.onclick = () => {
+      if (this.currentStep > 0) {
+        this.currentStep--;
+        this.renderStep();
+      }
+    };
+
+    nextBtn.onclick = () => {
+      if (this.currentStep < this.totalSteps - 1) {
+        this.currentStep++;
+        this.renderStep();
+      }
+    };
+
+    if (window.loadzy) loadzy(); // Lazy load
+  }
+}
+
+class CreateHelp {
+  constructor(key) {
+    this.key = key;
+    this.title = '';
+    this.message = '';
+    this.image = '';
+    this.video = '';
+  }
+
+  toStepObject() {
+    const step = {
+      title: this.title,
+      text: this.message,
+    };
+
+    if (this.image) step.image = this.image;
+    if (this.video) step.video = this.video;
+
+    return step;
+  }
+
+
+
+  add_step({ title='', message='', image = '', video = '' }) {
+    //her we will see if exist this help, if not exist, we will to create
+    if (!window.PLUS_HELP_DATA[this.key]) {
+      window.PLUS_HELP_DATA[this.key] = { steps: [] };
+    }
+
+    //save the information 
+    this.title = title;
+    this.message = message;
+    this.image = image;
+    this.video = video;
+    
+    //save the step of help
+    window.PLUS_HELP_DATA[this.key].steps.push(this.toStepObject());
+  }
+
+  save_help_data() {
+    //her we will see if exist this help, if not exist, we will to create
+    if (!window.PLUS_HELP_DATA[this.key]) {
+      window.PLUS_HELP_DATA[this.key] = { steps: [] };
+    }
+
+    window.PLUS_HELP_DATA[this.key].steps.push(this.toStepObject());
+  }
+
+}
+
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
   const tabs = document.querySelectorAll('.tab-content');
@@ -1314,6 +1483,10 @@ function transform_my_labels_erp() {
 
   if (!customElements.get("plus-switch")) {
     customElements.define("plus-switch", PlusSwitch);
+  }
+
+  if (!customElements.get("plus-help")) {
+    customElements.define('plus-help', PlusHelp);
   }
 }
 
