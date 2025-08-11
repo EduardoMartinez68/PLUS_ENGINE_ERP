@@ -953,13 +953,25 @@ class PlusSelectDate extends HTMLElement {
     const nameStart = this.getAttribute('name-start') || 'fecha_inicio';
     const nameEnd = this.getAttribute('name-end') || 'fecha_fin';
 
-    const labelInfo = this.getAttribute('label') || t('btn.range_date');
+    const labelInfo = this.getAttribute('label') || window.t('btn.range_date');
     const t=this.getAttribute('t') || labelInfo;
 
-    const labelText = window.translate_text(t);
+    const isRequired = this.hasAttribute('required');
+    const requiredMark = isRequired ? '*' : '';
+    const labelText = window.translate_text(t)+' '+requiredMark;
     const lang = navigator.language || 'es-ES';
 
     const shadow = this.shadowRoot;
+
+    //her we will get the translate of the select 
+    const select_range_date=window.t('btn.select_range_date')
+    const today=window.t('range.today');
+    const last_7_days=window.t('range.last_7_days');
+    const current_month=window.t('range.current_month');
+    const previous_month=window.t('range.previous_month');
+    const custom=window.t('range.custom');
+    const success=window.t('message.success');
+    const cancel=window.t('message.cancel');
 
     shadow.innerHTML = `
       <style>
@@ -1071,24 +1083,24 @@ class PlusSelectDate extends HTMLElement {
         <label class="plus-select-date-label">${labelText}</label>
         <div class="plus-select-date-display">
           <i class="fi icon-calendar fi-rr-calendar"></i>
-          <span class="plus-select-date-range">Selecciona una fecha</span>
+          <span class="plus-select-date-range">${select_range_date}</span>
           <i class="fi fi-rr-angle-small-right" style="margin-left:auto;"></i>
         </div>
         <div class="plus-select-date-popup">
           <div class="plus-select-date-options">
-            <div data-range="today">Hoy</div>
-            <div data-range="7days">Últimos 7 días</div>
-            <div data-range="thismonth">Mes actual</div>
-            <div data-range="lastmonth">Mes anterior</div>
-            <div data-range="custom">Personalizado</div>
+            <div data-range="today">${today}</div>
+            <div data-range="7days">${last_7_days}</div>
+            <div data-range="thismonth">${current_month}</div>
+            <div data-range="lastmonth">${previous_month}</div>
+            <div data-range="custom">${custom}</div>
           </div>
 
           <div class="plus-select-date-custom">
             <input type="date" class="date-start">
             <input type="date" class="date-end">
             <div class="plus-select-date-buttons">
-              <button class="btn-accept">Aceptar</button>
-              <button class="btn-cancel">Cancelar</button>
+              <button class="btn-accept">${success}</button>
+              <button class="btn-cancel">${cancel}</button>
             </div>
           </div>
         </div>

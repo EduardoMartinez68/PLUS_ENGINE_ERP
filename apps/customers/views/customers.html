@@ -38,10 +38,10 @@
   </plus-module>
 
   <plus-module name="Inputs" icon="<i class='fi fi-sr-shopping-cart'></i>">
-    <plus-select-date name-start="fecha_inicio" name-end="fecha_fin" label="Seleccionar fechas"></plus-select-date>
+    <plus-select-date name-start="fecha_inicio" name-end="fecha_fin"></plus-select-date>
 
-    <plus-select-date name-start="fecha_inicio" name-end="fecha_fin" label="Filtrar por fecha" filter></plus-select-date>
-
+    <plus-select-date name-start="fecha_inicio" name-end="fecha_fin" filter required></plus-select-date>
+    
     <div class="row">
       <div class="col-5">
         <plus-switch text="label-search-home" name="notificaciones" checked="true"

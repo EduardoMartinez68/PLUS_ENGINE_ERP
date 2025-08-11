@@ -47,5 +47,12 @@
 
 
 
-    "btn.range_date": "Zakres dat"
+    "btn.range_date": "Zakres dat",
+    "btn.select_range_date": "Wybierz datę",
+    "range.today": "Dzisiaj",
+    "range.last_7_days": "Ostatnie 7 dni",
+    "range.current_month": "Bieżący miesiąc",
+    "range.previous_month": "Poprzedni miesiąc",
+    "range.custom": "Niestandardowy"
+
 }

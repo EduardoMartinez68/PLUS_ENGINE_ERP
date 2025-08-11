@@ -46,5 +46,11 @@
     "app.exit": "Salir",
 
 
-    "btn.range_date": "Rango de fecha"
+    "btn.range_date": "Rango de fecha",
+    "btn.select_range_date": "Selecciona una fecha",
+    "range.today": "Hoy",
+    "range.last_7_days": "Últimos 7 días",
+    "range.current_month": "Mes actual",
+    "range.previous_month": "Mes anterior",
+    "range.custom": "Personalizado"
 }
