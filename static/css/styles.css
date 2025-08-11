@@ -278,7 +278,7 @@ input.case-title-input::placeholder {
   background: #fff;
   border: 2px solid #ccc;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  z-index: 9999;
+  z-index: 300;
   overflow: hidden;
   display: flex;
   flex-direction: column;

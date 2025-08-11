@@ -3,6 +3,7 @@
 <br>
 
 <plus-modules>
+
   <plus-module name="Ayuda">
 
     <plus-help title="¿Cómo cobrar con recibo?" data='ayuda-recibo' t="label-search-home"></plus-help>
@@ -10,9 +11,9 @@
 
   </plus-module>
 
-  <plus-module name="Inputs" icon="<i class='fi fi-sr-shopping-cart'></i>">
+  <plus-module name="Alertas" icon="<i class='fi fi-sr-shopping-cart'></i>">
 
-
+    
     <input-field label="label-search-home" type="email" name="search-1" placeholder="placeholder-search-home" required
       message-label="placeholder-search-home"></input-field>
 
@@ -37,6 +38,9 @@
   </plus-module>
 
   <plus-module name="Inputs" icon="<i class='fi fi-sr-shopping-cart'></i>">
+    <plus-select-date name-start="fecha_inicio" name-end="fecha_fin" label="Seleccionar fechas"></plus-select-date>
+
+    <plus-select-date name-start="fecha_inicio" name-end="fecha_fin" label="Filtrar por fecha" filter></plus-select-date>
 
     <div class="row">
       <div class="col-5">
@@ -171,5 +175,6 @@
     help.image = '';
     help.video = 'dQw4w9WgXcQ';
     help.save_help_data();
+
   })();
 </script>

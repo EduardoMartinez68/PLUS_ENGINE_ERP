@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agenda Legal</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f6f8fa;
+  color: #06294A;
+}
+
+.calendar-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #06294A;
+}
+
+.fc {
+  font-size: 14px;
+}
+
+.fc-toolbar-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #06294A;
+}
+
+.fc-button {
+  background-color: #06294A !important;
+  border: none !important;
+  border-radius: 5px !important;
+}
+
+.fc-button:hover {
+  background-color: #0a3b6b !important;
+}
+
+.fc-daygrid-event {
+  background-color: #005f73;
+  border: none;
+  border-radius: 3px;
+  padding: 2px 5px;
+  font-size: 13px;
+}
+
+  </style>
+</head>
+<body>
+  <div class="calendar-container">
+    <h1>Agenda del Despacho</h1>
+    <div id="calendar"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+  <script src="script.js"></script>
+  <script>
+document.addEventListener('DOMContentLoaded', function () {
+  const calendarEl = document.getElementById('calendar');
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth', // Vista inicial: mes
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridYear,dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+    },
+    views: {
+      dayGridYear: {
+        type: 'dayGrid',
+        duration: { years: 1 },
+        buttonText: 'Año'
+      }
+    },
+    locale: 'es',
+    height: 'auto',
+    events: [
+      {
+        title: 'Reunión con cliente',
+        start: '2025-08-14T10:00:00',
+        end: '2025-08-14T11:00:00',
+        description: 'Reunión sobre caso penal'
+      },
+      {
+        title: 'Juicio civil',
+        start: '2025-08-17T09:00:00',
+        end: '2025-08-17T13:00:00'
+      },
+      {
+        title: 'Firma de contrato',
+        start: '2025-08-22T16:00:00'
+      }
+    ]
+  });
+
+  calendar.render();
+});
+
+  </script>
+</body>
+</html>

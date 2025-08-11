@@ -22,6 +22,7 @@
     "warning.no_results": "No se encontraron resultados",
 
     "info.loading": "Cargando...",
+    "info.read_most": "Leer más",
     "info.sending": "Enviando...",
     "info.confirm_delete": "¿Estás seguro de que deseas eliminar esto?",
     "info.welcome": "Bienvenido",
@@ -42,5 +43,8 @@
     "app.contracts": "Contratos",
     "app.customers": "Clientes",
     "app.settings": "Configuraciones",
-    "app.exit": "Salir"
+    "app.exit": "Salir",
+
+
+    "btn.range_date": "Rango de fecha"
 }

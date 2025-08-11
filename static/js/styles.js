@@ -941,6 +941,240 @@ class CreateHelp {
 
 }
 
+
+
+class PlusSelectDate extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    const nameStart = this.getAttribute('name-start') || 'fecha_inicio';
+    const nameEnd = this.getAttribute('name-end') || 'fecha_fin';
+
+    const labelInfo = this.getAttribute('label') || t('btn.range_date');
+    const t=this.getAttribute('t') || labelInfo;
+
+    const labelText = window.translate_text(t);
+    const lang = navigator.language || 'es-ES';
+
+    const shadow = this.shadowRoot;
+
+    shadow.innerHTML = `
+      <style>
+        .plus-select-date-wrapper {
+          font-family: sans-serif;
+          position: relative;
+          width: 100%;
+          max-width: 300px;
+          margin-bottom: 16px; 
+        }
+
+        .plus-select-date-label {
+          font-size: 13px;
+          color: #555;
+          margin-bottom: 4px;
+          display: block;
+        }
+
+        .plus-select-date-display {
+          display: flex;
+          align-items: center;
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 6px;
+          cursor: pointer;
+          background: #fff;
+        }
+
+        .plus-select-date-display i {
+          margin-right: 8px;
+        }
+
+        .plus-select-date-popup {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: #fff;
+          border: 1px solid #ccc;
+          border-radius: 6px;
+          margin-top: 4px;
+          z-index: 100;
+          display: none;
+          flex-direction: column;
+          padding: 8px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .plus-select-date-popup.active {
+          display: flex;
+        }
+
+        .plus-select-date-options > div {
+          padding: 6px 10px;
+          cursor: pointer;
+          border-radius: 4px;
+        }
+
+        .plus-select-date-options > div:hover {
+          background: #f0f0f0;
+        }
+
+        .plus-select-date-custom {
+          display: none;
+          flex-direction: column;
+          gap: 8px;
+          margin-top: 8px;
+        }
+
+        .plus-select-date-custom.active {
+          display: flex;
+        }
+
+        .plus-select-date-custom input[type="date"] {
+          padding: 6px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+
+        .plus-select-date-buttons {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 8px;
+        }
+
+        .plus-select-date-buttons button {
+          padding: 6px 12px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+
+        .btn-accept {
+          background: var(--primary);
+          color: white;
+        }
+
+        .btn-cancel {
+          background: #ccc;
+        }
+
+        .icon-calendar{
+          color: var(--primary);
+        }
+      </style>
+      <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+
+      <div class="plus-select-date-wrapper">
+        <label class="plus-select-date-label">${labelText}</label>
+        <div class="plus-select-date-display">
+          <i class="fi icon-calendar fi-rr-calendar"></i>
+          <span class="plus-select-date-range">Selecciona una fecha</span>
+          <i class="fi fi-rr-angle-small-right" style="margin-left:auto;"></i>
+        </div>
+        <div class="plus-select-date-popup">
+          <div class="plus-select-date-options">
+            <div data-range="today">Hoy</div>
+            <div data-range="7days">Últimos 7 días</div>
+            <div data-range="thismonth">Mes actual</div>
+            <div data-range="lastmonth">Mes anterior</div>
+            <div data-range="custom">Personalizado</div>
+          </div>
+
+          <div class="plus-select-date-custom">
+            <input type="date" class="date-start">
+            <input type="date" class="date-end">
+            <div class="plus-select-date-buttons">
+              <button class="btn-accept">Aceptar</button>
+              <button class="btn-cancel">Cancelar</button>
+            </div>
+          </div>
+        </div>
+
+        <input type="hidden" id="${nameStart}" name="${nameStart}">
+        <input type="hidden" id="${nameEnd}" name="${nameEnd}">
+      </div>
+    `;
+
+    const display = shadow.querySelector('.plus-select-date-display');
+    const popup = shadow.querySelector('.plus-select-date-popup');
+    const options = shadow.querySelectorAll('.plus-select-date-options > div');
+    const customDiv = shadow.querySelector('.plus-select-date-custom');
+    const dateStart = shadow.querySelector('.date-start');
+    const dateEnd = shadow.querySelector('.date-end');
+    const btnAccept = shadow.querySelector('.btn-accept');
+    const btnCancel = shadow.querySelector('.btn-cancel');
+    const rangeSpan = shadow.querySelector('.plus-select-date-range');
+    const inputStart = shadow.getElementById(nameStart);
+    const inputEnd = shadow.getElementById(nameEnd);
+
+    function formatDate(date) {
+      return date.toLocaleDateString(lang, { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function setRange(start, end) {
+      rangeSpan.textContent = `${formatDate(start)} - ${formatDate(end)}`;
+      inputStart.value = start.toISOString().split('T')[0];
+      inputEnd.value = end.toISOString().split('T')[0];
+    }
+
+    display.addEventListener('click', () => {
+      popup.classList.toggle('active');
+    });
+
+    options.forEach(option => {
+      option.addEventListener('click', () => {
+        const type = option.dataset.range;
+        const now = new Date();
+        let start, end;
+
+        customDiv.classList.remove('active');
+
+        if (type === 'today') {
+          start = end = now;
+        } else if (type === '7days') {
+          end = now;
+          start = new Date();
+          start.setDate(end.getDate() - 6);
+        } else if (type === 'thismonth') {
+          start = new Date(now.getFullYear(), now.getMonth(), 1);
+          end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        } else if (type === 'lastmonth') {
+          start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          end = new Date(now.getFullYear(), now.getMonth(), 0);
+        } else if (type === 'custom') {
+          customDiv.classList.add('active');
+          return;
+        }
+
+        setRange(start, end);
+        popup.classList.remove('active');
+      });
+    });
+
+    btnAccept.addEventListener('click', () => {
+      if (dateStart.value && dateEnd.value) {
+        const start = new Date(dateStart.value);
+        const end = new Date(dateEnd.value);
+        setRange(start, end);
+        popup.classList.remove('active');
+      }
+    });
+
+    btnCancel.addEventListener('click', () => {
+      popup.classList.remove('active');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!this.contains(e.target) && !shadow.contains(e.target)) {
+        popup.classList.remove('active');
+      }
+    });
+  }
+}
+
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
   const tabs = document.querySelectorAll('.tab-content');
@@ -995,10 +1229,10 @@ function show_alert(type, title, description, readmoreText = '') {
   descEl.textContent = description;
   buttonsEl.innerHTML = '';
 
-  //get the text of the buttons with the language that have the web. This is for update the text of all the button
-  const btnTextSuccess = buttonsEl.getAttribute('btnTextSuccess');
-  const btnTextCancel = buttonsEl.getAttribute('btnTextCancel');
-  const btnTextReadMost = buttonsEl.getAttribute('btnTextReadMost');
+  //get the text of the buttons with the language that have the web. This is for update the text of all the button 
+  const btnTextSuccess = window.t('message.success'); //buttonsEl.getAttribute('btnTextSuccess');
+  const btnTextCancel = window.t('message.cancel'); //buttonsEl.getAttribute('btnTextCancel');
+  const btnTextReadMost = window.t('info.read_most'); //buttonsEl.getAttribute('btnTextReadMost');
 
   //her we will see if exist most text for show like message of error in code
   readmoreEl.textContent = readmoreText;
@@ -1488,6 +1722,11 @@ function transform_my_labels_erp() {
   if (!customElements.get("plus-help")) {
     customElements.define('plus-help', PlusHelp);
   }
+
+  if (!customElements.get("plus-select-date")) {
+    customElements.define('plus-select-date', PlusSelectDate);
+  }
+  
 }
 
 /**---------------------------------TAB----------------------------- */

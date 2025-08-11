@@ -22,6 +22,7 @@
     "warning.no_results": "Nie znaleziono wyników",
 
     "info.loading": "Ładowanie...",
+    "info.read_most": "Czytaj więcej",
     "info.sending": "Wysyłanie...",
     "info.confirm_delete": "Czy na pewno chcesz to usunąć?",
     "info.welcome": "Witamy",
@@ -42,5 +43,9 @@
     "app.contracts": "Kontrakty",
     "app.customers": "Klienci",
     "app.settings": "Ustawienia",
-    "app.exit": "Wyloguj się"
+    "app.exit": "Wyloguj się",
+
+
+
+    "btn.range_date": "Zakres dat"
 }
