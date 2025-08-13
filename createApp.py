@@ -113,8 +113,8 @@ def create_web_html(app_name):
     """
 
 if __name__ == '__main__':
-    nombre = input("Escribe el nombre de la app: ").strip()
-    if nombre:
-        create_app(nombre)
+    appName = input("What is the the name of the app?: ").strip()
+    if appName:
+        create_app(appName)
     else:
-        print("El nombre no puede estar vacío.")
+        print("The name of the app not can be empty.")

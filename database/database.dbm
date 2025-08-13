@@ -20,17 +20,20 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 </sequence>
 
+<schema name="branch" fill-color="#e1e1e1">
+</schema>
+
+<schema name="cases" fill-color="#e1e1e1">
+</schema>
+
+<schema name="customer" fill-color="#e1e1e1">
+</schema>
+
 <table name="employees">
 	<schema name="branch"/>
 	<position x="671" y="728"/>
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
-	</column>
-	<column name="activated" not-null="true" default-value="true">
-		<type name="boolean"/>
-	</column>
-	<column name="creation_date" default-value="CURRENT_TIMESTAMP">
-		<type name="timestamp"/>
 	</column>
 	<column name="path_photo">
 		<type name="text"/>
@@ -47,7 +50,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="cellphone">
 		<type name="varchar" length="20"/>
 	</column>
-	<column name="lphone">
+	<column name="phone">
 		<type name="varchar" length="20"/>
 	</column>
 	<column name="address">
@@ -64,6 +67,12 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="hiring_date">
 		<type name="date"/>
+	</column>
+	<column name="creation_date" default-value="CURRENT_TIMESTAMP">
+		<type name="timestamp"/>
+	</column>
+	<column name="activated" not-null="true" default-value="true">
+		<type name="boolean"/>
 	</column>
 	<constraint name="id_key_employees" type="pk-constr" factor="10" table="branch.employees">
 		<columns names="id" ref-type="src-columns"/>
@@ -99,26 +108,20 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
 	</column>
-	<column name="email_of_the_person_in_charge">
-		<type name="smallint"/>
+	<column name="name" not-null="true">
+		<type name="varchar" length="500"/>
+	</column>
+	<column name="nickname">
+		<type name="varchar" length="100"/>
+	</column>
+	<column name="email">
+		<type name="text"/>
 	</column>
 	<column name="country">
 		<type name="varchar" length="2"/>
 	</column>
 	<column name="address">
 		<type name="text"/>
-	</column>
-	<column name="creation_date" not-null="true" default-value="CURRENT_TIMESTAMP">
-		<type name="date"/>
-	</column>
-	<column name="activated" not-null="true" default-value="true">
-		<type name="boolean"/>
-	</column>
-	<column name="name" not-null="true">
-		<type name="varchar" length="500"/>
-	</column>
-	<column name="nickname">
-		<type name="varchar" length="100"/>
 	</column>
 	<column name="postal_code">
 		<type name="varchar" length="10"/>
@@ -129,14 +132,20 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="phone">
 		<type name="varchar" length="25"/>
 	</column>
-	<column name="email">
-		<type name="text"/>
-	</column>
 	<column name="website">
 		<type name="text"/>
 	</column>
 	<column name="name_of_the_person_in_charge">
 		<type name="text"/>
+	</column>
+	<column name="email_of_the_person_in_charge">
+		<type name="text"/>
+	</column>
+	<column name="creation_date" not-null="true" default-value="CURRENT_TIMESTAMP">
+		<type name="date"/>
+	</column>
+	<column name="activated" not-null="true" default-value="true">
+		<type name="boolean"/>
 	</column>
 	<constraint name="id_key_branch" type="pk-constr" factor="10" table="company.branch">
 		<columns names="id" ref-type="src-columns"/>
@@ -170,44 +179,17 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="branch.employees"
 	 src-required="false" dst-required="false"/>
 
-<schema name="branch" fill-color="#e1e1e1">
-</schema>
-
-<schema name="cases" fill-color="#e1e1e1">
-</schema>
-
-<schema name="customer" fill-color="#e1e1e1">
-</schema>
-
 <table name="customer">
 	<schema name="customer"/>
 	<position x="1174" y="1047"/>
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
 	</column>
-	<column name="contact_name">
-		<type name="varchar" length="150"/>
-	</column>
-	<column name="contact_email">
-		<type name="text"/>
-	</column>
-	<column name="contact_cellphone">
-		<type name="varchar" length="20"/>
-	</column>
-	<column name="contact_lphone">
-		<type name="varchar" length="20"/>
-	</column>
-	<column name="note">
-		<type name="text"/>
-	</column>
-	<column name="creation_date" not-null="true" default-value="CURRENT_TIMESTAMP">
-		<type name="timestamp"/>
-	</column>
-	<column name="activated" not-null="true" default-value="true">
-		<type name="boolean"/>
-	</column>
 	<column name="name" not-null="true">
 		<type name="varchar" length="300"/>
+	</column>
+	<column name="email">
+		<type name="text"/>
 	</column>
 	<column name="phone">
 		<type name="varchar" length="50"/>
@@ -224,17 +206,35 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="country">
 		<type name="varchar" length="2"/>
 	</column>
-	<column name="email">
-		<type name="text"/>
-	</column>
 	<column name="this_customer_is_a_company" not-null="true" default-value="false">
 		<type name="boolean"/>
 	</column>
 	<column name="company_name">
 		<type name="varchar" length="255"/>
 	</column>
+	<column name="contact_name">
+		<type name="varchar" length="150"/>
+	</column>
+	<column name="contact_email">
+		<type name="text"/>
+	</column>
+	<column name="contact_cellphone">
+		<type name="varchar" length="20"/>
+	</column>
+	<column name="contact_phone">
+		<type name="varchar" length="20"/>
+	</column>
 	<column name="website">
 		<type name="text"/>
+	</column>
+	<column name="note">
+		<type name="text"/>
+	</column>
+	<column name="creation_date" not-null="true" default-value="CURRENT_TIMESTAMP">
+		<type name="timestamp"/>
+	</column>
+	<column name="activated" not-null="true" default-value="true">
+		<type name="boolean"/>
 	</column>
 	<constraint name="id_key_customer" type="pk-constr" factor="10" table="customer.customer">
 		<columns names="id" ref-type="src-columns"/>
@@ -256,14 +256,17 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
 	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="100"/>
+	</column>
 	<column name="description">
 		<type name="text"/>
 	</column>
-	<column name="activated" not-null="true" default-value="true">
-		<type name="boolean"/>
-	</column>
 	<column name="creation_date" default-value="CURRENT_TIMESTAMP">
 		<type name="timestamp"/>
+	</column>
+	<column name="activated" not-null="true" default-value="true">
+		<type name="boolean"/>
 	</column>
 	<column name="view_permits" default-value="true">
 		<type name="boolean"/>
@@ -273,9 +276,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="delete_permits" not-null="true" default-value="true">
 		<type name="boolean"/>
-	</column>
-	<column name="name" not-null="true">
-		<type name="varchar" length="100"/>
 	</column>
 	<constraint name="id_key_permits" type="pk-constr" factor="10" table="company.permits">
 		<columns names="id" ref-type="src-columns"/>
@@ -333,9 +333,38 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-col-pattern="{sc}_{st}"
 	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
 	 src-fk-pattern="{st}_fk"
-	 col-indexes="4" constr-indexes="1"
+	 col-indexes="1" constr-indexes="1"
 	 src-table="company.company"
 	 dst-table="company.user_type"
 	 src-required="false" dst-required="false"/>
+
+<schema name="erp" fill-color="#e1e1e1">
+</schema>
+
+<table name="setting">
+	<schema name="erp"/>
+	<position x="1119" y="183"/>
+	<column name="id" not-null="true">
+		<type name="bigserial"/>
+	</column>
+	<column name="company_color" not-null="true" default-value="#075FAF">
+		<type name="varchar" length="7"/>
+	</column>
+	<column name="secondary_color" not-null="true" default-value="#074c8dff">
+		<type name="varchar" length="7"/>
+	</column>
+	<column name="button_color" not-null="true" default-value="#075FAF">
+		<type name="varchar" length="7"/>
+	</column>
+	<column name="button_success" not-null="true" default-value="#075FAF">
+		<type name="varchar" length="7"/>
+	</column>
+	<column name="currency_type" not-null="true" default-value="MXN">
+		<type name="varchar" length="5"/>
+	</column>
+	<constraint name="id_key_setting_erp" type="pk-constr" factor="10" table="erp.setting">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
 
 </dbmodel>
