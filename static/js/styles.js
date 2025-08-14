@@ -622,9 +622,11 @@ class PlusSelect extends HTMLElement {
     //we will see if exist a pop for add a new data to this select 
     if(this.hasAttribute('add')){
       searchWrapper.innerHTML = `
-        <i class="fi fi-rs-search"></i>
-        <input type="text" placeholder="${txtSearch}">
-        <button class='btn'><i class="fi fi-br-plus"></i></button>
+        <div class="search-icon"><i class="fi fi-rs-search"></i></div>
+        <input type="text" class="search-input" placeholder="${txtSearch}">
+        <button class="search-add-btn" title="Agregar nuevo">
+          <i class="fi fi-br-plus"></i>
+        </button>
       `;
     }else{
       //if not exist the attribute 'add' we only show the input
@@ -643,17 +645,20 @@ class PlusSelect extends HTMLElement {
     //also we will see if this data can be edit or delete 
     const delete_data=this.hasAttribute('delete_data');
     const edit_data=this.hasAttribute('edit_data');
+    const functionDelete=this.getAttribute('delete_data')?.replace('()', ''); //this is for remplace the () of the function example delete_customer() to delete_customer
+    const functionEdit=this.getAttribute('edit_data')?.replace('()', '');
 
     const link = this.getAttribute('link');
     if(thisSlectSendDataToTheServer){
       //if the proggramer need that this can be update with data of the server, we will get the information of the seacrk 
-
+      //await update_option_for_the_server('');
     }
 
     //Create the container of the <option>
     const slotOptions = this.querySelectorAll('option');
     let options = [];
 
+    //--this is when in the frontend the proggramer added options
     slotOptions.forEach(opt => {
       //get the text of the iformation
       const optionText = opt.getAttribute('t');
@@ -676,6 +681,7 @@ class PlusSelect extends HTMLElement {
       options.push(div);
       popup.appendChild(div);
     });
+    //----
 
     //Insert search before options
     popup.insertBefore(searchWrapper, popup.firstChild);
@@ -722,9 +728,19 @@ class PlusSelect extends HTMLElement {
     async function filterOptions(term) {
       //first we will see if this select have a link for get the answer of the server
       if(thisSlectSendDataToTheServer){
+        await update_option_for_the_server(term);
+      }else{
+        //if the proggramer not would like get information from the server, filter the option that the proggramer added in the frontend 
+        options.forEach(opt => {
+          opt.style.display = opt.textContent.toLowerCase().includes(term) ? 'block' : 'none';
+        });
+      }
+    }
+
+
+    async function update_option_for_the_server(){
         //after of send the message to the server, we will clear all the container of the previous options
-        options.forEach(opt => opt.remove());
-        options = [];
+        clear_option_select();
         
         //her we will create a loading for that the user know that the app is search his data
         const loadingDiv = document.createElement('div');
@@ -739,8 +755,7 @@ class PlusSelect extends HTMLElement {
         const result = await send_message_to_the_server(link, [term], false);
 
         //when get the answer of the server, other clear all the container 
-        options.forEach(opt => opt.remove());
-        options = [];
+        clear_option_select();
 
         //we will see if we can add the new customer
         if (result.success) {
@@ -772,7 +787,7 @@ class PlusSelect extends HTMLElement {
               editBtn.innerHTML = '<i class="fi fi-sr-pencil"></i>';
               editBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                handleEdit(data);
+                window[functionEdit](data.id); // run the function with the ID
               });
               actionsContainer.appendChild(editBtn);
             }
@@ -783,7 +798,7 @@ class PlusSelect extends HTMLElement {
               deleteBtn.innerHTML = '<i class="fi fi-sr-trash"></i>';
               deleteBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                handleDelete(data);
+                window[functionDelete](data.id); // run the function with the ID
               });
               actionsContainer.appendChild(deleteBtn);
             }
@@ -821,13 +836,13 @@ class PlusSelect extends HTMLElement {
           options.push(div);
           popup.appendChild(div);
         }
-      }else{
-        //if the proggramer not would like get information from the server, filter the option that the proggramer added in the frontend 
-        options.forEach(opt => {
-          opt.style.display = opt.textContent.toLowerCase().includes(term) ? 'block' : 'none';
-        });
-      }
     }
+
+    function clear_option_select(){
+      options.forEach(opt => opt.remove());
+      options = [];
+    }
+
 
     // Cerrar si hace clic fuera
     document.addEventListener('click', (e) => {
