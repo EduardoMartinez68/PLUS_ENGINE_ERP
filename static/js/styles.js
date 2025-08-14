@@ -618,15 +618,36 @@ class PlusSelect extends HTMLElement {
     const searchWrapper = document.createElement('div');
     searchWrapper.classList.add('plus-select-search-wrapper');
     const txtSearch = t('message.search') || 'search...'; //get the translate global of a seeker
-    searchWrapper.innerHTML = `
-      <i class="fi fi-rs-search"></i>
-      <input type="text" placeholder="${txtSearch}">
-    `;
+
+    //we will see if exist a pop for add a new data to this select 
+    if(this.hasAttribute('add')){
+      searchWrapper.innerHTML = `
+        <i class="fi fi-rs-search"></i>
+        <input type="text" placeholder="${txtSearch}">
+        <button><i class="fi fi-br-plus"></i></button>
+      `;
+    }else{
+      //if not exist the attribute 'add' we only show the input
+      searchWrapper.innerHTML = `
+        <i class="fi fi-rs-search"></i>
+        <input type="text" placeholder="${txtSearch}">
+      `;
+    }
+
+
     const searchInput = searchWrapper.querySelector('input');
+
+    //firsrt we will see if this select, can update 
+    const thisSlectSendDataToTheServer = this.hasAttribute('link');
+    const link = this.getAttribute('link');
+    if(thisSlectSendDataToTheServer){
+      //if the proggramer need that this can be update with data of the server, we will get the information of the seacrk 
+
+    }
 
     //Create the container of the <option>
     const slotOptions = this.querySelectorAll('option');
-    const options = [];
+    let options = [];
 
     slotOptions.forEach(opt => {
       //get the text of the iformation
@@ -651,16 +672,16 @@ class PlusSelect extends HTMLElement {
       popup.appendChild(div);
     });
 
-    // Insertar búsqueda antes de las opciones
+    //Insert search before options
     popup.insertBefore(searchWrapper, popup.firstChild);
 
-    // Crear input oculto
+    //Create hidden input
     const hiddenInput = document.createElement('input');
     hiddenInput.type = 'hidden';
     hiddenInput.name = name;
     if (isRequired) hiddenInput.required = true;
 
-    // Evento de clic en el select visible
+    //Click event on select visible. This is when the user do clic in the select.
     select.addEventListener('click', () => {
       popup.classList.toggle('active');
       searchInput.focus();
@@ -678,14 +699,89 @@ class PlusSelect extends HTMLElement {
     });
 
     // Filtrado
-    searchInput.addEventListener('input', e => {
-      filterOptions(e.target.value.toLowerCase());
+    let debounceTimer;
+    searchInput.addEventListener('input', async e  => {
+      
+      //we will see if the select will send data to the server
+      if(thisSlectSendDataToTheServer){
+        clearTimeout(debounceTimer);
+        const value = e.target.value.toLowerCase();
+        debounceTimer = setTimeout(async () => {
+          await filterOptions(value);
+        }, 500); // 500ms after stopping typing
+      }else{
+         await filterOptions(e.target.value.toLowerCase()); //if not send data to the server, we will filter to the instant 
+      }
     });
 
-    function filterOptions(term) {
-      options.forEach(opt => {
-        opt.style.display = opt.textContent.toLowerCase().includes(term) ? 'block' : 'none';
-      });
+    async function filterOptions(term) {
+      //first we will see if this select have a link for get the answer of the server
+      if(thisSlectSendDataToTheServer){
+        //after of send the message to the server, we will clear all the container of the previous options
+        options.forEach(opt => opt.remove());
+        options = [];
+        
+        //her we will create a loading for that the user know that the app is search his data
+        const loadingDiv = document.createElement('div');
+        loadingDiv.classList.add('plus-select-option');
+        loadingDiv.textContent = window.t('info.loading');
+        options.push(loadingDiv);
+        popup.appendChild(loadingDiv);
+
+        //if have a link of search, send this information to the server for get the information. 
+        //the that the server can retur is {id:0, text:'name'}
+        //send the information to the server and get his answer
+        const result = await send_message_to_the_server(link, [term], false);
+
+        //when get the answer of the server, other clear all the container 
+        options.forEach(opt => opt.remove());
+        options = [];
+
+        //we will see if we can add the new customer
+        if (result.success) {
+          //get the data that send the server
+          const anserServer = result.results;
+
+          //read all the data that the server send 
+          anserServer.forEach(data => {
+            //create the div and his data
+            const div = document.createElement('div');
+            div.classList.add('plus-select-option');
+            div.textContent = data.text;
+            div.dataset.value = data.id;
+
+            // add event to do clic in the option
+            div.addEventListener('click', () => {
+              select.querySelector('.plus-select-selected-text').textContent = div.textContent;
+              hiddenInput.value = div.dataset.value;
+              popup.classList.remove('active');
+              searchInput.value = '';
+              filterOptions('');
+            });
+
+            options.push(div);
+            popup.appendChild(div);
+          });
+        } else {
+          console.error(result.message || 'error to get information of the server')
+          const text = t('error.general'); //if exit a error to connect with the server show a message 
+
+          //now we will create the container of the div of the options
+          const div = document.createElement('div');
+          div.classList.add('plus-select-option');
+
+          div.textContent = text;
+
+          //add the option to the select
+          options.push(div);
+          popup.appendChild(div);
+        }
+      }else{
+        //if the proggramer not would like get information from the server, filter the option that the proggramer added in the frontend 
+        options.forEach(opt => {
+          opt.style.display = opt.textContent.toLowerCase().includes(term) ? 'block' : 'none';
+        });
+      }
     }
 
     // Cerrar si hace clic fuera

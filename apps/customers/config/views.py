@@ -303,3 +303,30 @@ def search_customers(request):
         else:
             return JsonResponse({'message': 'Método no permitido'}, status=405)
 
+@login_required(login_url='login')
+def search_customers_select(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == 'POST':
+            result_list = []
+    
+            result_list.append({
+                'id': 1,
+                'text': 'pablo'
+            })
+    
+            return JsonResponse({'success': True,'results': result_list})
+        else:
+            return JsonResponse({'message': 'Método no permitido'}, status=405)
+    else:
+        if request.method == 'POST':
+            result_list = []
+    
+            result_list.append({
+                'id': 1,
+                'text': 'pablo'
+            })
+    
+            return JsonResponse({'success': True,'results': result_list})
+        else:
+            return JsonResponse({'message': 'Método no permitido'}, status=405)
+

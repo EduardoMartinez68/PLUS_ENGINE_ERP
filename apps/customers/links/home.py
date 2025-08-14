@@ -162,3 +162,19 @@ def search_customers(request):
         return JsonResponse({'success': True,'results': result_list})
     else:
         return JsonResponse({'message': 'Método no permitido'}, status=405)
+    
+
+
+@csrf_exempt
+def search_customers_select(request):
+    if request.method == 'POST':
+        result_list = []
+
+        result_list.append({
+            'id': 1,
+            'text': 'pablo'
+        })
+
+        return JsonResponse({'success': True,'results': result_list})
+    else:
+        return JsonResponse({'message': 'Método no permitido'}, status=405)
