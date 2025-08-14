@@ -1423,7 +1423,7 @@ hr {
 }
 
 .plus-select-option {
-  padding: 10px;
+  padding: 6px 10px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -1438,6 +1438,31 @@ hr {
   color: #666;
   margin-left: 8px;
 }
+
+.plus-select-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.option-text {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.plus-select-actions button {
+  background: none;
+  border: none;
+  padding: 2px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.plus-select-actions i {
+  font-size: 14px;
+  color: #555;
+}
+
 
 @media (max-width: 600px) {
   .plus-select-wrapper {

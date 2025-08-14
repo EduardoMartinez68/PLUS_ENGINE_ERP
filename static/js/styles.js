@@ -624,7 +624,7 @@ class PlusSelect extends HTMLElement {
       searchWrapper.innerHTML = `
         <i class="fi fi-rs-search"></i>
         <input type="text" placeholder="${txtSearch}">
-        <button><i class="fi fi-br-plus"></i></button>
+        <button class='btn'><i class="fi fi-br-plus"></i></button>
       `;
     }else{
       //if not exist the attribute 'add' we only show the input
@@ -639,6 +639,11 @@ class PlusSelect extends HTMLElement {
 
     //firsrt we will see if this select, can update 
     const thisSlectSendDataToTheServer = this.hasAttribute('link');
+
+    //also we will see if this data can be edit or delete 
+    const delete_data=this.hasAttribute('delete_data');
+    const edit_data=this.hasAttribute('edit_data');
+
     const link = this.getAttribute('link');
     if(thisSlectSendDataToTheServer){
       //if the proggramer need that this can be update with data of the server, we will get the information of the seacrk 
@@ -744,16 +749,56 @@ class PlusSelect extends HTMLElement {
 
           //read all the data that the server send 
           anserServer.forEach(data => {
-            //create the div and his data
             const div = document.createElement('div');
             div.classList.add('plus-select-option');
-            div.textContent = data.text;
             div.dataset.value = data.id;
 
-            // add event to do clic in the option
+            // contenedor horizontal (texto + acciones)
+            const contentContainer = document.createElement('div');
+            contentContainer.classList.add('plus-select-content');
+
+            // Texto
+            const textSpan = document.createElement('span');
+            textSpan.classList.add('option-text');
+            textSpan.textContent = data.text;
+
+            // Contenedor de botones
+            const actionsContainer = document.createElement('div');
+            actionsContainer.classList.add('plus-select-actions');
+
+            if (edit_data) {
+              const editBtn = document.createElement('button');
+              editBtn.classList.add('edit-btn');
+              editBtn.innerHTML = '<i class="fi fi-sr-pencil"></i>';
+              editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleEdit(data);
+              });
+              actionsContainer.appendChild(editBtn);
+            }
+
+            if (delete_data) {
+              const deleteBtn = document.createElement('button');
+              deleteBtn.classList.add('delete-btn');
+              deleteBtn.innerHTML = '<i class="fi fi-sr-trash"></i>';
+              deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleDelete(data);
+              });
+              actionsContainer.appendChild(deleteBtn);
+            }
+
+            // Ensamblar la opción
+            contentContainer.appendChild(textSpan);
+            if (edit_data || delete_data) {
+              contentContainer.appendChild(actionsContainer);
+            }
+            div.appendChild(contentContainer);
+
+            // Evento de selección de opción
             div.addEventListener('click', () => {
-              select.querySelector('.plus-select-selected-text').textContent = div.textContent;
-              hiddenInput.value = div.dataset.value;
+              select.querySelector('.plus-select-selected-text').textContent = data.text;
+              hiddenInput.value = data.id;
               popup.classList.remove('active');
               searchInput.value = '';
               filterOptions('');
