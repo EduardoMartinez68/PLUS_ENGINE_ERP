@@ -174,7 +174,6 @@ def search_customers_select(request):
             'id': 1,
             'text': 'pablo'
         })
-
         return JsonResponse({'success': True,'results': result_list})
     else:
         return JsonResponse({'message': 'Método no permitido'}, status=405)

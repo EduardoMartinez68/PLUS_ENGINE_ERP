@@ -571,7 +571,7 @@ class PlusSelect extends HTMLElement {
     super();
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     //get the information that the programmer added to the select
     const textLabel = this.getAttribute('label') || '';
     const textLabelTranslate = window.translate_text(textLabel); //translate the text of the label
@@ -647,13 +647,8 @@ class PlusSelect extends HTMLElement {
     const edit_data=this.hasAttribute('edit_data');
     const functionDelete=this.getAttribute('delete_data')?.replace('()', ''); //this is for remplace the () of the function example delete_customer() to delete_customer
     const functionEdit=this.getAttribute('edit_data')?.replace('()', '');
-
+    const linkDelete=this.getAttribute('delete_data')?.replace('()', '');
     const link = this.getAttribute('link');
-    if(thisSlectSendDataToTheServer){
-      //if the proggramer need that this can be update with data of the server, we will get the information of the seacrk 
-      //await update_option_for_the_server('');
-    }
-
     //Create the container of the <option>
     const slotOptions = this.querySelectorAll('option');
     let options = [];
@@ -709,6 +704,11 @@ class PlusSelect extends HTMLElement {
       });
     });
 
+    if(thisSlectSendDataToTheServer){
+      //if the proggramer need that this can be update with data of the server, we will get the information of the seacrk 
+      await update_option_for_the_server('');
+    }
+
     // Filtrado
     let debounceTimer;
     searchInput.addEventListener('input', async e  => {
@@ -738,7 +738,7 @@ class PlusSelect extends HTMLElement {
     }
 
 
-    async function update_option_for_the_server(){
+    async function update_option_for_the_server(term){
         //after of send the message to the server, we will clear all the container of the previous options
         clear_option_select();
         
@@ -794,11 +794,17 @@ class PlusSelect extends HTMLElement {
 
             if (delete_data) {
               const deleteBtn = document.createElement('button');
-              deleteBtn.classList.add('delete-btn');
+              //const deleteBtn = document.createElement('confirm-button');
+              deleteBtn.setAttribute('message','')
+              //deleteBtn.classList.add('delete-btn');
               deleteBtn.innerHTML = '<i class="fi fi-sr-trash"></i>';
-              deleteBtn.addEventListener('click', (e) => {
+              deleteBtn.addEventListener('click', async (e) => {
                 e.stopPropagation();
-                window[functionDelete](data.id); // run the function with the ID
+                
+                //her we will see if the user delete the item
+                if(await plus_delete_with_help_button(data.id, linkDelete)){
+                  await update_option_for_the_server(''); //update the input when the user delete a item
+                }
               });
               actionsContainer.appendChild(deleteBtn);
             }
@@ -859,6 +865,24 @@ class PlusSelect extends HTMLElement {
 
     this.replaceWith(wrapper);
   }
+}
+
+async function plus_delete_with_help_button(id, link){
+  const titleDelete=window.t('info.confirm_delete');
+  const messageDelete=window.t('info.description_delete'); 
+  if (await show_message_question(titleDelete,messageDelete)){
+    const answer=await send_message_to_the_server(link,[id],true);
+    if(answer.success){
+      show_alert('success',window.t('success.deleted'), window.t('description.deleted'))
+      return true;
+    }else{
+      show_alert('alert',window.t('error.general'), window.t('error.to_delete'), answer.error)
+      console.error(answer.message || 'Error to delete the item in the server');
+      console.error(answer.error);
+    }
+  }
+
+  return false;
 }
 
 class PlusSwitch extends HTMLElement {
@@ -1390,6 +1414,7 @@ function show_alert(type, title, description, readmoreText = '') {
   else if (type === 'success') iconEl.innerHTML = '<i class="fi fi-sr-check-circle"></i>';
   else if (type === 'alert') iconEl.innerHTML = '<i class="fi fi-sr-exclamation"></i>';
   else if (type === 'question') iconEl.innerHTML = '<i class="fi fi-sr-interrogation"></i>';
+  else if (type === 'error') iconEl.innerHTML = '<i class="fi fi-ss-times-hexagon"></i>';
   else iconEl.innerHTML = '';
 
   //update the text that show the alert pop

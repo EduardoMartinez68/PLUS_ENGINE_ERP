@@ -10,12 +10,17 @@
     "success.sent": "Correo enviado",
     "success.added": "Agregado correctamente",
 
+    "description.saved": "Tu dato fue guardado con éxito",
+    "description.updated": "Tu dato fue actualizado correctamente",
+    "description.deleted": "Tu dato fue eliminado con éxito",
+
     "error.failed_delete": "No se pudo eliminar",
     "error.failed_save": "No se pudo guardar",
     "error.not_found": "No encontrado",
     "error.unauthorized": "No autorizado",
     "error.required_fields": "Todos los campos son obligatorios",
     "error.general": "Ocurrió un error",
+    "error.to_delete": "Ocurrió un error al intentar eliminar",
 
     "warning.unsaved_changes": "Tienes cambios sin guardar",
     "warning.permanent_action": "Esta acción es permanente",
@@ -25,6 +30,7 @@
     "info.read_most": "Leer más",
     "info.sending": "Enviando...",
     "info.confirm_delete": "¿Estás seguro de que deseas eliminar esto?",
+    "info.description_delete": "Este producto será eliminado permanentemente y no se podrá recuperar",
     "info.welcome": "Bienvenido",
     "info.logout": "Cerrar sesión",
     "info.searching": "Buscando...",

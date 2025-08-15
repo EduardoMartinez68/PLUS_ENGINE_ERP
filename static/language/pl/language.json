@@ -10,12 +10,17 @@
     "success.sent": "E-mail wysłany",
     "success.added": "Pomyślnie dodano",
 
+    "description.saved": "Twoje dane zostały pomyślnie zapisane",
+    "description.updated": "Twoje dane zostały pomyślnie zaktualizowane",
+    "description.deleted": "Twoje dane zostały pomyślnie usunięte",
+
     "error.failed_delete": "Nie udało się usunąć",
     "error.failed_save": "Nie udało się zapisać",
     "error.not_found": "Nie znaleziono",
     "error.unauthorized": "Brak autoryzacji",
     "error.required_fields": "Wszystkie pola są wymagane",
     "error.general": "Wystąpił błąd",
+    "error.to_delete": "Wystąpił błąd podczas próby usunięcia",
 
     "warning.unsaved_changes": "Masz niezapisane zmiany",
     "warning.permanent_action": "Ta czynność jest nieodwracalna",
@@ -25,6 +30,7 @@
     "info.read_most": "Czytaj więcej",
     "info.sending": "Wysyłanie...",
     "info.confirm_delete": "Czy na pewno chcesz to usunąć?",
+    "info.description_delete": "Ten produkt zostanie trwale usunięty i nie będzie można go odzyskać",
     "info.welcome": "Witamy",
     "info.logout": "Wyloguj się",
     "info.searching": "Wyszukiwanie...",
