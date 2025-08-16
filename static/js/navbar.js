@@ -27,7 +27,7 @@ function filterApps() {
 
 
 //this is for save the history that the user visit after
-let sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || []; 
+let sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || [];
 
 //this function is for load the web that need
 async function nextWeb(url) {
@@ -80,11 +80,11 @@ async function nextWeb(url) {
       localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
 
       //translate the language of the app
-      const pathTranslate= get_path_of_the_file_translate_of_the_app(url);
+      const pathTranslate = get_path_of_the_file_translate_of_the_app(url);
       load_language(pathTranslate);
 
       //update all the labels that the programmer do with the syntax of the ERP, to the labels that the user can see
-      transform_my_labels_erp(); 
+      transform_my_labels_erp();
 
       closeMenu();
     } catch (error) {
@@ -104,22 +104,66 @@ if (location.pathname !== lastPage) {
 }
 
 
-function get_path_of_the_app(url){
+function get_path_of_the_app(url) {
   const parts = url.replace(/^\/+|\/+$/g, '').split('/');
   return parts[0] || '';
 }
 
 
-function get_path_of_the_file_translate_of_the_app(url){
-  const basePathTranslate=get_path_of_the_app(url); //get the path of the app
+function get_path_of_the_file_translate_of_the_app(url) {
+  const basePathTranslate = get_path_of_the_app(url); //get the path of the app
   const language = languageUser; //get the language of the user
-  
+
   //if exit the path of the app we will load the translate.json
-  if (basePathTranslate) { 
+  if (basePathTranslate) {
     const pathTranslate = `static/${basePathTranslate}/locale/${language}/translate.json`;
     return pathTranslate;
   } else {
     console.error('Not able to obtain the base path of the app.');
     return null;
   }
+}
+
+
+/*--------------THIS SCRIPT IS FOR THAT THE USER CAN MOVE THE APPS WITH A EFECT WITH IF WAS APPS OF CELLPHONE*/
+const STORAGE_KEY = 'customAppOrder';
+
+
+const grid = document.querySelector('.apps-grid');
+
+// Inicializar Sortable
+Sortable.create(grid, {
+  animation: 200,
+  ghostClass: 'ghost',
+  onEnd: saveAppOrder
+});
+
+// Cargar orden desde localStorage
+loadAppOrder();
+
+
+// Guarda el orden actual de las apps
+function saveAppOrder() {
+  const appItems = document.querySelectorAll('.app-container[data-id]');
+  const order = Array.from(appItems).map(item => item.dataset.id);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(order));
+}
+
+// Carga el orden guardado
+function loadAppOrder() {
+  const savedOrder = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if (!savedOrder) return;
+
+  const grid = document.querySelector('.apps-grid');
+  const itemsMap = {};
+
+  document.querySelectorAll('.app-container[data-id]').forEach(item => {
+    itemsMap[item.dataset.id] = item;
+  });
+
+  savedOrder.forEach(id => {
+    if (itemsMap[id]) {
+      grid.appendChild(itemsMap[id]);
+    }
+  });
 }

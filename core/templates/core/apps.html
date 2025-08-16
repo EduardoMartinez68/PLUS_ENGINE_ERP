@@ -8,7 +8,7 @@
 
     {% load static %}
     {% for app in apps %}
-    <div class="app-container" onclick="nextWeb('{{ app.path }}{{ app.path }}')">
+    <div class="app-container" data-id="{{ app.name }}" onclick="nextWeb('{{ app.path }}{{ app.path }}')">
       <div class="app-box">
         <img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy">
       </div>
@@ -16,16 +16,16 @@
     </div>
     {% endfor %}
 
-    <div class="app-container">
+    <div class="app-container" data-id="app-plus-settings">
       <div class="app-box">
         <img src="https://cdn-icons-png.flaticon.com/512/1170/1170584.png" alt="">
       </div>
       <p class="app-name">settings</p>
     </div>
 
-    <form method="post" action="{% url 'logout' %}" style="margin-top: -10px;">
+    <form method="post" action="{% url 'logout' %}" style="margin-top: -10px;" >
       {% csrf_token %}
-      <button class="btn app-container" type="submit" style="background-color: transparent;">
+      <button class="btn app-container" type="submit" style="background-color: transparent; margin-top: -10px;" data-id="app-plus-exit">
         <div class="app-box">
           <img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" alt="" loading="lazy">
         </div>

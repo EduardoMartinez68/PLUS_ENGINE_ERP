@@ -250,3 +250,8 @@
     font-size: 18px;
   }
 }
+
+.ghost {
+  opacity: 0.4;
+  transform: scale(0.95);
+}
