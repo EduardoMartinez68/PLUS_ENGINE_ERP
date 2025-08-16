@@ -126,6 +126,10 @@ label {
   display: block;
 }
 
+.icon-active{
+  color: var(--primary);
+}
+
 .tabs {
   margin-top: 20px;
 }
@@ -1629,6 +1633,7 @@ hr {
   border-radius: 10px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   min-width: 160px;
+  width: 300px;
   padding: 8px 0;
   z-index: 200;
 }
@@ -1650,5 +1655,70 @@ hr {
 
 .plus-action-item i {
   font-size: 16px;
+  color: var(--primary);
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  width: 100%;
+}
+
+.item-main {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.item-main i {
+  margin-right: 6px;
+  font-size: 16px;
+  color: var(--primary);
+}
+
+.item-pin i {
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--primary);
+}
+
+/*DESKTOP shortcuts FUNCTION*/
+.plus-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.plus-quick-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+
+  flex-wrap: wrap;
+  margin-top: 12px;
+  justify-content: flex-end;  /* alinea el contenedor al final (derecha) */
+  flex-direction: row-reverse; /* pero los elementos comienzan desde la derecha hacia la izquierda */
+}
+
+.plus-quick-action:hover {
+  background-color: #e6edf3;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.plus-quick-action i {
+  font-size: 18px;
   color: var(--primary);
 }

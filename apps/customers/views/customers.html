@@ -8,12 +8,16 @@
 
   <plus-tabs>
     <plus-tab text="Tab 1">
-      iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+      <p>iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii</p>
       <plus-actions>
-        <plus-action icon="fi fi-rr-pencil" text="Editar" t="action-edit" onclick="editarCliente()"></plus-action>
+        <plus-action icon="fi fi-rr-pencil" text="Editar" t="action-edit" onclick="editarCliente()" pin="false"></plus-action>
+        <plus-action icon="fi fi-rr-pencil" text="Editar" t="action-edit" onclick="editarCliente()" pin="false"></plus-action>
         <plus-action icon="fi fi-rr-trash" text="Eliminar" t="action-delete" onclick="eliminarCliente()"></plus-action>
-        <plus-action icon="fi fi-rr-trash" text="Eliminar" t="action-delete" onclick="eliminarCliente()" type="switch">
-        </plus-action>
+
+
+        <plus-action text="Eliminar" t="action-delete" onclick="eliminarCliente()" type="switch" checked="false"></plus-action>
+        <plus-action icon="fi fi-rr-trash" text="Eliminar" t="action-delete" onclick="eliminarCliente()" type="switch" checked="true"></plus-action>
+        <plus-action text="Eliminar" t="action-delete" onclick="eliminarCliente()" type="switch" checked></plus-action>
       </plus-actions>
 
     </plus-tab>

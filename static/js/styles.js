@@ -910,10 +910,29 @@ class PlusSwitch extends HTMLElement {
     wrapper.classList.add('plus-switch');
 
     //now before creating the label
+    /*
     let labelText = document.createElement('span');
     labelText.classList.add('plus-switch-label');
     labelText.setAttribute('t', t);
     labelText.textContent = textTranlsate;
+    */
+    let labelText = document.createElement('span');
+    labelText.classList.add('plus-switch-label');
+    labelText.setAttribute('t', t);
+
+    // Check if an icon is defined
+    const iconClass = this.getAttribute('icon');
+    if (iconClass) {
+      const iconEl = document.createElement('i');
+      iconEl.className = iconClass;
+      iconEl.style.marginRight = '6px'; // spacing between icon and text
+      iconEl.style.fontSize = '16px';
+      iconEl.style.color = 'var(--primary)';
+      labelText.appendChild(iconEl);
+    }
+
+    // Add text after icon
+    labelText.appendChild(document.createTextNode(textTranlsate));
 
     //we will see if the proggramer wants show a label with message. The label with message is show 
     const labelTitle = this.getAttribute('lable') || text;
@@ -1445,19 +1464,63 @@ class PlusActions extends HTMLElement {
       if(type=='switch'){
         //her we will to create a id for that the user can edit or get iformation of the switch 
         const id = action.getAttribute('id') || `plus-id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        const raw = action.getAttribute('checked');
+        const checked = get_value_of_label_true_or_false(raw);
 
+        //her we will save all the information that the proggramer added to the label
         item=document.createElement('plus-switch');
         item.setAttribute('id', id)
         item.setAttribute('text', text)
         item.setAttribute('name', id)
-        item.setAttribute('checked', false);
+        item.setAttribute('icon', icon)
+
+        if(checked){
+          item.setAttribute('checked', checked);
+        }
       }else{
         item = document.createElement('div');
         item.className = 'plus-action-item';
-        item.innerHTML = `
-          <i class="${icon}"></i>
-          <span>${textTranslate}</span>
-        `;
+
+        //we will see if this button need a pin 
+        const thisElementHaveApin=action.hasAttribute('pin');
+        const pin=get_value_of_label_true_or_false(action.getAttribute('pin'));
+
+        if(thisElementHaveApin){
+          if(pin){
+            item.innerHTML = `
+              <div class="item-row">
+                <div class="item-main" onclick="handleMainAction(this)">
+                  <i class="${icon}"></i>
+                  <span>${textTranslate}</span>
+                </div>
+                <div class="item-pin">
+                  <i class="fi fi-ss-thumbtack"></i>
+                </div>
+              </div>
+            `;
+          }else{
+            item.innerHTML = `
+              <div class="item-row">
+                <div class="item-main" onclick="handleMainAction(this)">
+                  <i class="${icon}"></i>
+                  <span>${textTranslate}</span>
+                </div>
+                <div class="item-pin">
+                  <i class="fi fi-rs-thumbtack"></i>
+                </div>
+              </div>
+            `;
+          }
+        }else{
+          item.innerHTML = `
+          <div class="item-row">
+            <div class="item-main" onclick="handleMainAction(this)">
+              <i class="${icon}"></i>
+              <span>${textTranslate}</span>
+            </div>
+          </div>
+          `;
+        }
       }
 
       if (onclick) {
@@ -1467,8 +1530,22 @@ class PlusActions extends HTMLElement {
         };
       }
 
+      // Assign event to pins without propagating the click to the parent
+      const pinIcon = item.querySelector('.item-pin i');
+      if (pinIcon) {
+        pinIcon.addEventListener('click', (e) => {
+          e.stopPropagation(); // This prevents the parent click from being triggered.
+          this.handlePin(pinIcon, action, onclick, icon, textTranslate);  // run the function for add the function flash
+        });
+      }
+
       menu.appendChild(item);
     });
+    
+    //her is the desktop of the shortcuts of the functions
+    const quickActions = document.createElement('div');
+    quickActions.className = 'plus-quick-actions';
+    this.appendChild(quickActions);
 
     this.appendChild(button);
     this.appendChild(menu);
@@ -1490,8 +1567,46 @@ class PlusActions extends HTMLElement {
       icon.style.transform = 'rotate(0deg)';
     }
   }
+
+  handlePin(pinIcon, action, onclick, icon, textTranslate) {
+    const quickActions = this.querySelector('.plus-quick-actions');
+    const alreadyPinned = pinIcon.classList.contains('fi-ss-thumbtack');
+
+    if (alreadyPinned) {
+      // Remove quick access
+      pinIcon.classList.remove('fi-ss-thumbtack');
+      pinIcon.classList.add('fi-rs-thumbtack');
+
+      const existing = quickActions.querySelector(`[data-id="${textTranslate}"]`);
+      if (existing) quickActions.removeChild(existing);
+    } else {
+      // Add quick access
+      pinIcon.classList.remove('fi-rs-thumbtack');
+      pinIcon.classList.add('fi-ss-thumbtack');
+
+      const shortcut = document.createElement('button');
+      shortcut.className = 'plus-quick-action';
+      shortcut.setAttribute('data-id', textTranslate);
+
+      if (icon) {
+        shortcut.innerHTML = `<i class="${icon}"></i>`;
+      } else {
+        shortcut.textContent = textTranslate;
+      }
+
+      shortcut.addEventListener('click', () => {
+        if (onclick) window[onclick]?.();
+      });
+
+      quickActions.appendChild(shortcut);
+    }
+  }
 }
 
+
+function get_value_of_label_true_or_false(value){
+  return value === true || value === 'true' || value === '1' || value === 1;
+}
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
   const tabs = document.querySelectorAll('.tab-content');
