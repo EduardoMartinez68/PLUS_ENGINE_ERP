@@ -1597,3 +1597,58 @@ hr {
 .plus-tab {
   display: none;
 }
+
+
+
+/**-----------------------------------------------------PLUS ACTION-----------------------------------------------*/
+.plus-actions {
+  position: relative;
+  display: inline-block;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.plus-action-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+.plus-action-button i {
+  transition: transform 0.3s ease;
+}
+
+.plus-action-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  min-width: 160px;
+  padding: 8px 0;
+  z-index: 200;
+}
+
+.plus-action-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #333;
+  transition: background 0.2s;
+}
+
+.plus-action-item:hover {
+  background: #f2f2f2;
+}
+
+.plus-action-item i {
+  font-size: 16px;
+  color: var(--primary);
+}

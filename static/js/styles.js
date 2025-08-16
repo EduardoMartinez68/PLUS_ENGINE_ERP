@@ -1367,7 +1367,6 @@ class PlusSelectDate extends HTMLElement {
   }
 }
 
-
 class PlusTabs extends HTMLElement {
   connectedCallback() {
     this.classList.add('plus-tabs');
@@ -1407,11 +1406,89 @@ class PlusTabs extends HTMLElement {
   }
 }
 
-
 class PlusTab extends HTMLElement {
   connectedCallback() {
     this.classList.add('plus-tab');
     //this.style.display = 'none';
+  }
+}
+
+class PlusActions extends HTMLElement {
+  constructor() {
+    super();
+    this.open = false;
+  }
+
+  connectedCallback() {
+    this.classList.add('plus-actions');
+
+    const button = document.createElement('button');
+    button.className = 'plus-action-button';
+    button.innerHTML = '<i class="fi fi-rr-menu-dots-vertical"></i>';
+
+    const menu = document.createElement('div');
+    menu.className = 'plus-action-menu';
+    menu.style.display = 'none';
+
+    const actions = this.querySelectorAll('plus-action');
+    actions.forEach(action => {
+      const type = action.getAttribute('type') || '0';
+      const icon = action.getAttribute('icon') || '';
+      const t = action.getAttribute('t');
+      const text = t || action.getAttribute('text');
+      const onclick = action.getAttribute('onclick');
+
+      const textTranslate=window.translate_text(text);
+
+      //her we will see the type 
+      let item;
+      if(type=='switch'){
+        //her we will to create a id for that the user can edit or get iformation of the switch 
+        const id = action.getAttribute('id') || `plus-id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+        item=document.createElement('plus-switch');
+        item.setAttribute('id', id)
+        item.setAttribute('text', text)
+        item.setAttribute('name', id)
+        item.setAttribute('checked', false);
+      }else{
+        item = document.createElement('div');
+        item.className = 'plus-action-item';
+        item.innerHTML = `
+          <i class="${icon}"></i>
+          <span>${textTranslate}</span>
+        `;
+      }
+
+      if (onclick) {
+        item.onclick = () => {
+          window[onclick]?.();
+          this.toggle(false); // opcional: cerrar al hacer clic
+        };
+      }
+
+      menu.appendChild(item);
+    });
+
+    this.appendChild(button);
+    this.appendChild(menu);
+
+    button.addEventListener('click', () => this.toggle());
+  }
+
+  toggle(forceState = null) {
+    const menu = this.querySelector('.plus-action-menu');
+    const icon = this.querySelector('.plus-action-button i');
+
+    this.open = forceState !== null ? forceState : !this.open;
+
+    if (this.open) {
+      menu.style.display = 'block';
+      icon.style.transform = 'rotate(90deg)';
+    } else {
+      menu.style.display = 'none';
+      icon.style.transform = 'rotate(0deg)';
+    }
   }
 }
 
@@ -1974,6 +2051,14 @@ function transform_my_labels_erp() {
 
   if (!customElements.get("plus-tab")) {
     customElements.define('plus-tab', PlusTab);
+  }
+
+  if (!customElements.get("plus-actions")) {
+    customElements.define('plus-actions', PlusActions);
+  }
+
+  if (!customElements.get("plus-action")) {
+    customElements.define('plus-action', class extends HTMLElement {});
   }
 }
 
