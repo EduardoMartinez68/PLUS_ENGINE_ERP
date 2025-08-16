@@ -1367,6 +1367,54 @@ class PlusSelectDate extends HTMLElement {
   }
 }
 
+
+class PlusTabs extends HTMLElement {
+  connectedCallback() {
+    this.classList.add('plus-tabs');
+
+    const tabButtonsContainer = document.createElement('div');
+    tabButtonsContainer.className = 'plus-tab-buttons';
+
+    const tabs = Array.from(this.querySelectorAll('plus-tab'));
+
+    tabs.forEach((tab, index) => {
+      const tAttr = tab.getAttribute('t');
+      const textAttr = tab.getAttribute('text');
+      const title = window.translate_text(tAttr || textAttr);
+
+      const button = document.createElement('button');
+      button.textContent = title;
+      button.type = 'button';
+      if (index === 0) button.classList.add('active');
+
+      button.addEventListener('click', () => {
+        this.querySelectorAll('plus-tab').forEach((t, i) => {
+          t.style.display = i === index ? 'block' : 'none';
+        });
+        tabButtonsContainer.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        button.classList.add('active');
+      });
+
+      tabButtonsContainer.appendChild(button);
+    });
+
+    this.insertBefore(tabButtonsContainer, this.firstChild);
+
+    // Mostrar solo el primer tab al iniciar
+    tabs.forEach((tab, index) => {
+      tab.style.display = index === 0 ? 'block' : 'none';
+    });
+  }
+}
+
+
+class PlusTab extends HTMLElement {
+  connectedCallback() {
+    this.classList.add('plus-tab');
+    //this.style.display = 'none';
+  }
+}
+
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
   const tabs = document.querySelectorAll('.tab-content');
@@ -1919,7 +1967,14 @@ function transform_my_labels_erp() {
   if (!customElements.get("plus-select-date")) {
     customElements.define('plus-select-date', PlusSelectDate);
   }
-  
+
+  if (!customElements.get("plus-tabs")) {
+    customElements.define('plus-tabs', PlusTabs);
+  }
+
+  if (!customElements.get("plus-tab")) {
+    customElements.define('plus-tab', PlusTab);
+  }
 }
 
 /**---------------------------------TAB----------------------------- */

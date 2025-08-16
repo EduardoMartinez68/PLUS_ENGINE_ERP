@@ -4,6 +4,26 @@
 
 <plus-modules>
 
+  <plus-module>
+
+  <plus-tabs>
+    <plus-tab text="Tab 1">
+      <message-pop title="label-search-home" name="pop-data-facture2">
+        <p t="placeholder-search-home"></p>
+      </message-pop>
+      <button onclick="show_pop('pop-data-facture2')">open pop</button>
+      Hola amigos.
+    </plus-tab>
+
+    <plus-tab t="label-search-home" text="Tab 2">
+      {% include 'partialsCustomers/customerForm1.html' %}
+    </plus-tab>
+  </plus-tabs>
+
+
+
+  </plus-module>
+
   <plus-module name="Ayuda">
 
     <plus-help title="¿Cómo cobrar con recibo?" data='ayuda-recibo' t="label-search-home"></plus-help>
@@ -51,9 +71,7 @@
     <plus-switch text="label-search-home" name="notificaciones" checked="false"></plus-switch>
 
     <plus-select label="label-search-home" message="placeholder-search-home" name="tipo_documento" requerid link="customers/search_customers_select/" add="open_pop()" edit_data="edit_data" delete_data="customers/search_customers_select/">
-      <option value="contrato" t="placeholder-search-home">Contrato</option>
-      <option value="juicio" t="placeholder-search-home">Juicio</option>
-      <option value="testamento" t="placeholder-search-home">Testamento</option>
+
     </plus-select>
 
 
@@ -176,10 +194,11 @@
     help.video = 'dQw4w9WgXcQ';
     help.save_help_data();
 
-
-
-    function edit_data(id){
-      alert('Edit');
-    }
   })();
+
+  function edit_data(id){
+    alert('Edit');
+  }
+
+
 </script>
