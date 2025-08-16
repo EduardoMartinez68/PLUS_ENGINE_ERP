@@ -25,18 +25,6 @@
 </form>
 
 
-        <div class="tabs">
-            <div class="tab-buttons">
-                <button class="active" onclick="openTab(event, 'form1')" t="info-general" type="button">Informacion General</button>
-                <button onclick="openTab(event, 'form2')" t="info-empresa" type="button">Informacion empresa</button>
-            </div>
-
-            {% include 'partialsCustomers/customerForm1.html' %}
-            {% include 'partialsCustomers/customerForm2.html' %}
-            <button class="btn btn-add btn-success" style="width: 100%;" t="save">Guardar</button>
-        </div>
-
-
 
 <script>
 (() => {

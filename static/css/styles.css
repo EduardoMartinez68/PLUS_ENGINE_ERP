@@ -3,46 +3,43 @@
   --primary: #085DA9;
   --primary-light: #1C3C60;
   --primary-dark: #05396B;
-
   /* Base UI */
   --background: #F5F7FA;
   --text: #1e2a38;
   --font: 'Inter', 'Segoe UI', 'Open Sans', sans-serif;
   --font-size-base: 15px;
   --font-weight: 400;
-
   /* Buttons */
   --btn-success-bg: #2ecc71;
   --btn-success-text: #ffffff;
-
   --btn-normal-bg: #e4e7ec;
   --btn-normal-text: #333333;
-
   --btn-cancel-bg: #ef4444;
   --btn-cancel-text: #ffffff;
-
   /* Card / container structure */
   --container-max-width: 1200px;
   --gap: 16px;
   --radius: 10px;
-
   --card-bg: #ffffff;
   --card-border: #e5e7eb;
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-
   /* Transitions */
   --transition: all 0.3s ease;
+
+  --color-success: #2d8659;
+  --color-hover-success:#24704a;
 }
 
 * {
   box-sizing: border-box;
   font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 body {
   margin: 0;
-  background-color: #f8f9fa;
-  color: #1d2939;
+  background-color: var(--background);
+  color: var(--text);
 }
 
 header {
@@ -126,7 +123,7 @@ label {
   display: block;
 }
 
-.icon-active{
+.icon-active {
   color: var(--primary);
 }
 
@@ -269,6 +266,7 @@ input.case-title-input::placeholder {
   font-weight: bold;
   transition: background-color 0.3s;
 }
+
 .plus-help-button:hover {
   background-color: var(--primary-light);
 }
@@ -281,12 +279,13 @@ input.case-title-input::placeholder {
   max-height: 90vh;
   background: #fff;
   border: 2px solid #ccc;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 300;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
+
 .plus-help-hidden {
   display: none;
 }
@@ -298,10 +297,12 @@ input.case-title-input::placeholder {
   padding: 10px;
   border-bottom: 1px solid #ccc;
 }
+
 .plus-help-title {
   font-weight: bold;
   font-size: 16px;
 }
+
 .plus-help-close {
   background: transparent;
   border: none;
@@ -316,6 +317,7 @@ input.case-title-input::placeholder {
   background: #fafafa;
   border-bottom: 1px solid #ddd;
 }
+
 .plus-help-progress-item {
   width: 25px;
   height: 25px;
@@ -328,12 +330,15 @@ input.case-title-input::placeholder {
   font-weight: bold;
   transition: background 0.3s;
 }
+
 .plus-help-progress-item.active {
   background: var(--primary);
   color: white;
 }
+
 .plus-help-progress-item.done {
-  background: #43A047;/*#4CAF50;*/
+  background: #43A047;
+  /*#4CAF50;*/
   color: white;
 }
 
@@ -342,14 +347,17 @@ input.case-title-input::placeholder {
   padding: 15px;
   overflow-y: auto;
 }
+
 .plus-help-step {
   margin-bottom: 20px;
 }
+
 .plus-help-img {
   width: 100%;
   border-radius: 5px;
   margin-top: 10px;
 }
+
 .plus-help-video {
   width: 100%;
   height: 200px;
@@ -365,6 +373,7 @@ input.case-title-input::placeholder {
   border-top: 1px solid #eee;
   background: #f9f9f9;
 }
+
 .plus-help-nav {
   background: var(--primary);
   color: white;
@@ -374,6 +383,7 @@ input.case-title-input::placeholder {
   cursor: pointer;
   font-weight: bold;
 }
+
 .plus-help-nav:disabled {
   background: #646464;
   cursor: default;
@@ -483,11 +493,11 @@ hr {
 }
 
 .btn-add {
-  background-color: #2d8659;
+  background-color: var(--color-success);
 }
 
 .btn-add:hover {
-  background-color: #24704a;
+  background-color: var(--color-hover-success);
 }
 
 .btn-edit {
@@ -582,7 +592,7 @@ hr {
 
 .status-step.completed {
   background-color: #d1fadd;
-  color: #027a48;
+  color: var(--color-success);
 }
 
 .status-step.active {
@@ -864,7 +874,7 @@ hr {
 
 /* Icon colors */
 .sub-menu-app-pop-success .sub-menu-app-pop-icon {
-  color: #3bf673;
+  color: var(--color-success);
 }
 
 .sub-menu-app-pop-info .sub-menu-app-pop-icon {
@@ -924,10 +934,11 @@ hr {
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.2s ease;
+  width: 100%;
 }
 
 .sub-menu-app-btn-primary {
-  background-color: var(--btn-success-bg);
+  background-color: var(--color-success);
   color: #fff;
 }
 
@@ -1258,12 +1269,12 @@ hr {
 }
 
 .popup-accept {
-  background-color: #27ae60;
+  background-color: var(--color-success);
   color: white;
 }
 
 .popup-accept:hover {
-  background-color: #219653;
+  background-color: var(--color-hover-success);
 }
 
 .popup-cancel {
@@ -1709,8 +1720,10 @@ hr {
 
   flex-wrap: wrap;
   margin-top: 12px;
-  justify-content: flex-end;  /* alinea el contenedor al final (derecha) */
-  flex-direction: row-reverse; /* pero los elementos comienzan desde la derecha hacia la izquierda */
+  justify-content: flex-end;
+  /* alinea el contenedor al final (derecha) */
+  flex-direction: row-reverse;
+  /* pero los elementos comienzan desde la derecha hacia la izquierda */
 }
 
 .plus-quick-action:hover {
