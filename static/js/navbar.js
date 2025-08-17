@@ -135,6 +135,7 @@ const grid = document.querySelector('.apps-grid');
 Sortable.create(grid, {
   animation: 200,
   ghostClass: 'ghost',
+  filter: '.btn',
   onEnd: saveAppOrder
 });
 

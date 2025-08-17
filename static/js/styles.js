@@ -245,6 +245,56 @@ class InputField extends HTMLElement {
   }
 }
 
+class SearchBar extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    const labelTextInfo = this.getAttribute("label") || "";
+    const labelText = translate_text(labelTextInfo);
+    const name = this.getAttribute("name") || "";
+    const placeHolderText = this.getAttribute("placeholder");
+    const required = this.hasAttribute("required");
+    const readOnly = this.hasAttribute("readonly");
+    const disabled = this.hasAttribute("disabled");
+    const value = this.getAttribute("value") || "";
+
+    // Placeholder traducido o por defecto
+    const placeholder = placeHolderText
+      ? translate_text(placeHolderText)
+      : labelText;
+
+    const tPlaceholderKey = (!placeHolderText || placeHolderText.trim() === '')
+      ? labelTextInfo
+      : placeHolderText;
+
+    // Crear elementos
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("search-wrapper");
+
+    const input = document.createElement("input");
+    input.type = "search";
+    input.classList.add("search-input");
+    input.name = name;
+    input.placeholder = placeholder;
+    input.value = value;
+    input.setAttribute("t-placeholder", tPlaceholderKey);
+
+    if (required) input.required = true;
+    if (readOnly) input.readOnly = true;
+    if (disabled) input.disabled = true;
+
+    const icon = document.createElement("i");
+    icon.className = "fi fi-br-search search-icon";
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(icon);
+
+    this.replaceWith(wrapper);
+  }
+}
+
 class ConfirmButton extends HTMLElement {
   constructor() {
     super();
@@ -2174,6 +2224,10 @@ function transform_my_labels_erp() {
 
   if (!customElements.get("plus-action")) {
     customElements.define('plus-action', class extends HTMLElement {});
+  }
+
+  if (!customElements.get("search-bar")) {
+    customElements.define('search-bar', SearchBar);
   }
 }
 

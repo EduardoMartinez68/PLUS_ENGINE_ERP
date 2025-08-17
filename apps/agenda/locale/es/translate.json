@@ -1,0 +1,27 @@
+{
+    "new_event": "Nuevo Evento",
+    "navbar-2": "Crear Categoria",
+    "placeholder-search":"Filtrar por departamento",
+
+
+
+    "title-pop-create-event":"Crear un nuevo evento en la Agenda",
+
+
+    "label-input-title":"Escribe el Nombre del Evento",
+    "placeholder-input-title":"Nombre del Evento",
+    
+    "label-input-address":"Dirección / Lugar del evento",
+    "placeholder-input-address":"Dirección del evento",
+    "label-link":"Videollamada (URL)",
+    "label-category":"Category",
+    "label-Remember":"Recordatorio",
+    "label-priority":"Prioridad",
+
+    "repeat_this_event":"Reperit este evento",
+    "i_am_free":"Estoy libre en este evento",
+
+
+    "label-comment":"Agregar comentario",
+    "placeholder-comment":"Escribe un comentario para el evento"
+}

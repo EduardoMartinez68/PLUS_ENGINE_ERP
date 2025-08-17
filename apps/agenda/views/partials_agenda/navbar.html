@@ -1,10 +1,4 @@
-<nav class="sub-menu-app-nav">
-    <div class="sub-menu-app-nav-container">
-        <div class="sub-menu-app-nav-item">
-            <a class="sub-menu-app-nav-link sub-menu-app-link-base" onclick="nextWeb('contracts/contracts')"><button class="btn button btn-navbar">Mis Contratos</button></a>
-        </div>
-        <div class="sub-menu-app-nav-item">
-            <a class="sub-menu-app-nav-link sub-menu-app-link-base" onclick="show_pop('pop-quote')"><button class="btn button btn-add">Nuevo Contrato +</button></a>
-        </div>
-    </div>
-</nav>
+<app-menu>
+  <sub-menu name="navbar-customers" link="customers/customers"></sub-menu>
+  <sub-menu name="navbar-add" link="customers/add_customer" class="btn-add"></sub-menu>
+</app-menu>

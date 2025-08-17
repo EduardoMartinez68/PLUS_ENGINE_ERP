@@ -1,7 +1,7 @@
 //This function is for load all the translations of the app of the ERP, this function is called forever that the user change the language or load the web
 ///example: load the language spanish to the app 'sales'
 //load_language('/apps/sales/translate.json');
-let languageUser = 'pl'; //get the language of the user example (es,pl,en,fr,etc)
+let languageUser = 'es'//'pl'; //get the language of the user example (es,pl,en,fr,etc)
 let translateOld={};
 let lastUrl=''; //here we will save the last loaded URL for avoid loading the same URL again
 function load_language(langUrl) {
@@ -9,6 +9,7 @@ function load_language(langUrl) {
   if (lastUrl === langUrl) {
     //if we have save the translation of the web, we will apply the translation to the web evit load the language again
     apply_translation_to_the_web(translateOld);
+    console.log(langUrl)
     return;
   }
 
