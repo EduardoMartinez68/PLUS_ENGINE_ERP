@@ -15,6 +15,7 @@
     "priority.low": "Prioridad baja",
     "priority.normal": "Prioridad normal",
     "priority.high": "Prioridad alta",
+    "send_notification": "Enviar notificación",
 
     "all-day":"Todo el dia",
     "starts":"Fecha inicio",
