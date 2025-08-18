@@ -1855,6 +1855,9 @@ class PlusDate extends HTMLElement {
 
     this.display = this.shadowRoot.querySelector('#plus-date-display');
     this.input = this.shadowRoot.querySelector(`input[name="${name}"]`);
+    this.input.type = 'date';
+    this.input.required = this.hasAttribute('required'); //we will see if this input is requerid
+
     this.calendarContainer = this.shadowRoot.querySelector('.plus-calendar-calendar-container');
 
     this.display.addEventListener('click', () => {
