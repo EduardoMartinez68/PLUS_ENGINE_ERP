@@ -1,0 +1,162 @@
+<style>
+    .calendar {
+        background-color: transparent;
+        border-radius: 20px;
+        padding: 20px;
+        max-width: 420px;
+        width: 100%;
+    }
+
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .calendar-header h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        color:var(--primary);
+    }
+
+    .nav-buttons button {
+        background-color: transparent;
+        color:var(--primary);
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 8px;
+        transition: background 0.2s;
+    }
+
+    .nav-buttons button:hover {
+        background-color: #f0f0f0;
+    }
+
+    .day-names,
+    .days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+        gap: 10px;
+    }
+
+    .day-names div {
+        font-weight: bold;
+        color: #888;
+    }
+
+    .days div {
+        padding: 10px 0;
+        border-radius: 10px;
+        transition: all 0.2s;
+        cursor: default;
+    }
+
+    .days div.today {
+        background-color: var(--primary);
+        color: white;
+        font-weight: bold;
+    }
+
+    .days div:hover {
+        background-color: #f0f0f5;
+    }
+
+    .days div.empty {
+        visibility: hidden;
+    }
+
+    .title-number-day{
+        font-size: 5rem;
+    }
+
+    .title-day{
+        font-size: 2.5rem;
+    }
+</style>
+
+<br>
+<label class="title-number-day">1</label>
+<label class="title-day">FRI</label>
+<button class="btn btn-normal">Today</button>
+
+
+<div class="calendar">
+    <div class="calendar-header">
+        <div class="nav-buttons">
+            <button onclick="changeMonth(-1)">❮</button>
+        </div>
+        <h2 id="month-year"></h2>
+        <div class="nav-buttons">
+            <button onclick="changeMonth(1)">❯</button>
+        </div>
+    </div>
+    <div class="day-names">
+        <div>Dom</div>
+        <div>Lun</div>
+        <div>Mar</div>
+        <div>Mié</div>
+        <div>Jue</div>
+        <div>Vie</div>
+        <div>Sáb</div>
+    </div>
+    <div class="days" id="calendar-days"></div>
+</div>
+
+<script>
+
+    function renderCalendar(date) {
+        const monthYearText = document.getElementById('month-year');
+        const daysContainer = document.getElementById('calendar-days');
+
+        const year = date.getFullYear();
+        const month = date.getMonth();
+
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const today = new Date();
+
+        monthYearText.textContent = date.toLocaleDateString('es-MX', {
+            month: 'long',
+            year: 'numeric'
+        });
+
+        daysContainer.innerHTML = '';
+
+        const startDay = firstDay.getDay();
+        for (let i = 0; i < startDay; i++) {
+            const empty = document.createElement('div');
+            empty.classList.add('empty');
+            daysContainer.appendChild(empty);
+        }
+
+        for (let day = 1; day <= lastDay.getDate(); day++) {
+            const dayElement = document.createElement('div');
+            dayElement.textContent = day;
+
+            if (
+                today.getFullYear() === year &&
+                today.getMonth() === month &&
+                today.getDate() === day
+            ) {
+                dayElement.classList.add('today');
+            }
+
+            daysContainer.appendChild(dayElement);
+        }
+    }
+
+    function changeMonth(step) {
+        const monthYearText = document.getElementById('month-year');
+        const daysContainer = document.getElementById('calendar-days');
+
+        let currentDate = new Date();
+        currentDate.setMonth(currentDate.getMonth() + step);
+        renderCalendar(currentDate);
+    }
+
+    renderCalendar(new Date());
+</script>

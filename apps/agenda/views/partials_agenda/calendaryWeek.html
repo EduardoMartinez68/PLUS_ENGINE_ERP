@@ -1,0 +1,102 @@
+
+  <style>
+    .calendary-week-calendar {
+      display: grid;
+      grid-template-columns: 100px repeat(7, 1fr);
+      width: 100%;
+      height: 100vh;
+    }
+
+    .calendary-week-header {
+      display: contents;
+    }
+
+    .calendary-week-header div {
+      background: #f0f0f0;
+      text-align: center;
+      padding: 10px;
+      font-weight: bold;
+      border: 1px solid #ccc;
+    }
+
+    .calendary-week-hour-cell {
+      padding: 4px;
+      border: 1px solid #ddd;
+      text-align: right;
+      font-size: 12px;
+      background: #fafafa;
+    }
+
+    .calendary-week-time-slot {
+      border: 1px solid #eee;
+      height: 40px;
+    }
+
+    .calendary-week-row {
+      display: contents;
+    }
+
+    .calendary-week-column-day {
+      background: #fff;
+    }
+  </style>
+
+  <div id="calendary-week-calendar" class="calendary-week-calendar"></div>
+
+  <script>
+    function renderWeek(dateStr) {
+      const calendar = document.getElementById('calendary-week-calendar');
+      calendar.innerHTML = '';
+
+      const inputDate = new Date(dateStr);
+      const weekStart = new Date(inputDate);
+      weekStart.setDate(inputDate.getDate() - inputDate.getDay()); // domingo
+
+      // Header (Días)
+      const header = document.createElement('div');
+      header.className = 'calendary-week-header';
+
+      const hourHeader = document.createElement('div');
+      hourHeader.textContent = '';
+      header.appendChild(hourHeader);
+
+      const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(weekStart);
+        day.setDate(weekStart.getDate() + i);
+
+        const dayDiv = document.createElement('div');
+        dayDiv.textContent = `${dayNames[i]} ${day.getDate()}/${day.getMonth() + 1}`;
+        header.appendChild(dayDiv);
+      }
+
+      calendar.appendChild(header);
+
+      // Rellenar horas
+      for (let h = 0; h < 24; h++) {
+        const hour = h.toString().padStart(2, '0');
+
+        const row = document.createElement('div');
+        row.className = 'calendary-week-row';
+
+        const hourCell = document.createElement('div');
+        hourCell.className = 'calendary-week-hour-cell';
+        hourCell.textContent = `${hour}:00`;
+        row.appendChild(hourCell);
+
+        for (let d = 0; d < 7; d++) {
+          const slot = document.createElement('div');
+          slot.className = 'calendary-week-time-slot calendary-week-column-day';
+          slot.dataset.day = d;
+          slot.dataset.hour = h;
+          row.appendChild(slot);
+        }
+
+        calendar.appendChild(row);
+      }
+    }
+
+    // Ejemplo de uso: cambiar la fecha aquí abajo
+    renderWeek('2025-08-17');
+  </script>
