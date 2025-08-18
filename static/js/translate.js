@@ -26,6 +26,26 @@ function load_language(langUrl) {
     });
 }
 
+
+
+
+
+function get_language_of_the_system() {
+  // Detects the browser language
+  const languageBrowser = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+
+  //Custom Language Mapping
+  const listLanguages = {
+    'es': 'es-MX',
+    'es-mx': 'es-mx',
+    'pl': 'pl-pl',
+    'pl-pl': 'pl-pl'
+  };
+
+  //Returns the mapped language or the browser language as a fallback
+  return listLanguages[languageUser] || languageBrowser;
+}
+
 //this function is for translate the web with the translations loaded or saved. The function is called when the user load the web or change the language
 function apply_translation_to_the_web(translations) {
   //get all the elements that have the attribute t 

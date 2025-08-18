@@ -1656,235 +1656,6 @@ class PlusActions extends HTMLElement {
 
 
 /*----------------DATE------------------------------------- */
-
-class PlusDate2 extends HTMLElement {
-  constructor() {
-    super();
-    this.selectedDate = null;
-    this.currentDate = new Date();
-
-    // Creamos el shadow DOM
-    this.attachShadow({ mode: "open" });
-  }
-
-  connectedCallback() {
-    const labelText = this.getAttribute("label") || "Selecciona una fecha";
-    const name = this.getAttribute("name") || "plus-date";
-    const valueAttr = this.getAttribute("value");
-    if (valueAttr) {
-      this.selectedDate = new Date(valueAttr);
-      this.currentDate = new Date(valueAttr);
-    }
-
-    const style = document.createElement("style");
-    style.textContent = `
-      .plus-calendar-calendar {
-        background-color: white;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        border-radius: 20px;
-        padding: 20px;
-        max-width: 420px;
-        width: 100%;
-      }
-
-      .plus-calendar-calendar-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-      }
-
-      .plus-calendar-calendar-header h2 {
-        margin: 0;
-        font-size: 1.4rem;
-      }
-
-      .plus-calendar-calendar-days {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 5px;
-        text-align: center;
-      }
-
-      .plus-calendar-calendar-days .plus-calendar-day {
-        padding: 8px 0;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-
-      .plus-calendar-calendar-days .plus-calendar-day:hover {
-        background-color: #eee;
-      }
-
-      .plus-calendar-calendar-days .plus-calendar-today {
-        background-color: #007aff;
-        color: white;
-      }
-
-      .plus-calendar-calendar-days .plus-calendar-selected {
-        background-color: #555;
-        color: white;
-      }
-
-      .plus-calendar-calendar-days .plus-calendar-empty {
-        visibility: hidden;
-      }
-
-      .plus-calendar-fake-input {
-        width: 100%;
-        padding: 8px 4px;
-        margin-top: 4px;
-        border: none;
-        border-bottom: 2px solid #d0d5dd;
-        background-color: transparent;
-        font-size: 1em;
-        color: #1d2939;
-        outline: none;
-        transition: border-color 0.3s;
-        margin: 12px 0;
-      }
-
-      .plus-calendar-fake-input:hover,
-      .plus-calendar-fake-input:focus {
-        border-bottom-color: #2a395b;
-      }
-
-      .plus-calendar-calendar-container {
-        margin-top: 10px;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        z-index: 999;
-        position: absolute;
-      }
-
-      .plus-calendar-calendar-header button {
-        background-color: transparent;
-        border: none;
-        font-size: 1.2rem;
-        cursor: pointer;
-        padding: 5px 10px;
-        border-radius: 8px;
-        transition: background 0.2s;
-      }
-
-      .plus-calendar-calendar-header button:hover {
-        background-color: #f0f0f0;
-      }
-
-      .plus-calendar-input-label {
-        display: block;
-        margin-bottom: 6px;
-        font-weight: bold;
-        font-size: 0.95rem;
-      }
-
-      .plus-calendar-input-wrapper {
-        position: relative;
-        width: max-content;
-      }
-    `;
-
-    this.shadowRoot.innerHTML = `
-      <div class="plus-calendar-input-wrapper">
-        <label class="plus-calendar-input-label">${labelText}</label>
-        <div class="plus-calendar-fake-input" id="plus-date-display">${this.formatDate(this.selectedDate)}</div>
-        <input type="date" id="${name}" name="${name}" style="display:none;" value="${valueAttr || ''}"/>
-        <div class="plus-calendar-calendar-container" style="display:none;"></div>
-      </div>
-    `;
-    this.shadowRoot.appendChild(style);
-
-    this.display = this.shadowRoot.querySelector('#plus-date-display');
-    this.input = this.shadowRoot.querySelector(`input[name="${name}"]`);
-    this.calendarContainer = this.shadowRoot.querySelector('.plus-calendar-calendar-container');
-
-    this.display.addEventListener('click', () => {
-      this.toggleCalendar();
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!this.contains(e.target)) {
-        this.calendarContainer.style.display = 'none';
-      }
-    });
-
-    this.renderCalendar();
-  }
-
-  toggleCalendar() {
-    this.calendarContainer.style.display =
-      this.calendarContainer.style.display === 'none' ? 'block' : 'none';
-    this.renderCalendar();
-  }
-
-  formatDate(date) {
-    if (!date) return "Selecciona una fecha";
-    return date.toLocaleDateString('es-MX', {
-      day: '2-digit', month: '2-digit', year: 'numeric'
-    });
-  }
-
-  renderCalendar() {
-    const month = this.currentDate.getMonth();
-    const year = this.currentDate.getFullYear();
-    const firstDay = new Date(year, month, 1).getDay();
-    const lastDate = new Date(year, month + 1, 0).getDate();
-    const today = new Date();
-    const selected = this.selectedDate;
-
-    let html = `
-      <div class="plus-calendar-calendar">
-        <div class="plus-calendar-calendar-header">
-          <button class="plus-calendar-prev-month">❮</button>
-          <span>${this.currentDate.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' })}</span>
-          <button class="plus-calendar-next-month">❯</button>
-        </div>
-        <div class="plus-calendar-calendar-days">
-    `;
-
-    for (let i = 0; i < firstDay; i++) {
-      html += `<div class="plus-calendar-empty"></div>`;
-    }
-
-    for (let d = 1; d <= lastDate; d++) {
-      const current = new Date(year, month, d);
-      const isToday = current.toDateString() === today.toDateString();
-      const isSelected = selected && current.toDateString() === selected.toDateString();
-      html += `<div class="plus-calendar-day 
-        ${isToday ? "plus-calendar-today" : ""} 
-        ${isSelected ? "plus-calendar-selected" : ""}" 
-        data-date="${current.toISOString()}">${d}</div>`;
-    }
-
-    html += `</div></div>`;
-    this.calendarContainer.innerHTML = html;
-
-    this.calendarContainer.querySelector('.plus-calendar-prev-month').addEventListener('click', () => {
-      this.currentDate.setMonth(this.currentDate.getMonth() - 1);
-      this.renderCalendar();
-    });
-
-    this.calendarContainer.querySelector('.plus-calendar-next-month').addEventListener('click', () => {
-      this.currentDate.setMonth(this.currentDate.getMonth() + 1);
-      this.renderCalendar();
-    });
-
-    this.calendarContainer.querySelectorAll('.plus-calendar-day').forEach(day => {
-      day.addEventListener('click', () => {
-        const selectedISO = day.getAttribute('data-date');
-        const newDate = new Date(selectedISO);
-        this.selectedDate = newDate;
-        this.input.value = selectedISO.split('T')[0];
-        this.display.textContent = this.formatDate(newDate);
-        this.calendarContainer.style.display = 'none';
-        this.renderCalendar();
-      });
-    });
-  }
-}
-
 const colors={
   color_company:'#075EAC'
 }
@@ -2054,6 +1825,20 @@ class PlusDate extends HTMLElement {
       background-color: #f4f4f8ff;
       color: #2a395b;
     }
+
+      .btn-restart{
+        background-color: #f4f4f8ff;
+        color: #2a395b;
+        border: none;
+        font-size: .9rem;
+        cursor: pointer;
+        padding: 5px 5px;
+        border-radius: 8px;
+      }
+
+      .btn-restart:hover{
+      cursor:pointer;
+      }
     `;
 
     this.shadowRoot.innerHTML = `
@@ -2093,8 +1878,9 @@ class PlusDate extends HTMLElement {
   }
 
   formatDate(date) {
-    if (!date) return "Selecciona una fecha";
-    return date.toLocaleDateString('es-MX', {
+    if (!date) return window.t('btn.select_range_date');
+    const lang=window.get_language_of_the_system()
+    return date.toLocaleDateString(lang, {
       day: '2-digit', month: '2-digit', year: 'numeric'
     });
   }
@@ -2122,7 +1908,7 @@ class PlusDate extends HTMLElement {
 
     const textToday=window.t('range.today');
     const textDay=this.create_text_day();
-    const userLang = navigator.language || navigator.userLanguage; //get the languace of the system of the user
+    const userLang = window.get_language_of_the_system(); //get the languace of the system of the user
 
     let html = `
       <div class="plus-calendar-calendar">
@@ -2150,10 +1936,14 @@ class PlusDate extends HTMLElement {
         data-date="${current.toISOString()}">${d}</div>`;
     }
 
-    html += `</div></div>`;
+
+
+    html += `</div>
+      <button class="btn-restart">Restart</button>
+    </div>`;
     this.calendarContainer.innerHTML = html;
 
-    // Eventos
+    // Events of the buttons for change the date
     this.calendarContainer.querySelector('.plus-calendar-prev-month').onclick = () => {
       this.currentDate.setMonth(this.currentDate.getMonth() - 1);
       this.renderCalendar();
@@ -2186,6 +1976,17 @@ class PlusDate extends HTMLElement {
         this.renderCalendar();
       };
     });
+
+
+
+
+    this.calendarContainer.querySelector('.btn-restart').onclick = () => {
+      this.selectedDate = null;
+      this.input.value = '';
+      this.display.textContent = '00/00/0000';//window.t('btn.select_range_date');
+      this.calendarContainer.style.display = 'none';
+      this.renderCalendar();
+    };
   }
 
   get_list_months() {
@@ -2217,6 +2018,7 @@ class PlusDate extends HTMLElement {
           <span class="plus-calendar-current-month">${year}</span>
           <button class="plus-calendar-next-month">❯</button>
           <button class="plus-calendar-today-btn">${textToday}</button>
+          <button class="plus-calendar-today-btn">${textToday}</button>
         </div>
         <div class="plus-calendar-calendar-days-month">
     `;
@@ -2228,7 +2030,7 @@ class PlusDate extends HTMLElement {
     html += `</div></div>`;
     this.calendarContainer.innerHTML = html;
 
-    // Eventos para navegar entre años
+    //Events to browse between years
     this.calendarContainer.querySelector('.plus-calendar-prev-month').onclick = () => {
       this.currentDate.setFullYear(this.currentDate.getFullYear() - 1);
       this.renderCalendar();
@@ -2246,7 +2048,7 @@ class PlusDate extends HTMLElement {
       this.renderCalendar();
     };
 
-    // Seleccionar mes y volver a modo días
+    // Select month and return to day mode
     this.calendarContainer.querySelectorAll('.plus-calendar-month').forEach(monthDiv => {
       monthDiv.onclick = () => {
         const month = parseInt(monthDiv.getAttribute('data-month'));
@@ -2255,9 +2057,6 @@ class PlusDate extends HTMLElement {
         this.renderCalendar();
       };
     });
-
-    // Cambiar año al hacer click en el título del año para un futuro modo "años" si quieres
-    // Por ahora no implementamos modo años, solo meses y días
   }
 
 }
