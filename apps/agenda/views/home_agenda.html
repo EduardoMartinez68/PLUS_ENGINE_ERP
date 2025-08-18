@@ -1,18 +1,10 @@
-
 <div class="row">
   <div class="col-8">
     {% include 'partials_agenda/calendaryWeek.html' %}
   </div>
   <div class="col-4">
     <div style="background-color: white; height: 100%;">
-
-        <plus-actions>
-            <plus-action icon="fi fi-rr-pencil" text="New Event" t="New Event" onclick="editarCliente()"></plus-action>
-            <plus-action icon="fi fi-rr-pencil" text="New Homework" t="New Homework" onclick="editarCliente()"></plus-action>
-            <plus-action icon="fi fi-rr-trash" text="New Recordatory" t="New Recordatory" onclick="eliminarCliente()"></plus-action>
-            <plus-action icon="fi fi-rr-trash" text="New Category" t="New Category" onclick="eliminarCliente()"></plus-action>
-        </plus-actions>
-        
+      {% include 'partials_agenda/options_calendary.html' %}
       <center>
         {% include 'partials_agenda/calendaryMonth.html' %}
       </center>

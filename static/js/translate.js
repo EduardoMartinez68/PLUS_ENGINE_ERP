@@ -123,12 +123,21 @@ function translate_dynamic_content(container) {
     if (translateOld[key]) {
       el.textContent = translateOld[key];
     }
+    else{
+      //if the text not exist in the dictionary of the app, we will see if the word exist in the dictionary of the ERP
+      const text=t(key);
+      el.textContent = text;
+    }
   });
 
   container.querySelectorAll('[t-placeholder]').forEach(el => {
     const key = el.getAttribute('t-placeholder');
     if (translateOld[key]) {
       el.setAttribute('placeholder', translateOld[key]);
+    }else{
+      //if the text not exist in the dictionary of the app, we will see if the word exist in the dictionary of the ERP
+      const text=t(key);
+      el.setAttribute('placeholder', text);
     }
   });
 

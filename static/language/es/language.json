@@ -1,6 +1,8 @@
  {
     "message.title": "Confirmación",
     "message.success": "Aceptar",
+    "message.save": "Guardar",
+    "message.delete": "Eliminar",
     "message.cancel": "Cancelar",
     "message.search": "Buscar...",
 

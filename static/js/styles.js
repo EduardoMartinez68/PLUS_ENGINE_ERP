@@ -671,13 +671,21 @@ class PlusSelect extends HTMLElement {
 
     //we will see if exist a pop for add a new data to this select 
     if(this.hasAttribute('add')){
-      searchWrapper.innerHTML = `
-        <div class="search-icon"><i class="fi fi-rs-search"></i></div>
-        <input type="text" class="search-input" placeholder="${txtSearch}">
-        <button class="search-add-btn" title="Agregar nuevo">
-          <i class="fi fi-br-plus"></i>
-        </button>
-      `;
+  const functionName = this.getAttribute('add');
+
+  searchWrapper.innerHTML = `
+    <i class="fi fi-rs-search"></i>
+    <input type="text" placeholder="${txtSearch}">
+    <button class="search-add-btn" title="Agregar nuevo">
+      <i class="fi fi-br-plus"></i>
+    </button>
+  `;
+
+  // Asegúrate de que el DOM ya tiene el botón antes de agregar el evento
+  const addButton = searchWrapper.querySelector('.search-add-btn');
+  if (addButton && typeof window[functionName] === 'function') {
+    addButton.addEventListener('click', window[functionName]);
+  }
     }else{
       //if not exist the attribute 'add' we only show the input
       searchWrapper.innerHTML = `
@@ -743,7 +751,7 @@ class PlusSelect extends HTMLElement {
       searchInput.focus();
     });
 
-    // Evento clic en opciones
+    // Event clic in options
     options.forEach(opt => {
       opt.addEventListener('click', () => {
         select.querySelector('.plus-select-selected-text').textContent = opt.textContent;
@@ -759,7 +767,7 @@ class PlusSelect extends HTMLElement {
       await update_option_for_the_server('');
     }
 
-    // Filtrado
+    // Filter
     let debounceTimer;
     searchInput.addEventListener('input', async e  => {
       
@@ -900,14 +908,14 @@ class PlusSelect extends HTMLElement {
     }
 
 
-    // Cerrar si hace clic fuera
+    // Clouse if the user do clic outside 
     document.addEventListener('click', (e) => {
       if (!wrapper.contains(e.target)) {
         popup.classList.remove('active');
       }
     });
 
-    // Montar estructura final
+    //show structure of the label
     wrapper.appendChild(label);
     wrapper.appendChild(select);
     wrapper.appendChild(popup);
@@ -1507,7 +1515,18 @@ class PlusActions extends HTMLElement {
       const text = t || action.getAttribute('text');
       const onclick = action.getAttribute('onclick');
 
-      const textTranslate=window.translate_text(text);
+      //now we will see if the user add a 
+      const existCombo=action.hasAttribute('combo')
+      const combo=action.getAttribute('combo')
+      if(existCombo){
+        const keyBind=document.createElement('key-bind');
+        keyBind.setAttribute('combo', combo)
+        keyBind.setAttribute('action', onclick)
+        this.appendChild(keyBind);
+      }
+
+      //save the text to translate
+      const textTranslate = window.translate_text(text) + (existCombo ? ' '+combo : '');
 
       //her we will see the type 
       let item;
@@ -1572,9 +1591,13 @@ class PlusActions extends HTMLElement {
           `;
         }
       }
+    
+
+
 
       if (onclick) {
         item.onclick = () => {
+          
           window[onclick]?.();
           this.toggle(false); // opcional: cerrar al hacer clic
         };
@@ -1690,6 +1713,7 @@ class PlusDate extends HTMLElement {
         border-radius: 20px;
         padding: 20px;
         width: 100%;
+        z-inex:-50;
       }
 
       .plus-calendar-calendar-header {
