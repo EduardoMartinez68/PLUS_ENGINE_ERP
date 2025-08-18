@@ -672,7 +672,7 @@ class PlusSelect extends HTMLElement {
     //we will see if exist a pop for add a new data to this select 
     if(this.hasAttribute('add')){
   const functionName = this.getAttribute('add');
-
+  
   searchWrapper.innerHTML = `
     <i class="fi fi-rs-search"></i>
     <input type="text" placeholder="${txtSearch}">
@@ -1907,7 +1907,7 @@ class PlusDate extends HTMLElement {
   }
 
   formatDate(date) {
-    if (!date) return window.t('btn.select_range_date');
+    if (!date) return '00/00/0000';
     const lang=window.get_language_of_the_system()
     return date.toLocaleDateString(lang, {
       day: '2-digit', month: '2-digit', year: 'numeric'
@@ -2133,6 +2133,7 @@ class PlusTime extends HTMLElement {
         outline: none;
         transition: border-color 0.3s;
         cursor: pointer;
+        margin-top: 12px;
       }
 
       .time-picker-display:hover,

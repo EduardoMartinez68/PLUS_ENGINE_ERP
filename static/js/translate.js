@@ -157,7 +157,10 @@ function t(key, listLanguage = LANG) {
 function translate_text(key) {
   // Check if the key exists in the provided listLanguage
   //if not exist in the listLanguage, we will return the key
-  return translateOld[key] || key;
+  let textTranslate=translateOld[key] || key;
+  textTranslate=t(textTranslate);
+
+  return textTranslate;
 }
 
 //this functions is for translate the menu of the apps, this function is called when the user load the web or change the language

@@ -7,11 +7,11 @@
         margin: 10px 0;
     }
 </style>
+
 <plus-actions>
-    <plus-action text="New Event" t="new_event" onclick="open_type_pop" combo="Shift+n"></plus-action>
-    <plus-action text="New Homework" t="New Homework" onclick="editarCliente()"></plus-action>
-    <plus-action text="New Recordatory" t="New Recordatory" onclick="eliminarCliente()"></plus-action>
-    <plus-action text="New Category" t="New Category" onclick="eliminarCliente()"></plus-action>
+    <plus-action icon="fi fi-rr-pencil"  text="New Event" t="new-event" onclick="open_type_pop()" combo="Shift+n" ></plus-action>
+    <plus-action icon="fi fi-rr-pencil" text="Editar" t="new-event" onclick="editarCliente()" ></plus-action>
+    <plus-action icon="fi fi-rr-pencil" text="Editar" t="action-edit" onclick="editarCliente()"></plus-action>
 </plus-actions>
 
 <message-pop title="title-pop-create-event" name="pop-data-event">
@@ -82,7 +82,7 @@
                 <input-field label="label-link" type="text" name="link" placeholder="www/..."></input-field>
             </div>
 
-            
+
             <plus-switch text="repeat_this_event" name="repeat_event"></plus-switch>
 
             <div class="row section">
@@ -116,8 +116,25 @@
 
 <script>
     function open_type_pop() {
+        //first we will to clear all the input of the form 
+
+
+
         show_pop('pop-data-event')
     }
+
+    function clean_form_event(){
+        
+    }
+
+
+
+
+
+
+
+
+
 
     function open_pop(){
         alert('hi')
