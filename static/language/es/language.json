@@ -58,5 +58,50 @@
     "range.last_7_days": "Últimos 7 días",
     "range.current_month": "Mes actual",
     "range.previous_month": "Mes anterior",
-    "range.custom": "Personalizado"
+    "range.custom": "Personalizado",
+
+
+
+    "sunday": "Domingo",
+    "monday": "Lunes",
+    "tuesday": "Martes",
+    "wednesday": "Miercoles",
+    "thursday": "Jueves",
+    "friday": "Viernes",
+    "saturday": "Sábado",
+
+    "january": "Enero",
+    "february": "Febrero",
+    "march": "Marzo",
+    "april": "Abril",
+    "may": "Mayo",
+    "june": "Junio",
+    "july": "Julio",
+    "august": "Agosto",
+    "moth.september": "Septiembre",
+    "october": "Octubre",
+    "november": "Noviembre",
+    "december": "Diciembre",
+
+    "date.sunday": "Dom",
+    "date.monday": "Lun",
+    "date.tuesday": "Mar",
+    "date.wednesday": "Mié",
+    "date.thursday": "Jue",
+    "date.friday": "Vie",
+    "date.saturday": "Sáb",
+
+    "date.month.january": "Ene",
+    "date.month.february": "Feb",
+    "date.month.march": "Mar",
+    "date.month.april": "Abr",
+    "date.month.may": "May",
+    "date.month.june": "Jun",
+    "date.month.july": "Jul",
+    "date.month.august": "Ago",
+    "date.month.september": "Sep",
+    "date.month.october": "Oct",
+    "date.month.november": "Nov",
+    "date.month.december": "Dic"
 }
+

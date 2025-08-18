@@ -27,7 +27,7 @@
   --transition: all 0.3s ease;
 
   --color-success: #2d8659;
-  --color-hover-success:#24704a;
+  --color-hover-success: #24704a;
 }
 
 * {
@@ -1771,4 +1771,142 @@ hr {
 .plus-quick-action i {
   font-size: 18px;
   color: var(--primary);
+}
+
+
+
+/**-----------------------------------------------INPUT TYPE DATE-----------------------------------------*/
+ .plus-calendar-calendar {
+  background-color: white;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  max-width: 420px;
+  width: 100%;
+}
+
+.plus-calendar-calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.plus-calendar-calendar-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.plus-calendar-nav-buttons button {
+  background-color: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.plus-calendar-nav-buttons button:hover {
+  background-color: #f0f0f0;
+}
+
+.plus-calendar-day-names,
+.plus-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  gap: 10px;
+}
+
+.plus-calendar-day-names div {
+  font-weight: bold;
+  color: #888;
+}
+
+.plus-calendar-days div {
+  padding: 10px 0;
+  border-radius: 10px;
+  transition: all 0.2s;
+  cursor: default;
+}
+
+.plus-calendar-days div.plus-calendar-today {
+  background-color: #007aff;
+  color: white;
+  font-weight: bold;
+}
+
+.plus-calendar-days div:hover {
+  background-color: #f0f0f5;
+}
+
+.plus-calendar-days div.empty {
+  visibility: hidden;
+}
+
+.plus-calendar-fake-input {
+  border: 1px solid #ccc;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.plus-calendar-fake-input:hover {
+  border-color: #aaa;
+}
+
+.plus-calendar-calendar-container {
+  margin-top: 10px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  position: absolute;
+}
+
+.calendar {
+  padding: 10px;
+  width: 100%;
+}
+
+.plus-calendar-calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.plus-calendar-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  text-align: center;
+}
+
+.plus-calendar-calendar-days .plus-calendar-day {
+  padding: 8px 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.plus-calendar-calendar-days .plus-calendar-day:hover {
+  background-color: #eee;
+}
+
+.plus-calendar-calendar-days .plus-calendar-today {
+  background-color: #007aff;
+  color: white;
+}
+
+.plus-calendar-calendar-days .plus-calendar-selected {
+  background-color: #555;
+  color: white;
+}
+
+.plus-calendar-calendar-days .plus-calendar-empty {
+  visibility: hidden;
 }

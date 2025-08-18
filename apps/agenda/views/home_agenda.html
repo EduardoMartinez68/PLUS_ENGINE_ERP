@@ -159,11 +159,15 @@
 </div>
 <br>
 
+<plus-date
+  name="fecha_reserva"
+  label="Fecha de reserva"
+  value="2025-08-17">
+</plus-date>
 
 <div class="row">
   <div class="col-10">
 
-    <div id="calendar"></div>
   </div>
   <div class="col-2">
     <div class="row">
@@ -299,65 +303,6 @@
 
 
 <script>
-  //load the FullCalendar and after run the calendar
-  async function initCalendar() {
-    try {
-      await load_script('https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js');
-
-      const calendarEl = document.getElementById('calendar');
-      const userLang = navigator.language || navigator.userLanguage || 'es';
-
-      const calendar = new FullCalendar.Calendar(calendarEl, {
-        locale: userLang,
-        initialView: 'timeGridWeek',
-        themeSystem: 'standard',
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay,listYear'
-        },
-        selectable: true,
-        editable: true,
-        select(info) {
-          show_pop('pop-create-a-new-event')
-          /*
-          const title = prompt('Nuevo pendiente:');
-
-          if (title) {
-            calendar.addEvent({
-              title,
-              start: info.start,
-              end: info.end,
-              allDay: info.allDay
-            });
-          }
-          */
-
-
-          calendar.unselect();
-        },
-
-        eventClick(info) {
-          if (confirm('¿Deseas eliminar este pendiente?')) {
-            info.event.remove();
-          }
-        },
-        events: []
-      });
-
-      calendar.render();
-
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  // run the calendar initialization
-  initCalendar();
-
-
-
-
   //------------------------------------------------------------------
   function create_a_new_event(){
     /*Her the user can add a new event in his calendar*/
