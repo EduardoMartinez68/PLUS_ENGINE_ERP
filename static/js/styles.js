@@ -1779,10 +1779,10 @@ class PlusDate extends HTMLElement {
       }
 
       .plus-calendar-input-label {
+        font-size: 0.85em;
+        color: #475467;
+        margin-bottom: 4px;
         display: block;
-        margin-bottom: 6px;
-        font-weight: bold;
-        font-size: 0.95rem;
       }
 
       .plus-calendar-input-wrapper {
@@ -1841,6 +1841,7 @@ class PlusDate extends HTMLElement {
       }
     `;
 
+
     this.shadowRoot.innerHTML = `
       <div class="plus-calendar-input-wrapper">
         <label class="plus-calendar-input-label">${labelText}</label>
@@ -1856,6 +1857,7 @@ class PlusDate extends HTMLElement {
     this.display = this.shadowRoot.querySelector('#plus-date-display');
     this.input = this.shadowRoot.querySelector(`input[name="${name}"]`);
     this.input.type = 'date';
+    this.input.id = this.getAttribute("id") || generate_unique_dom_id(); //her we will to create a id 
     this.input.required = this.hasAttribute('required'); //we will see if this input is requerid
 
     this.calendarContainer = this.shadowRoot.querySelector('.plus-calendar-calendar-container');
@@ -2064,7 +2066,202 @@ class PlusDate extends HTMLElement {
 
 }
 
+class PlusTime extends HTMLElement {
+  constructor() {
+    super();
+    this.selectedHour = 12;
+    this.selectedMinute = 0;
+    this.attachShadow({ mode: "open" });
+  }
 
+  connectedCallback() {
+    const name = this.getAttribute("name") || "plus-time";
+    const id = this.getAttribute("id") || generate_unique_dom_id(); //her we will to create a id 
+    const labelText = this.getAttribute("label") || "Select Time";
+    const valueAttr = this.getAttribute("value") || "";
+    const [h, m] = valueAttr.split(":");
+    if (h && m) {
+      this.selectedHour = parseInt(h);
+      this.selectedMinute = parseInt(m);
+    }
+
+    const style = document.createElement("style");
+    style.textContent = `
+      .time-picker-wrapper {
+        position: relative;
+        width: max-content;
+      }
+
+      .time-picker-label {
+        font-size: 0.85em;
+        color: #475467;
+        margin-bottom: 4px;
+        display: block;
+      }
+
+      .time-picker-display {
+        padding: 8px 4px;
+        border: none;
+        border-bottom: 2px solid #d0d5dd;
+        background-color: transparent;
+        font-size: 1em;
+        color: #1d2939;
+        outline: none;
+        transition: border-color 0.3s;
+        cursor: pointer;
+      }
+
+      .time-picker-display:hover,
+      .time-picker-display:focus {
+        border-bottom-color: #2a395b;
+      }
+
+      .time-picker-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+        padding: 20px;
+        display: flex;
+        gap: 16px;
+        user-select: none;
+      }
+
+      .time-scroll {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 1.5rem;
+        height: 120px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .time-scroll div {
+        padding: 6px;
+        cursor: grab;
+        transition: background-color 0.2s;
+        text-align: center;
+      }
+
+      .time-scroll div:hover,
+      .time-scroll div.selected {
+        background-color: #f0f0f0;
+        border-radius: 6px;
+      }
+
+      .arrow {
+        font-size: 1.2rem;
+        cursor: pointer;
+        user-select: none;
+      }
+    `;
+
+    this.shadowRoot.innerHTML = `
+      <div class="time-picker-wrapper">
+        <label class="time-picker-label">${labelText}</label>
+        <div class="time-picker-display">${this.formatTime()}</div>
+        <input type="time" name="${name}" id="${id}" value="${this.formatTime(true)}" style="display:none;"/>
+        <div class="time-picker-dropdown">
+          <div class="time-scroll" id="hour-scroll">
+            ${this.generateOptions(24, this.selectedHour)}
+          </div>
+          <div class="time-scroll" id="minute-scroll">
+            ${this.generateOptions(60, this.selectedMinute)}
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.shadowRoot.appendChild(style);
+
+    this.display = this.shadowRoot.querySelector(".time-picker-display");
+    this.dropdown = this.shadowRoot.querySelector(".time-picker-dropdown");
+    this.input = this.shadowRoot.querySelector("input[type='time']");
+
+    this.display.addEventListener("click", () => {
+      this.dropdown.style.display =
+        this.dropdown.style.display === "none" || !this.dropdown.style.display ? "flex" : "none";
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!this.contains(e.target)) this.dropdown.style.display = "none";
+    });
+
+    this.initInteraction("hour");
+    this.initInteraction("minute");
+  }
+
+  formatTime(asValue = false) {
+    const h = String(this.selectedHour).padStart(2, "0");
+    const m = String(this.selectedMinute).padStart(2, "0");
+    return asValue ? `${h}:${m}` : `${h}:${m}`;
+  }
+
+  generateOptions(limit, selected) {
+    let html = "";
+    for (let i = 0; i < limit; i++) {
+      const padded = String(i).padStart(2, "0");
+      html += `<div class="time-option ${i === selected ? "selected" : ""}" data-val="${i}">${padded}</div>`;
+    }
+    return html;
+  }
+
+  initInteraction(type) {
+    const scroll = this.shadowRoot.getElementById(`${type}-scroll`);
+    const options = scroll.querySelectorAll(".time-option");
+
+    let isDragging = false;
+    let startY;
+    let startScroll;
+
+    scroll.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      startY = e.clientY;
+      startScroll = scroll.scrollTop;
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      const delta = startY - e.clientY;
+      scroll.scrollTop = startScroll + delta;
+    });
+
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+    });
+
+    scroll.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      scroll.scrollTop += e.deltaY;
+    });
+
+    options.forEach((opt) => {
+      opt.addEventListener("click", () => {
+        options.forEach((o) => o.classList.remove("selected"));
+        opt.classList.add("selected");
+        const val = parseInt(opt.getAttribute("data-val"));
+        if (type === "hour") this.selectedHour = val;
+        else this.selectedMinute = val;
+        this.display.textContent = this.formatTime();
+        this.input.value = this.formatTime(true);
+      });
+    });
+
+  }
+}
+
+function generate_unique_dom_id(prefix = "plus-") {
+  let id;
+  do {
+    id = prefix + Math.random().toString(36).substr(2, 9);
+  } while (document.getElementById(id));
+  return id;
+}
 
 function get_value_of_label_true_or_false(value){
   return value === true || value === 'true' || value === '1' || value === 1;
@@ -2644,6 +2841,10 @@ function transform_my_labels_erp() {
 
   if (!customElements.get("plus-date")) {
     customElements.define('plus-date', PlusDate);
+  }
+
+  if (!customElements.get("plus-time")) {
+    customElements.define("plus-time", PlusTime);
   }
 }
 
