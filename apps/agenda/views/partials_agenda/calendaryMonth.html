@@ -17,12 +17,12 @@
     .calendar-header h2 {
         margin: 0;
         font-size: 1.4rem;
-        color:var(--primary);
+        color: var(--primary);
     }
 
     .nav-buttons button {
         background-color: transparent;
-        color:var(--primary);
+        color: var(--primary);
         border: none;
         font-size: 1.2rem;
         cursor: pointer;
@@ -69,94 +69,150 @@
         visibility: hidden;
     }
 
-    .title-number-day{
+    .title-number-day {
         font-size: 5rem;
     }
 
-    .title-day{
+    .title-day {
         font-size: 2.5rem;
     }
 </style>
 
 <br>
-<label class="title-number-day">1</label>
-<label class="title-day">FRI</label>
-<button class="btn btn-normal">Today</button>
+<label class="title-number-day" id="numberDay">1</label>
+<label class="title-day" id="textDay">FRI</label>
+<button class="btn btn-normal" id="btnTodayCalendaryMonth">Today</button>
 
 
 <div class="calendar">
     <div class="calendar-header">
         <div class="nav-buttons">
-            <button onclick="changeMonth(-1)">❮</button>
+            <button onclick="window.changeMonth(-1)">❮</button>
         </div>
         <h2 id="month-year"></h2>
         <div class="nav-buttons">
-            <button onclick="changeMonth(1)">❯</button>
+            <button onclick="window.changeMonth(1)">❯</button>
         </div>
     </div>
     <div class="day-names">
-        <div>Dom</div>
-        <div>Lun</div>
-        <div>Mar</div>
-        <div>Mié</div>
-        <div>Jue</div>
-        <div>Vie</div>
-        <div>Sáb</div>
+        <div>Sun</div>
+        <div>Mon</div>
+        <div>Tue</div>
+        <div>Wed</div>
+        <div>Thu</div>
+        <div>Fri</div>
+        <div>Sat</div>
     </div>
     <div class="days" id="calendar-days"></div>
 </div>
 
 <script>
+    (() => {
+        let currentDate = new Date(); // ✅ Variable global
 
-    function renderCalendar(date) {
-        const monthYearText = document.getElementById('month-year');
-        const daysContainer = document.getElementById('calendar-days');
 
-        const year = date.getFullYear();
-        const month = date.getMonth();
 
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        const today = new Date();
+        function change_info_language() {
+            //get the days in his language
+            const dayNames = [
+                window.translate_text('date.sunday'),
+                window.translate_text('date.monday'),
+                window.translate_text('date.tuesday'),
+                window.translate_text('date.wednesday'),
+                window.translate_text('date.thursday'),
+                window.translate_text('date.friday'),
+                window.translate_text('date.saturday')
+            ];
 
-        monthYearText.textContent = date.toLocaleDateString('es-MX', {
-            month: 'long',
-            year: 'numeric'
-        });
-
-        daysContainer.innerHTML = '';
-
-        const startDay = firstDay.getDay();
-        for (let i = 0; i < startDay; i++) {
-            const empty = document.createElement('div');
-            empty.classList.add('empty');
-            daysContainer.appendChild(empty);
+            //her get the divs where is the days
+            const dayNamesDivs = document.querySelectorAll('.day-names div');
+            for (let i = 0; i < dayNamesDivs.length; i++) {
+                dayNamesDivs[i].textContent = dayNames[i]; //update the text
+            }
         }
 
-        for (let day = 1; day <= lastDay.getDate(); day++) {
-            const dayElement = document.createElement('div');
-            dayElement.textContent = day;
+        function update_text_day(numberDay) {
+            document.getElementById('numberDay').textContent = numberDay;
+            document.getElementById('textDay').textContent = ''
+        }
 
-            if (
-                today.getFullYear() === year &&
-                today.getMonth() === month &&
-                today.getDate() === day
-            ) {
-                dayElement.classList.add('today');
+
+
+        function renderCalendar(date) {
+            const monthYearText = document.getElementById('month-year');
+            const daysContainer = document.getElementById('calendar-days');
+
+            const year = date.getFullYear();
+            const month = date.getMonth();
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const today = new Date();
+
+            monthYearText.textContent = date.toLocaleDateString('es-MX', {
+                month: 'long',
+                year: 'numeric'
+            });
+
+            daysContainer.innerHTML = '';
+
+            const startDay = firstDay.getDay();
+            for (let i = 0; i < startDay; i++) {
+                const empty = document.createElement('div');
+                empty.classList.add('empty');
+                daysContainer.appendChild(empty);
             }
 
-            daysContainer.appendChild(dayElement);
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const dayElement = document.createElement('div');
+                dayElement.textContent = day;
+
+                // ✅ Marca el día actual
+                if (
+                    today.getFullYear() === year &&
+                    today.getMonth() === month &&
+                    today.getDate() === day
+                ) {
+                    dayElement.classList.add('today');
+                }
+
+                // ✅ Evento al hacer clic en un día
+                dayElement.addEventListener('click', () => {
+                    const clickedDate = new Date(year, month, day);
+                    renderWeek(clickedDate);
+                    update_text_day(day)
+                });
+
+                daysContainer.appendChild(dayElement);
+            }
         }
-    }
 
-    function changeMonth(step) {
-        const monthYearText = document.getElementById('month-year');
-        const daysContainer = document.getElementById('calendar-days');
+        function changeMonth(step) {
+            currentDate.setMonth(currentDate.getMonth() + step); // ✅ Usamos la variable global
+            renderCalendar(currentDate);
+        }
 
-        let currentDate = new Date();
-        currentDate.setMonth(currentDate.getMonth() + step);
-        renderCalendar(currentDate);
-    }
 
-    renderCalendar(new Date());
+
+
+        change_info_language(); //first we will translate the text of the agenda
+        update_text_day( currentDate.getDate())
+        renderCalendar(currentDate); // ✅ Inicio con la variable global
+
+
+        document.getElementById('btnTodayCalendaryMonth').addEventListener('click', () => {
+            currentDate = new Date(); // restart to the day
+            renderCalendar(currentDate);
+        });
+
+
+
+
+
+
+
+
+
+        window.changeMonth = changeMonth;
+    })();
 </script>

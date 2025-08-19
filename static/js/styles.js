@@ -601,19 +601,11 @@ class PlusModules extends HTMLElement {
   }
 }
 
-customElements.define('plus-modules', PlusModules);
-
 class PlusModule extends HTMLElement {
   connectedCallback() {
     this.classList.add('plus-modules-module');
   }
 }
-
-customElements.define('plus-module', PlusModule);
-
-
-
-
 
 
 class PlusSelect extends HTMLElement {
@@ -1509,7 +1501,7 @@ class PlusActions extends HTMLElement {
 
     const actions = this.querySelectorAll('plus-action');
     actions.forEach(action => {
-      const type = action.getAttribute('type') || '0';
+      const type = action.getAttribute('type') || null;
       const icon = action.getAttribute('icon') || '';
       const t = action.getAttribute('t');
       const text = t || action.getAttribute('text');
@@ -1599,7 +1591,7 @@ class PlusActions extends HTMLElement {
         item.onclick = () => {
           
           window[onclick]?.();
-          this.toggle(false); // opcional: cerrar al hacer clic
+          this.toggle(false); // opcional: close when do clic the user
         };
       }
 
@@ -1613,6 +1605,7 @@ class PlusActions extends HTMLElement {
       }
 
       menu.appendChild(item);
+
     });
     
     //her is the desktop of the shortcuts of the functions

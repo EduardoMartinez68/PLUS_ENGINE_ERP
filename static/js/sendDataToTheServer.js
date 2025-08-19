@@ -17,6 +17,7 @@ async function send_message_to_the_server(url, data = {}, with_load = true) {
         });
 
         if (!response.ok) {
+            console.log(url)
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
@@ -24,6 +25,7 @@ async function send_message_to_the_server(url, data = {}, with_load = true) {
         return result;
 
     } catch (error) {
+        console.log(url)
         console.error('Error al cargar datos:', error);
         return { success: false, error: error.message };
 
@@ -93,4 +95,3 @@ async function create_form_for_send_the_server(id_form, url) {
 }
 
 
-send_message_to_the_server();

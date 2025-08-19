@@ -1,102 +1,158 @@
+<style>
+  .calendary-week-calendar {
+    display: grid;
+    grid-template-columns: 100px repeat(7, 1fr);
+    width: 100%;
+    height: 100vh;
+    position: relative;
+  }
 
-  <style>
-    .calendary-week-calendar {
-      display: grid;
-      grid-template-columns: 100px repeat(7, 1fr);
-      width: 100%;
-      height: 100vh;
-    }
+  .calendary-week-header {
+    display: contents;
+  }
 
-    .calendary-week-header {
-      display: contents;
-    }
+  .calendary-week-header div {
+    background: #f0f0f0;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    border: 1px solid #ccc;
+  }
 
-    .calendary-week-header div {
-      background: #f0f0f0;
-      text-align: center;
-      padding: 10px;
-      font-weight: bold;
-      border: 1px solid #ccc;
-    }
+  .calendary-week-hour-cell {
+    padding: 4px;
+    border: 1px solid #ddd;
+    text-align: right;
+    font-size: 12px;
+    background: #fafafa;
+  }
 
-    .calendary-week-hour-cell {
-      padding: 4px;
-      border: 1px solid #ddd;
-      text-align: right;
-      font-size: 12px;
-      background: #fafafa;
-    }
+  .calendary-week-time-slot {
+    border: 1px solid #eee;
+    height: 40px;
+    position: relative;
+  }
 
-    .calendary-week-time-slot {
-      border: 1px solid #eee;
-      height: 40px;
-    }
+  .calendary-week-row {
+    display: contents;
+  }
 
-    .calendary-week-row {
-      display: contents;
-    }
+  .calendary-week-column-day {
+    background: #fff;
+  }
 
-    .calendary-week-column-day {
-      background: #fff;
-    }
-  </style>
+  /* 🔴 Línea roja para hora actual */
+  .calendary-week-current-hour-line {
+    position: absolute;
+    height: 2px;
+    background: rgb(250, 126, 126);
+    width: calc(100% - 100px); /* 100px es la columna de horas */
+    left: 100px;
+    z-index: 10;
+  }
 
-  <div id="calendary-week-calendar" class="calendary-week-calendar"></div>
+  /* 🌟 Columna del día actual */
+  .calendary-week-today-column {
+    background-color: #e0f7fa79 !important;
+  }
+</style>
 
-  <script>
-    function renderWeek(dateStr) {
-      const calendar = document.getElementById('calendary-week-calendar');
-      calendar.innerHTML = '';
+<div id="calendary-week-calendar" class="calendary-week-calendar"></div>
 
-      const inputDate = new Date(dateStr);
-      const weekStart = new Date(inputDate);
-      weekStart.setDate(inputDate.getDate() - inputDate.getDay()); // domingo
+<script>
+  function renderWeek(dateStr) {
+    const calendar = document.getElementById('calendary-week-calendar');
+    calendar.innerHTML = '';
 
-      // Header (Días)
-      const header = document.createElement('div');
-      header.className = 'calendary-week-header';
+    const inputDate = new Date(dateStr);
+    const weekStart = new Date(inputDate);
+    weekStart.setDate(inputDate.getDate() - inputDate.getDay()); // domingo
 
-      const hourHeader = document.createElement('div');
-      hourHeader.textContent = '';
-      header.appendChild(hourHeader);
+    const today = new Date();
+    const isSameDay = (d1, d2) =>
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate();
 
-      const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const header = document.createElement('div');
+    header.className = 'calendary-week-header';
 
-      for (let i = 0; i < 7; i++) {
-        const day = new Date(weekStart);
-        day.setDate(weekStart.getDate() + i);
+    const hourHeader = document.createElement('div');
+    hourHeader.textContent = '';
+    header.appendChild(hourHeader);
 
-        const dayDiv = document.createElement('div');
-        dayDiv.textContent = `${dayNames[i]} ${day.getDate()}/${day.getMonth() + 1}`;
-        header.appendChild(dayDiv);
+    const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+    const todayColumnIndices = [];
+
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(weekStart);
+      day.setDate(weekStart.getDate() + i);
+
+      const dayDiv = document.createElement('div');
+      dayDiv.textContent = `${dayNames[i]} ${day.getDate()}`;
+
+      if (isSameDay(today, day)) {
+        todayColumnIndices.push(i); // Guardar qué día es hoy
+        dayDiv.style.backgroundColor = '#e0f7fa'; // también destacar en encabezado
       }
 
-      calendar.appendChild(header);
+      header.appendChild(dayDiv);
+    }
 
-      // Rellenar horas
-      for (let h = 0; h < 24; h++) {
-        const hour = h.toString().padStart(2, '0');
+    calendar.appendChild(header);
 
-        const row = document.createElement('div');
-        row.className = 'calendary-week-row';
+    for (let h = 0; h < 24; h++) {
+      const hour = h.toString().padStart(2, '0');
 
-        const hourCell = document.createElement('div');
-        hourCell.className = 'calendary-week-hour-cell';
-        hourCell.textContent = `${hour}:00`;
-        row.appendChild(hourCell);
+      const row = document.createElement('div');
+      row.className = 'calendary-week-row';
 
-        for (let d = 0; d < 7; d++) {
-          const slot = document.createElement('div');
-          slot.className = 'calendary-week-time-slot calendary-week-column-day';
-          slot.dataset.day = d;
-          slot.dataset.hour = h;
-          row.appendChild(slot);
+      const hourCell = document.createElement('div');
+      hourCell.className = 'calendary-week-hour-cell';
+      hourCell.textContent = `${hour}:00`;
+      row.appendChild(hourCell);
+
+      for (let d = 0; d < 7; d++) {
+        const slot = document.createElement('div');
+        slot.className = 'calendary-week-time-slot calendary-week-column-day';
+        slot.dataset.day = d;
+        slot.dataset.hour = h;
+
+        // Si esta es la columna del día actual, le añadimos la clase de fondo
+        if (todayColumnIndices.includes(d)) {
+          slot.classList.add('calendary-week-today-column');
         }
 
-        calendar.appendChild(row);
+        row.appendChild(slot);
       }
+
+      calendar.appendChild(row);
     }
 
-    // Ejemplo de uso: cambiar la fecha aquí abajo
-    renderWeek('2025-08-17');
-  </script>
+    // 🔴 Línea roja de la hora actual
+    if (today >= weekStart && today <= new Date(weekStart.getTime() + 6 * 86400000)) {
+      const hours = today.getHours();
+      const minutes = today.getMinutes();
+      const positionY = (hours * 40) + (minutes / 60 * 40); // cada hora es 40px
+
+      const redLine = document.createElement('div');
+      redLine.className = 'calendary-week-current-hour-line';
+      redLine.style.top = `${positionY + 40}px`; // +40 por el encabezado de días
+
+      calendar.appendChild(redLine);
+    }
+  }
+
+  function render_this_day() {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    renderWeek(todayStr);
+  }
+
+  render_this_day();
+</script>

@@ -1,17 +1,5 @@
-<style>
-    .section{
-        background-color: white;
-        border-radius: 12px;
-        width: 100%;
-        padding: 10px;
-        margin: 10px 0;
-    }
-</style>
-
 <plus-actions>
-    <plus-action icon="fi fi-rr-pencil"  text="New Event" t="new-event" onclick="open_type_pop()" combo="Shift+n" ></plus-action>
-    <plus-action icon="fi fi-rr-pencil" text="Editar" t="new-event" onclick="editarCliente()" ></plus-action>
-    <plus-action icon="fi fi-rr-pencil" text="Editar" t="action-edit" onclick="editarCliente()"></plus-action>
+    <plus-action text="new-event" t="new-event" onclick="open_type_pop" combo="Shift+n"></plus-action>
 </plus-actions>
 
 <message-pop title="title-pop-create-event" name="pop-data-event">
@@ -117,11 +105,9 @@
 <script>
     function open_type_pop() {
         //first we will to clear all the input of the form 
-
-
-
         show_pop('pop-data-event')
     }
+
 
     function clean_form_event(){
         

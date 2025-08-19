@@ -9,7 +9,6 @@ function load_language(langUrl) {
   if (lastUrl === langUrl) {
     //if we have save the translation of the web, we will apply the translation to the web evit load the language again
     apply_translation_to_the_web(translateOld);
-    console.log(langUrl)
     return;
   }
 
@@ -25,10 +24,6 @@ function load_language(langUrl) {
       console.error('Error to load the language:', err);
     });
 }
-
-
-
-
 
 function get_language_of_the_system() {
   // Detects the browser language
@@ -120,25 +115,12 @@ get_language_ERP().then(languages => {
 function translate_dynamic_content(container) {
   container.querySelectorAll('[t]').forEach(el => {
     const key = el.getAttribute('t');
-    if (translateOld[key]) {
-      el.textContent = translateOld[key];
-    }
-    else{
-      //if the text not exist in the dictionary of the app, we will see if the word exist in the dictionary of the ERP
-      const text=t(key);
-      el.textContent = text;
-    }
+    el.textContent=translate_text(key);
   });
 
   container.querySelectorAll('[t-placeholder]').forEach(el => {
     const key = el.getAttribute('t-placeholder');
-    if (translateOld[key]) {
-      el.setAttribute('placeholder', translateOld[key]);
-    }else{
-      //if the text not exist in the dictionary of the app, we will see if the word exist in the dictionary of the ERP
-      const text=t(key);
-      el.setAttribute('placeholder', text);
-    }
+    el.setAttribute('placeholder', translate_text(key));
   });
 
   container.querySelectorAll('info-label').forEach(el => {
@@ -157,8 +139,8 @@ function t(key, listLanguage = LANG) {
 function translate_text(key) {
   // Check if the key exists in the provided listLanguage
   //if not exist in the listLanguage, we will return the key
-  let textTranslate=translateOld[key] || key;
-  textTranslate=t(textTranslate);
+  let textTranslate=t(key); 
+  textTranslate=translateOld[textTranslate] || textTranslate;
 
   return textTranslate;
 }
