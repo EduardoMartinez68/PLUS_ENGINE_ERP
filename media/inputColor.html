@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Input Color - ERP Abogados</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; background: #f5f6f8; padding: 40px;">
+
+  <input-color id="colorCliente" name="color_cliente" value="#3b82f6"></input-color>
+
+  <script>
+    class InputColorComponent extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+
+        const colorInicial = this.getAttribute('value') || '#3b82f6';
+        const name = this.getAttribute('name') || '';
+        const id = this.getAttribute('id') || '';
+
+        this.value = colorInicial;
+
+        const container = document.createElement('div');
+        container.innerHTML = `
+          <style>
+            .input-color-container {
+              position: relative;
+              display: inline-block;
+              font-family: inherit;
+            }
+
+            .color-box {
+              width: 42px;
+              height: 42px;
+              border-radius: 12px;
+              border: 1px solid #ccc;
+              cursor: pointer;
+              box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+              transition: all 0.2s ease;
+            }
+
+            .color-box:hover {
+              box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            }
+
+            .color-picker-popup {
+              position: absolute;
+              top: 52px;
+              left: 0;
+              background: #fff;
+              border: 1px solid #e0e0e0;
+              border-radius: 16px;
+              box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+              padding: 16px;
+              z-index: 100;
+              width: 260px;
+              display: none;
+              animation: fadeIn 0.2s ease;
+            }
+
+            @keyframes fadeIn {
+              from { opacity: 0; transform: translateY(-5px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+
+            .tabs {
+              display: flex;
+              margin-bottom: 12px;
+              background: #f0f0f0;
+              border-radius: 12px;
+              overflow: hidden;
+            }
+
+            .tab-button {
+              flex: 1;
+              padding: 8px;
+              background: transparent;
+              border: none;
+              cursor: pointer;
+              font-size: 14px;
+              color: #444;
+              transition: background 0.2s;
+            }
+
+            .tab-button.active {
+              background: #e0e0e0;
+              font-weight: 600;
+            }
+
+            .tab-content {
+              display: none;
+              margin-top: 8px;
+            }
+
+            .tab-content.active {
+              display: block;
+            }
+
+            .quick-colors {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 10px;
+              justify-content: start;
+            }
+
+            .color-circle {
+              width: 28px;
+              height: 28px;
+              border-radius: 50%;
+              cursor: pointer;
+              border: 1px solid #ccc;
+              transition: transform 0.1s;
+            }
+
+            .color-circle:hover {
+              border-color: #999;
+            }
+
+            .color-code-input {
+              margin-top: 12px;
+              width: 100%;
+              padding: 6px 10px;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              font-size: 13px;
+              font-family: monospace;
+              color: #333;
+              background: #fdfdfd;
+              box-sizing: border-box;
+            }
+
+            .accept-button {
+              margin-top: 12px;
+              width: 100%;
+              padding: 8px;
+              background: #007aff;
+              color: white;
+              border: none;
+              border-radius: 8px;
+              font-size: 14px;
+              cursor: pointer;
+              transition: background 0.2s;
+            }
+
+            .accept-button:hover {
+              background: #005fd1;
+            }
+          </style>
+          <input type="hidden" name="${name}" id="${id}" value="${colorInicial}" />
+          
+          <div class="input-color-container">
+            <div class="color-box" style="background-color: ${colorInicial}"></div>
+            <div class="color-picker-popup">
+                <input type="text" class="color-code-input" value="${colorInicial}" readonly />
+                <br><br>
+              <div class="tabs">
+                <button class="tab-button active">Rápido</button>
+                <button class="tab-button">Personalizado</button>
+              </div>
+              <div class="tab-content active">
+                <div class="quick-colors">
+                ${[
+                '#ff3b30', // rojo (Apple red)
+                '#ff6b81', // rosa
+                '#a55eea', // púrpura
+                '#8e44ad', // morado
+                '#0050ef', // azul fuerte
+                '#5ac8fa', // azul claro
+                '#007aff', // azul rey
+                '#00ffff', // azul aqua
+                '#20c997', // verde aqua
+                '#006400', // verde oscuro
+                '#34c759', // verde claro (Apple green)
+                '#ffff00', // amarillo clásico
+                '#f1c40f', // amarillo cálido
+                '#f39c12', // amarillo intenso
+                '#ffa500', // naranja
+                '#e67e22', // naranja oscuro
+                '#8b4513', // café
+                '#95a5a6', // gris
+                '#000000', // negro
+                '#ffffff'  // blanco
+                ]
+                .map(color => `<div class="color-circle" style="background:${color}" data-color="${color}"></div>`)
+                .join('')}
+                </div>
+              </div>
+              <div class="tab-content">
+                <input type="color" class="custom-color" value="${colorInicial}" />
+                <button class="accept-button">Aceptar</button>
+              </div>
+              
+            </div>
+            
+          </div>
+        `;
+
+        this.shadowRoot.appendChild(container);
+
+        const box = this.shadowRoot.querySelector('.color-box');
+        const popup = this.shadowRoot.querySelector('.color-picker-popup');
+        const tabs = this.shadowRoot.querySelectorAll('.tab-button');
+        const contents = this.shadowRoot.querySelectorAll('.tab-content');
+        const hiddenInput = this.shadowRoot.querySelector('input[type="hidden"]');
+        const textInput = this.shadowRoot.querySelector('.color-code-input');
+        const acceptButton = this.shadowRoot.querySelector('.accept-button');
+        const colorInput = this.shadowRoot.querySelector('.custom-color');
+
+        // Abrir / cerrar popup
+        box.addEventListener('click', () => {
+          popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Tabs
+        tabs.forEach((tab, i) => {
+          tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            contents[i].classList.add('active');
+          });
+        });
+
+        // Círculos de color rápido
+        this.shadowRoot.querySelectorAll('.color-circle').forEach(circle => {
+          circle.addEventListener('click', () => {
+            const color = circle.getAttribute('data-color');
+            this.updateColor(color);
+            popup.style.display = 'none';
+          });
+        });
+
+        // Botón aceptar
+        acceptButton.addEventListener('click', () => {
+          const color = colorInput.value;
+          this.updateColor(color);
+          popup.style.display = 'none';
+        });
+      }
+
+      updateColor(color) {
+        this.value = color;
+        this.shadowRoot.querySelector('.color-box').style.backgroundColor = color;
+        this.shadowRoot.querySelector('.color-code-input').value = color;
+        this.shadowRoot.querySelector('input[type="hidden"]').value = color;
+        this.dispatchEvent(new CustomEvent('change', { detail: { color } }));
+      }
+
+      get value() {
+        return this.getAttribute('value');
+      }
+
+      set value(val) {
+        this.setAttribute('value', val);
+      }
+    }
+
+    customElements.define('input-color', InputColorComponent);
+  </script>
+</body>
+</html>
