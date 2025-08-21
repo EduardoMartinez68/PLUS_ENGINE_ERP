@@ -1,134 +1,109 @@
-<style>
-.my-pop-content {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  background-color: var(--background);
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  min-width: 300px;
-  width: 50vw;
-  height: 70vh;
-  max-height: 70vh;
-  max-width: 90vw;
-  overflow: hidden;
-  border-radius: 6px;
-
-  overflow: visible;
-  padding: 0;
-}
-
-.container-scroll {
-  flex-grow: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 20px;
-}
-
-</style>
 <plus-actions>
     <plus-action text="new-event" onclick="open_type_pop" combo="Shift+n"></plus-action>
     <plus-action text="title-create-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
 </plus-actions>
 
 <message-pop title="title-pop-create-event" name="pop-data-event">
-    <div class="container-scroll">
-    <plus-tabs>
-        <plus-tab text="Description">
-            <div class="section">
+    <div class="container-pop">
+        <plus-tabs>
+            <plus-tab text="Description">
+                <div class="section">
                     <label t="label-input-title">Title of the event</label>
                     <input type="text" name="name" class="case-title-input" placeholder="Title"
                         t-placeholder="placeholder-input-title" required maxlength="300" />
-            </div>
-
-
-            <div class="section">
-                <div class="row m-1">
-                    <plus-select label="priority" name="priority" required>
-                        <option selected t="priority.low"></option>
-                        <option t="priority.normal"></option>
-                        <option t="priority.high"></option>
-                    </plus-select>
-
-                    <plus-select label="label-search-home" name="tipo_documento" requerid link="customers/search_customers_select/" add="open_pop_new_type_event" edit_data="edit_data" delete_data="customers/search_customers_select/">
-
-                    </plus-select>
-                </div>
-            </div>
-
-            <div class="section">
-                <plus-switch text="all-day" name="allDay"></plus-switch>
-
-                <div class="row section">                
-                    <plus-date label="starts"></plus-date>
-                    <plus-time label="starts"></plus-time>
                 </div>
 
-                <div class="row section">                
-                    <plus-date label="ends"></plus-date>
-                    <plus-time label="ends"></plus-time>
+
+                <div class="section">
+                    <div class="row m-1">
+                        <plus-select label="priority" name="priority" required>
+                            <option selected t="priority.low"></option>
+                            <option t="priority.normal"></option>
+                            <option t="priority.high"></option>
+                        </plus-select>
+
+                        <plus-select label="label-search-home" name="tipo_documento" requerid
+                            link="customers/search_customers_select/" add="open_pop_new_type_event"
+                            edit_data="edit_data" delete_data="customers/search_customers_select/">
+
+                        </plus-select>
+                    </div>
                 </div>
 
-            </div>
+                <div class="section">
+                    <plus-switch text="all-day" name="allDay"></plus-switch>
 
-            <div class="section">
-                <plus-select label="Tiempo de aviso" name="alert_time" required>
-                    <option selected t="alert.none"></option>
-                    <option t="alert.5min"></option>
-                    <option t="alert.10min"></option>
-                    <option t="alert.15min"></option>
-                    <option t="alert.30min"></option>
-                    <option t="alert.1hr"></option>
-                    <option t="alert.2hr"></option>
-                    <option t="alert.1day"></option>
-                    <option t="alert.2day"></option>
-                    <option t="alert.1week"></option>
-                </plus-select>
-            </div>
+                    <div class="row section">
+                        <plus-date label="starts"></plus-date>
+                        <plus-time label="starts"></plus-time>
+                    </div>
 
+                    <div class="row section">
+                        <plus-date label="ends"></plus-date>
+                        <plus-time label="ends"></plus-time>
+                    </div>
 
-            
+                </div>
 
-
-        </plus-tab>
-
-
-        <plus-tab text="More options">
-            <div class="section">
-                <input-field label="label-input-address" name="location" placeholder="placeholder-input-address"></input-field>
-            </div>
-
-            <div class="section">
-                <input-field label="label-link" type="text" name="link" placeholder="www/..."></input-field>
-            </div>
-
-
-            <plus-switch text="repeat_this_event" name="repeat_event"></plus-switch>
-
-            <div class="section">
-                <div class="row m-1">
-                    <plus-select label="repeat" name="repeat" requerid>
-                        <option selected t="option.never"></option>
-                        <option t="option.every_day"></option>
-                        <option t="option.every_week"></option>
-                        <option t="option.every_2_weeks"></option>
-                        <option t="option.every_month"></option>
-                        <option t="option.every_year"></option>
-                    </plus-select>
-
-
-                    <plus-select label="endRepeat" name="endRepeat" requerid>
-                        <option selected t="option.never">Never</option>
-                        <option  t="option.on_day">On Day</option>
+                <div class="section">
+                    <plus-select label="Tiempo de aviso" name="alert_time" required>
+                        <option selected t="alert.none"></option>
+                        <option t="alert.5min"></option>
+                        <option t="alert.10min"></option>
+                        <option t="alert.15min"></option>
+                        <option t="alert.30min"></option>
+                        <option t="alert.1hr"></option>
+                        <option t="alert.2hr"></option>
+                        <option t="alert.1day"></option>
+                        <option t="alert.2day"></option>
+                        <option t="alert.1week"></option>
                     </plus-select>
                 </div>
-            </div>
 
-            <plus-switch text="send_notification" name="send_notification" checked="true"></plus-switch>
 
-            <plus-switch text="i_am_free" name="i_am_free" checked="true"></plus-switch>
-        </plus-tab>
-    </plus-tabs>
+
+
+
+            </plus-tab>
+
+
+            <plus-tab text="More options">
+                <div class="section">
+                    <input-field label="label-input-address" name="location"
+                        placeholder="placeholder-input-address"></input-field>
+                </div>
+
+                <div class="section">
+                    <input-field label="label-link" type="text" name="link" placeholder="www/..."></input-field>
+                </div>
+
+
+                <plus-switch text="repeat_this_event" name="repeat_event"></plus-switch>
+
+                <div class="section">
+                    <div class="row m-1">
+                        <plus-select label="repeat" name="repeat" requerid>
+                            <option selected t="option.never"></option>
+                            <option t="option.every_day"></option>
+                            <option t="option.every_week"></option>
+                            <option t="option.every_2_weeks"></option>
+                            <option t="option.every_month"></option>
+                            <option t="option.every_year"></option>
+                        </plus-select>
+
+
+                        <plus-select label="endRepeat" name="endRepeat" requerid>
+                            <option selected t="option.never">Never</option>
+                            <option t="option.on_day">On Day</option>
+                        </plus-select>
+                    </div>
+                </div>
+
+                <plus-switch text="send_notification" name="send_notification" checked="true"></plus-switch>
+
+                <plus-switch text="i_am_free" name="i_am_free" checked="true"></plus-switch>
+            </plus-tab>
+        </plus-tabs>
     </div>
 
     <button class="btn btn-add btn-success" t="message.success">Save</button>
@@ -140,8 +115,8 @@
 <message-pop title="title-create-type-event" name="pop-new-data-event">
     <div class="section">
         <label t="new-type-event">Title of the event</label>
-        <input type="text" name="name" class="case-title-input"
-            t-placeholder="new-type-event" required maxlength="300" />
+        <input type="text" name="name" class="case-title-input" t-placeholder="new-type-event" required
+            maxlength="300" />
     </div>
 
     <div class="section">
@@ -161,8 +136,8 @@
     }
 
 
-    function clean_form_event(){
-        
+    function clean_form_event() {
+
     }
 
 
@@ -174,11 +149,11 @@
 
 
 
-    function open_pop_new_type_event(){
+    function open_pop_new_type_event() {
         show_pop('pop-new-data-event')
     }
 
-    function create_new_type_event(){
+    function create_new_type_event() {
         //const title = document.querySelector('input[name="name"]').value;
         //const color = document.querySelector('input[name="color"]').value;
 

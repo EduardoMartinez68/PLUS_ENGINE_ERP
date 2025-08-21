@@ -1245,18 +1245,23 @@ hr {
 }
 
 .my-pop-content {
+  display: flex;
+  flex-direction: column;
   position: relative;
   background-color: var(--background);
-  padding: 20px;
   border: 1px solid #ccc;
   box-sizing: border-box;
   min-width: 300px;
   width: 50vw;
   max-height: 70vh;
   max-width: 90vw;
-  overflow-y: auto;
+  overflow: hidden;
+  border-radius: 6px;
+
   overflow: visible;
+  padding: 0;
 }
+
 
 
 
@@ -1310,6 +1315,27 @@ hr {
   padding: 20px 20px 30px 20px;
 }
 
+.container-pop{
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+}
+
+
+@media (max-width: 600px) {
+    .my-pop-content {
+        width: 100vw;
+        height: 100vh;
+        max-width: 100vw;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .container-pop{
+        padding: 15px;
+    }
+}
 
 /**------------------------------------------------------------------------------------------message pop for question------------------------------------------------------------------------*/
 .confirm-popup-overlay {
@@ -1506,21 +1532,25 @@ hr {
   box-shadow: 0 0 0 3px rgba(93, 135, 255, 0.2);
 }
 
-.plus-select-popup {
-  position: absolute;
-  top: 0;
-  left: calc(100% + 12px);
-  width: 260px;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-  display: none;
-  flex-direction: column;
-  padding: 10px;
-}
+    .plus-select-popup {
+        position: absolute;
+        top: 0;
+        left: calc(100% + 12px);
+        width: 260px;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        display: none;
+        flex-direction: column;
+        padding: 10px;
 
+
+        max-height: 150px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
 .plus-select-popup.active {
   display: flex;
 }
