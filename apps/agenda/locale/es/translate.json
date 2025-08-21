@@ -57,5 +57,9 @@
     "placeholder-comment":"Escribe un comentario para el evento",
 
     "title-create-type-event":"Crear un nuevo tipo de evento",
-    "new-type-event":"Nuevo tipo de evento"
+    "new-type-event":"Nuevo tipo de evento",
+
+
+    "label-description":"Descripción",
+    "placeholder-description":"Escribe una descripción para el evento"
 }

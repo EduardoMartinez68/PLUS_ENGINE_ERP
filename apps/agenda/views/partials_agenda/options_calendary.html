@@ -1,3 +1,4 @@
+
 <plus-actions>
     <plus-action text="new-event" onclick="open_type_pop" combo="Shift+n"></plus-action>
     <plus-action text="title-create-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
@@ -66,8 +67,8 @@
                 </div>
 
                 <div class="section">
-                    <textarea label="label-input-description" name="description"
-                        placeholder="placeholder-input-description"></textarea>
+                    <label for="description" t="label-description">Description</label>
+                    <textarea name="description" id="description" rows="4" t-placeholder="placeholder-description"></textarea>
                 </div>
 
 
@@ -85,7 +86,7 @@
                 </div>
 
 
-                <plus-switch text="repeat_this_event" name="repeat_event"></plus-switch>
+                <plus-switch text="repeat_this_event" name="repeat_event" id="repeat_this_event"></plus-switch>
 
                 <div class="section">
                     <div class="row m-1">
@@ -168,8 +169,11 @@
         //console.log('Creating new type event:', { title, color });
         hide_pop('pop-new-data-event')
     }
+
 </script>
+
 <script>
+    /*
   function initEmailInput() {
     // Variables globales accesibles desde window
     window.container = document.getElementById('email-tags-container');
@@ -227,4 +231,23 @@
 
   // Inicializa todo
   initEmailInput();
+  */
+</script>
+
+
+<script>
+  (() => {
+  customElements.whenDefined('plus-switch').then(() => {
+    const plusSwitch = document.querySelector('plus-switch');
+    const input = plusSwitch.shadowRoot?.querySelector('input[type="checkbox"]');
+
+    if (input) {
+      input.addEventListener('change', () => {
+        console.log("¿Está encendido?", input.checked);
+      });
+    } else {
+      console.warn("Input no encontrado en el shadow DOM.");
+    }
+  });
+  });
 </script>

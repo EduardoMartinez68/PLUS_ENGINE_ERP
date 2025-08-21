@@ -940,6 +940,7 @@ async function plus_delete_with_help_button(id, link) {
 class PlusSwitch extends HTMLElement {
   constructor() {
     super();
+    
   }
 
   connectedCallback() {
@@ -1022,6 +1023,15 @@ class PlusSwitch extends HTMLElement {
 
     // Replace the original label
     this.replaceWith(container);
+
+    //her we will add a event listener
+    checkbox.addEventListener('change', (e) => {
+      this.dispatchEvent(new CustomEvent('change', {
+        detail: { checked: e.target.checked },
+        bubbles: true,
+        composed: true
+      }));
+    });
   }
 }
 
@@ -1192,8 +1202,6 @@ class CreateHelp {
   }
 
 }
-
-
 
 class PlusSelectDate extends HTMLElement {
   constructor() {
@@ -1669,6 +1677,95 @@ class PlusActions extends HTMLElement {
 
       quickActions.appendChild(shortcut);
     }
+  }
+}
+
+class PlusComment extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  async connectedCallback() {
+    const shadow = this.shadowRoot;
+
+    // Carga Quill JS y CSS desde un CDN (puedes cambiarlo si es local)
+    const quillJS = await this.loadScript('https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js');
+    const quillCSS = await this.loadCSS('https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css');
+
+    // Agrega estilos al shadow
+    const styleTag = document.createElement('style');
+    styleTag.textContent = `
+      #editor {
+        height: 200px;
+      }
+      .ql-toolbar.ql-snow {
+        border: 1px solid #ccc;
+        border-bottom: none;
+      }
+      .ql-container.ql-snow {
+        border: 1px solid #ccc;
+      }
+    `;
+    shadow.appendChild(styleTag);
+
+    // Crea el contenedor del editor
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
+      <div class="editor">
+        <div id="toolbar">
+          <button class="ql-bold"></button>
+          <button class="ql-italic"></button>
+          <button class="ql-underline"></button>
+          <button class="ql-strike"></button>
+          <select class="ql-size">
+            <option value="small"></option>
+            <option selected></option>
+            <option value="large"></option>
+            <option value="huge"></option>
+          </select>
+          <button class="ql-list" value="ordered"></button>
+          <button class="ql-list" value="bullet"></button>
+        </div>
+        <div id="editor"></div>
+      </div>
+    `;
+    shadow.appendChild(wrapper);
+
+    // Inyecta Quill dentro del shadow DOM usando su propio contexto
+    const Quill = window.Quill;
+    new Quill(shadow.getElementById('editor'), {
+      theme: 'snow',
+      modules: {
+        toolbar: shadow.getElementById('toolbar')
+      }
+    });
+  }
+
+  // Método para cargar el CSS y devolver la URL para uso interno
+  loadCSS(href) {
+    return new Promise((resolve, reject) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      link.onload = () => resolve(href);
+      link.onerror = () => reject(new Error(`Error cargando CSS: ${href}`));
+      this.shadowRoot.appendChild(link);
+    });
+  }
+
+  // Método para cargar el JS de Quill
+  loadScript(src) {
+    return new Promise((resolve, reject) => {
+      if (window.Quill) return resolve();
+
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = () => reject(new Error(`Error cargando JS: ${src}`));
+      document.head.appendChild(script);
+    });
   }
 }
 
@@ -3248,6 +3345,9 @@ function transform_my_labels_erp() {
     customElements.define('plus-emails', PlusEmails);
   }
 
+  if (!customElements.get("plus-comment")) {
+    customElements.define('plus-comment', PlusComment);
+  }
 }
 
 /**---------------------------------TAB----------------------------- */
