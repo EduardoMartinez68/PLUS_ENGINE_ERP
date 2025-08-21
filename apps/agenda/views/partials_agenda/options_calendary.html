@@ -1,9 +1,38 @@
+<style>
+.my-pop-content {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: var(--background);
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  min-width: 300px;
+  width: 50vw;
+  height: 70vh;
+  max-height: 70vh;
+  max-width: 90vw;
+  overflow: hidden;
+  border-radius: 6px;
+
+  overflow: visible;
+  padding: 0;
+}
+
+.container-scroll {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+}
+
+</style>
 <plus-actions>
     <plus-action text="new-event" onclick="open_type_pop" combo="Shift+n"></plus-action>
     <plus-action text="title-create-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
 </plus-actions>
 
 <message-pop title="title-pop-create-event" name="pop-data-event">
+    <div class="container-scroll">
     <plus-tabs>
         <plus-tab text="Description">
             <div class="section">
@@ -100,7 +129,7 @@
             <plus-switch text="i_am_free" name="i_am_free" checked="true"></plus-switch>
         </plus-tab>
     </plus-tabs>
-
+    </div>
 
     <button class="btn btn-add btn-success" t="message.success">Save</button>
 </message-pop>
