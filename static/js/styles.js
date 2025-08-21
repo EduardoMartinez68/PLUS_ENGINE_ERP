@@ -166,6 +166,7 @@ class InputField extends HTMLElement {
 
     input.type = type;
     input.name = name;
+    input.id = this.getAttribute('id') || generate_unique_dom_id();
 
     //her we will add more atributes to the input only if the user would like do 
     const pattern = this.getAttribute("pattern");
@@ -662,10 +663,10 @@ class PlusSelect extends HTMLElement {
     const txtSearch = t('message.search') || 'search...'; //get the translate global of a seeker
 
     //we will see if exist a pop for add a new data to this select 
-    if(this.hasAttribute('add')){
-  const functionName = this.getAttribute('add');
-  
-  searchWrapper.innerHTML = `
+    if (this.hasAttribute('add')) {
+      const functionName = this.getAttribute('add');
+
+      searchWrapper.innerHTML = `
     <i class="fi fi-rs-search"></i>
     <input type="text" placeholder="${txtSearch}">
     <button class="search-add-btn" title="Agregar nuevo">
@@ -673,12 +674,12 @@ class PlusSelect extends HTMLElement {
     </button>
   `;
 
-  // Asegúrate de que el DOM ya tiene el botón antes de agregar el evento
-  const addButton = searchWrapper.querySelector('.search-add-btn');
-  if (addButton && typeof window[functionName] === 'function') {
-    addButton.addEventListener('click', window[functionName]);
-  }
-    }else{
+      // Asegúrate de que el DOM ya tiene el botón antes de agregar el evento
+      const addButton = searchWrapper.querySelector('.search-add-btn');
+      if (addButton && typeof window[functionName] === 'function') {
+        addButton.addEventListener('click', window[functionName]);
+      }
+    } else {
       //if not exist the attribute 'add' we only show the input
       searchWrapper.innerHTML = `
         <i class="fi fi-rs-search"></i>
@@ -693,11 +694,11 @@ class PlusSelect extends HTMLElement {
     const thisSlectSendDataToTheServer = this.hasAttribute('link');
 
     //also we will see if this data can be edit or delete 
-    const delete_data=this.hasAttribute('delete_data');
-    const edit_data=this.hasAttribute('edit_data');
-    const functionDelete=this.getAttribute('delete_data')?.replace('()', ''); //this is for remplace the () of the function example delete_customer() to delete_customer
-    const functionEdit=this.getAttribute('edit_data')?.replace('()', '');
-    const linkDelete=this.getAttribute('delete_data')?.replace('()', '');
+    const delete_data = this.hasAttribute('delete_data');
+    const edit_data = this.hasAttribute('edit_data');
+    const functionDelete = this.getAttribute('delete_data')?.replace('()', ''); //this is for remplace the () of the function example delete_customer() to delete_customer
+    const functionEdit = this.getAttribute('edit_data')?.replace('()', '');
+    const linkDelete = this.getAttribute('delete_data')?.replace('()', '');
     const link = this.getAttribute('link');
     //Create the container of the <option>
     const slotOptions = this.querySelectorAll('option');
@@ -735,6 +736,7 @@ class PlusSelect extends HTMLElement {
     const hiddenInput = document.createElement('input');
     hiddenInput.type = 'hidden';
     hiddenInput.name = name;
+    hiddenInput.id = this.getAttribute('id') || generate_unique_dom_id();
     if (isRequired) hiddenInput.required = true;
 
     //Click event on select visible. This is when the user do clic in the select.
@@ -754,32 +756,32 @@ class PlusSelect extends HTMLElement {
       });
     });
 
-    if(thisSlectSendDataToTheServer){
+    if (thisSlectSendDataToTheServer) {
       //if the proggramer need that this can be update with data of the server, we will get the information of the seacrk 
       await update_option_for_the_server('');
     }
 
     // Filter
     let debounceTimer;
-    searchInput.addEventListener('input', async e  => {
-      
+    searchInput.addEventListener('input', async e => {
+
       //we will see if the select will send data to the server
-      if(thisSlectSendDataToTheServer){
+      if (thisSlectSendDataToTheServer) {
         clearTimeout(debounceTimer);
         const value = e.target.value.toLowerCase();
         debounceTimer = setTimeout(async () => {
           await filterOptions(value);
         }, 500); // 500ms after stopping typing
-      }else{
-         await filterOptions(e.target.value.toLowerCase()); //if not send data to the server, we will filter to the instant 
+      } else {
+        await filterOptions(e.target.value.toLowerCase()); //if not send data to the server, we will filter to the instant 
       }
     });
 
     async function filterOptions(term) {
       //first we will see if this select have a link for get the answer of the server
-      if(thisSlectSendDataToTheServer){
+      if (thisSlectSendDataToTheServer) {
         await update_option_for_the_server(term);
-      }else{
+      } else {
         //if the proggramer not would like get information from the server, filter the option that the proggramer added in the frontend 
         options.forEach(opt => {
           opt.style.display = opt.textContent.toLowerCase().includes(term) ? 'block' : 'none';
@@ -788,113 +790,113 @@ class PlusSelect extends HTMLElement {
     }
 
 
-    async function update_option_for_the_server(term){
-        //after of send the message to the server, we will clear all the container of the previous options
-        clear_option_select();
-        
-        //her we will create a loading for that the user know that the app is search his data
-        const loadingDiv = document.createElement('div');
-        loadingDiv.classList.add('plus-select-option');
-        loadingDiv.textContent = window.t('info.loading');
-        options.push(loadingDiv);
-        popup.appendChild(loadingDiv);
+    async function update_option_for_the_server(term) {
+      //after of send the message to the server, we will clear all the container of the previous options
+      clear_option_select();
 
-        //if have a link of search, send this information to the server for get the information. 
-        //the that the server can retur is {id:0, text:'name'}
-        //send the information to the server and get his answer
-        const result = await send_message_to_the_server(link, [term], false);
+      //her we will create a loading for that the user know that the app is search his data
+      const loadingDiv = document.createElement('div');
+      loadingDiv.classList.add('plus-select-option');
+      loadingDiv.textContent = window.t('info.loading');
+      options.push(loadingDiv);
+      popup.appendChild(loadingDiv);
 
-        //when get the answer of the server, other clear all the container 
-        clear_option_select();
+      //if have a link of search, send this information to the server for get the information. 
+      //the that the server can retur is {id:0, text:'name'}
+      //send the information to the server and get his answer
+      const result = await send_message_to_the_server(link, [term], false);
 
-        //we will see if we can add the new customer
-        if (result.success) {
-          //get the data that send the server
-          const anserServer = result.results;
+      //when get the answer of the server, other clear all the container 
+      clear_option_select();
 
-          //read all the data that the server send 
-          anserServer.forEach(data => {
-            const div = document.createElement('div');
-            div.classList.add('plus-select-option');
-            div.dataset.value = data.id;
+      //we will see if we can add the new customer
+      if (result.success) {
+        //get the data that send the server
+        const anserServer = result.results;
 
-            // contenedor horizontal (texto + acciones)
-            const contentContainer = document.createElement('div');
-            contentContainer.classList.add('plus-select-content');
-
-            // Texto
-            const textSpan = document.createElement('span');
-            textSpan.classList.add('option-text');
-            textSpan.textContent = data.text;
-
-            // Contenedor de botones
-            const actionsContainer = document.createElement('div');
-            actionsContainer.classList.add('plus-select-actions');
-
-            if (edit_data) {
-              const editBtn = document.createElement('button');
-              editBtn.classList.add('edit-btn');
-              editBtn.innerHTML = '<i class="fi fi-sr-pencil"></i>';
-              editBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                window[functionEdit](data.id); // run the function with the ID
-              });
-              actionsContainer.appendChild(editBtn);
-            }
-
-            if (delete_data) {
-              const deleteBtn = document.createElement('button');
-              //const deleteBtn = document.createElement('confirm-button');
-              deleteBtn.setAttribute('message','')
-              //deleteBtn.classList.add('delete-btn');
-              deleteBtn.innerHTML = '<i class="fi fi-sr-trash"></i>';
-              deleteBtn.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                
-                //her we will see if the user delete the item
-                if(await plus_delete_with_help_button(data.id, linkDelete)){
-                  await update_option_for_the_server(''); //update the input when the user delete a item
-                }
-              });
-              actionsContainer.appendChild(deleteBtn);
-            }
-
-            // Ensamblar la opción
-            contentContainer.appendChild(textSpan);
-            if (edit_data || delete_data) {
-              contentContainer.appendChild(actionsContainer);
-            }
-            div.appendChild(contentContainer);
-
-            // Evento de selección de opción
-            div.addEventListener('click', () => {
-              select.querySelector('.plus-select-selected-text').textContent = data.text;
-              hiddenInput.value = data.id;
-              popup.classList.remove('active');
-              searchInput.value = '';
-              filterOptions('');
-            });
-
-            options.push(div);
-            popup.appendChild(div);
-          });
-        } else {
-          console.error(result.message || 'error to get information of the server')
-          const text = t('error.general'); //if exit a error to connect with the server show a message 
-
-          //now we will create the container of the div of the options
+        //read all the data that the server send 
+        anserServer.forEach(data => {
           const div = document.createElement('div');
           div.classList.add('plus-select-option');
+          div.dataset.value = data.id;
 
-          div.textContent = text;
+          // contenedor horizontal (texto + acciones)
+          const contentContainer = document.createElement('div');
+          contentContainer.classList.add('plus-select-content');
 
-          //add the option to the select
+          // Texto
+          const textSpan = document.createElement('span');
+          textSpan.classList.add('option-text');
+          textSpan.textContent = data.text;
+
+          // Contenedor de botones
+          const actionsContainer = document.createElement('div');
+          actionsContainer.classList.add('plus-select-actions');
+
+          if (edit_data) {
+            const editBtn = document.createElement('button');
+            editBtn.classList.add('edit-btn');
+            editBtn.innerHTML = '<i class="fi fi-sr-pencil"></i>';
+            editBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              window[functionEdit](data.id); // run the function with the ID
+            });
+            actionsContainer.appendChild(editBtn);
+          }
+
+          if (delete_data) {
+            const deleteBtn = document.createElement('button');
+            //const deleteBtn = document.createElement('confirm-button');
+            deleteBtn.setAttribute('message', '')
+            //deleteBtn.classList.add('delete-btn');
+            deleteBtn.innerHTML = '<i class="fi fi-sr-trash"></i>';
+            deleteBtn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+
+              //her we will see if the user delete the item
+              if (await plus_delete_with_help_button(data.id, linkDelete)) {
+                await update_option_for_the_server(''); //update the input when the user delete a item
+              }
+            });
+            actionsContainer.appendChild(deleteBtn);
+          }
+
+          // Ensamblar la opción
+          contentContainer.appendChild(textSpan);
+          if (edit_data || delete_data) {
+            contentContainer.appendChild(actionsContainer);
+          }
+          div.appendChild(contentContainer);
+
+          // Evento de selección de opción
+          div.addEventListener('click', () => {
+            select.querySelector('.plus-select-selected-text').textContent = data.text;
+            hiddenInput.value = data.id;
+            popup.classList.remove('active');
+            searchInput.value = '';
+            filterOptions('');
+          });
+
           options.push(div);
           popup.appendChild(div);
-        }
+        });
+      } else {
+        console.error(result.message || 'error to get information of the server')
+        const text = t('error.general'); //if exit a error to connect with the server show a message 
+
+        //now we will create the container of the div of the options
+        const div = document.createElement('div');
+        div.classList.add('plus-select-option');
+
+        div.textContent = text;
+
+        //add the option to the select
+        options.push(div);
+        popup.appendChild(div);
+      }
     }
 
-    function clear_option_select(){
+    function clear_option_select() {
       options.forEach(opt => opt.remove());
       options = [];
     }
@@ -917,16 +919,16 @@ class PlusSelect extends HTMLElement {
   }
 }
 
-async function plus_delete_with_help_button(id, link){
-  const titleDelete=window.t('info.confirm_delete');
-  const messageDelete=window.t('info.description_delete'); 
-  if (await show_message_question(titleDelete,messageDelete)){
-    const answer=await send_message_to_the_server(link,[id],true);
-    if(answer.success){
-      show_alert('success',window.t('success.deleted'), window.t('description.deleted'))
+async function plus_delete_with_help_button(id, link) {
+  const titleDelete = window.t('info.confirm_delete');
+  const messageDelete = window.t('info.description_delete');
+  if (await show_message_question(titleDelete, messageDelete)) {
+    const answer = await send_message_to_the_server(link, [id], true);
+    if (answer.success) {
+      show_alert('success', window.t('success.deleted'), window.t('description.deleted'))
       return true;
-    }else{
-      show_alert('alert',window.t('error.general'), window.t('error.to_delete'), answer.error)
+    } else {
+      show_alert('alert', window.t('error.general'), window.t('error.to_delete'), answer.error)
       console.error(answer.message || 'Error to delete the item in the server');
       console.error(answer.error);
     }
@@ -1004,6 +1006,7 @@ class PlusSwitch extends HTMLElement {
     checkbox.type = 'checkbox';
     checkbox.checked = isChecked;
     checkbox.name = name;
+    checkbox.id = this.getAttribute('id') || generate_unique_dom_id();
 
     const slider = document.createElement('span');
     slider.classList.add('plus-switch-slider');
@@ -1163,7 +1166,7 @@ class CreateHelp {
 
 
 
-  add_step({ title='', message='', image = '', video = '' }) {
+  add_step({ title = '', message = '', image = '', video = '' }) {
     //her we will see if exist this help, if not exist, we will to create
     if (!window.PLUS_HELP_DATA[this.key]) {
       window.PLUS_HELP_DATA[this.key] = { steps: [] };
@@ -1174,7 +1177,7 @@ class CreateHelp {
     this.message = message;
     this.image = image;
     this.video = video;
-    
+
     //save the step of help
     window.PLUS_HELP_DATA[this.key].steps.push(this.toStepObject());
   }
@@ -1203,24 +1206,24 @@ class PlusSelectDate extends HTMLElement {
     const nameEnd = this.getAttribute('name-end') || 'fecha_fin';
 
     const labelInfo = this.getAttribute('label') || window.t('btn.range_date');
-    const t=this.getAttribute('t') || labelInfo;
+    const t = this.getAttribute('t') || labelInfo;
 
     const isRequired = this.hasAttribute('required');
     const requiredMark = isRequired ? '*' : '';
-    const labelText = window.translate_text(t)+' '+requiredMark;
+    const labelText = window.translate_text(t) + ' ' + requiredMark;
     const lang = navigator.language || 'es-ES';
 
     const shadow = this.shadowRoot;
 
     //her we will get the translate of the select 
-    const select_range_date=window.t('btn.select_range_date')
-    const today=window.t('range.today');
-    const last_7_days=window.t('range.last_7_days');
-    const current_month=window.t('range.current_month');
-    const previous_month=window.t('range.previous_month');
-    const custom=window.t('range.custom');
-    const success=window.t('message.success');
-    const cancel=window.t('message.cancel');
+    const select_range_date = window.t('btn.select_range_date')
+    const today = window.t('range.today');
+    const last_7_days = window.t('range.last_7_days');
+    const current_month = window.t('range.current_month');
+    const previous_month = window.t('range.previous_month');
+    const custom = window.t('range.custom');
+    const success = window.t('message.success');
+    const cancel = window.t('message.cancel');
 
     shadow.innerHTML = `
       <style>
@@ -1508,46 +1511,46 @@ class PlusActions extends HTMLElement {
       const onclick = action.getAttribute('onclick');
 
       //now we will see if the user add a 
-      const existCombo=action.hasAttribute('combo')
-      const combo=action.getAttribute('combo')
-      if(existCombo){
-        const keyBind=document.createElement('key-bind');
+      const existCombo = action.hasAttribute('combo')
+      const combo = action.getAttribute('combo')
+      if (existCombo) {
+        const keyBind = document.createElement('key-bind');
         keyBind.setAttribute('combo', combo)
         keyBind.setAttribute('action', onclick)
         this.appendChild(keyBind);
       }
 
       //save the text to translate
-      const textTranslate = window.translate_text(text) + (existCombo ? ' '+combo : '');
+      const textTranslate = window.translate_text(text) + (existCombo ? ' ' + combo : '');
 
       //her we will see the type 
       let item;
-      if(type=='switch'){
+      if (type == 'switch') {
         //her we will to create a id for that the user can edit or get iformation of the switch 
         const id = action.getAttribute('id') || `plus-id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
         const raw = action.getAttribute('checked');
         const checked = get_value_of_label_true_or_false(raw);
 
         //her we will save all the information that the proggramer added to the label
-        item=document.createElement('plus-switch');
+        item = document.createElement('plus-switch');
         item.setAttribute('id', id)
         item.setAttribute('text', text)
         item.setAttribute('name', id)
         item.setAttribute('icon', icon)
 
-        if(checked){
+        if (checked) {
           item.setAttribute('checked', checked);
         }
-      }else{
+      } else {
         item = document.createElement('div');
         item.className = 'plus-action-item';
 
         //we will see if this button need a pin 
-        const thisElementHaveApin=action.hasAttribute('pin');
-        const pin=get_value_of_label_true_or_false(action.getAttribute('pin'));
+        const thisElementHaveApin = action.hasAttribute('pin');
+        const pin = get_value_of_label_true_or_false(action.getAttribute('pin'));
 
-        if(thisElementHaveApin){
-          if(pin){
+        if (thisElementHaveApin) {
+          if (pin) {
             item.innerHTML = `
               <div class="item-row">
                 <div class="item-main" onclick="handleMainAction(this)">
@@ -1559,7 +1562,7 @@ class PlusActions extends HTMLElement {
                 </div>
               </div>
             `;
-          }else{
+          } else {
             item.innerHTML = `
               <div class="item-row">
                 <div class="item-main" onclick="handleMainAction(this)">
@@ -1572,7 +1575,7 @@ class PlusActions extends HTMLElement {
               </div>
             `;
           }
-        }else{
+        } else {
           item.innerHTML = `
           <div class="item-row">
             <div class="item-main" onclick="handleMainAction(this)">
@@ -1583,13 +1586,13 @@ class PlusActions extends HTMLElement {
           `;
         }
       }
-    
+
 
 
 
       if (onclick) {
         item.onclick = () => {
-          
+
           window[onclick]?.();
           this.toggle(false); // opcional: close when do clic the user
         };
@@ -1607,7 +1610,7 @@ class PlusActions extends HTMLElement {
       menu.appendChild(item);
 
     });
-    
+
     //her is the desktop of the shortcuts of the functions
     const quickActions = document.createElement('div');
     quickActions.className = 'plus-quick-actions';
@@ -1672,8 +1675,9 @@ class PlusActions extends HTMLElement {
 
 
 /*----------------DATE------------------------------------- */
-const colors={
-  color_company:'#075EAC'
+const colors = {
+  color_company: '#075EAC',
+  color_company_hover: '#075192ff'
 }
 
 class PlusDate extends HTMLElement {
@@ -1901,7 +1905,7 @@ class PlusDate extends HTMLElement {
 
   formatDate(date) {
     if (!date) return '00/00/0000';
-    const lang=window.get_language_of_the_system()
+    const lang = window.get_language_of_the_system()
     return date.toLocaleDateString(lang, {
       day: '2-digit', month: '2-digit', year: 'numeric'
     });
@@ -1915,7 +1919,7 @@ class PlusDate extends HTMLElement {
     }
   }
 
-  create_text_day(){
+  create_text_day() {
     return `<div>${window.t('date.sunday')}</div><div>${window.t('date.monday')}</div><div>${window.t('date.tuesday')}</div><div>${window.t('date.wednesday')}</div><div>${window.t('date.thursday')}</div><div>${window.t('date.friday')}</div><div>${window.t('date.saturday')}</div>`;
   }
 
@@ -1928,8 +1932,8 @@ class PlusDate extends HTMLElement {
     const selected = this.selectedDate;
 
 
-    const textToday=window.t('range.today');
-    const textDay=this.create_text_day();
+    const textToday = window.t('range.today');
+    const textDay = this.create_text_day();
     const userLang = window.get_language_of_the_system(); //get the languace of the system of the user
 
     let html = `
@@ -2031,7 +2035,7 @@ class PlusDate extends HTMLElement {
   renderMonths() {
     const year = this.currentDate.getFullYear();
     const monthNames = this.get_list_months();
-    const textToday=window.t('range.today');
+    const textToday = window.t('range.today');
 
     let html = `
       <div class="plus-calendar-calendar">
@@ -2281,8 +2285,263 @@ function generate_unique_dom_id(prefix = "plus-") {
   return id;
 }
 
-function get_value_of_label_true_or_false(value){
+function get_value_of_label_true_or_false(value) {
   return value === true || value === 'true' || value === '1' || value === 1;
+}
+
+
+class InputColor extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+
+    const colorInicial = this.getAttribute('value') || '#3b82f6';
+    const name = this.getAttribute('name') || '';
+    const id = this.getAttribute('id') || generate_unique_dom_id();
+
+    this.value = colorInicial;
+
+    const container = document.createElement('div');
+    container.innerHTML = `
+          <style>
+            .input-color-container {
+              position: relative;
+              display: inline-block;
+              font-family: inherit;
+            }
+
+            .color-box {
+              width: 42px;
+              height: 42px;
+              border-radius: 12px;
+              border: 1px solid #ccc;
+              cursor: pointer;
+              box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+              transition: all 0.2s ease;
+            }
+
+            .color-box:hover {
+              box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            }
+
+            .color-picker-popup {
+              position: absolute;
+              top: 52px;
+              left: 0;
+              background: #fff;
+              border: 1px solid #e0e0e0;
+              border-radius: 16px;
+              box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+              padding: 16px;
+              z-index: 10000000;
+              width: 260px;
+              display: none;
+              animation: fadeIn 0.2s ease;
+            }
+
+            @keyframes fadeIn {
+              from { opacity: 0; transform: translateY(-5px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+
+            .tabs {
+              display: flex;
+              margin-bottom: 12px;
+              background: #f0f0f0;
+              border-radius: 12px;
+              overflow: hidden;
+            }
+
+            .tab-button {
+              flex: 1;
+              padding: 8px;
+              background: transparent;
+              border: none;
+              cursor: pointer;
+              font-size: 14px;
+              color: #444;
+              transition: background 0.2s;
+            }
+
+            .tab-button.active {
+              background: #e0e0e0;
+              font-weight: 600;
+            }
+
+            .tab-content {
+              display: none;
+              margin-top: 8px;
+            }
+
+            .tab-content.active {
+              display: block;
+            }
+
+            .quick-colors {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 10px;
+              justify-content: start;
+            }
+
+            .color-circle {
+              width: 28px;
+              height: 28px;
+              border-radius: 50%;
+              cursor: pointer;
+              border: 1px solid #ccc;
+              transition: transform 0.1s;
+            }
+
+            .color-circle:hover {
+              border-color: #999;
+            }
+
+            .color-code-input {
+              margin-top: 12px;
+              width: 100%;
+              padding: 6px 10px;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              font-size: 13px;
+              font-family: monospace;
+              color: #333;
+              background: #fdfdfd;
+              box-sizing: border-box;
+            }
+
+            .accept-button {
+              margin-top: 12px;
+              width: 100%;
+              padding: 8px;
+              background: ${colors.color_company};
+              color: white;
+              border: none;
+              border-radius: 8px;
+              font-size: 14px;
+              cursor: pointer;
+              transition: background 0.2s;
+            }
+
+            .accept-button:hover {
+              background: ${colors.color_company_hover};
+            }
+          </style>
+          <input type="hidden" name="${name}" id="${id}" value="${colorInicial}" />
+          <div class="input-color-container">
+            <div class="color-box" style="background-color: ${colorInicial}"></div>
+            <div class="color-picker-popup">
+                <input type="text" class="color-code-input" value="${colorInicial}" readonly />
+                <br><br>
+              <div class="tabs">
+                <button class="tab-button active">${window.t('input.speed')}</button>
+                <button class="tab-button">${window.t('input.personalize')}</button>
+              </div>
+              <div class="tab-content active">
+                <div class="quick-colors">
+                ${[
+        '#ff3b30', // red
+        '#ff6b81', // pink
+        '#a55eea', // purple
+        '#8e44ad', // dark purple
+        '#0050ef', // strong blue
+        '#5ac8fa', // light blue
+        '#007aff', // royal blue
+        '#00ffff', // aqua blue
+        '#20c997', // aqua green
+        '#006400', // dark green
+        '#34c759', // light green (Apple green)
+        '#ffff00', // classic yellow
+        '#f1c40f', // warm yellow
+        '#f39c12', // intense yellow
+        '#ffa500', // orange
+        '#e67e22', // dark orange
+        '#8b4513', // brown
+        '#95a5a6', // gray
+        '#000000', // black
+        '#ffffff'  // white
+      ]
+        .map(color => `<div class="color-circle" style="background:${color}" data-color="${color}"></div>`)
+        .join('')}
+                </div>
+              </div>
+              <div class="tab-content">
+                <input type="color" class="custom-color" value="${colorInicial}" />
+                <button class="accept-button">${window.t('message.success')}</button>
+              </div>
+              
+            </div>
+            
+          </div>
+        `;
+    
+
+    //her we will to create a label for that the user know that this is a input of color
+    const label=document.createElement('info-label');
+    label.textContent = window.t('input.color');
+    label.setAttribute('t', 'input.color');
+    label.setAttribute('text', window.t('input.color'));
+    this.shadowRoot.appendChild(label);
+
+    //add the container
+    this.shadowRoot.appendChild(container);
+
+    const box = this.shadowRoot.querySelector('.color-box');
+    const popup = this.shadowRoot.querySelector('.color-picker-popup');
+    const tabs = this.shadowRoot.querySelectorAll('.tab-button');
+    const contents = this.shadowRoot.querySelectorAll('.tab-content');
+    const hiddenInput = this.shadowRoot.querySelector('input[type="hidden"]');
+    const textInput = this.shadowRoot.querySelector('.color-code-input');
+    const acceptButton = this.shadowRoot.querySelector('.accept-button');
+    const colorInput = this.shadowRoot.querySelector('.custom-color');
+
+    // open / close popup
+    box.addEventListener('click', () => {
+      popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Tabs
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        contents[i].classList.add('active');
+      });
+    });
+
+    //Quick Color Circles
+    this.shadowRoot.querySelectorAll('.color-circle').forEach(circle => {
+      circle.addEventListener('click', () => {
+        const color = circle.getAttribute('data-color');
+        this.updateColor(color);
+        popup.style.display = 'none';
+      });
+    });
+
+    // Accept button
+    acceptButton.addEventListener('click', () => {
+      const color = colorInput.value;
+      this.updateColor(color);
+      popup.style.display = 'none';
+    });
+  }
+
+  updateColor(color) {
+    this.value = color;
+    this.shadowRoot.querySelector('.color-box').style.backgroundColor = color;
+    this.shadowRoot.querySelector('.color-code-input').value = color;
+    this.shadowRoot.querySelector('input[type="hidden"]').value = color;
+    this.dispatchEvent(new CustomEvent('change', { detail: { color } }));
+  }
+
+  get value() {
+    return this.getAttribute('value');
+  }
+
+  set value(val) {
+    this.setAttribute('value', val);
+  }
 }
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
@@ -2850,7 +3109,7 @@ function transform_my_labels_erp() {
   }
 
   if (!customElements.get("plus-action")) {
-    customElements.define('plus-action', class extends HTMLElement {});
+    customElements.define('plus-action', class extends HTMLElement { });
   }
 
   if (!customElements.get("search-bar")) {
@@ -2863,6 +3122,10 @@ function transform_my_labels_erp() {
 
   if (!customElements.get("plus-time")) {
     customElements.define("plus-time", PlusTime);
+  }
+
+  if (!customElements.get("input-color")) {
+    customElements.define("input-color", InputColor);
   }
 }
 

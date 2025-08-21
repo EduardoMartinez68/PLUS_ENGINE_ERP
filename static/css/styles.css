@@ -28,6 +28,14 @@
 
   --color-success: #2d8659;
   --color-hover-success: #24704a;
+
+  /*SPACE PADDING*/
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
 }
 
 * {
@@ -50,6 +58,57 @@ header {
   font-weight: 600;
 }
 
+
+
+/* padding styles */
+/* Clases de margen */
+.m-0 { margin: var(--space-0) !important; }
+.m-1 { margin: var(--space-1) !important; }
+.m-2 { margin: var(--space-2) !important; }
+.m-3 { margin: var(--space-3) !important; }
+.m-4 { margin: var(--space-4) !important; }
+.m-5 { margin: var(--space-5) !important; }
+
+/* Padding */
+.p-0 { padding: var(--space-0) !important; }
+.p-1 { padding: var(--space-1) !important; }
+.p-2 { padding: var(--space-2) !important; }
+.p-3 { padding: var(--space-3) !important; }
+.p-4 { padding: var(--space-4) !important; }
+.p-5 { padding: var(--space-5) !important; }
+
+/* Direcciones individuales (top, bottom, left, right) */
+.mt-1 { margin-top: var(--space-1) !important; }
+.mb-1 { margin-bottom: var(--space-1) !important; }
+.ml-1 { margin-left: var(--space-1) !important; }
+.mr-1 { margin-right: var(--space-1) !important; }
+
+.pt-1 { padding-top: var(--space-1) !important; }
+.pb-1 { padding-bottom: var(--space-1) !important; }
+.pl-1 { padding-left: var(--space-1) !important; }
+.pr-1 { padding-right: var(--space-1) !important; }
+
+/* X (horizontal) y Y (vertical) */
+.mx-1 {
+  margin-left: var(--space-1) !important;
+  margin-right: var(--space-1) !important;
+}
+.my-1 {
+  margin-top: var(--space-1) !important;
+  margin-bottom: var(--space-1) !important;
+}
+.px-1 {
+  padding-left: var(--space-1) !important;
+  padding-right: var(--space-1) !important;
+}
+.py-1 {
+  padding-top: var(--space-1) !important;
+  padding-bottom: var(--space-1) !important;
+}
+
+
+
+/**/
 .container {
   position: relative;
   max-width: 1100px;
@@ -1186,6 +1245,7 @@ hr {
 }
 
 .my-pop-content {
+  position: relative;
   background-color: var(--background);
   padding: 20px;
   border: 1px solid #ccc;
@@ -1195,6 +1255,7 @@ hr {
   max-width: 90vw;
   max-height: 90vh;
   overflow-y: auto;
+  overflow: visible;
 }
 
 

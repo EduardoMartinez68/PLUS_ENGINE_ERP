@@ -1,5 +1,6 @@
 <plus-actions>
     <plus-action text="new-event" onclick="open_type_pop" combo="Shift+n"></plus-action>
+    <plus-action text="title-create-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
 </plus-actions>
 
 <message-pop title="title-pop-create-event" name="pop-data-event">
@@ -12,16 +13,18 @@
             </div>
 
 
-            <div class="row section">
-                <plus-select label="priority" name="priority" required>
-                    <option selected t="priority.low"></option>
-                    <option t="priority.normal"></option>
-                    <option t="priority.high"></option>
-                </plus-select>
+            <div class="section">
+                <div class="row m-1">
+                    <plus-select label="priority" name="priority" required>
+                        <option selected t="priority.low"></option>
+                        <option t="priority.normal"></option>
+                        <option t="priority.high"></option>
+                    </plus-select>
 
-                <plus-select label="label-search-home" name="tipo_documento" requerid link="customers/search_customers_select/" add="open_pop" edit_data="edit_data" delete_data="customers/search_customers_select/">
+                    <plus-select label="label-search-home" name="tipo_documento" requerid link="customers/search_customers_select/" add="open_pop_new_type_event" edit_data="edit_data" delete_data="customers/search_customers_select/">
 
-                </plus-select>
+                    </plus-select>
+                </div>
             </div>
 
             <div class="section">
@@ -39,7 +42,7 @@
 
             </div>
 
-            <div class="row section">
+            <div class="section">
                 <plus-select label="Tiempo de aviso" name="alert_time" required>
                     <option selected t="alert.none"></option>
                     <option t="alert.5min"></option>
@@ -73,21 +76,23 @@
 
             <plus-switch text="repeat_this_event" name="repeat_event"></plus-switch>
 
-            <div class="row section">
-                <plus-select label="repeat" name="repeat" requerid>
-                    <option selected t="option.never"></option>
-                    <option t="option.every_day"></option>
-                    <option t="option.every_week"></option>
-                    <option t="option.every_2_weeks"></option>
-                    <option t="option.every_month"></option>
-                    <option t="option.every_year"></option>
-                </plus-select>
+            <div class="section">
+                <div class="row m-1">
+                    <plus-select label="repeat" name="repeat" requerid>
+                        <option selected t="option.never"></option>
+                        <option t="option.every_day"></option>
+                        <option t="option.every_week"></option>
+                        <option t="option.every_2_weeks"></option>
+                        <option t="option.every_month"></option>
+                        <option t="option.every_year"></option>
+                    </plus-select>
 
 
-                <plus-select label="endRepeat" name="endRepeat" requerid>
-                    <option selected t="option.never">Never</option>
-                    <option  t="option.on_day">On Day</option>
-                </plus-select>
+                    <plus-select label="endRepeat" name="endRepeat" requerid>
+                        <option selected t="option.never">Never</option>
+                        <option  t="option.on_day">On Day</option>
+                    </plus-select>
+                </div>
             </div>
 
             <plus-switch text="send_notification" name="send_notification" checked="true"></plus-switch>
@@ -101,6 +106,24 @@
 </message-pop>
 
 
+
+
+<message-pop title="title-create-type-event" name="pop-new-data-event">
+    <div class="section">
+        <label t="new-type-event">Title of the event</label>
+        <input type="text" name="name" class="case-title-input"
+            t-placeholder="new-type-event" required maxlength="300" />
+    </div>
+
+    <div class="section">
+        <label for="">Color</label>
+        <input-color></input-color>
+    </div>
+
+    <button t="message.create" class="btn btn-success btn-add" onclick="create_new_type_event()">Success</button>
+</message-pop>
+
+<button onclick="show_pop('pop-new-data-event')">Open Type Pop</button>
 
 <script>
     function open_type_pop() {
@@ -122,7 +145,16 @@
 
 
 
-    function open_pop(){
-        alert('hi')
+    function open_pop_new_type_event(){
+        show_pop('pop-new-data-event')
+    }
+
+    function create_new_type_event(){
+        //const title = document.querySelector('input[name="name"]').value;
+        //const color = document.querySelector('input[name="color"]').value;
+
+        // Here you would typically send this data to your server
+        //console.log('Creating new type event:', { title, color });
+        hide_pop('pop-new-data-event')
     }
 </script>

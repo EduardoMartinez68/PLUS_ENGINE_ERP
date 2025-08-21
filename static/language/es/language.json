@@ -104,6 +104,15 @@
     "date.month.september": "Sep",
     "date.month.october": "Oct",
     "date.month.november": "Nov",
-    "date.month.december": "Dic"
+    "date.month.december": "Dic",
+
+    "input.color": "Color",
+    "input.speed": "Rápido",
+    "input.personalize": "Personalizado",
+    "input.select": "Seleccionar",
+    "input.text": "Texto",
+    "input.number": "Número",
+    "input.date": "Fecha",
+    "input.time": "Hora"
 }
 

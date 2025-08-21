@@ -12,9 +12,9 @@
     "placeholder-input-title":"Nombre del Evento",
     
     "priority": "Prioridad",
-    "priority.low": "Prioridad baja",
-    "priority.normal": "Prioridad normal",
-    "priority.high": "Prioridad alta",
+    "priority.low": "Baja",
+    "priority.normal": "Normal",
+    "priority.high": "Alta",
     "send_notification": "Enviar notificación",
 
     "all-day":"Todo el dia",
@@ -54,5 +54,8 @@
 
 
     "label-comment":"Agregar comentario",
-    "placeholder-comment":"Escribe un comentario para el evento"
+    "placeholder-comment":"Escribe un comentario para el evento",
+
+    "title-create-type-event":"Crear un nuevo tipo de evento",
+    "new-type-event":"Nuevo tipo de evento"
 }
