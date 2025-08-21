@@ -60,8 +60,15 @@
                     </plus-select>
                 </div>
 
+                <div class="section">
+                    <info-label label="Email de invitados" message="Agrega correos y presiona Enter, coma o espacio"></info-label>
+                    <plus-emails id="invitados" name="correos_invitados" label="Email de invitados"></plus-emails>
+                </div>
 
-
+                <div class="section">
+                    <textarea label="label-input-description" name="description"
+                        placeholder="placeholder-input-description"></textarea>
+                </div>
 
 
             </plus-tab>
@@ -161,4 +168,63 @@
         //console.log('Creating new type event:', { title, color });
         hide_pop('pop-new-data-event')
     }
+</script>
+<script>
+  function initEmailInput() {
+    // Variables globales accesibles desde window
+    window.container = document.getElementById('email-tags-container');
+    window.input = document.getElementById('email-input');
+    window.jsonOutput = document.getElementById('emails-json');
+    window.emails = [];
+
+    window.focusEmailInput = function () {
+      window.input.focus();
+    }
+
+    window.addEmail = function (email) {
+      email = email.trim();
+      if (email && window.validateEmail(email) && !window.emails.includes(email)) {
+        window.emails.push(email);
+
+        const tag = document.createElement('span');
+        tag.className = 'email-tag';
+        tag.innerHTML = `${email} <button onclick="window.removeEmail('${email}')">&times;</button>`;
+        window.container.insertBefore(tag, window.input);
+        window.input.value = '';
+        window.updateJson();
+      }
+    }
+
+    window.removeEmail = function (email) {
+      const index = window.emails.indexOf(email);
+      if (index > -1) {
+        window.emails.splice(index, 1);
+        [...window.container.getElementsByClassName('email-tag')].forEach(tag => {
+          if (tag.textContent.includes(email)) {
+            window.container.removeChild(tag);
+          }
+        });
+        window.updateJson();
+      }
+    }
+
+    window.updateJson = function () {
+      window.jsonOutput.textContent = JSON.stringify(window.emails, null, 2);
+    }
+
+    window.validateEmail = function (email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+
+    window.input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ',' || e.key === ' ') {
+        e.preventDefault();
+        window.addEmail(window.input.value);
+      }
+    });
+  }
+
+  // Inicializa todo
+  initEmailInput();
 </script>

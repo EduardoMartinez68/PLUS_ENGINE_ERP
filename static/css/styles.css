@@ -62,45 +62,104 @@ header {
 
 /* padding styles */
 /* class margin  */
-.m-0 { margin: var(--space-0) !important; }
-.m-1 { margin: var(--space-1) !important; }
-.m-2 { margin: var(--space-2) !important; }
-.m-3 { margin: var(--space-3) !important; }
-.m-4 { margin: var(--space-4) !important; }
-.m-5 { margin: var(--space-5) !important; }
+.m-0 {
+  margin: var(--space-0) !important;
+}
+
+.m-1 {
+  margin: var(--space-1) !important;
+}
+
+.m-2 {
+  margin: var(--space-2) !important;
+}
+
+.m-3 {
+  margin: var(--space-3) !important;
+}
+
+.m-4 {
+  margin: var(--space-4) !important;
+}
+
+.m-5 {
+  margin: var(--space-5) !important;
+}
 
 /* Padding */
-.p-0 { padding: var(--space-0) !important; }
-.p-1 { padding: var(--space-1) !important; }
-.p-2 { padding: var(--space-2) !important; }
-.p-3 { padding: var(--space-3) !important; }
-.p-4 { padding: var(--space-4) !important; }
-.p-5 { padding: var(--space-5) !important; }
+.p-0 {
+  padding: var(--space-0) !important;
+}
+
+.p-1 {
+  padding: var(--space-1) !important;
+}
+
+.p-2 {
+  padding: var(--space-2) !important;
+}
+
+.p-3 {
+  padding: var(--space-3) !important;
+}
+
+.p-4 {
+  padding: var(--space-4) !important;
+}
+
+.p-5 {
+  padding: var(--space-5) !important;
+}
 
 /* individual addresses (top, bottom, left, right) */
-.mt-1 { margin-top: var(--space-1) !important; }
-.mb-1 { margin-bottom: var(--space-1) !important; }
-.ml-1 { margin-left: var(--space-1) !important; }
-.mr-1 { margin-right: var(--space-1) !important; }
+.mt-1 {
+  margin-top: var(--space-1) !important;
+}
 
-.pt-1 { padding-top: var(--space-1) !important; }
-.pb-1 { padding-bottom: var(--space-1) !important; }
-.pl-1 { padding-left: var(--space-1) !important; }
-.pr-1 { padding-right: var(--space-1) !important; }
+.mb-1 {
+  margin-bottom: var(--space-1) !important;
+}
+
+.ml-1 {
+  margin-left: var(--space-1) !important;
+}
+
+.mr-1 {
+  margin-right: var(--space-1) !important;
+}
+
+.pt-1 {
+  padding-top: var(--space-1) !important;
+}
+
+.pb-1 {
+  padding-bottom: var(--space-1) !important;
+}
+
+.pl-1 {
+  padding-left: var(--space-1) !important;
+}
+
+.pr-1 {
+  padding-right: var(--space-1) !important;
+}
 
 /* X (horizontal) y Y (vertical) */
 .mx-1 {
   margin-left: var(--space-1) !important;
   margin-right: var(--space-1) !important;
 }
+
 .my-1 {
   margin-top: var(--space-1) !important;
   margin-bottom: var(--space-1) !important;
 }
+
 .px-1 {
   padding-left: var(--space-1) !important;
   padding-right: var(--space-1) !important;
 }
+
 .py-1 {
   padding-top: var(--space-1) !important;
   padding-bottom: var(--space-1) !important;
@@ -129,12 +188,12 @@ header {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
 }
 
-.section{
-    background-color: white;
-    border-radius: 12px;
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
+.section {
+  background-color: white;
+  border-radius: 12px;
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
 }
 
 .section-title {
@@ -1315,7 +1374,7 @@ hr {
   padding: 20px 20px 30px 20px;
 }
 
-.container-pop{
+.container-pop {
   flex-grow: 1;
   overflow-y: auto;
   overflow-x: hidden;
@@ -1324,17 +1383,17 @@ hr {
 
 
 @media (max-width: 600px) {
-    .my-pop-content {
-        width: 100vw;
-        height: 100vh;
-        max-width: 100vw;
-        max-height: 100vh;
-        border-radius: 0;
-    }
+  .my-pop-content {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+  }
 
-    .container-pop{
-        padding: 15px;
-    }
+  .container-pop {
+    padding: 15px;
+  }
 }
 
 /**------------------------------------------------------------------------------------------message pop for question------------------------------------------------------------------------*/
@@ -1507,7 +1566,7 @@ hr {
 /**----------------------------------------PLUS SELECT---------------------------------------------------*/
 .plus-select-wrapper {
   position: relative;
- /*  width: 100%; Para que se adapte al contenedor */
+  /*  width: 100%; Para que se adapte al contenedor */
   margin: 12px 0;
   width: 300px;
 }
@@ -1532,25 +1591,26 @@ hr {
   box-shadow: 0 0 0 3px rgba(93, 135, 255, 0.2);
 }
 
-    .plus-select-popup {
-        position: absolute;
-        top: 0;
-        left: calc(100% + 12px);
-        width: 260px;
-        background-color: white;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        z-index: 10;
-        display: none;
-        flex-direction: column;
-        padding: 10px;
+.plus-select-popup {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 12px);
+  width: 260px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  display: none;
+  flex-direction: column;
+  padding: 10px;
 
 
-        max-height: 150px;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
+  max-height: 150px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .plus-select-popup.active {
   display: flex;
 }
@@ -1558,8 +1618,8 @@ hr {
 .plus-select-search-wrapper {
   display: flex;
   align-items: center;
-  border: none;                
-  border-radius: 0;            
+  border: none;
+  border-radius: 0;
   background-color: transparent;
   transition: border-color 0.2s;
 
@@ -1884,7 +1944,7 @@ hr {
 
 
 /**-----------------------------------------------INPUT TYPE DATE-----------------------------------------*/
- .plus-calendar-calendar {
+.plus-calendar-calendar {
   background-color: white;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   border-radius: 20px;

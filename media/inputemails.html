@@ -1,0 +1,120 @@
+<form>
+  <label>Correos para soporte:</label>
+  <plus-emails id="soporte" name="correos_soporte"></plus-emails>
+
+  <label>Correos de contacto:</label>
+  <plus-emails id="contacto" name="correos_contacto"></plus-emails>
+
+  <button type="submit">Enviar</button>
+</form>
+
+
+<script>
+  class PlusEmails extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: 'open' });
+
+      // Crear estilos encapsulados
+      const style = document.createElement('style');
+      style.textContent = `
+        .container {
+          border: 1px solid #ccc;
+          padding: 8px;
+          border-radius: 8px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          background-color: #f9f9f9;
+        }
+
+        .tag {
+            background-color: #D6E9F8; /* Azul pastel muy fino y elegante */
+            color: #085DA9;             /* Texto en color corporativo */
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .tag:hover {
+            background-color: #C5DFF1;
+        }
+            
+        .tag button {
+          background: none;
+          border: none;
+          color: inherit;
+          font-weight: bold;
+          cursor: pointer;
+        }
+
+        input[type="text"] {
+          border: none;
+          outline: none;
+          flex: 1;
+          min-width: 120px;
+          font-size: 14px;
+        }
+      `;
+
+      // Crear HTML del componente
+      this.shadowRoot.innerHTML = `
+        <div class="container">
+          <slot name="emails"></slot>
+          <input type="text" placeholder="Agregar email...">
+        </div>
+        <input type="hidden">
+      `;
+      this.shadowRoot.appendChild(style);
+    }
+
+    connectedCallback() {
+      const input = this.shadowRoot.querySelector('input[type="text"]');
+      const hidden = this.shadowRoot.querySelector('input[type="hidden"]');
+      const container = this.shadowRoot.querySelector('.container');
+
+      const nameAttr = this.getAttribute('name');
+      const idAttr = this.getAttribute('id');
+
+      if (nameAttr) hidden.name = nameAttr;
+      if (idAttr) this.shadowRoot.querySelector('.container').id = idAttr;
+
+      const emails = [];
+
+      const renderTags = () => {
+        const existingTags = container.querySelectorAll('.tag');
+        existingTags.forEach(tag => tag.remove());
+
+        emails.forEach(email => {
+          const tag = document.createElement('span');
+          tag.className = 'tag';
+          tag.innerHTML = `${email} <button type="button">&times;</button>`;
+          tag.querySelector('button').onclick = () => {
+            emails.splice(emails.indexOf(email), 1);
+            renderTags();
+          };
+          container.insertBefore(tag, input);
+        });
+
+        hidden.value = JSON.stringify(emails);
+      };
+
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ',') {
+          e.preventDefault();
+          const email = input.value.trim();
+          if (email && !emails.includes(email)) {
+            emails.push(email);
+            renderTags();
+          }
+          input.value = '';
+        }
+      });
+    }
+  }
+
+  customElements.define('plus-emails', PlusEmails);
+</script>

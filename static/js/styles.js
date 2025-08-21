@@ -2474,10 +2474,10 @@ class InputColor extends HTMLElement {
             
           </div>
         `;
-    
+
 
     //her we will to create a label for that the user know that this is a input of color
-    const label=document.createElement('info-label');
+    const label = document.createElement('info-label');
     label.textContent = window.t('input.color');
     label.setAttribute('t', 'input.color');
     label.setAttribute('text', window.t('input.color'));
@@ -2543,6 +2543,122 @@ class InputColor extends HTMLElement {
     this.setAttribute('value', val);
   }
 }
+
+
+class PlusEmails extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+
+    // Crear estilos encapsulados
+    const style = document.createElement('style');
+    style.textContent = `
+        .container {
+          padding: 8px;
+          flex-wrap: wrap;
+          background-color: #f9f9f9;
+          background: transparent;
+
+
+          display: flex;
+          gap: 8px;
+          padding: 4px 0;
+
+          border-bottom: 2px solid #D0D5DD;
+        }
+
+        .tag {
+            background-color: #D6E9F8; 
+            color: #085DA9;           
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .tag:hover {
+            background-color: #C5DFF1;
+        }
+            
+        .tag button {
+          background: none;
+          border: none;
+          color: inherit;
+          font-weight: bold;
+          cursor: pointer;
+        }
+
+        input[type="text"] {
+          border: none;
+          outline: none;
+          flex: 1;
+          min-width: 120px;
+          font-size: 14px;
+          background: transparent;
+        }
+      `;
+
+
+    // Crear HTML del componente
+    this.shadowRoot.innerHTML = `
+        <div class="container">
+          <slot name="emails"></slot>
+          <input type="text" placeholder="Agregar email...">
+        </div>
+        <input type="hidden">
+      `;
+
+
+    this.shadowRoot.appendChild(style);
+  }
+
+  connectedCallback() {
+    const input = this.shadowRoot.querySelector('input[type="text"]');
+    const hidden = this.shadowRoot.querySelector('input[type="hidden"]');
+    const container = this.shadowRoot.querySelector('.container');
+
+    const nameAttr = this.getAttribute('name');
+    const idAttr = this.getAttribute('id') || generate_unique_dom_id();
+
+    if (nameAttr) hidden.name = nameAttr;
+    if (idAttr) this.shadowRoot.querySelector('.container').id = idAttr;
+
+    const emails = [];
+
+    const renderTags = () => {
+      const existingTags = container.querySelectorAll('.tag');
+      existingTags.forEach(tag => tag.remove());
+
+      emails.forEach(email => {
+        const tag = document.createElement('span');
+        tag.className = 'tag';
+        tag.innerHTML = `${email} <button type="button">&times;</button>`;
+        tag.querySelector('button').onclick = () => {
+          emails.splice(emails.indexOf(email), 1);
+          renderTags();
+        };
+        container.insertBefore(tag, input);
+      });
+
+      hidden.value = JSON.stringify(emails);
+    };
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const email = input.value.trim();
+        if (email && !emails.includes(email)) {
+          emails.push(email);
+          renderTags();
+        }
+        input.value = '';
+      }
+    });
+  }
+}
+
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
   const tabs = document.querySelectorAll('.tab-content');
@@ -3127,6 +3243,11 @@ function transform_my_labels_erp() {
   if (!customElements.get("input-color")) {
     customElements.define("input-color", InputColor);
   }
+
+  if (!customElements.get("plus-emails")) {
+    customElements.define('plus-emails', PlusEmails);
+  }
+
 }
 
 /**---------------------------------TAB----------------------------- */
