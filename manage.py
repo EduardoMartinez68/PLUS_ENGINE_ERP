@@ -19,6 +19,7 @@ if __name__ == "__main__":
     # First, try to run the function that generates all models from the database
     # Assumes you have a script named 'generate_all_models.py' in the project root
     # with a function called 'generate_all_models()'
+    
     try:
         from generate_all_models import create_models
         create_models()

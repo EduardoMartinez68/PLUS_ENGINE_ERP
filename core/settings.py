@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from core.readApps import APPS_FOLDER, APPS_NAME
 from core.updateAllTheFilesOfTheApps import *
+
+
 # load the variables in the file .env
 from dotenv import load_dotenv
 load_dotenv()
@@ -89,11 +91,11 @@ db_port = os.getenv('DB_PORT')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': db_name,
-        'USER': db_user,
-        'PASSWORD': db_pass,
-        'HOST': db_host,
-        'PORT': db_port,
+        'NAME': os.getenv('DB_NAME', 'default_db_name'),
+        'USER': os.getenv('DB_USER', 'default_user'),
+        'PASSWORD': os.getenv('DB_PASS', 'default_password'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
         'OPTIONS': {
             'options': '-c search_path=customer,public',
         },
