@@ -32,16 +32,16 @@
                 </div>
 
                 <div class="section">
-                    <plus-switch text="all-day" name="allDay"></plus-switch>
+                    <plus-switch text="all-day" name="allDay" onclick="activate_event_all_the_day"></plus-switch>
 
                     <div class="row section">
-                        <plus-date label="starts"></plus-date>
-                        <plus-time label="starts"></plus-time>
+                        <plus-date label="starts" name="start_date" id="start_date"></plus-date>
+                        <plus-time label="starts" name="start_time" id="start_time"></plus-time>
                     </div>
 
                     <div class="row section">
-                        <plus-date label="ends"></plus-date>
-                        <plus-time label="ends"></plus-time>
+                        <plus-date label="ends" name="end_date" id="end_date"></plus-date>
+                        <plus-time label="ends" name="end_time" id="end_time"></plus-time>
                     </div>
 
                 </div>
@@ -140,7 +140,9 @@
 <script>
     function open_type_pop() {
         //first we will to clear all the input of the form 
+        update_pop_information()
         show_pop('pop-data-event')
+      
     }
 
 
@@ -242,6 +244,37 @@
     console.log(mySwitch.checked);  // true o false según el estado
   });
 
+
+
+
+  //------------------her is for update the information of the pop-----------------------//
+  function update_pop_information() {
+    //get the date 
+    const day = new Date();
+
+
+    //get the date update
+    change_label_date('start_date', day);
+    change_label_date('end_date', day);
+
+    //her also update the information of the minutes for get the time 
+  
+    const hours = day.getHours().toString().padStart(2, '0');
+    const minutes = day.getMinutes().toString().padStart(2, '0');
+    const time = `${hours}:${minutes}`;
+    change_label_time('start_time', time);
+    change_label_time('end_time', time);
+  }
+
+
+
+
+
+
+
+
+
+
   function hidden_input_repet(status) {
     const inputRepet = document.getElementById('input_repet');
     if (status) {
@@ -249,5 +282,90 @@
     } else {
       inputRepet.style.display = 'none';
     }
+  }
+
+  function activate_event_all_the_day(status) {
+    const day = new Date();
+    // Crear fecha de inicio del día (00:00:00)
+    const startOfDay = 'T00:00:00';
+
+    // Crear fecha de fin del día (23:59:59)
+    const endOfDay = 'T23:59:59';
+
+    change_label_date('start_date', formatDateToDDMMYYYY(day));
+    change_label_date('end_date', formatDateToDDMMYYYY(day));
+  }
+
+
+function format_date_to_text(date) {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses van de 0 a 11
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+
+
+
+  /*---------------------------CHANGE INFO OF LABELS---------------------------*/
+  function change_label_date(id, newDate){
+    const plusDate = document.getElementById(id);
+
+    if (!plusDate) return;
+
+    // her we will see if the component has a shadowRoot
+    const shadow = plusDate.shadowRoot;
+    if (!shadow) return;
+
+    // now we can search in the shadow DOM
+    const input = shadow.querySelector('input[type="date"]');
+
+    const label = shadow.querySelector('label');
+    const displayDiv = shadow.querySelector('#plus-date-display');
+
+    // Ejemplo: cambiar valor del input
+    if (input) {
+      input.value = newDate; // cualquier fecha válida en formato yyyy-mm-dd
+      displayDiv.textContent = format_date_to_text(newDate); // actualizar la visualización
+    }
+  }
+
+
+  function change_label_time(id, newTime){
+    const plusTime = document.getElementById(id);    
+    if (!plusTime) return;
+
+    // her we will see if the component has a shadowRoot
+    const shadow = plusTime.shadowRoot;
+    if (!shadow) return;
+
+    // now we can search in the shadow DOM
+    const input = shadow.getElementById(id);
+
+    const label = shadow.querySelector('label');
+    const displayDiv = shadow.querySelector('.time-picker-display');
+
+    //get the hour and the time
+
+    // Ejemplo: cambiar valor del input
+    if (input) {
+      input.value = newTime; // cualquier fecha válida en formato yyyy-mm-dd
+      displayDiv.textContent = newTime; // actualizar la visualización
+    }
+  }
+
+
+  //her we will get the information of the status of the switch
+  function get_status_switch(id) {
+    const mySwitch = document.getElementById(id);
+    if (!mySwitch) return;
+
+    // her we will see if the component has a shadowRoot
+    const shadow = mySwitch.shadowRoot;
+    if (!shadow) return;
+
+
+    const input = shadow.getElementById(id);
+    return input.checked ? input.checked : false;
   }
 </script>

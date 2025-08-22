@@ -1023,6 +1023,9 @@ class PlusSwitch extends HTMLElement {
     container.appendChild(wrapper);
 
     // Replace the original label
+    if (this.hasAttribute('id')) {
+      this.removeAttribute('id');
+    }
     this.replaceWith(container);
 
     //her we will add a event listener
