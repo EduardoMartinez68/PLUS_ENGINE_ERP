@@ -1,5 +1,6 @@
 import psycopg2
 import os
+from dotenv import load_dotenv
 import yaml
 from pathlib import Path
 
@@ -7,12 +8,14 @@ APPS_CACHE = []
 APPS_FOLDER=[]
 APPS_NAME=[]
 
+env_path = Path(__file__).resolve().parent.parent / '.env'
+load_dotenv(dotenv_path=env_path)
 conn_params = {
-    'host': 'localhost',
-    'port': 5432,
-    'database': 'plus_erp',
-    'user': 'postgres',
-    'password': 'bobesponja48'
+    'host': os.getenv('DB_HOST'),
+    'port': os.getenv('DB_PORT'),
+    'database': os.getenv('DB_NAME'),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASS')
 }
 
 def read_all_my_apps():

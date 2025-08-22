@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Seguridad
 secret_key = os.getenv('SECRET_KEY')
-SECRET_KEY = secret_key if secret_key else 'tu-clave-secreta-aqui'
+SECRET_KEY = secret_key if secret_key else 'your_secret_key'
 DEBUG = True
 ALLOWED_HOSTS = []
 

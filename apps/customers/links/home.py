@@ -1,3 +1,5 @@
+'''
+
 from django.shortcuts import render, redirect
 from database.models import Customer
 from django.contrib import messages
@@ -177,3 +179,6 @@ def search_customers_select(request):
         return JsonResponse({'success': True,'results': result_list})
     else:
         return JsonResponse({'message': 'Método no permitido'}, status=405)
+
+
+'''

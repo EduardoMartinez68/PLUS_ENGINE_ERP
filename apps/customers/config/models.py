@@ -12,12 +12,12 @@ class Customer(models.Model):
     phone = models.CharField(max_length=50, blank=True, null=True)
     cellphone = models.CharField(max_length=50, blank=True, null=True)
     website = models.TextField(blank=True, null=True)
-    creation_date = models.DateTimeField(auto_now_add=False)  # lo maneja la DB
+    creation_date = models.DateTimeField(auto_now_add=False)
     country = models.CharField(max_length=100, blank=True, null=True)
     status = models.BooleanField(default=True)
 
     class Meta:
-        db_table = '"customer"."customer"'  # schema.tabla
+        db_table = '"company"."customer"'  # schema.tabla
         verbose_name = 'Customer'
         verbose_name_plural = 'Customers'
 
