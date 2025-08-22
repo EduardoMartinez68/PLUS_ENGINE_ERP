@@ -86,9 +86,9 @@
                 </div>
 
 
-                <plus-switch text="repeat_this_event" name="repeat_event" id="repeat_this_event"></plus-switch>
+                <plus-switch text="repeat_this_event" name="repeat_event" id="repeat_this_event" onclick="hidden_input_repet"></plus-switch>
 
-                <div class="section">
+                <div class="section" id="input_repet" style="display: none;">
                     <div class="row m-1">
                         <plus-select label="repeat" name="repeat" requerid>
                             <option selected t="option.never"></option>
@@ -237,17 +237,17 @@
 
 <script>
   (() => {
-  customElements.whenDefined('plus-switch').then(() => {
-    const plusSwitch = document.querySelector('plus-switch');
-    const input = plusSwitch.shadowRoot?.querySelector('input[type="checkbox"]');
+    const mySwitch = document.getElementById('repeat_this_event');
+    console.log(mySwitch)
+    console.log(mySwitch.checked);  // true o false según el estado
+  });
 
-    if (input) {
-      input.addEventListener('change', () => {
-        console.log("¿Está encendido?", input.checked);
-      });
+  function hidden_input_repet(status) {
+    const inputRepet = document.getElementById('input_repet');
+    if (status) {
+      inputRepet.style.display = 'block';
     } else {
-      console.warn("Input no encontrado en el shadow DOM.");
+      inputRepet.style.display = 'none';
     }
-  });
-  });
+  }
 </script>

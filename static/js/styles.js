@@ -940,7 +940,7 @@ async function plus_delete_with_help_button(id, link) {
 class PlusSwitch extends HTMLElement {
   constructor() {
     super();
-    
+    this._checkbox = null;
   }
 
   connectedCallback() {
@@ -1008,7 +1008,8 @@ class PlusSwitch extends HTMLElement {
     checkbox.checked = isChecked;
     checkbox.name = name;
     checkbox.id = this.getAttribute('id') || generate_unique_dom_id();
-
+    this._checkbox = checkbox;
+    
     const slider = document.createElement('span');
     slider.classList.add('plus-switch-slider');
 
@@ -1025,14 +1026,17 @@ class PlusSwitch extends HTMLElement {
     this.replaceWith(container);
 
     //her we will add a event listener
+    const eventOnclick=this.getAttribute('onclick');
     checkbox.addEventListener('change', (e) => {
-      this.dispatchEvent(new CustomEvent('change', {
-        detail: { checked: e.target.checked },
-        bubbles: true,
-        composed: true
-      }));
+      const status=this._checkbox ? this._checkbox.checked : false;
+
+      //her we will see if exist the function and run the function with the status of the check
+      if (eventOnclick && typeof window[eventOnclick] === 'function') {
+        window[eventOnclick](status);
+      }
     });
   }
+
 }
 
 class PlusHelp extends HTMLElement {
