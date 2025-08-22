@@ -30,16 +30,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 </schema>
 
 <table name="employees">
-	<schema name="branch"/>
+	<schema name="company"/>
 	<position x="671" y="728"/>
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
-	</column>
-	<column name="email" not-null="true">
-		<type name="text"/>
-	</column>
-	<column name="password" not-null="true">
-		<type name="text"/>
 	</column>
 	<column name="cellphone">
 		<type name="varchar" length="20"/>
@@ -74,7 +68,13 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="name" not-null="true" default-value="600">
 		<type name="varchar"/>
 	</column>
-	<constraint name="id_key_employees" type="pk-constr" factor="10" table="branch.employees">
+	<column name="email" not-null="true">
+		<type name="text"/>
+	</column>
+	<column name="password" not-null="true">
+		<type name="text"/>
+	</column>
+	<constraint name="id_key_employees" type="pk-constr" factor="10" table="company.employees">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 </table>
@@ -107,9 +107,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<position x="1158" y="402"/>
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
-	</column>
-	<column name="nickname">
-		<type name="varchar" length="100"/>
 	</column>
 	<column name="email">
 		<type name="text"/>
@@ -147,6 +144,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="name" not-null="true">
 		<type name="varchar" length="500"/>
 	</column>
+	<column name="nickname">
+		<type name="varchar" length="100"/>
+	</column>
 	<constraint name="id_key_branch" type="pk-constr" factor="10" table="company.branch">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
@@ -167,7 +167,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-fk-pattern="{st}_fk"
 	 col-indexes="1" constr-indexes="1"
 	 src-table="company.company"
-	 dst-table="branch.employees"
+	 dst-table="company.employees"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="branch_has_many_users" type="rel1n"
@@ -176,17 +176,14 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-fk-pattern="{st}_fk"
 	 col-indexes="2" constr-indexes="2"
 	 src-table="company.branch"
-	 dst-table="branch.employees"
+	 dst-table="company.employees"
 	 src-required="false" dst-required="false"/>
 
 <table name="customer">
-	<schema name="customer"/>
+	<schema name="company"/>
 	<position x="1174" y="1047"/>
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
-	</column>
-	<column name="email">
-		<type name="text"/>
 	</column>
 	<column name="phone">
 		<type name="varchar" length="50"/>
@@ -236,7 +233,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="name" not-null="true">
 		<type name="varchar" length="300"/>
 	</column>
-	<constraint name="id_key_customer" type="pk-constr" factor="10" table="customer.customer">
+	<column name="email">
+		<type name="text"/>
+	</column>
+	<constraint name="id_key_customer" type="pk-constr" factor="10" table="company.customer">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 </table>
@@ -247,7 +247,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-fk-pattern="{st}_fk"
 	 col-indexes="1" constr-indexes="1"
 	 src-table="company.branch"
-	 dst-table="customer.customer"
+	 dst-table="company.customer"
 	 src-required="false" dst-required="false"/>
 
 <table name="permits">
@@ -255,9 +255,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<position x="659" y="465"/>
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
-	</column>
-	<column name="description">
-		<type name="text"/>
 	</column>
 	<column name="creation_date" default-value="CURRENT_TIMESTAMP">
 		<type name="timestamp"/>
@@ -276,6 +273,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="name" not-null="true">
 		<type name="varchar" length="100"/>
+	</column>
+	<column name="description">
+		<type name="text"/>
 	</column>
 	<constraint name="id_key_permits" type="pk-constr" factor="10" table="company.permits">
 		<columns names="id" ref-type="src-columns"/>
@@ -297,14 +297,14 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
 	</column>
-	<column name="description">
-		<type name="text"/>
-	</column>
 	<column name="activated" not-null="true" default-value="true">
 		<type name="boolean"/>
 	</column>
 	<column name="name" not-null="true">
 		<type name="varchar" length="100"/>
+	</column>
+	<column name="description">
+		<type name="text"/>
 	</column>
 	<constraint name="id_key_user_type" type="pk-constr" factor="10" table="company.user_type">
 		<columns names="id" ref-type="src-columns"/>
@@ -317,7 +317,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-fk-pattern="{st}_fk"
 	 col-indexes="16" constr-indexes="3"
 	 src-table="company.permits"
-	 dst-table="branch.employees"
+	 dst-table="company.employees"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="user_type_has_many_users" type="rel1n"
@@ -326,7 +326,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-fk-pattern="{st}_fk"
 	 col-indexes="17" constr-indexes="4"
 	 src-table="company.user_type"
-	 dst-table="branch.employees"
+	 dst-table="company.employees"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="company_has_many_user_type" type="rel1n"

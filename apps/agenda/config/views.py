@@ -21,7 +21,7 @@ def create_type_event(request):
     
             #now we will see if exists the name
             if(title==''):
-                return JsonResponse({'success': False, 'message': 'Se necesita un nombre para el tipo de evento.'}, status=400)
+                return JsonResponse({'success': False, 'message': 'message.need_a_name_for_the_type_event', 'error': 'Need the title of the type event'}, status=400)
     
             print(request.user)
             return JsonResponse({'success': True, 'message': 'Cliente editado exitosamente.'})
@@ -36,7 +36,7 @@ def create_type_event(request):
     
             #now we will see if exists the name
             if(title==''):
-                return JsonResponse({'success': False, 'message': 'Se necesita un nombre para el tipo de evento.'}, status=400)
+                return JsonResponse({'success': False, 'message': 'message.need_a_name_for_the_type_event', 'error': 'Need the title of the type event'}, status=400)
     
             print(request.user)
             return JsonResponse({'success': True, 'message': 'Cliente editado exitosamente.'})
