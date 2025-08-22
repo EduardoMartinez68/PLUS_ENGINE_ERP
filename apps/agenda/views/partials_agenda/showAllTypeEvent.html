@@ -13,7 +13,16 @@
   border-bottom: 1px solid #ccc;
 }
 </style>
-<search-bar placeholder="message.search" function-callback="filter_table_type_event"></search-bar>
+<div class="row">
+    <div class="col-10">
+        <search-bar placeholder="message.search" function-callback="filter_table_type_event"></search-bar>
+    </div>
+    <div class="col-2">
+        <br>
+        <button class="btn btn-add" onclick="open_pop_new_type_event()">+</button>
+    </div>
+</div>
+
 <table>
     <thead>
         <tr>
@@ -24,11 +33,11 @@
     <tbody id="body-table-type-event">
         <tr>
             <td>Event 1</td>
-            <td><input-color></input-color></td>
+            <td></td>
         </tr>
         <tr>
             <td>Event 2</td>
-            <td><input-color></input-color></td>
+            <td></td>
         </tr>
     </tbody>
 </table>
@@ -36,7 +45,6 @@
 
 <script>
     function filter_table_type_event(text){
-        console.log("Filtering table with text:", text);
         const rows = document.getElementById('body-table-type-event').getElementsByTagName('tr');
         Array.from(rows).forEach(row => {
             const eventName = row.cells[0].textContent.toLowerCase();

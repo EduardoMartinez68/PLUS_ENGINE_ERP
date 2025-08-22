@@ -72,7 +72,7 @@ class MessagePop extends HTMLElement {
 
   connectedCallback() {
     const title = this.getAttribute('title') || '';
-    const translatedTitle = translate_text(title); // Translate the title if needed
+    const translatedTitle = window.translate_text(title); // Translate the title if needed
 
     //get the name of the pop, this is for identify the pop when the user do click in the button close
     const name = this.getAttribute('name') || 'pop-default';
@@ -2808,10 +2808,27 @@ function open_tab(evt, tabName) {
 }
 
 /**----------------------------------MESSAGE POP----------------------**/
+let currentPopZIndex = 5000;
 function show_pop(idOverlay) {
   const overlay = document.getElementById(idOverlay);
   if (overlay) {
+    overlay.style.zIndex = currentPopZIndex;
     overlay.style.display = 'flex';
+
+    currentPopZIndex += 1;
+
+    //now update the z index of the menu of the apps
+    const appMenu = document.getElementById('appMenu');
+    let currentZIndex = window.getComputedStyle(appMenu).getPropertyValue('z-index');
+
+    //we will see if have a z-index, if have we will aument 1 to his value
+    if (!isNaN(currentZIndex)) {
+      let newZIndex = currentZIndex + 1;
+      appMenu.style.zIndex = newZIndex;
+    } else {
+      //if not have a z-index, we will to create a z-index
+      appMenu.style.zIndex = 1000;
+    }
   }
 }
 
@@ -2834,6 +2851,9 @@ function show_alert(type, title, description, readmoreText = '') {
   const buttonsEl = document.getElementById('alert-buttons');
   const iconEl = document.getElementById('alert-icon');
 
+  overlay.style.zIndex = currentPopZIndex+1;
+
+  pop.style.zIndex = currentPopZIndex+1;
   pop.classList.remove('sub-menu-app-pop-info', 'sub-menu-app-pop-alert', 'sub-menu-app-pop-question', 'sub-menu-app-pop-normal');
   pop.classList.add('sub-menu-app-pop-' + type);
 
@@ -2910,6 +2930,7 @@ function show_notification(type = 'info', message = '', duration = 4000) {
   };
 
   const alert = document.createElement('div');
+  alert.style.zIndex = currentPopZIndex+1;
   alert.className = `notification-alert ${type}`;
   alert.innerHTML = `
         <div class="icon">${icons[type] || icons['info']}</div>
@@ -3410,11 +3431,13 @@ function openTab(evt, tabId) {
 }
 /**---------------------------------SHOW MESSAGE POP PERSONALITY----------------------------- */
 function open_my_pop(id) {
-  const el = document.getElementById(id);
-  if (el) el.style.display = 'flex';
+  const popElement = document.getElementById(id);
+  if (popElement){
+    popElement.style.display = 'flex';
+  }
 }
 
 function close_my_pop(id) {
-  const el = document.getElementById(id);
-  if (el) el.style.display = 'none';
+  const popElement = document.getElementById(id);
+  if (popElement) popElement.style.display = 'none';
 }

@@ -81,12 +81,12 @@ async function nextWeb(url) {
       sessionHistory.push(url);
       localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
 
-      //translate the language of the app
-      const pathTranslate = get_path_of_the_file_translate_of_the_app(url);
-      load_language(pathTranslate);
-
       //update all the labels that the programmer do with the syntax of the ERP, to the labels that the user can see
       transform_my_labels_erp();
+
+      //translate the language of the app
+      const pathTranslate = get_path_of_the_file_translate_of_the_app(url);
+      await load_language(pathTranslate);
 
       closeMenu();
     } catch (error) {

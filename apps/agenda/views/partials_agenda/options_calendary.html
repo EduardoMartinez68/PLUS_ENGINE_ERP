@@ -41,16 +41,10 @@
 
 
     function open_pop_new_type_event() {
-        show_pop('pop-new-data-event')
-    }
+      //clear the container of the input 
+      document.getElementById('title-type-event').value = '';
 
-    function create_new_type_event() {
-        //const title = document.querySelector('input[name="name"]').value;
-        //const color = document.querySelector('input[name="color"]').value;
-
-        // Here you would typically send this data to your server
-        //console.log('Creating new type event:', { title, color });
-        hide_pop('pop-new-data-event')
+      show_pop('pop-new-data-event')
     }
 
     function open_pop_show_all_type_event(){

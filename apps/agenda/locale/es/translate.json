@@ -23,6 +23,8 @@
     "ends":"Fecha final",
     "min-end":"Tiempo final",
 
+    "search-type-event":"Tipo de evento",
+
     "repeat":"Tiempo de repetición",
     "endRepeat": "Final de la repetición",
     "option.never": "Nunca",
@@ -69,5 +71,23 @@
     "title-show-all-the-type-event":"Mostrar todos los tipos de evento",
     "type-events":"Tipos de evento",
     "event":"Evento",
-    "color": "Color"
+    "color": "Color",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    "message.error_in_server": "Ocurrio un error en el servidor",
+    "message.need_most_data": "Faltan campos obligatorios",
+    "message.need_a_name_for_the_type_event": "Se necesita un nombre para el tipo de evento"
 }

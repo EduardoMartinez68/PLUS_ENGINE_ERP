@@ -35,12 +35,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
 	</column>
-	<column name="path_photo">
-		<type name="text"/>
-	</column>
-	<column name="name" not-null="true" default-value="600">
-		<type name="varchar"/>
-	</column>
 	<column name="email" not-null="true">
 		<type name="text"/>
 	</column>
@@ -74,6 +68,12 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="activated" not-null="true" default-value="true">
 		<type name="boolean"/>
 	</column>
+	<column name="path_photo">
+		<type name="text"/>
+	</column>
+	<column name="name" not-null="true" default-value="600">
+		<type name="varchar"/>
+	</column>
 	<constraint name="id_key_employees" type="pk-constr" factor="10" table="branch.employees">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
@@ -104,12 +104,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <table name="branch">
 	<schema name="company"/>
-	<position x="1155" y="402"/>
+	<position x="1158" y="402"/>
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
-	</column>
-	<column name="name" not-null="true">
-		<type name="varchar" length="500"/>
 	</column>
 	<column name="nickname">
 		<type name="varchar" length="100"/>
@@ -146,6 +143,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="activated" not-null="true" default-value="true">
 		<type name="boolean"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="500"/>
 	</column>
 	<constraint name="id_key_branch" type="pk-constr" factor="10" table="company.branch">
 		<columns names="id" ref-type="src-columns"/>
@@ -184,9 +184,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<position x="1174" y="1047"/>
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
-	</column>
-	<column name="name" not-null="true">
-		<type name="varchar" length="300"/>
 	</column>
 	<column name="email">
 		<type name="text"/>
@@ -236,6 +233,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="activated" not-null="true" default-value="true">
 		<type name="boolean"/>
 	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="300"/>
+	</column>
 	<constraint name="id_key_customer" type="pk-constr" factor="10" table="customer.customer">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
@@ -256,9 +256,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
 	</column>
-	<column name="name" not-null="true">
-		<type name="varchar" length="100"/>
-	</column>
 	<column name="description">
 		<type name="text"/>
 	</column>
@@ -276,6 +273,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="delete_permits" not-null="true" default-value="true">
 		<type name="boolean"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="100"/>
 	</column>
 	<constraint name="id_key_permits" type="pk-constr" factor="10" table="company.permits">
 		<columns names="id" ref-type="src-columns"/>
@@ -297,14 +297,14 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
 	</column>
-	<column name="name" not-null="true">
-		<type name="varchar" length="100"/>
-	</column>
 	<column name="description">
 		<type name="text"/>
 	</column>
 	<column name="activated" not-null="true" default-value="true">
 		<type name="boolean"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="100"/>
 	</column>
 	<constraint name="id_key_user_type" type="pk-constr" factor="10" table="company.user_type">
 		<columns names="id" ref-type="src-columns"/>

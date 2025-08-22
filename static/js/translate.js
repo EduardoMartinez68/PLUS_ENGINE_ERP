@@ -4,7 +4,7 @@
 let languageUser = 'es'//'pl'; //get the language of the user example (es,pl,en,fr,etc)
 let translateOld={};
 let lastUrl=''; //here we will save the last loaded URL for avoid loading the same URL again
-function load_language(langUrl) {
+async function load_language(langUrl) {
   //her we will check if the langUrl is equal to the lastUrl, if it is equal we will not load the language again
   if (lastUrl === langUrl) {
     //if we have save the translation of the web, we will apply the translation to the web evit load the language again
@@ -13,16 +13,15 @@ function load_language(langUrl) {
   }
 
   //if we not have save the language, will load the language
-  fetch(langUrl)
-    .then(res => res.json())
-    .then(translations => {
-      translateOld=translations; //save the translations in the variable translateOld
-      apply_translation_to_the_web(translations); //now translate the web with the new translations
-      lastUrl = langUrl; //save the last loaded URL
-    })
-    .catch(err => {
-      console.error('Error to load the language:', err);
-    });
+  try {
+    const res = await fetch(langUrl);
+    const translations = await res.json();
+    translateOld = translations;
+    apply_translation_to_the_web(translations);
+    lastUrl = langUrl;
+  } catch (err) {
+    console.error('Error al cargar el idioma:', err);
+  }
 }
 
 function get_language_of_the_system() {
@@ -62,15 +61,15 @@ function apply_translation_to_the_web(translations) {
 }
 
 /*
-    this function is for translate the attributes of the elements that have the attribute data-i18n-attr
-    the value of the attribute is a list of attributes separated by commas, for example: data-i18n-attr="title,alt"
+    this function is for translate the attributes of the elements that have the attribute t
+    the value of the attribute is a list of attributes separated by commas, for example: t="title,alt"
     the function will translate the attributes using the translations object.
 
     This function is for translate the labels of the ERP, for example:
     <label-info   
     label="language.input_name"
     message="language.input_message"
-    data-i18n-attr="label,message">
+    t="label,message">
     </label-info>
 */
 function translate_attributes(element, translations) {
