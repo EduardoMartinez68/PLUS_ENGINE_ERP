@@ -258,7 +258,6 @@
     change_label_date('end_date', day);
 
     //her also update the information of the minutes for get the time 
-  
     const hours = day.getHours().toString().padStart(2, '0');
     const minutes = day.getMinutes().toString().padStart(2, '0');
     const time = `${hours}:${minutes}`;
@@ -285,19 +284,13 @@
   }
 
   function activate_event_all_the_day(status) {
-    const day = new Date();
-    // Crear fecha de inicio del día (00:00:00)
-    const startOfDay = 'T00:00:00';
-
-    // Crear fecha de fin del día (23:59:59)
-    const endOfDay = 'T23:59:59';
-
-    change_label_date('start_date', formatDateToDDMMYYYY(day));
-    change_label_date('end_date', formatDateToDDMMYYYY(day));
+    //her also update the information of the minutes for get the time 
+    change_label_time('start_time', '00:00');
+    change_label_time('end_time', '23:59');
   }
 
 
-function format_date_to_text(date) {
+  function format_date_to_text(date) {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses van de 0 a 11
   const year = date.getFullYear();
