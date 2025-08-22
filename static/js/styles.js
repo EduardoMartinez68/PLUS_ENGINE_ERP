@@ -249,38 +249,44 @@ class InputField extends HTMLElement {
 class SearchBar extends HTMLElement {
   constructor() {
     super();
+    this._typingTimer = null;
+    this._doneTypingInterval = 500; 
   }
 
   connectedCallback() {
     const labelTextInfo = this.getAttribute("label") || "";
-    const labelText = translate_text(labelTextInfo);
+    const labelText = labelTextInfo || "message.search";
     const name = this.getAttribute("name") || "";
-    const placeHolderText = this.getAttribute("placeholder");
+    const placeHolderText = this.getAttribute("placeholder") || "";
     const required = this.hasAttribute("required");
     const readOnly = this.hasAttribute("readonly");
     const disabled = this.hasAttribute("disabled");
     const value = this.getAttribute("value") || "";
 
-    // Placeholder traducido o por defecto
-    const placeholder = placeHolderText
-      ? translate_text(placeHolderText)
-      : labelText;
+    //we will see if the proggramer added a placeholder
+    const placeholder = placeHolderText || "message.search";
 
-    const tPlaceholderKey = (!placeHolderText || placeHolderText.trim() === '')
-      ? labelTextInfo
-      : placeHolderText;
+    const tPlaceholderKey = placeHolderText || "message.search";
 
-    // Crear elementos
+    //create the elements
     const wrapper = document.createElement("div");
     wrapper.classList.add("search-wrapper");
 
+    //her we will to create a label 
+    const label = document.createElement("label");
+    label.setAttribute('t',labelText);
+    label.textContent = window.translate_text(labelTextInfo); 
+
+    //her we will to create the inputs
     const input = document.createElement("input");
     input.type = "search";
     input.classList.add("search-input");
     input.name = name;
-    input.placeholder = placeholder;
+    input.id = this.getAttribute("id") || generate_unique_dom_id();
+    input.placeholder = window.translate_text(placeholder);
     input.value = value;
     input.setAttribute("t-placeholder", tPlaceholderKey);
+
 
     if (required) input.required = true;
     if (readOnly) input.readOnly = true;
@@ -291,6 +297,31 @@ class SearchBar extends HTMLElement {
 
     wrapper.appendChild(input);
     wrapper.appendChild(icon);
+
+    // Detect attribute function 'function'
+    const callbackFnName = this.getAttribute("function-callback");
+
+    if (callbackFnName && typeof window[callbackFnName] === "function") {
+
+      // Debounce input events
+      input.addEventListener('input', () => {
+        clearTimeout(this._typingTimer);
+        this._typingTimer = setTimeout(() => {
+          const currentText = input.value;
+          window[callbackFnName](currentText);
+        }, this._doneTypingInterval);
+      });
+
+      //run the function if the user do a enter also
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          clearTimeout(this._typingTimer);
+          window[callbackFnName](input.value);
+        }
+      });
+    }
+
+
 
     this.replaceWith(wrapper);
   }
@@ -1797,6 +1828,7 @@ class PlusDate extends HTMLElement {
   connectedCallback() {
     const textT = this.getAttribute("t"); //get the text to translate if exist in the label
     const labelTextT = textT || this.getAttribute("label"); //her we will see if the user would like translate a text, if no have nathing, we will get the value of the label
+    console.log(labelTextT)
     const labelText = window.translate_text(labelTextT) || window.t('btn.select_range_date'); //her we will to trsnlate the text if exist a text, else we will to create a value predefine 
 
     const name = this.getAttribute("name") || "plus-date";

@@ -48,6 +48,7 @@ async function nextWeb(url) {
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
 
+      //her we will update the DOM
       const mainContent = doc.getElementById('main-content');
       document.getElementById('main-content').innerHTML = mainContent ? mainContent.innerHTML : html;
 
@@ -76,6 +77,7 @@ async function nextWeb(url) {
         document.body.appendChild(newScript);
       }
 
+      //update the last session that the user visited
       sessionHistory.push(url);
       localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
 
@@ -90,6 +92,8 @@ async function nextWeb(url) {
     } catch (error) {
       console.error('Error to load the container of the body:', error);
     }
+
+
   } else {
     console.error('Invalid URL provided to nextWeb');
   }

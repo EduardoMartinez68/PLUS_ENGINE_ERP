@@ -1,0 +1,50 @@
+<style>
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  width: 100%;
+  border-radius: 0;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  border-bottom: 1px solid #ccc;
+}
+</style>
+<search-bar placeholder="message.search" function-callback="filter_table_type_event"></search-bar>
+<table>
+    <thead>
+        <tr>
+            <th t="event">Event</th>
+            <th t="color">Color</th>
+        </tr>
+    </thead>
+    <tbody id="body-table-type-event">
+        <tr>
+            <td>Event 1</td>
+            <td><input-color></input-color></td>
+        </tr>
+        <tr>
+            <td>Event 2</td>
+            <td><input-color></input-color></td>
+        </tr>
+    </tbody>
+</table>
+
+
+<script>
+    function filter_table_type_event(text){
+        console.log("Filtering table with text:", text);
+        const rows = document.getElementById('body-table-type-event').getElementsByTagName('tr');
+        Array.from(rows).forEach(row => {
+            const eventName = row.cells[0].textContent.toLowerCase();
+            if (eventName.includes(text.toLowerCase())) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+</script>

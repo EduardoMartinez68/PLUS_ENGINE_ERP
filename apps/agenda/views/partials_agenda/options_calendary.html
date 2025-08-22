@@ -2,140 +2,21 @@
 <plus-actions>
     <plus-action text="new-event" onclick="open_type_pop" combo="Shift+n"></plus-action>
     <plus-action text="title-create-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
+    <plus-action text="title-show-all-the-type-event" onclick="open_pop_show_all_type_event"></plus-action>
 </plus-actions>
 
 <message-pop title="title-pop-create-event" name="pop-data-event">
-    <div class="container-pop">
-        <plus-tabs>
-            <plus-tab text="Description">
-                <div class="section">
-                    <label t="label-input-title">Title of the event</label>
-                    <input type="text" name="name" class="case-title-input" placeholder="Title"
-                        t-placeholder="placeholder-input-title" required maxlength="300" />
-                </div>
-
-
-                <div class="section">
-                    <div class="row m-1">
-                        <plus-select label="priority" name="priority" required>
-                            <option selected t="priority.low"></option>
-                            <option t="priority.normal"></option>
-                            <option t="priority.high"></option>
-                        </plus-select>
-
-                        <plus-select label="label-search-home" name="tipo_documento" requerid
-                            link="customers/search_customers_select/" add="open_pop_new_type_event"
-                            edit_data="edit_data" delete_data="customers/search_customers_select/">
-
-                        </plus-select>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <plus-switch text="all-day" name="allDay" onclick="activate_event_all_the_day"></plus-switch>
-
-                    <div class="row section">
-                        <plus-date label="starts" name="start_date" id="start_date"></plus-date>
-                        <plus-time label="starts" name="start_time" id="start_time"></plus-time>
-                    </div>
-
-                    <div class="row section">
-                        <plus-date label="ends" name="end_date" id="end_date"></plus-date>
-                        <plus-time label="ends" name="end_time" id="end_time"></plus-time>
-                    </div>
-
-                </div>
-
-                <div class="section">
-                    <plus-select label="Tiempo de aviso" name="alert_time" required>
-                        <option selected t="alert.none"></option>
-                        <option t="alert.5min"></option>
-                        <option t="alert.10min"></option>
-                        <option t="alert.15min"></option>
-                        <option t="alert.30min"></option>
-                        <option t="alert.1hr"></option>
-                        <option t="alert.2hr"></option>
-                        <option t="alert.1day"></option>
-                        <option t="alert.2day"></option>
-                        <option t="alert.1week"></option>
-                    </plus-select>
-                </div>
-
-                <div class="section">
-                    <info-label label="Email de invitados" message="Agrega correos y presiona Enter, coma o espacio"></info-label>
-                    <plus-emails id="invitados" name="correos_invitados" label="Email de invitados"></plus-emails>
-                </div>
-
-                <div class="section">
-                    <label for="description" t="label-description">Description</label>
-                    <textarea name="description" id="description" rows="4" t-placeholder="placeholder-description"></textarea>
-                </div>
-
-
-            </plus-tab>
-
-
-            <plus-tab text="More options">
-                <div class="section">
-                    <input-field label="label-input-address" name="location"
-                        placeholder="placeholder-input-address"></input-field>
-                </div>
-
-                <div class="section">
-                    <input-field label="label-link" type="text" name="link" placeholder="www/..."></input-field>
-                </div>
-
-
-                <plus-switch text="repeat_this_event" name="repeat_event" id="repeat_this_event" onclick="hidden_input_repet"></plus-switch>
-
-                <div class="section" id="input_repet" style="display: none;">
-                    <div class="row m-1">
-                        <plus-select label="repeat" name="repeat" requerid>
-                            <option selected t="option.never"></option>
-                            <option t="option.every_day"></option>
-                            <option t="option.every_week"></option>
-                            <option t="option.every_2_weeks"></option>
-                            <option t="option.every_month"></option>
-                            <option t="option.every_year"></option>
-                        </plus-select>
-
-
-                        <plus-select label="endRepeat" name="endRepeat" requerid>
-                            <option selected t="option.never">Never</option>
-                            <option t="option.on_day">On Day</option>
-                        </plus-select>
-                    </div>
-                </div>
-
-                <plus-switch text="send_notification" name="send_notification" checked="true"></plus-switch>
-
-                <plus-switch text="i_am_free" name="i_am_free" checked="true"></plus-switch>
-            </plus-tab>
-        </plus-tabs>
-    </div>
-
-    <button class="btn btn-add btn-success" t="message.success">Save</button>
+    {% include 'partials_agenda/formCreateNewEvent.html' %}
 </message-pop>
-
-
 
 
 <message-pop title="title-create-type-event" name="pop-new-data-event">
-    <div class="section">
-        <label t="new-type-event">Title of the event</label>
-        <input type="text" name="name" class="case-title-input" t-placeholder="new-type-event" required
-            maxlength="300" />
-    </div>
-
-    <div class="section">
-        <label for="">Color</label>
-        <input-color></input-color>
-    </div>
-
-    <button t="message.create" class="btn btn-success btn-add" onclick="create_new_type_event()">Success</button>
+  {% include 'partials_agenda/createNewTypeEvent.html' %}
 </message-pop>
 
-<button onclick="show_pop('pop-new-data-event')">Open Type Pop</button>
+<message-pop title="type-events" name="pop-show-all-the-type-event">
+  {% include 'partials_agenda/showAllTypeEvent.html' %}
+</message-pop>
 
 <script>
     function open_type_pop() {
@@ -147,7 +28,7 @@
 
 
     function clean_form_event() {
-
+      update_pop_information();
     }
 
 
@@ -172,6 +53,9 @@
         hide_pop('pop-new-data-event')
     }
 
+    function open_pop_show_all_type_event(){
+      show_pop('pop-show-all-the-type-event')
+    }
 </script>
 
 <script>
@@ -238,14 +122,6 @@
 
 
 <script>
-  (() => {
-    const mySwitch = document.getElementById('repeat_this_event');
-    console.log(mySwitch)
-    console.log(mySwitch.checked);  // true o false según el estado
-  });
-
-
-
 
   //------------------her is for update the information of the pop-----------------------//
   function update_pop_information() {
@@ -254,25 +130,16 @@
 
 
     //get the date update
-    change_label_date('start_date', day);
-    change_label_date('end_date', day);
+    change_plus_date('start_date', day);
+    change_plus_date('end_date', day);
 
     //her also update the information of the minutes for get the time 
     const hours = day.getHours().toString().padStart(2, '0');
     const minutes = day.getMinutes().toString().padStart(2, '0');
     const time = `${hours}:${minutes}`;
-    change_label_time('start_time', time);
-    change_label_time('end_time', time);
+    change_plus_time('start_time', time);
+    change_plus_time('end_time', time);
   }
-
-
-
-
-
-
-
-
-
 
   function hidden_input_repet(status) {
     const inputRepet = document.getElementById('input_repet');
@@ -285,11 +152,11 @@
 
   function activate_event_all_the_day(status) {
     //her also update the information of the minutes for get the time 
-    change_label_time('start_time', '00:00');
-    change_label_time('end_time', '23:59');
+    change_plus_time('start_time', '00:00');
+    change_plus_time('end_time', '23:59');
   }
 
-
+  /*---------------------------CHANGE INFO OF LABELS---------------------------*/
   function format_date_to_text(date) {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses van de 0 a 11
@@ -298,10 +165,7 @@
 }
 
 
-
-
-  /*---------------------------CHANGE INFO OF LABELS---------------------------*/
-  function change_label_date(id, newDate){
+  function change_plus_date(id, newDate){
     const plusDate = document.getElementById(id);
 
     if (!plusDate) return;
@@ -323,8 +187,7 @@
     }
   }
 
-
-  function change_label_time(id, newTime){
+  function change_plus_time(id, newTime){
     const plusTime = document.getElementById(id);    
     if (!plusTime) return;
 
@@ -347,9 +210,8 @@
     }
   }
 
-
   //her we will get the information of the status of the switch
-  function get_status_switch(id) {
+  function get_status_plus_switch(id) {
     const mySwitch = document.getElementById(id);
     if (!mySwitch) return;
 
@@ -361,4 +223,7 @@
     const input = shadow.getElementById(id);
     return input.checked ? input.checked : false;
   }
+
+
+
 </script>

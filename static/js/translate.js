@@ -46,13 +46,13 @@ function apply_translation_to_the_web(translations) {
   //get all the elements that have the attribute t 
   document.querySelectorAll('[t]').forEach(el => {
     const key = el.getAttribute('t'); //get the key of the translation
-    if (translations[key]) el.textContent = translations[key]; //translate the text of the element
+    el.textContent=translate_text(key) //translate the text of the element
   });
 
   //get all the elements that have the attribute t-placeholder, normally this attribute is used for input, textarea, etc.
   document.querySelectorAll('[t-placeholder]').forEach(el => {
     const key = el.getAttribute('t-placeholder'); //get the key of the translation
-    if (translations[key]) el.setAttribute('placeholder', translations[key]); //translate the placeholder of the element
+    el.setAttribute('placeholder', translate_text(key));  //translate the placeholder of the element
   });
 
   //translate the attributes of the elements that have the attribute <info-label>
@@ -75,13 +75,13 @@ function apply_translation_to_the_web(translations) {
 */
 function translate_attributes(element, translations) {
   const keyLabel = element.getAttribute('label');
-  if (keyLabel && translations[keyLabel]) {
-    element.setAttribute('label', translations[keyLabel]);
+  if(keyLabel){
+    element.setAttribute('label',translate_text(keyLabel));
   }
 
   const keyMessage = element.getAttribute('message');
-  if (keyMessage && translations[keyMessage]) {
-    element.setAttribute('message', translations[keyMessage]);
+  if (keyMessage) {
+    element.setAttribute('message', translate_text(keyMessage));
   }
   
 }

@@ -19,7 +19,9 @@
 
     "all-day":"Todo el dia",
     "starts":"Fecha inicio",
+    "min-start":"Tiempo inicio",
     "ends":"Fecha final",
+    "min-end":"Tiempo final",
 
     "repeat":"Tiempo de repetición",
     "endRepeat": "Final de la repetición",
@@ -61,5 +63,11 @@
 
 
     "label-description":"Descripción",
-    "placeholder-description":"Escribe una descripción para el evento"
+    "placeholder-description":"Escribe una descripción para el evento",
+
+
+    "title-show-all-the-type-event":"Mostrar todos los tipos de evento",
+    "type-events":"Tipos de evento",
+    "event":"Evento",
+    "color": "Color"
 }
