@@ -11,17 +11,17 @@
 </head>
 <div class="login-container">
     <form method="post">
-        <h2>Iniciar Sesión</h2>
+        <h2 t="login">Login</h2>
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Entrar</button>
+        <button type="submit" t="inside">inside</button>
         <br>
     <div class="extra-link">
-        ¿No tienes cuenta? <a href="/singup">Crear nueva cuenta</a>
+        <label t="do-you-have-account">do you have a account?</label> <a href="/singup" t="create-new-account">Crear nueva cuenta</a>
     </div>
 
     <div class="extra-link">
-        ¿Olvidaste tu contraseña? <a href="/singup">Recupérala aquí</a>
+        <label t="forgot-password">do you forgot your password?</label> <a href="/singup" t="recover-password">recover it here</a>
     </div>
     </form>
 </div>

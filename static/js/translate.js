@@ -1,7 +1,7 @@
 //This function is for load all the translations of the app of the ERP, this function is called forever that the user change the language or load the web
 ///example: load the language spanish to the app 'sales'
 //load_language('/apps/sales/translate.json');
-let languageUser = 'es'//'pl'; //get the language of the user example (es,pl,en,fr,etc)
+let languageUser = 'es'//'pl' 'es'; //get the language of the user example (es,pl,en,fr,etc)
 let translateOld={};
 let lastUrl=''; //here we will save the last loaded URL for avoid loading the same URL again
 async function load_language(langUrl) {
@@ -149,18 +149,22 @@ function translate_menu_apps(){
   //get the list of the apps in the menu
   const menuApps = document.querySelectorAll('.app-name');
   const searchApp=document.getElementById('searchInput'); //get the search input
+  if (menuApps && searchApp){
+    //update the placeholder of the search input
+    searchApp.setAttribute('placeholder', LANG['menu.search']);
 
-  //update the placeholder of the search input
-  searchApp.setAttribute('placeholder', LANG['menu.search']);
+    //here we will translate all the apps that be in the menu
+    menuApps.forEach(app => {
+      const key = 'app.'+app.textContent.trim(); //create the key for the translation
 
-  //here we will translate all the apps that be in the menu
-  menuApps.forEach(app => {
-    const key = 'app.'+app.textContent.trim(); //create the key for the translation
+      //we will check if exist the key in the translations, if exist we will translate the app
+      //if not exist we will not translate the app and we will keep the original text
+      if (key && LANG[key]) {
+        app.textContent = LANG[key];
+      }
+    });
+  }
 
-    //we will check if exist the key in the translations, if exist we will translate the app
-    //if not exist we will not translate the app and we will keep the original text
-    if (key && LANG[key]) {
-      app.textContent = LANG[key];
-    }
-  });
+
+  apply_translation_to_the_web(LANG);
 }

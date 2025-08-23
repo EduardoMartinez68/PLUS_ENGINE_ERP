@@ -114,7 +114,7 @@ class Setting(models.Model):
     date_format = models.CharField(max_length=20, default="DD/MM/YYYY")
 
     class Meta:
-        db_table = 'erp"."setting'
+        db_table = 'company"."setting'
 
     def __str__(self):
         return f"Settings {self.id}"

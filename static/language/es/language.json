@@ -1,4 +1,13 @@
  {
+    "have-you-a-account": "¿Ya tienes una cuenta?",
+    "register": "Registrar",
+    "login": "Iniciar Sesión",
+    "inside": "Entrar",
+    "create-new-account": "Crear nueva cuenta",
+    "recover-password": "Recuperar contraseña",
+    "do-you-have-account": "¿No tienes cuenta?",
+    "forgot-password": "¿Olvidaste tu contraseña?",
+
     "message.title": "Confirmación",
     "message.success": "Aceptar",
     "message.save": "Guardar",

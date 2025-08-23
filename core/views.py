@@ -2,6 +2,7 @@ from django.shortcuts import render
 from core.readApps import APPS_CACHE #get the list of our apps in the ERP
 from core.models import Company, Branch
 import os
+from django.contrib import messages
 
 #when tis we will read our file .env
 from dotenv import load_dotenv 
@@ -18,26 +19,38 @@ def home(request):
 from django.shortcuts import render, redirect
 from core.forms import SignUpForm
 
+
+
+#here we will import the message for translate the ERP with the language of the user
+import core.message_language as ml
+
 def register(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)  # todavía no guardamos para agregar company/branch
+            try:
+                user = form.save(commit=False)  # We haven't saved anything to add yet. company/branch
 
-            # 1️⃣ Crear Company
-            company = Company.objects.create(name=f'Empresa de {user.email}')
+                # 1️⃣ create a company
+                company = Company.objects.create(company_name=f'Company of {user.email}')
 
-            # 2️⃣ Crear Branch
-            branch = Branch.objects.create(id_company=company)
+                # 2️⃣ create a branch
+                branch = Branch.objects.create(id_company=company)
 
-            # 3️⃣ Guardar en user los id
-            user.id_company = company.id
-            user.id_branch = branch.id
+                # 3️⃣ save the ids in user
+                user.id_company = company
+                user.id_branch = branch
 
-            user.set_password(form.cleaned_data['password1'])  # hash de password
-            user.save()
 
-            return redirect('/login')  # o a donde quieras mandar después del registro
+                messages.success(request, f"{ml.get_message('success')}")
+                user.set_password(form.cleaned_data['password1'])  # hash the password
+                user.save()
+
+                return redirect('/login')  # or wherever you want to redirect after registration
+            except Exception as e:
+                messages.error(request, f"{ml.get_message('email_taken')} {str(e)}")
+        else:
+            messages.error(request, f"{ml.get_message('required_fields')}")
     else:
         form = SignUpForm()
 

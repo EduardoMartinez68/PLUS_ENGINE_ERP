@@ -14,12 +14,15 @@
     {{ form.non_field_errors }}
     {{ form.as_p }}
 
-    <button type="submit">Registrar</button>
+    <button type="submit" t="register">register</button>
     <br><br>
     <div class="extra-link">
-    <center><a href="/login">¿Ya tienes una cuenta?</a></center>
+    <center><a href="/login" t="have-you-a-account">have you a account?</a></center>
     </div>
   </form>
-
+  <script src="{% static 'js/translate.js' %}" ></script>
+  <script>
+      apply_translation_to_the_web(LANG);
+  </script>
 </body>
 </html>
