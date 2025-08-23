@@ -119,5 +119,9 @@
     "input.text": "Tekst",
     "input.number": "Numer",
     "input.date": "Data",
-    "input.time": "Godzina"
+    "input.time": "Godzina",
+
+
+    "input.write-a-message": "Napisz wiadomość...",
+    "ia-not-can-listen":"Rozpoznawanie mowy niedostępne"
 }

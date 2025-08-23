@@ -1,7 +1,4 @@
-'''
-
 from django.shortcuts import render, redirect
-from database.models import Customer
 from django.contrib import messages
 from datetime import datetime
 from django.db.models import Q
@@ -9,6 +6,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
 from django.http import HttpResponse
+
+'''
+from database.models import Customer
+
 
 def customers_home(request):
     id_branch = request.user.id_branch
@@ -182,3 +183,16 @@ def search_customers_select(request):
 
 
 '''
+
+@csrf_exempt
+def search_customers_select(request):
+    if request.method == 'POST':
+        result_list = []
+
+        result_list.append({
+            'id': 1,
+            'text': 'pablo'
+        })
+        return JsonResponse({'success': True,'results': result_list})
+    else:
+        return JsonResponse({'message': 'Método no permitido'}, status=405)

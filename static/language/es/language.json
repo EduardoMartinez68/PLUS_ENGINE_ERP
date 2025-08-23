@@ -122,6 +122,9 @@
     "input.text": "Texto",
     "input.number": "Número",
     "input.date": "Fecha",
-    "input.time": "Hora"
+    "input.time": "Hora",
+
+    "input.write-a-message": "Escribe un mensaje...",
+    "ia-not-can-listen":"Reconocimiento de voz no disponible"
 }
 

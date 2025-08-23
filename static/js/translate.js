@@ -164,7 +164,8 @@ function translate_menu_apps(){
       }
     });
   }
-
-
-  apply_translation_to_the_web(LANG);
+  else{
+    //if not exist the menu of apps, is because the user is not logged in
+    apply_translation_to_the_web(LANG);
+  }
 }
