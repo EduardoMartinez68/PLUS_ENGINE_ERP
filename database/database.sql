@@ -104,7 +104,7 @@ CREATE INDEX IF NOT EXISTS idx_permits_id_company ON company.permits(id_company)
 
 
 ---------------------------------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS company.employees (
+CREATE TABLE IF NOT EXISTS company.users (
 	id bigserial PRIMARY KEY,
 
     path_photo text,

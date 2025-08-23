@@ -1,7 +1,12 @@
 #for run the server 
+#---SETP 1 RUN THIS COMMAND FOR CREATE THE MODELS OF THE DATABASE
 python manage.py makemigrations core
+
+#---SETP 2 RUN THIS COMMAND FOR LOAD AND CREATE THE STRUCT OF THE DATABASE
 python manage.py migrate
 
+
+#---SETP 3 RUN THIS COMMAND FOR RUN THE SERVER
 python manage.py runserver
 python manage.py runserver 0.0.0.0:8000
 

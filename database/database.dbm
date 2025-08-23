@@ -29,23 +29,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <schema name="customer" fill-color="#e1e1e1">
 </schema>
 
-<table name="employees">
-	<schema name="company"/>
+<table name="users">
+	<schema name="public"/>
 	<position x="671" y="728"/>
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
-	</column>
-	<column name="cellphone">
-		<type name="varchar" length="20"/>
-	</column>
-	<column name="phone">
-		<type name="varchar" length="20"/>
-	</column>
-	<column name="address">
-		<type name="text"/>
-	</column>
-	<column name="country">
-		<type name="varchar" length="2"/>
 	</column>
 	<column name="postal_code">
 		<type name="varchar" length="20"/>
@@ -74,7 +62,19 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="password" not-null="true">
 		<type name="text"/>
 	</column>
-	<constraint name="id_key_employees" type="pk-constr" factor="10" table="company.employees">
+	<column name="cellphone">
+		<type name="varchar" length="20"/>
+	</column>
+	<column name="phone">
+		<type name="varchar" length="20"/>
+	</column>
+	<column name="address">
+		<type name="text"/>
+	</column>
+	<column name="country">
+		<type name="varchar" length="2"/>
+	</column>
+	<constraint name="id_key_employees" type="pk-constr" factor="10" table="public.users">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 </table>
@@ -107,12 +107,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<position x="1158" y="402"/>
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
-	</column>
-	<column name="email">
-		<type name="text"/>
-	</column>
-	<column name="country">
-		<type name="varchar" length="2"/>
 	</column>
 	<column name="address">
 		<type name="text"/>
@@ -147,6 +141,12 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="nickname">
 		<type name="varchar" length="100"/>
 	</column>
+	<column name="email">
+		<type name="text"/>
+	</column>
+	<column name="country">
+		<type name="varchar" length="2"/>
+	</column>
 	<constraint name="id_key_branch" type="pk-constr" factor="10" table="company.branch">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
@@ -167,7 +167,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-fk-pattern="{st}_fk"
 	 col-indexes="1" constr-indexes="1"
 	 src-table="company.company"
-	 dst-table="company.employees"
+	 dst-table="public.users"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="branch_has_many_users" type="rel1n"
@@ -176,7 +176,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-fk-pattern="{st}_fk"
 	 col-indexes="2" constr-indexes="2"
 	 src-table="company.branch"
-	 dst-table="company.employees"
+	 dst-table="public.users"
 	 src-required="false" dst-required="false"/>
 
 <table name="customer">
@@ -184,12 +184,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<position x="1174" y="1047"/>
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
-	</column>
-	<column name="phone">
-		<type name="varchar" length="50"/>
-	</column>
-	<column name="points">
-		<type name="integer"/>
 	</column>
 	<column name="credit">
 		<type name="integer"/>
@@ -236,6 +230,12 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="email">
 		<type name="text"/>
 	</column>
+	<column name="phone">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="points">
+		<type name="integer"/>
+	</column>
 	<constraint name="id_key_customer" type="pk-constr" factor="10" table="company.customer">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
@@ -256,12 +256,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
 	</column>
-	<column name="creation_date" default-value="CURRENT_TIMESTAMP">
-		<type name="timestamp"/>
-	</column>
-	<column name="activated" not-null="true" default-value="true">
-		<type name="boolean"/>
-	</column>
 	<column name="view_permits" default-value="true">
 		<type name="boolean"/>
 	</column>
@@ -276,6 +270,12 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="description">
 		<type name="text"/>
+	</column>
+	<column name="creation_date" default-value="CURRENT_TIMESTAMP">
+		<type name="timestamp"/>
+	</column>
+	<column name="activated" not-null="true" default-value="true">
+		<type name="boolean"/>
 	</column>
 	<constraint name="id_key_permits" type="pk-constr" factor="10" table="company.permits">
 		<columns names="id" ref-type="src-columns"/>
@@ -297,14 +297,14 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
 	</column>
+	<column name="description">
+		<type name="text"/>
+	</column>
 	<column name="activated" not-null="true" default-value="true">
 		<type name="boolean"/>
 	</column>
 	<column name="name" not-null="true">
 		<type name="varchar" length="100"/>
-	</column>
-	<column name="description">
-		<type name="text"/>
 	</column>
 	<constraint name="id_key_user_type" type="pk-constr" factor="10" table="company.user_type">
 		<columns names="id" ref-type="src-columns"/>
@@ -317,7 +317,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-fk-pattern="{st}_fk"
 	 col-indexes="16" constr-indexes="3"
 	 src-table="company.permits"
-	 dst-table="company.employees"
+	 dst-table="public.users"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="user_type_has_many_users" type="rel1n"
@@ -326,7 +326,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-fk-pattern="{st}_fk"
 	 col-indexes="17" constr-indexes="4"
 	 src-table="company.user_type"
-	 dst-table="company.employees"
+	 dst-table="public.users"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="company_has_many_user_type" type="rel1n"
