@@ -775,9 +775,10 @@ class PlusSelect extends HTMLElement {
     if (isRequired) hiddenInput.required = true;
 
     //Click event on select visible. This is when the user do clic in the select.
-    select.addEventListener('click', () => {
+    select.addEventListener('click', async () => {
       popup.classList.toggle('active');
       searchInput.focus();
+      await update_option_for_the_server('');
     });
 
     // Event clic in options
@@ -793,7 +794,7 @@ class PlusSelect extends HTMLElement {
 
     if (thisSlectSendDataToTheServer) {
       //if the proggramer need that this can be update with data of the server, we will get the information of the seacrk 
-      await update_option_for_the_server('');
+      //await update_option_for_the_server('');
     }
 
     // Filter
