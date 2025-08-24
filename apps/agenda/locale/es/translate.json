@@ -19,10 +19,10 @@
 
     "all-day":"Todo el dia",
     "starts":"Fecha inicio",
-    "min-start":"Tiempo inicio",
+    "min-start":"",
     "ends":"Fecha final",
-    "min-end":"Tiempo final",
-
+    "min-end":"",
+    "time-of-alert": "Tiempo de aviso",
     "search-type-event":"Tipo de evento",
 
     "repeat":"Tiempo de repetición",

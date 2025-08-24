@@ -63,7 +63,7 @@
     "app.settings": "Configuraciones",
     "app.exit": "Salir",
 
-
+    "btn.restart": "Reiniciar",
     "btn.range_date": "Rango de fecha",
     "btn.select_range_date": "Selecciona una fecha",
     "range.today": "Hoy",

@@ -16,7 +16,7 @@
                         <option t="priority.high"></option>
                     </plus-select>
 
-                    <plus-select label="search-type-event" name="tipo_documento" required
+                    <plus-select label="search-type-event" name="type_event" required
                         link="customers/search_customers_select/" add="open_pop_new_type_event" edit_data="edit_data"
                         delete_data="customers/search_customers_select/">
                     </plus-select>
@@ -25,7 +25,6 @@
 
             <div class="section">
                 <plus-switch text="all-day" name="allDay" onclick="activate_event_all_the_day"></plus-switch>
-
                 <div class="row section">
                     <plus-date label="starts" name="start_date" id="start_date"></plus-date>
                     <plus-time label="min-start" name="start_time" id="start_time"></plus-time>
@@ -39,7 +38,7 @@
             </div>
 
             <div class="section">
-                <plus-select label="Tiempo de aviso" name="alert_time" required>
+                <plus-select label="time-of-alert" name="alert_time" required>
                     <option selected t="alert.none"></option>
                     <option t="alert.5min"></option>
                     <option t="alert.10min"></option>

@@ -647,7 +647,7 @@ class PlusSelect extends HTMLElement {
 
   async connectedCallback() {
     //get the information that the programmer added to the select
-    const textLabel = this.getAttribute('label') || '';
+    const textLabel =  this.getAttribute('t')|| this.getAttribute('label') || '';
     const textLabelTranslate = window.translate_text(textLabel); //translate the text of the label
 
     const name = this.getAttribute('name') || '';
@@ -662,10 +662,13 @@ class PlusSelect extends HTMLElement {
       //if the programmer need show a messga, we will to create the special label when the information that need
       label = document.createElement('info-label');
       label.setAttribute('label', textLabel)
+      label.setAttribute('t', textLabel)
+      label.textContent = textLabelTranslate;
       label.setAttribute('message', thisLabelHaveAMessage)
     } else {
       //if the programmer not need show a message, we will create a message normal
       label = document.createElement('label');
+      label.setAttribute('label', textLabel)
       label.setAttribute('t', textLabel);
       label.textContent = textLabelTranslate;
     }
@@ -832,15 +835,15 @@ class PlusSelect extends HTMLElement {
       loadingDiv.textContent = window.t('info.loading');
       options.push(loadingDiv);
       popup.appendChild(loadingDiv);
-
+      
       //if have a link of search, send this information to the server for get the information. 
       //the that the server can retur is {id:0, text:'name'}
       //send the information to the server and get his answer
-      const result = await send_message_to_the_server(link, [term], false);
+      const result = await window.send_message_to_the_server(link, [term], false); //with this have a error for translate the label 
 
       //when get the answer of the server, other clear all the container 
       clear_option_select();
-
+      
       //we will see if we can add the new customer
       if (result.success) {
         //get the data that send the server
@@ -913,7 +916,7 @@ class PlusSelect extends HTMLElement {
           popup.appendChild(div);
         });
       } else {
-        console.error(result.message || 'error to get information of the server')
+        console.error(result.message || 'error to get information of the server for the select')
         const text = t('error.general'); //if exit a error to connect with the server show a message 
 
         //now we will create the container of the div of the options
@@ -926,6 +929,7 @@ class PlusSelect extends HTMLElement {
         options.push(div);
         popup.appendChild(div);
       }
+
     }
 
     function clear_option_select() {
@@ -1829,8 +1833,8 @@ class PlusDate extends HTMLElement {
 
   connectedCallback() {
     const textT = this.getAttribute("t"); //get the text to translate if exist in the label
-    const labelTextT = textT || this.getAttribute("label"); //her we will see if the user would like translate a text, if no have nathing, we will get the value of the label
-    const labelText = window.translate_text(labelTextT) || window.t('btn.select_range_date'); //her we will to trsnlate the text if exist a text, else we will to create a value predefine 
+    const labelTextT = textT || this.getAttribute("label") || 'btn.select_range_date'; //her we will see if the user would like translate a text, if no have nathing, we will get the value of the label
+    const labelText = window.translate_text(labelTextT); //her we will to trsnlate the text if exist a text, else we will to create a value predefine 
 
     const name = this.getAttribute("name") || "plus-date";
     const valueAttr = this.getAttribute("value");
@@ -2002,7 +2006,7 @@ class PlusDate extends HTMLElement {
 
     this.shadowRoot.innerHTML = `
       <div class="plus-calendar-input-wrapper">
-        <label class="plus-calendar-input-label" t='${labelTextT || 'btn.select_range_date'}'>${labelText}</label>
+        <label class="plus-calendar-input-label" t='${labelTextT}'>${labelText}</label>
         <div class="plus-calendar-fake-input" id="plus-date-display">${this.formatDate(this.selectedDate)}</div>
         <input type="date" id="${name}" name="${name}" style="display:none;" value="${valueAttr || ''}"/>
         <div class="plus-calendar-calendar-container" style="display:none;"></div>
@@ -2102,7 +2106,7 @@ class PlusDate extends HTMLElement {
 
 
     html += `</div>
-      <button class="btn-restart">Restart</button>
+      <button class="btn-restart">${window.t('btn.restart')}</button>
     </div>`;
     this.calendarContainer.innerHTML = html;
 
