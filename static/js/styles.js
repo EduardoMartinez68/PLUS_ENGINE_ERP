@@ -2009,7 +2009,6 @@ class PlusDate extends HTMLElement {
 
     this.shadowRoot.innerHTML = `
       <div class="plus-calendar-input-wrapper">
-        <label class="plus-calendar-input-label" t='${t}'>${labelText}</label>
         <div class="plus-calendar-fake-input" id="plus-date-display">${this.formatDate(this.selectedDate)}</div>
         <input type="date" id="${name}" name="${name}" style="display:none;" value="${valueAttr || ''}"/>
         <div class="plus-calendar-calendar-container" style="display:none;"></div>
@@ -2330,7 +2329,6 @@ class PlusTime extends HTMLElement {
 
     this.shadowRoot.innerHTML = `
       <div class="time-picker-wrapper">
-        <label class="time-picker-label" t='${t}'>${labelTranslate}</label>
         <div class="time-picker-display">${this.formatTime()}</div>
         <input type="time" name="${name}" id="${id}" value="${this.formatTime(true)}" style="display:none;"/>
         <div class="time-picker-dropdown">
