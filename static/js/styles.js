@@ -778,7 +778,10 @@ class PlusSelect extends HTMLElement {
     select.addEventListener('click', async () => {
       popup.classList.toggle('active');
       searchInput.focus();
-      await update_option_for_the_server('');
+
+      if (thisSlectSendDataToTheServer) {
+        await update_option_for_the_server('');
+      }
     });
 
     // Event clic in options
@@ -1833,9 +1836,8 @@ class PlusDate extends HTMLElement {
   }
 
   connectedCallback() {
-    const textT = this.getAttribute("t"); //get the text to translate if exist in the label
-    const labelTextT = textT || this.getAttribute("label") || 'btn.select_range_date'; //her we will see if the user would like translate a text, if no have nathing, we will get the value of the label
-    const labelText = window.translate_text(labelTextT); //her we will to trsnlate the text if exist a text, else we will to create a value predefine 
+    const t = this.getAttribute("t") || this.getAttribute("label") || 'btn.select_range_date'; //her we will see if the user would like translate a text, if no have nathing, we will get the value of the label
+    const labelText = window.translate_text(t); //her we will to trsnlate the text if exist a text, else we will to create a value predefine 
 
     const name = this.getAttribute("name") || "plus-date";
     const valueAttr = this.getAttribute("value");
@@ -2007,7 +2009,7 @@ class PlusDate extends HTMLElement {
 
     this.shadowRoot.innerHTML = `
       <div class="plus-calendar-input-wrapper">
-        <label class="plus-calendar-input-label" t='${labelTextT}'>${labelText}</label>
+        <label class="plus-calendar-input-label" t='${t}'>${labelText}</label>
         <div class="plus-calendar-fake-input" id="plus-date-display">${this.formatDate(this.selectedDate)}</div>
         <input type="date" id="${name}" name="${name}" style="display:none;" value="${valueAttr || ''}"/>
         <div class="plus-calendar-calendar-container" style="display:none;"></div>
@@ -2240,8 +2242,8 @@ class PlusTime extends HTMLElement {
   connectedCallback() {
     const name = this.getAttribute("name") || "plus-time";
     const id = this.getAttribute("id") || generate_unique_dom_id(); //her we will to create a id 
-    const labelText = this.getAttribute("t") || this.getAttribute("label") || "Select Time";
-    const labelTranslate = window.translate_text(labelText);
+    const t = this.getAttribute("t") || this.getAttribute("label") || "Select Time";
+    const labelTranslate = window.translate_text(t);
     const valueAttr = this.getAttribute("value") || "";
     const [h, m] = valueAttr.split(":");
     if (h && m) {
@@ -2328,7 +2330,7 @@ class PlusTime extends HTMLElement {
 
     this.shadowRoot.innerHTML = `
       <div class="time-picker-wrapper">
-        <label class="time-picker-label" t='${labelText}'>${labelTranslate}</label>
+        <label class="time-picker-label" t='${t}'>${labelTranslate}</label>
         <div class="time-picker-display">${this.formatTime()}</div>
         <input type="time" name="${name}" id="${id}" value="${this.formatTime(true)}" style="display:none;"/>
         <div class="time-picker-dropdown">
