@@ -680,7 +680,7 @@ class PlusSelect extends HTMLElement {
     const select = document.createElement('div');
     select.classList.add('plus-select-select');
     select.innerHTML = `
-      <span class="plus-select-selected-text">${textLabelTranslate}</span>
+      <span class="plus-select-selected-text" t='${textLabel}'>${textLabelTranslate}</span>
       <i class="fi fi-rr-angle-small-right plus-select-icon"></i>
     `;
 
@@ -691,19 +691,19 @@ class PlusSelect extends HTMLElement {
     // Create the container of the seeker 
     const searchWrapper = document.createElement('div');
     searchWrapper.classList.add('plus-select-search-wrapper');
-    const txtSearch = t('message.search') || 'search...'; //get the translate global of a seeker
+    const txtSearch = window.t('message.search') || 'search...'; //get the translate global of a seeker
 
     //we will see if exist a pop for add a new data to this select 
     if (this.hasAttribute('add')) {
       const functionName = this.getAttribute('add');
 
       searchWrapper.innerHTML = `
-    <i class="fi fi-rs-search"></i>
-    <input type="text" placeholder="${txtSearch}">
-    <button class="search-add-btn" title="Agregar nuevo">
-      <i class="fi fi-br-plus"></i>
-    </button>
-  `;
+      <i class="fi fi-rs-search"></i>
+      <input type="text" placeholder="${txtSearch}">
+      <button class="search-add-btn" title="${window.t('message.add')}">
+        <i class="fi fi-br-plus"></i>
+      </button>
+    `;
 
       // Asegúrate de que el DOM ya tiene el botón antes de agregar el evento
       const addButton = searchWrapper.querySelector('.search-add-btn');
@@ -750,6 +750,7 @@ class PlusSelect extends HTMLElement {
       //her we will create the container of the div of the options
       const div = document.createElement('div');
       div.classList.add('plus-select-option');
+      div.setAttribute('t', optionText);
 
       div.textContent = textTranlate; //update the text that we will show in the option
       div.dataset.value = opt.getAttribute('value') || textTranlate; //add the value
@@ -1552,8 +1553,8 @@ class PlusActions extends HTMLElement {
     actions.forEach(action => {
       const type = action.getAttribute('type') || null;
       const icon = action.getAttribute('icon') || '';
-      const t = action.getAttribute('t');
-      const text = t || action.getAttribute('text');
+      const t = action.getAttribute('t') || action.getAttribute('text');
+      const text = action.getAttribute('text');
       const onclick = action.getAttribute('onclick');
 
       //now we will see if the user add a 
@@ -1567,7 +1568,7 @@ class PlusActions extends HTMLElement {
       }
 
       //save the text to translate
-      const textTranslate = window.translate_text(text) + (existCombo ? ' ' + combo : '');
+      const textTranslate = window.translate_text(t) + (existCombo ? ' ' + combo : '');
 
       //her we will see the type 
       let item;
@@ -1581,6 +1582,7 @@ class PlusActions extends HTMLElement {
         item = document.createElement('plus-switch');
         item.setAttribute('id', id)
         item.setAttribute('text', text)
+        item.setAttribute('t', t)
         item.setAttribute('name', id)
         item.setAttribute('icon', icon)
 
@@ -1601,7 +1603,7 @@ class PlusActions extends HTMLElement {
               <div class="item-row">
                 <div class="item-main" onclick="handleMainAction(this)">
                   <i class="${icon}"></i>
-                  <span>${textTranslate}</span>
+                  <span t='${t}'>${textTranslate}</span>
                 </div>
                 <div class="item-pin">
                   <i class="fi fi-ss-thumbtack"></i>
@@ -1613,7 +1615,7 @@ class PlusActions extends HTMLElement {
               <div class="item-row">
                 <div class="item-main" onclick="handleMainAction(this)">
                   <i class="${icon}"></i>
-                  <span>${textTranslate}</span>
+                  <span t='${t}'>${textTranslate}</span>
                 </div>
                 <div class="item-pin">
                   <i class="fi fi-rs-thumbtack"></i>
@@ -1626,7 +1628,7 @@ class PlusActions extends HTMLElement {
           <div class="item-row">
             <div class="item-main" onclick="handleMainAction(this)">
               <i class="${icon}"></i>
-              <span>${textTranslate}</span>
+              <span t='${t}'>${textTranslate}</span>
             </div>
           </div>
           `;
@@ -1828,7 +1830,6 @@ class PlusDate extends HTMLElement {
   connectedCallback() {
     const textT = this.getAttribute("t"); //get the text to translate if exist in the label
     const labelTextT = textT || this.getAttribute("label"); //her we will see if the user would like translate a text, if no have nathing, we will get the value of the label
-    console.log(labelTextT)
     const labelText = window.translate_text(labelTextT) || window.t('btn.select_range_date'); //her we will to trsnlate the text if exist a text, else we will to create a value predefine 
 
     const name = this.getAttribute("name") || "plus-date";
@@ -2001,7 +2002,7 @@ class PlusDate extends HTMLElement {
 
     this.shadowRoot.innerHTML = `
       <div class="plus-calendar-input-wrapper">
-        <label class="plus-calendar-input-label">${labelText}</label>
+        <label class="plus-calendar-input-label" t='${labelTextT || 'btn.select_range_date'}'>${labelText}</label>
         <div class="plus-calendar-fake-input" id="plus-date-display">${this.formatDate(this.selectedDate)}</div>
         <input type="date" id="${name}" name="${name}" style="display:none;" value="${valueAttr || ''}"/>
         <div class="plus-calendar-calendar-container" style="display:none;"></div>
@@ -2234,7 +2235,8 @@ class PlusTime extends HTMLElement {
   connectedCallback() {
     const name = this.getAttribute("name") || "plus-time";
     const id = this.getAttribute("id") || generate_unique_dom_id(); //her we will to create a id 
-    const labelText = this.getAttribute("label") || "Select Time";
+    const labelText = this.getAttribute("t") || this.getAttribute("label") || "Select Time";
+    const labelTranslate = window.translate_text(labelText);
     const valueAttr = this.getAttribute("value") || "";
     const [h, m] = valueAttr.split(":");
     if (h && m) {
@@ -2321,7 +2323,7 @@ class PlusTime extends HTMLElement {
 
     this.shadowRoot.innerHTML = `
       <div class="time-picker-wrapper">
-        <label class="time-picker-label">${labelText}</label>
+        <label class="time-picker-label" t='${labelText}'>${labelTranslate}</label>
         <div class="time-picker-display">${this.formatTime()}</div>
         <input type="time" name="${name}" id="${id}" value="${this.formatTime(true)}" style="display:none;"/>
         <div class="time-picker-dropdown">
