@@ -111,7 +111,8 @@ class EditQuantity extends HTMLElement {
     this.type = this.getAttribute('type') === 'float' ? 'float' : 'int';
     this.stepAttr = this.getAttribute('step') || '1';
     this.step = this.type === 'float' ? parseFloat(this.stepAttr) : parseInt(this.stepAttr);
-    this.titleText = this.getAttribute('t') || this.getAttribute('title') || 'Editar cantidad';
+    this.t = this.getAttribute('t') || this.getAttribute('title') || 'btn.edit-quantity';
+    this.titleText = window.translate_text(this.t);
 
     // Valor inicial que mostrará el input
     this._value = this.type === 'float' ? 0.0 : 0;
@@ -129,20 +130,29 @@ class EditQuantity extends HTMLElement {
           display: inline-block;
           font-family: 'Segoe UI', sans-serif;
         }
-        input.display-input {
-          width: 120px;
-          font-size: 24px;
-          padding: 8px 10px;
-          border-radius: 10px;
-          border: 1px solid #ccc;
-          text-align: center;
-          cursor: pointer;
-          user-select: none;
-        }
-        input.display-input:focus {
+        input,
+        textarea,
+        select {
+          width: 100%;
+          padding: 8px 4px;
+          margin-top: 4px;
+          border: none;
+          border-bottom: 2px solid #d0d5dd;
+          background-color: transparent;
+          font-size: 1em;
+          color: #1d2939;
           outline: none;
-          border-color: ${colors.color_company};
-          box-shadow: 0 0 5px ${colors.color_company};
+          transition: border-color 0.3s;
+          margin: 12px 0;
+        }
+
+        input:hover{
+          cursor: pointer;
+        }
+
+        input:focus,
+        select:focus {
+          border-bottom-color: #2a395b;
         }
       </style>
       <input type="text" class="display-input" readonly value="${this._value}" title="${this.titleText}" />
@@ -294,7 +304,7 @@ class EditQuantity extends HTMLElement {
       </style>
       <div class="popup">
         <div class="navbar">
-          <h4>${this.titleText}</h4>
+          <h4 t='${this.t}'>${this.titleText}</h4>
           <button class="close-btn" title="Cerrar">&times;</button>
         </div>
         <div class="body">
@@ -304,7 +314,7 @@ class EditQuantity extends HTMLElement {
             <button class="quantity-btn" id="increase">+</button>
           </div>
           <div class="footer">
-            <button class="accept-btn" id="accept">Aceptar</button>
+            <button class="accept-btn" id="accept" t='${window.t('message.success')}'>Success</button>
           </div>
         </div>
       </div>
