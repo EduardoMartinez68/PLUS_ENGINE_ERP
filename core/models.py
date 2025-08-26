@@ -23,7 +23,7 @@ class Company(models.Model):
     company_name = models.CharField(max_length=300, null=True)
     name_of_the_person_in_charge = models.CharField(max_length=150)
     email_of_the_person_in_charge = models.TextField()
-    creation_date = models.DateTimeField(auto_now_add=True)
+    creation_date = models.DateField(auto_now_add=True)
 
     class Meta:
         db_table = 'company"."company'

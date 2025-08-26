@@ -7,9 +7,6 @@
                     t-placeholder="placeholder-input-title" required maxlength="300" />
             </div>
 
-            <edit-quantity title="Editar precio" value="10" step="0.5" type="float"></edit-quantity>
-
-
             <div class="section">
                 <div class="row m-1">
                     <plus-select label="priority" name="priority" required>
@@ -19,8 +16,8 @@
                     </plus-select>
 
                     <plus-select label="search-type-event" name="type_event" required
-                        link="customers/search_customers_select/" add="open_pop_new_type_event" edit_data="edit_data"
-                        delete_data="customers/search_customers_select/">
+                        link="agenda/get_the_first_type_events/" add="open_pop_new_type_event" edit_data="edit_data"
+                        delete_data="agenda/delete_type_event/">
                     </plus-select>
                 </div>
             </div>
@@ -107,9 +104,7 @@
                         <option t="option.on_year" value="365">A Year</option>
                     </plus-select>
                 </div>
-                <div class="row">
-                    <plus-date label="finish_repeat_date" id="repeat_until" name="repeat_until"></plus-date>
-                </div>
+
             </div>
 
             <plus-switch text="send_notification" name="send_notification" checked="true"></plus-switch>

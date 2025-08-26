@@ -22,27 +22,22 @@ def create_app(app_name):
 
     # Crear config.yaml
     config_content = f"""name: "{app_name}"
-appName: "{app_name}"
-icon: "{app_name}/icon.webp"
-path: "/{app_name}"
-dbInit: true
-permissionsFile: 'permissions.json'
-"""
+        appName: "{app_name}"
+        icon: "{app_name}/icon.webp"
+        path: "/{app_name}"
+        dbInit: true
+        permissionsFile: 'permissions.json'
+    """
     with open(os.path.join(base_path, 'config.yaml'), 'w', encoding='utf-8') as f:
         f.write(config_content)
 
-    # Crear db.sql vacío
-    with open(os.path.join(base_path, 'db.sql'), 'w', encoding='utf-8') as f:
-        f.write("-- SQL statements for database setup go here\n")
+    # create models.py for that the programmer can do a database
+    with open(os.path.join(base_path, 'models.py'), 'w', encoding='utf-8') as f:
+        f.write("#here you can create the body of the database \n")
 
-    # Crear icon.webp vacío (puedes reemplazar luego el archivo real)
+    # create icon.webp (you can then replace the real file)
     with open(os.path.join(base_path, 'static','icon.webp'), 'wb') as f:
         pass
-    
-    base_path_config = os.path.join(base_path, 'config')
-    # Crear models.py vacío
-    with open(os.path.join(base_path_config, 'models.py'), 'w', encoding='utf-8') as f:
-        f.write("# Model definitions go here\n")
 
     # Crear urls.py con el nombre de la app adaptado
     urls_content = f"""from django.urls import path
@@ -57,7 +52,7 @@ urlpatterns = [
     with open(os.path.join(base_path, 'urls.py'), 'w', encoding='utf-8') as f:
         f.write(urls_content)
 
-    # Crear views.py con la función ajustada
+    # create views.py with the function adjusted
     views_content = f"""from django.shortcuts import render
 
 def {app_name}_home(request):
@@ -67,10 +62,7 @@ def {app_name}_home(request):
     with open(os.path.join(fileLink, 'views.py'), 'w', encoding='utf-8') as f:
         f.write(views_content)
 
-    print(f"App '{app_name}' creada con éxito en {base_path}.")
-
-
-
+    print(f"App '{app_name}' create with success in {base_path}.")
 
 def create_web_html(app_name):
     return f"""

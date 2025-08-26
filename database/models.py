@@ -80,7 +80,7 @@ class DjangoSession(models.Model):
         managed = False
         db_table = 'django_session'
 
-
+'''
 class Users(models.Model):
     password = models.CharField(max_length=128)
     last_login = models.DateTimeField(blank=True, null=True)
@@ -104,7 +104,7 @@ class Users(models.Model):
     class Meta:
         managed = False
         db_table = 'users'
-
+'''
 
 class UsersGroups(models.Model):
     customuser = models.ForeignKey(Users, models.DO_NOTHING)

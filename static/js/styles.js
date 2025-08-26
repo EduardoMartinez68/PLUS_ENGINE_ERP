@@ -1,3 +1,12 @@
+//this functions is for create a id unique for that not exist a error when create a new element
+function generate_unique_dom_id(prefix = "plus-") {
+  let id;
+  do {
+    id = prefix + Math.random().toString(36).substr(2, 9);
+  } while (document.getElementById(id));
+  return id;
+}
+
 /*---------------------------------------------class labels---------------------------------------------*/
 class InfoLabel extends HTMLElement {
   constructor() {
@@ -64,7 +73,6 @@ class InfoLabel extends HTMLElement {
   }
 }
 
-
 class MessagePop extends HTMLElement {
   constructor() {
     super();
@@ -103,18 +111,19 @@ class MessagePop extends HTMLElement {
       `;
   }
 }
+
 class EditQuantity extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-
+    this.name = this.getAttribute('name') || 'quantity';
     this.type = this.getAttribute('type') === 'float' ? 'float' : 'int';
     this.stepAttr = this.getAttribute('step') || '1';
     this.step = this.type === 'float' ? parseFloat(this.stepAttr) : parseInt(this.stepAttr);
     this.t = this.getAttribute('t') || this.getAttribute('title') || 'btn.edit-quantity';
     this.titleText = window.translate_text(this.t);
 
-    // Valor inicial que mostrará el input
+    // Initial value that the input will display
     this._value = this.type === 'float' ? 0.0 : 0;
   }
 
@@ -155,7 +164,7 @@ class EditQuantity extends HTMLElement {
           border-bottom-color: #2a395b;
         }
       </style>
-      <input type="text" class="display-input" readonly value="${this._value}" title="${this.titleText}" />
+      <input type="text" class="display-input" readonly value="${this._value}" title="${this.titleText}" name="${this.name}" />
     `;
 
     this.shadowRoot.querySelector('.display-input').addEventListener('click', () => this.openPopup());
@@ -180,7 +189,7 @@ class EditQuantity extends HTMLElement {
           background: #fff;
           border-radius: 12px;
           width: 90%;
-          max-width: 400px;
+          max-width: 600px;
           box-shadow: 0 8px 32px rgba(0,0,0,0.2);
           overflow: hidden;
           font-family: 'Segoe UI', sans-serif;
@@ -218,7 +227,7 @@ class EditQuantity extends HTMLElement {
           gap: 16px;
         }
         .controls input {
-          width: 120px;
+          width: 50%;
           text-align: center;
           font-size: 24px;
           padding: 10px;
@@ -227,6 +236,7 @@ class EditQuantity extends HTMLElement {
         }
         .quantity-btn {
           width: 48px;
+          width:25%;
           height: 48px;
           font-size: 28px;
           background-color: ${colors.color_company};
@@ -320,7 +330,7 @@ class EditQuantity extends HTMLElement {
       </div>
     `;
 
-    // Agregar popup al shadowRoot para que siga encapsulado
+    // add popup to shadowRoot for that the label is encapsulated
     this.shadowRoot.appendChild(popup);
 
     const close = () => {
@@ -329,7 +339,7 @@ class EditQuantity extends HTMLElement {
 
     const $ = this.shadowRoot;
 
-    // Botones
+    //buttons
     popup.querySelector('.close-btn').addEventListener('click', close);
 
     const inputQuantity = popup.querySelector('#quantity');
@@ -348,23 +358,23 @@ class EditQuantity extends HTMLElement {
 
     popup.querySelector('#accept').addEventListener('click', () => {
       this._value = inputQuantity.value;
-      // Actualizar input visible
+      // update the input that the user can see
       this.shadowRoot.querySelector('.display-input').value = this._value;
       close();
 
-      // Opcional: disparar evento para avisar que cambió el valor
+      // Optional: trigger event to notify that the value has changed
       this.dispatchEvent(new CustomEvent('change', {
         detail: { value: this._value }
       }));
     });
   }
 
-  // Getter para valor actual
+  // Getter for the current value
   get value() {
     return this._value;
   }
 
-  // Setter para actualizar valor desde afuera
+  // Setter to update value from outside
   set value(val) {
     this._value = val;
     if (this.shadowRoot.querySelector('.display-input'))
@@ -1351,6 +1361,21 @@ class PlusSwitch extends HTMLElement {
 
 }
 
+//her we will get the information of the status of the switch
+function get_status_plus_switch(id) {
+  const mySwitch = document.getElementById(id);
+  if (!mySwitch) return;
+
+  // her we will see if the component has a shadowRoot
+  const shadow = mySwitch.shadowRoot;
+  if (!shadow) return;
+
+
+  const input = shadow.getElementById(id);
+  return input.checked ? input.checked : false;
+}
+
+
 class PlusHelp extends HTMLElement {
   constructor() {
     super();
@@ -2094,6 +2119,14 @@ const colors = {
   color_company_hover: '#075192ff'
 }
 
+function format_date_to_text(date) {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // the month goes from 0 to 11
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+
 class PlusDate extends HTMLElement {
   constructor() {
     super();
@@ -2499,6 +2532,30 @@ class PlusDate extends HTMLElement {
 
 }
 
+
+function change_plus_date(id, newDate){
+  const plusDate = document.getElementById(id);
+
+  if (!plusDate) return;
+
+  // her we will see if the component has a shadowRoot
+  const shadow = plusDate.shadowRoot;
+  if (!shadow) return;
+
+  // now we can search in the shadow DOM
+  const input = shadow.querySelector('input[type="date"]');
+
+  const label = shadow.querySelector('label');
+  const displayDiv = shadow.querySelector('#plus-date-display');
+
+  // Ejemplo: cambiar valor del input
+  if (input) {
+    input.value = newDate; // cualquier fecha válida en formato yyyy-mm-dd
+    displayDiv.textContent = format_date_to_text(newDate); // actualizar la visualización
+  }
+}
+
+
 class PlusTime extends HTMLElement {
   constructor() {
     super();
@@ -2689,13 +2746,30 @@ class PlusTime extends HTMLElement {
   }
 }
 
-function generate_unique_dom_id(prefix = "plus-") {
-  let id;
-  do {
-    id = prefix + Math.random().toString(36).substr(2, 9);
-  } while (document.getElementById(id));
-  return id;
+function change_plus_time(id, newTime){
+  const plusTime = document.getElementById(id);    
+  if (!plusTime) return;
+
+  // her we will see if the component has a shadowRoot
+  const shadow = plusTime.shadowRoot;
+  if (!shadow) return;
+
+  // now we can search in the shadow DOM
+  const input = shadow.getElementById(id);
+
+  const label = shadow.querySelector('label');
+  const displayDiv = shadow.querySelector('.time-picker-display');
+
+  //get the hour and the time
+
+  // Ejemplo: cambiar valor del input
+  if (input) {
+    input.value = newTime; // cualquier fecha válida en formato yyyy-mm-dd
+    displayDiv.textContent = newTime; // actualizar la visualización
+  }
 }
+
+
 
 function get_value_of_label_true_or_false(value) {
   return value === true || value === 'true' || value === '1' || value === 1;

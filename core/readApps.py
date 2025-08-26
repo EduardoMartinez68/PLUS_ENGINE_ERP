@@ -71,7 +71,6 @@ def create_the_body_of_the_database_of_the_erp():
     cur.close()
     conn.close()
 
-
 def run_the_sql_of_the_database_of_all_the_apps(sorted_apps, base_dir):
     """
     run all the file SQL of all the apps in sort
@@ -80,7 +79,7 @@ def run_the_sql_of_the_database_of_all_the_apps(sorted_apps, base_dir):
         sorted_apps (list): ordered list of apps (dictionaries).
         base_dir (str): base path where the app folders are located.
         conn_params (dict): parameters for connecting to PostgreSQL.
-    """
+    
 
     #connect with the DB
     conn = psycopg2.connect(**conn_params)
@@ -110,6 +109,7 @@ def run_the_sql_of_the_database_of_all_the_apps(sorted_apps, base_dir):
 
     cur.close()
     conn.close()
+    """
 
 def sort_all_apps_based_on_their_dependencies(apps):
     # Filtramos None y preparamos dict para acceso rápido

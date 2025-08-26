@@ -15,8 +15,8 @@ class TypeAppoint(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
+        # here we will see the type of database
         db_table = 'agenda.type_appoint'
-
 
     def __str__(self):
         return self.name
@@ -65,3 +65,4 @@ class Settings(models.Model):
 
     def __str__(self):
         return self.email_alert
+    

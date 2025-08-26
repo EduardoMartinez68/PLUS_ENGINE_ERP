@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'database',
+    #'database',
     'core'
 ]+APPS_NAME #your apps ERP
 
