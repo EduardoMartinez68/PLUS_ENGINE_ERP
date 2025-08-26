@@ -9,4 +9,4 @@ def create_models():
     with open('database/models.py', 'w', encoding='utf-8') as f:
         management.call_command('inspectdb', database='default', stdout=f)
 
-create_models()
+#create_models()

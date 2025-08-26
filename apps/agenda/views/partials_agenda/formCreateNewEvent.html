@@ -7,13 +7,15 @@
                     t-placeholder="placeholder-input-title" required maxlength="300" />
             </div>
 
+            <edit-quantity title="Editar precio" value="10" step="0.5" type="float"></edit-quantity>
+
 
             <div class="section">
                 <div class="row m-1">
                     <plus-select label="priority" name="priority" required>
-                        <option selected t="priority.low"></option>
-                        <option t="priority.normal"></option>
-                        <option t="priority.high"></option>
+                        <option selected t="priority.low" value="0"></option>
+                        <option t="priority.normal" value="1"></option>
+                        <option t="priority.high" value="2"></option>
                     </plus-select>
 
                     <plus-select label="search-type-event" name="type_event" required
@@ -41,23 +43,23 @@
 
             <div class="section">
                 <plus-select label="time-of-alert" name="alert_time" required>
-                    <option selected t="alert.none"></option>
-                    <option t="alert.5min"></option>
-                    <option t="alert.10min"></option>
-                    <option t="alert.15min"></option>
-                    <option t="alert.30min"></option>
-                    <option t="alert.1hr"></option>
-                    <option t="alert.2hr"></option>
-                    <option t="alert.1day"></option>
-                    <option t="alert.2day"></option>
-                    <option t="alert.1week"></option>
+                    <option selected t="alert.none" value="0"></option>
+                    <option t="alert.5min" value="5"></option>
+                    <option t="alert.10min" value="10"></option>
+                    <option t="alert.15min" value="15"></option>
+                    <option t="alert.30min" value="30"></option>
+                    <option t="alert.1hr" value="60"></option>
+                    <option t="alert.2hr" value="120"></option>
+                    <option t="alert.1day" value="1440"></option>
+                    <option t="alert.2day" value="2880"></option>
+                    <option t="alert.1week" value="10080"></option>
                 </plus-select>
             </div>
 
             <div class="section">
-                <info-label label="Email de invitados"
-                    message="Agrega correos y presiona Enter, coma o espacio"></info-label>
-                <plus-emails id="invitados" name="correos_invitados" label="Email de invitados"></plus-emails>
+                <info-label label="emails-guests"
+                    message="email-message-show"></info-label>
+                <plus-emails id="invitados" name="emails_guests" label="emails-guests"></plus-emails>
             </div>
 
             <div class="section">
@@ -86,20 +88,27 @@
 
             <div class="section" id="input_repet" style="display: none;">
                 <div class="row m-1">
-                    <plus-select label="repeat" name="repeat" requerid>
-                        <option selected t="option.never"></option>
-                        <option t="option.every_day"></option>
-                        <option t="option.every_week"></option>
-                        <option t="option.every_2_weeks"></option>
-                        <option t="option.every_month"></option>
-                        <option t="option.every_year"></option>
+                    <plus-select label="repeat" name="time_repeat" requerid>
+                        <option selected t="option.never" value="0"></option>
+                        <option t="option.every_day" value="1"></option>
+                        <option t="option.every_week" value="7"></option>
+                        <option t="option.every_2_weeks" value="15"></option>
+                        <option t="option.every_month" value="30"></option>
+                        <option t="option.every_year" value="365"></option>
                     </plus-select>
 
 
-                    <plus-select label="endRepeat" name="endRepeat" requerid>
-                        <option selected t="option.never">Never</option>
-                        <option t="option.on_day">On Day</option>
+                    <plus-select label="endRepeat" name="time_end_repeat" requerid>
+                        <option selected t="option.never" value="0">Never</option>
+                        <option t="option.on_day" value="1">On Day</option>
+                        <option t="option.on_week" value="7">A week</option>
+                        <option t="option.on_2_weeks" value="15">Two week</option>
+                        <option t="option.on_month" value="30">A Month</option>
+                        <option t="option.on_year" value="365">A Year</option>
                     </plus-select>
+                </div>
+                <div class="row">
+                    <plus-date label="finish_repeat_date" id="repeat_until" name="repeat_until"></plus-date>
                 </div>
             </div>
 

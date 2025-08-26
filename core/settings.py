@@ -87,6 +87,24 @@ db_pass = os.getenv('DB_PASS')
 db_name = os.getenv('DB_NAME')
 db_port = os.getenv('DB_PORT')
 
+'''
+
+INSTALLED_APPS = [
+    'django_q'
+]
+
+
+Q_CLUSTER = {
+    'name': 'erp_cluster',        # Name of the task cluster
+    'workers': 4,                 # Number of workers (processes) that run tasks in parallel
+    'timeout': 60,                # Maximum time in seconds a task is allowed before being marked as failed
+    'retry': 120,                 # Time in seconds to retry a failed task
+    'queue_limit': 50,            # Maximum number of tasks allowed in the queue
+    'bulk': 10,                   # Number of tasks processed per cycle (for performance)
+    'orm': 'default',             # Use Django's database as the backend (instead of Redis, etc.)
+}
+'''
+
 # Base de datos PostgreSQL
 DATABASES = {
     'default': {

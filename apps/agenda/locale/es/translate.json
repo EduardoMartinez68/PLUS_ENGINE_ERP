@@ -34,7 +34,12 @@
     "option.every_month": "Cada mes",
     "option.every_year": "Cada año",
     "option.on_day": "Un día",
-    
+
+    "option.on_week": "Una semana",
+    "option.on_2_weeks": "Dos semanas",
+    "option.on_month": "Un mes",
+    "option.on_year": "Un año",
+
     "alert.none": "Ninguna alerta",
     "alert.5min": "Avisar 5 minutos antes",
     "alert.10min": "Avisar 10 minutos antes",
@@ -53,7 +58,8 @@
     "label-Remember":"Recordatorio",
     "label-priority":"Prioridad",
 
-    "repeat_this_event":"Reperit este evento",
+    "repeat_this_event":"Repetir este evento",
+    "finish_repeat_date":"Finalizar repetición en",
     "i_am_free":"Estoy libre en este evento",
 
 
@@ -78,7 +84,8 @@
 
 
 
-
+    "emails-guests":"Emails de invitados",
+    "email-message-show": "Agrega correos y presiona Enter, coma o espacio",
 
 
 

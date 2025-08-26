@@ -9,6 +9,8 @@ if __name__ == "__main__":
     try:
         # Import the Django management command executor
         from django.core.management import execute_from_command_line
+        # Finally, execute the usual Django management command (e.g., runserver, migrate)
+        execute_from_command_line(sys.argv)
     except ImportError as exc:
         # Raise a clear error if Django is not installed
         raise ImportError(
@@ -19,6 +21,7 @@ if __name__ == "__main__":
     # First, try to run the function that generates all models from the database
     # Assumes you have a script named 'generate_all_models.py' in the project root
     # with a function called 'generate_all_models()'
+    '''
     
     try:
         from generate_all_models import create_models
@@ -27,6 +30,6 @@ if __name__ == "__main__":
         print("Module 'generate_all_models.py' not found or not in PYTHONPATH.")
     except AttributeError:
         print("The module 'generate_all_models.py' does not have a function 'generate_all_models()'.")
+        '''
 
-    # Finally, execute the usual Django management command (e.g., runserver, migrate)
-    execute_from_command_line(sys.argv)
+

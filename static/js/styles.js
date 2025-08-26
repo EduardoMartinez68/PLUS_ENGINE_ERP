@@ -104,6 +104,234 @@ class MessagePop extends HTMLElement {
   }
 }
 
+class EditQuantity extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }); // Shadow DOM encapsulado
+  }
+
+  connectedCallback() {
+    const type = this.getAttribute('type') === 'float' ? 'float' : 'int';
+    const stepAttr = this.getAttribute('step') || '1';
+    const step = type === 'float' ? parseFloat(stepAttr) : parseInt(stepAttr);
+    const titleText = this.getAttribute('title') || 'Editar cantidad';
+    const name = this.getAttribute('name') || 'edit-quantity-pop';
+    const inputTargetId = this.getAttribute('target');
+    const inputTarget = document.getElementById(inputTargetId);
+    let value = inputTarget ? parseFloat(inputTarget.value || '0') : 0;
+
+    const translatedTitle = window.translate_text ? window.translate_text(titleText) : titleText;
+
+    this.shadowRoot.innerHTML = `
+      <style>
+  :host {
+    all: initial;
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+  }
+
+  .popup {
+    background: #fff;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .navbar {
+    background: ${colors.color_company};
+    color: white;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .navbar h4 {
+    margin: 0;
+    font-size: 20px;
+  }
+
+  .navbar .close-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .body {
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .controls input {
+    width: 120px;
+    text-align: center;
+    font-size: 24px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+  }
+
+  .quantity-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 28px;
+    background-color: ${colors.color_company};
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+    color: white;
+  }
+
+  .quantity-btn:hover {
+    background-color: ${colors.color_company_hover};
+  }
+
+  .footer {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .accept-btn {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    background-color: ${colors.color_company};
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .accept-btn:hover {
+    background-color: ${colors.color_company_hover};
+  }
+
+  /* Adaptabilidad para tablets y móviles */
+  @media (max-width: 768px) {
+    .popup {
+      width: 95%;
+      max-width: 90%;
+    }
+
+    .controls input {
+      width: 100px;
+      font-size: 20px;
+    }
+
+    .quantity-btn {
+      width: 44px;
+      height: 44px;
+      font-size: 26px;
+    }
+
+    .accept-btn {
+      font-size: 16px;
+      padding: 12px 0;
+    }
+
+    .navbar h4 {
+      font-size: 18px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .controls {
+      gap: 12px;
+    }
+
+    .controls input {
+      width: 80px;
+      font-size: 18px;
+    }
+
+    .quantity-btn {
+      width: 40px;
+      height: 40px;
+      font-size: 24px;
+    }
+
+    .accept-btn {
+      font-size: 16px;
+      padding: 10px 0;
+    }
+
+    .navbar h4 {
+      font-size: 16px;
+    }
+  }
+      </style>
+
+      <div class="overlay">
+        <div class="popup">
+          <div class="navbar">
+            <h4 t="${titleText}">${translatedTitle}</h4>
+            <button class="close-btn" title="Cerrar">×</button>
+          </div>
+          <div class="body">
+            <div class="controls">
+              <button class="quantity-btn" id="decrease">−</button>
+              <input type="number" id="quantity" value="${value}" step="${step}" />
+              <button class="quantity-btn" id="increase">+</button>
+            </div>
+            <div class="footer">
+              <button class="accept-btn" id="accept">Aceptar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const $ = this.shadowRoot;
+    const close = () => this.remove();
+
+    $.querySelector('.close-btn').addEventListener('click', close);
+    $.querySelector('#increase').addEventListener('click', () => {
+      const input = $.querySelector('#quantity');
+      let currentValue = parseFloat(input.value);
+      currentValue += step;
+      input.value = type === 'int' ? Math.round(currentValue) : currentValue.toFixed(2);
+    });
+
+    $.querySelector('#decrease').addEventListener('click', () => {
+      const input = $.querySelector('#quantity');
+      let currentValue = parseFloat(input.value);
+      currentValue -= step;
+      input.value = type === 'int' ? Math.round(currentValue) : currentValue.toFixed(2);
+    });
+
+    $.querySelector('#accept').addEventListener('click', () => {
+      const newValue = $.querySelector('#quantity').value;
+      if (inputTarget) inputTarget.value = newValue;
+      close();
+    });
+  }
+}
+
+
 /*
 <input-field 
 label="email"  //lo que dira el label (esto es obligatorio)
@@ -3415,6 +3643,11 @@ function transform_my_labels_erp() {
   if (!customElements.get("plus-comment")) {
     customElements.define('plus-comment', PlusComment);
   }
+
+  if (!customElements.get("edit-quantity")) {
+    customElements.define('edit-quantity', EditQuantity);
+  }
+  
 }
 
 /**---------------------------------TAB----------------------------- */

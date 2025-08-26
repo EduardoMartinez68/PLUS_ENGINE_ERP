@@ -13,6 +13,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <schema name="company" fill-color="#e1e1e1">
 </schema>
 
+<schema name="agenda" fill-color="#e1e1e1">
+</schema>
+
 <sequence name="branch"
 	 start="1" increment="1"
 	 min-value="0" max-value="2147483647"
@@ -34,6 +37,21 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<position x="671" y="728"/>
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
+	</column>
+	<column name="phone">
+		<type name="varchar" length="20"/>
+	</column>
+	<column name="address">
+		<type name="text"/>
+	</column>
+	<column name="country">
+		<type name="varchar" length="2"/>
+	</column>
+	<column name="postal_code">
+		<type name="varchar" length="20"/>
+	</column>
+	<column name="date_of_birth">
+		<type name="date"/>
 	</column>
 	<column name="hiring_date">
 		<type name="date"/>
@@ -58,21 +76,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="cellphone">
 		<type name="varchar" length="20"/>
-	</column>
-	<column name="phone">
-		<type name="varchar" length="20"/>
-	</column>
-	<column name="address">
-		<type name="text"/>
-	</column>
-	<column name="country">
-		<type name="varchar" length="2"/>
-	</column>
-	<column name="postal_code">
-		<type name="varchar" length="20"/>
-	</column>
-	<column name="date_of_birth">
-		<type name="date"/>
 	</column>
 	<column name="timezone" not-null="true" default-value="America/Mexico_City">
 		<type name="varchar" length="50"/>
@@ -111,18 +114,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
 	</column>
-	<column name="postal_code">
-		<type name="varchar" length="10"/>
-	</column>
-	<column name="cellphone">
-		<type name="varchar" length="25"/>
-	</column>
-	<column name="phone">
-		<type name="varchar" length="25"/>
-	</column>
-	<column name="website">
-		<type name="text"/>
-	</column>
 	<column name="name_of_the_person_in_charge">
 		<type name="text"/>
 	</column>
@@ -148,6 +139,18 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="varchar" length="2"/>
 	</column>
 	<column name="address">
+		<type name="text"/>
+	</column>
+	<column name="postal_code">
+		<type name="varchar" length="10"/>
+	</column>
+	<column name="cellphone">
+		<type name="varchar" length="25"/>
+	</column>
+	<column name="phone">
+		<type name="varchar" length="25"/>
+	</column>
+	<column name="website">
 		<type name="text"/>
 	</column>
 	<constraint name="id_key_branch" type="pk-constr" factor="10" table="company.branch">
@@ -184,21 +187,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <table name="customer">
 	<schema name="company"/>
-	<position x="1174" y="1047"/>
+	<position x="1174" y="931"/>
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
-	</column>
-	<column name="cellphone">
-		<type name="varchar" length="50"/>
-	</column>
-	<column name="country">
-		<type name="varchar" length="2"/>
-	</column>
-	<column name="this_customer_is_a_company" not-null="true" default-value="false">
-		<type name="boolean"/>
-	</column>
-	<column name="company_name">
-		<type name="varchar" length="255"/>
 	</column>
 	<column name="contact_name">
 		<type name="varchar" length="150"/>
@@ -239,6 +230,18 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="credit">
 		<type name="integer"/>
 	</column>
+	<column name="cellphone">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="country">
+		<type name="varchar" length="2"/>
+	</column>
+	<column name="this_customer_is_a_company" not-null="true" default-value="false">
+		<type name="boolean"/>
+	</column>
+	<column name="company_name">
+		<type name="varchar" length="255"/>
+	</column>
 	<constraint name="id_key_customer" type="pk-constr" factor="10" table="company.customer">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
@@ -259,6 +262,15 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
 	</column>
+	<column name="creation_date" default-value="CURRENT_TIMESTAMP">
+		<type name="timestamp"/>
+	</column>
+	<column name="activated" not-null="true" default-value="true">
+		<type name="boolean"/>
+	</column>
+	<column name="view_permits" default-value="true">
+		<type name="boolean"/>
+	</column>
 	<column name="edit_permits" not-null="true" default-value="true">
 		<type name="boolean"/>
 	</column>
@@ -270,15 +282,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="description">
 		<type name="text"/>
-	</column>
-	<column name="creation_date" default-value="CURRENT_TIMESTAMP">
-		<type name="timestamp"/>
-	</column>
-	<column name="activated" not-null="true" default-value="true">
-		<type name="boolean"/>
-	</column>
-	<column name="view_permits" default-value="true">
-		<type name="boolean"/>
 	</column>
 	<constraint name="id_key_permits" type="pk-constr" factor="10" table="company.permits">
 		<columns names="id" ref-type="src-columns"/>
@@ -300,14 +303,14 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
 	</column>
-	<column name="activated" not-null="true" default-value="true">
-		<type name="boolean"/>
-	</column>
 	<column name="name" not-null="true">
 		<type name="varchar" length="100"/>
 	</column>
 	<column name="description">
 		<type name="text"/>
+	</column>
+	<column name="activated" not-null="true" default-value="true">
+		<type name="boolean"/>
 	</column>
 	<constraint name="id_key_user_type" type="pk-constr" factor="10" table="company.user_type">
 		<columns names="id" ref-type="src-columns"/>
@@ -346,7 +349,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <table name="setting">
 	<schema name="erp"/>
-	<position x="1119" y="183"/>
+	<position x="1119" y="182"/>
 	<column name="id" not-null="true">
 		<type name="bigserial"/>
 	</column>
@@ -369,5 +372,129 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 </table>
+
+<table name="appointments">
+	<schema name="agenda"/>
+	<position x="1109" y="1561"/>
+	<column name="id" not-null="true">
+		<type name="bigserial"/>
+	</column>
+	<column name="title" not-null="true">
+		<type name="varchar" length="100"/>
+	</column>
+	<column name="description">
+		<type name="text"/>
+	</column>
+	<column name="date_start" not-null="true" default-value="CURRENT_TIMESTAMP">
+		<type name="timestamp"/>
+	</column>
+	<column name="date_finish" not-null="true" default-value="CURRENT_TIMESTAMP">
+		<type name="timestamp"/>
+	</column>
+	<column name="time_alert" default-value="0">
+		<type name="integer"/>
+	</column>
+	<column name="priority" not-null="true" default-value="0">
+		<type name="smallint"/>
+	</column>
+	<column name="activate_event_all_the_day" not-null="true" default-value="false">
+		<type name="boolean"/>
+	</column>
+	<column name="emails_guests">
+		<type name="json"/>
+	</column>
+	<column name="location">
+		<type name="text"/>
+	</column>
+	<column name="link">
+		<type name="text"/>
+	</column>
+	<column name="repeat_this_event" not-null="true" default-value="false">
+		<type name="boolean"/>
+	</column>
+	<column name="time_repeat" default-value="0">
+		<type name="smallint"/>
+	</column>
+	<column name="finish_repeat_date">
+		<type name="timestamp"/>
+		<comment><![CDATA[this is for that the ERP know when can stop of repeating this event]]></comment>
+	</column>
+	<column name="send_notification" not-null="true" default-value="true">
+		<type name="boolean"/>
+	</column>
+	<column name="i_am_free" not-null="true" default-value="true">
+		<type name="boolean"/>
+	</column>
+	<constraint name="id_key_appointments" type="pk-constr" factor="10" table="agenda.appointments">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="type_appoint">
+	<schema name="agenda"/>
+	<position x="1564" y="1661"/>
+	<column name="id" not-null="true">
+		<type name="bigserial"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="100"/>
+	</column>
+	<column name="description">
+		<type name="text"/>
+	</column>
+	<column name="color" not-null="true" default-value="'#FF0000'">
+		<type name="varchar" length="25"/>
+	</column>
+	<constraint name="id_key_type_appoint" type="pk-constr" factor="10" table="agenda.type_appoint">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="settings">
+	<schema name="agenda"/>
+	<position x="1115" y="1887"/>
+	<column name="id" not-null="true">
+		<type name="bigserial"/>
+	</column>
+	<column name="email_alert" not-null="true">
+		<type name="text"/>
+	</column>
+	<column name="time_alert" not-null="true" default-value="0">
+		<type name="integer"/>
+	</column>
+	<column name="send_notification" not-null="true" default-value="true">
+		<type name="boolean"/>
+	</column>
+	<constraint name="id_key_settings_agenda" type="pk-constr" factor="10" table="agenda.settings">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="type_appoint_has_many_appointments" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="16" constr-indexes="1"
+	 src-table="agenda.type_appoint"
+	 dst-table="agenda.appointments"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="users_has_many_type_appoint" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="4" constr-indexes="1"
+	 src-table="public.users"
+	 dst-table="agenda.type_appoint"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="users_has_many_appointments" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="17" constr-indexes="2"
+	 src-table="public.users"
+	 dst-table="agenda.appointments"
+	 src-required="false" dst-required="false"/>
 
 </dbmodel>

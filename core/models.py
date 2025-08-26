@@ -143,6 +143,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     path_photo = models.TextField(blank=True, null=True)
     cellphone = models.CharField(max_length=20, blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
+    timezone = models.CharField(max_length=50, blank=True, default='America/Mexico_City')
 
     # Required fields
     is_active = models.BooleanField(default=True)
