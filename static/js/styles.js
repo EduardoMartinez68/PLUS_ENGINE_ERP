@@ -103,231 +103,262 @@ class MessagePop extends HTMLElement {
       `;
   }
 }
-
 class EditQuantity extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' }); // Shadow DOM encapsulado
+    this.attachShadow({ mode: 'open' });
+
+    this.type = this.getAttribute('type') === 'float' ? 'float' : 'int';
+    this.stepAttr = this.getAttribute('step') || '1';
+    this.step = this.type === 'float' ? parseFloat(this.stepAttr) : parseInt(this.stepAttr);
+    this.titleText = this.getAttribute('t') || this.getAttribute('title') || 'Editar cantidad';
+
+    // Valor inicial que mostrará el input
+    this._value = this.type === 'float' ? 0.0 : 0;
   }
 
   connectedCallback() {
-    const type = this.getAttribute('type') === 'float' ? 'float' : 'int';
-    const stepAttr = this.getAttribute('step') || '1';
-    const step = type === 'float' ? parseFloat(stepAttr) : parseInt(stepAttr);
-    const titleText = this.getAttribute('title') || 'Editar cantidad';
-    const name = this.getAttribute('name') || 'edit-quantity-pop';
-    const inputTargetId = this.getAttribute('target');
-    const inputTarget = document.getElementById(inputTargetId);
-    let value = inputTarget ? parseFloat(inputTarget.value || '0') : 0;
+    this.renderInput();
+  }
 
-    const translatedTitle = window.translate_text ? window.translate_text(titleText) : titleText;
-
+  renderInput() {
     this.shadowRoot.innerHTML = `
       <style>
-  :host {
-    all: initial;
-  }
-
-  .overlay {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0,0,0,0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-  }
-
-  .popup {
-    background: #fff;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-    overflow: hidden;
-    font-family: 'Segoe UI', sans-serif;
-  }
-
-  .navbar {
-    background: ${colors.color_company};
-    color: white;
-    padding: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .navbar h4 {
-    margin: 0;
-    font-size: 20px;
-  }
-
-  .navbar .close-btn {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-  }
-
-  .body {
-    padding: 24px 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-  }
-
-  .controls {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .controls input {
-    width: 120px;
-    text-align: center;
-    font-size: 24px;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-  }
-
-  .quantity-btn {
-    width: 48px;
-    height: 48px;
-    font-size: 28px;
-    background-color: ${colors.color_company};
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background 0.3s;
-    color: white;
-  }
-
-  .quantity-btn:hover {
-    background-color: ${colors.color_company_hover};
-  }
-
-  .footer {
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .accept-btn {
-    width: 100%;
-    padding: 14px 0;
-    font-size: 18px;
-    border: none;
-    border-radius: 10px;
-    background-color: ${colors.color_company};
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-  .accept-btn:hover {
-    background-color: ${colors.color_company_hover};
-  }
-
-  /* Adaptabilidad para tablets y móviles */
-  @media (max-width: 768px) {
-    .popup {
-      width: 95%;
-      max-width: 90%;
-    }
-
-    .controls input {
-      width: 100px;
-      font-size: 20px;
-    }
-
-    .quantity-btn {
-      width: 44px;
-      height: 44px;
-      font-size: 26px;
-    }
-
-    .accept-btn {
-      font-size: 16px;
-      padding: 12px 0;
-    }
-
-    .navbar h4 {
-      font-size: 18px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .controls {
-      gap: 12px;
-    }
-
-    .controls input {
-      width: 80px;
-      font-size: 18px;
-    }
-
-    .quantity-btn {
-      width: 40px;
-      height: 40px;
-      font-size: 24px;
-    }
-
-    .accept-btn {
-      font-size: 16px;
-      padding: 10px 0;
-    }
-
-    .navbar h4 {
-      font-size: 16px;
-    }
-  }
+        :host {
+          all: initial;
+          display: inline-block;
+          font-family: 'Segoe UI', sans-serif;
+        }
+        input.display-input {
+          width: 120px;
+          font-size: 24px;
+          padding: 8px 10px;
+          border-radius: 10px;
+          border: 1px solid #ccc;
+          text-align: center;
+          cursor: pointer;
+          user-select: none;
+        }
+        input.display-input:focus {
+          outline: none;
+          border-color: ${colors.color_company};
+          box-shadow: 0 0 5px ${colors.color_company};
+        }
       </style>
+      <input type="text" class="display-input" readonly value="${this._value}" title="${this.titleText}" />
+    `;
 
-      <div class="overlay">
-        <div class="popup">
-          <div class="navbar">
-            <h4 t="${titleText}">${translatedTitle}</h4>
-            <button class="close-btn" title="Cerrar">×</button>
+    this.shadowRoot.querySelector('.display-input').addEventListener('click', () => this.openPopup());
+  }
+
+  openPopup() {
+    // Crear overlay + popup
+    const popup = document.createElement('div');
+    popup.classList.add('overlay');
+    popup.innerHTML = `
+      <style>
+        .overlay {
+          position: fixed;
+          inset: 0;
+          background-color: rgba(0,0,0,0.6);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 10000;
+        }
+        .popup {
+          background: #fff;
+          border-radius: 12px;
+          width: 90%;
+          max-width: 400px;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+          overflow: hidden;
+          font-family: 'Segoe UI', sans-serif;
+          padding: 0;
+        }
+        .navbar {
+          background: ${colors.color_company};
+          color: white;
+          padding: 16px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .navbar h4 {
+          margin: 0;
+          font-size: 20px;
+        }
+        .navbar .close-btn {
+          background: transparent;
+          border: none;
+          color: white;
+          font-size: 24px;
+          cursor: pointer;
+        }
+        .body {
+          padding: 24px 16px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 24px;
+        }
+        .controls {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        .controls input {
+          width: 120px;
+          text-align: center;
+          font-size: 24px;
+          padding: 10px;
+          border-radius: 10px;
+          border: 1px solid #ccc;
+        }
+        .quantity-btn {
+          width: 48px;
+          height: 48px;
+          font-size: 28px;
+          background-color: ${colors.color_company};
+          border: none;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: background 0.3s;
+          color: white;
+        }
+        .quantity-btn:hover {
+          background-color: ${colors.color_company_hover};
+        }
+        .footer {
+          width: 100%;
+          margin-top: 10px;
+        }
+        .accept-btn {
+          width: 100%;
+          padding: 14px 0;
+          font-size: 18px;
+          border: none;
+          border-radius: 10px;
+          background-color: ${colors.color_company};
+          color: white;
+          cursor: pointer;
+          transition: background 0.3s;
+        }
+        .accept-btn:hover {
+          background-color: ${colors.color_company_hover};
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+          .popup {
+            width: 95%;
+            max-width: 90%;
+          }
+          .controls input {
+            width: 100px;
+            font-size: 20px;
+          }
+          .quantity-btn {
+            width: 44px;
+            height: 44px;
+            font-size: 26px;
+          }
+          .accept-btn {
+            font-size: 16px;
+            padding: 12px 0;
+          }
+          .navbar h4 {
+            font-size: 18px;
+          }
+        }
+        @media (max-width: 480px) {
+          .controls {
+            gap: 12px;
+          }
+          .controls input {
+            width: 80px;
+            font-size: 18px;
+          }
+          .quantity-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+          }
+          .accept-btn {
+            font-size: 16px;
+            padding: 10px 0;
+          }
+          .navbar h4 {
+            font-size: 16px;
+          }
+        }
+      </style>
+      <div class="popup">
+        <div class="navbar">
+          <h4>${this.titleText}</h4>
+          <button class="close-btn" title="Cerrar">&times;</button>
+        </div>
+        <div class="body">
+          <div class="controls">
+            <button class="quantity-btn" id="decrease">−</button>
+            <input type="number" id="quantity" value="${this._value}" step="${this.step}" />
+            <button class="quantity-btn" id="increase">+</button>
           </div>
-          <div class="body">
-            <div class="controls">
-              <button class="quantity-btn" id="decrease">−</button>
-              <input type="number" id="quantity" value="${value}" step="${step}" />
-              <button class="quantity-btn" id="increase">+</button>
-            </div>
-            <div class="footer">
-              <button class="accept-btn" id="accept">Aceptar</button>
-            </div>
+          <div class="footer">
+            <button class="accept-btn" id="accept">Aceptar</button>
           </div>
         </div>
       </div>
     `;
 
+    // Agregar popup al shadowRoot para que siga encapsulado
+    this.shadowRoot.appendChild(popup);
+
+    const close = () => {
+      this.shadowRoot.removeChild(popup);
+    };
+
     const $ = this.shadowRoot;
-    const close = () => this.remove();
 
-    $.querySelector('.close-btn').addEventListener('click', close);
-    $.querySelector('#increase').addEventListener('click', () => {
-      const input = $.querySelector('#quantity');
-      let currentValue = parseFloat(input.value);
-      currentValue += step;
-      input.value = type === 'int' ? Math.round(currentValue) : currentValue.toFixed(2);
+    // Botones
+    popup.querySelector('.close-btn').addEventListener('click', close);
+
+    const inputQuantity = popup.querySelector('#quantity');
+
+    popup.querySelector('#increase').addEventListener('click', () => {
+      let currentValue = parseFloat(inputQuantity.value);
+      currentValue += this.step;
+      inputQuantity.value = this.type === 'int' ? Math.round(currentValue) : currentValue.toFixed(2);
     });
 
-    $.querySelector('#decrease').addEventListener('click', () => {
-      const input = $.querySelector('#quantity');
-      let currentValue = parseFloat(input.value);
-      currentValue -= step;
-      input.value = type === 'int' ? Math.round(currentValue) : currentValue.toFixed(2);
+    popup.querySelector('#decrease').addEventListener('click', () => {
+      let currentValue = parseFloat(inputQuantity.value);
+      currentValue -= this.step;
+      inputQuantity.value = this.type === 'int' ? Math.round(currentValue) : currentValue.toFixed(2);
     });
 
-    $.querySelector('#accept').addEventListener('click', () => {
-      const newValue = $.querySelector('#quantity').value;
-      if (inputTarget) inputTarget.value = newValue;
+    popup.querySelector('#accept').addEventListener('click', () => {
+      this._value = inputQuantity.value;
+      // Actualizar input visible
+      this.shadowRoot.querySelector('.display-input').value = this._value;
       close();
+
+      // Opcional: disparar evento para avisar que cambió el valor
+      this.dispatchEvent(new CustomEvent('change', {
+        detail: { value: this._value }
+      }));
     });
+  }
+
+  // Getter para valor actual
+  get value() {
+    return this._value;
+  }
+
+  // Setter para actualizar valor desde afuera
+  set value(val) {
+    this._value = val;
+    if (this.shadowRoot.querySelector('.display-input'))
+      this.shadowRoot.querySelector('.display-input').value = val;
   }
 }
 
