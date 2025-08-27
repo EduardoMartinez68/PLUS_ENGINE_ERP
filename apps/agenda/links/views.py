@@ -3,6 +3,10 @@ import json
 from django.http import JsonResponse
 from ..models import TypeAppoint
 from django.db.models import F
+from datetime import datetime
+import sys
+import os
+from ..plus_wrapper import Plus
 
 def agenda_home(request):
     return render(request, 'home_agenda.html')
@@ -17,24 +21,42 @@ def create_event(request):
             return JsonResponse({'success': False, 'message': 'message.error.the-form-have-a-error', 'error': str(e)}, status=400)
 
         #--------------------
-        print(body_json)
+        #print(body_json)
         titleEvent = body_json.get("name_event", "").strip()
         description = body_json.get("description", "")
-        date_start = None
-        date_finish = None
+
+        #-----------------------------------------------------
+        #data that get of the user from the frontend
+        date_startDay =  body_json.get("start_date", "")
+        date_finishDay =  body_json.get("end_date", "")
+        date_startHour =  body_json.get("start_time", "")
+        date_finishHour =  body_json.get("end_time", "")
+
+        #convert to datetime 
+        date_start = datetime.strptime(f"{date_startDay} {date_startHour}", "%Y-%m-%d %H:%M")
+        date_finish = datetime.strptime(f"{date_finishDay} {date_finishHour}", "%Y-%m-%d %H:%M")
+
+        date_start_utc = Plus.convert_to_utc(date_start, "America/Mexico_City")
+        date_finish_utc = Plus.convert_to_utc(date_finish, "America/Mexico_City")
+ 
+        print(date_start_utc, date_finish_utc)
+        print('normal')
+        print(Plus.convert_from_utc(date_start_utc, "America/Mexico_City"), Plus.convert_from_utc(date_finish_utc, "America/Mexico_City"))
+
+        #-----------------------------------------------------
 
         time_alert = body_json.get("alert_time", "0") #this is for know when to alert in minute
         priority = body_json.get("priority", "0") #for default the priority is equal to 0
         activate_event_all_the_day = body_json.get("activate_event_all_the_day") == "on"
 
 
-        emails_guests = None
+        emails_guests = body_json.get("emails_guests", []) #this is a list of emails
         location = body_json.get("location", "")
         link = body_json.get("link", "")
 
         repeat_this_event = body_json.get("repeat_this_event") == "on" #True/False
         time_repeat =  body_json.get("time_repeat", "") #this is for that the ERP knows how often to repeat this event in days
-        finish_repeat_date = body_json.get("time_end_repeat", "")
+        finish_repeat_date = body_json.get("time_end_repeat", "") 
 
 
         send_notification = body_json.get("send_notification") == "on"  # True/False
@@ -112,4 +134,6 @@ def create_type_event(request):
             return JsonResponse({'success': False, 'message': 'Error al crear el tipo de evento.', 'error': str(e)}, status=500)
 
     return JsonResponse({'success': False, 'message': 'Método no permitido.'}, status=405)
+
+
 
