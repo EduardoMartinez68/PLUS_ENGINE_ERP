@@ -2607,6 +2607,13 @@ class PlusTime extends HTMLElement {
     this.selectedHour = 12;
     this.selectedMinute = 0;
     this.attachShadow({ mode: "open" });
+
+    //her we will to create a  input hidden outside of the DOM normal 
+    const name = this.getAttribute('name') || 'plus-time';
+    this.hiddenInput = document.createElement('input');
+    this.hiddenInput.type = 'hidden';
+    this.hiddenInput.name = name;
+    this.appendChild(this.hiddenInput);
   }
 
   connectedCallback() {
@@ -2726,6 +2733,7 @@ class PlusTime extends HTMLElement {
 
     document.addEventListener("click", (e) => {
       if (!this.contains(e.target)) this.dropdown.style.display = "none";
+      this.update_input_form();
     });
 
     this.initInteraction("hour");
@@ -2787,30 +2795,56 @@ class PlusTime extends HTMLElement {
         this.input.value = this.formatTime(true);
       });
     });
+  }
 
+  update_input_form() {
+    // update the input that is hidden
+    if (this.hiddenInput) {
+      this.hiddenInput.value = `${String(this.selectedHour).padStart(2, '0')}:${String(this.selectedMinute).padStart(2, '0')}`;
+    }
+
+    // also update the input type="time" in the shadow DOM
+    if (this.input) {
+      this.input.value = `${String(this.selectedHour).padStart(2, '0')}:${String(this.selectedMinute).padStart(2, '0')}`;
+    }
+
+    // Update the display
+    if (this.display) {
+      this.display.textContent = `${String(this.selectedHour).padStart(2, '0')}:${String(this.selectedMinute).padStart(2, '0')}`;
+    }
   }
 }
 
-function change_plus_time(id, newTime){
-  const plusTime = document.getElementById(id);    
+function change_plus_time(id, newTime) {
+  const plusTime = document.getElementById(id);
   if (!plusTime) return;
 
-  // her we will see if the component has a shadowRoot
   const shadow = plusTime.shadowRoot;
   if (!shadow) return;
 
-  // now we can search in the shadow DOM
-  const input = shadow.getElementById(id);
+  const [hourStr, minuteStr] = newTime.split(':');
+  const hour = parseInt(hourStr, 10);
+  const minute = parseInt(minuteStr, 10);
 
-  const label = shadow.querySelector('label');
+  // Actualizar propiedades internas
+  plusTime.selectedHour = hour;
+  plusTime.selectedMinute = minute;
+
+  // Actualizar display
   const displayDiv = shadow.querySelector('.time-picker-display');
+  if (displayDiv) {
+    displayDiv.textContent = `${hourStr.padStart(2, '0')}:${minuteStr.padStart(2, '0')}`;
+  }
 
-  //get the hour and the time
-
-  // Ejemplo: cambiar valor del input
+  // Actualizar input tipo time (si lo necesitas)
+  const input = shadow.querySelector('input[type="time"]');
   if (input) {
-    input.value = newTime; // cualquier fecha válida en formato yyyy-mm-dd
-    displayDiv.textContent = newTime; // actualizar la visualización
+    input.value = `${hourStr.padStart(2, '0')}:${minuteStr.padStart(2, '0')}`;
+  }
+
+  // Actualizar input hidden que se enviará en el formulario
+  if (plusTime.hiddenInput) {
+    plusTime.hiddenInput.value = `${hourStr.padStart(2, '0')}:${minuteStr.padStart(2, '0')}`;
   }
 }
 
