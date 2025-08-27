@@ -2134,6 +2134,7 @@ class PlusDate extends HTMLElement {
     this.currentDate = new Date();
 
     //her we will to create a  input hidden outside of the DOM normal 
+    const name = this.getAttribute('name') || 'plus-date';
     this.hiddenInput = document.createElement('input');
     this.hiddenInput.type = 'hidden';
     this.hiddenInput.name = name;
@@ -2369,6 +2370,8 @@ class PlusDate extends HTMLElement {
     } else if (this.mode === 'months') {
       this.renderMonths();
     }
+
+    this.update_input_form();
   }
 
   create_text_day() {
@@ -2465,6 +2468,9 @@ class PlusDate extends HTMLElement {
       this.calendarContainer.style.display = 'none';
       this.renderCalendar();
     };
+
+
+    this.update_input_form();
   }
 
   get_list_months() {
@@ -2535,32 +2541,64 @@ class PlusDate extends HTMLElement {
         this.renderCalendar();
       };
     });
+
+
+    this.update_input_form();
   }
 
-}
+  update_input_form(){
+    this.calendarContainer.querySelectorAll('.plus-calendar-day').forEach(day => {
+      day.onclick = () => {
+        const selectedISO = day.getAttribute('data-date');
+        const newDate = new Date(selectedISO);
+        this.selectedDate = newDate;
 
+        // Actualizar display
+        this.display.textContent = this.formatDate(newDate);
+
+        // Actualizar input hidden para que el formulario lo envíe
+        this.hiddenInput.value = selectedISO.split('T')[0];
+
+        this.calendarContainer.style.display = 'none';
+      };
+    });
+  }
+}
 
 function change_plus_date(id, newDate){
   const plusDate = document.getElementById(id);
-
   if (!plusDate) return;
 
-  // her we will see if the component has a shadowRoot
   const shadow = plusDate.shadowRoot;
   if (!shadow) return;
 
-  // now we can search in the shadow DOM
-  const input = shadow.querySelector('input[type="date"]');
-
-  const label = shadow.querySelector('label');
   const displayDiv = shadow.querySelector('#plus-date-display');
 
-  // Ejemplo: cambiar valor del input
-  if (input) {
-    input.value = newDate; // cualquier fecha válida en formato yyyy-mm-dd
-    displayDiv.textContent = format_date_to_text(newDate); // actualizar la visualización
+  // 1️⃣ Actualizar la UI del calendario
+  if (displayDiv) {
+    displayDiv.textContent = format_date_to_text(newDate); // mostrar fecha
+  }
+
+  // 2️⃣ Actualizar el input dentro del shadow DOM (opcional)
+  const inputShadow = shadow.querySelector('input[type="date"]');
+  if (inputShadow) inputShadow.value = typeof newDate === 'string' ? newDate : newDate.toISOString().split('T')[0];
+
+  // 3️⃣ Actualizar el input hidden que se envía al formulario
+  if (plusDate.hiddenInput) {
+    plusDate.hiddenInput.value = typeof newDate === 'string' ? newDate : newDate.toISOString().split('T')[0];
+  }
+
+  // 4️⃣ Actualizar la propiedad selectedDate del componente
+  if (plusDate.selectedDate !== undefined) {
+    plusDate.selectedDate = typeof newDate === 'string' ? new Date(newDate) : newDate;
+  }
+
+  // 5️⃣ (Opcional) refrescar calendario interno
+  if (plusDate.renderCalendar) {
+    plusDate.renderCalendar();
   }
 }
+
 
 
 class PlusTime extends HTMLElement {
@@ -3038,12 +3076,24 @@ class InputColor extends HTMLElement {
 }
 
 
-class PlusEmails extends HTMLElement {
+class PlusTag extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    const name = this.getAttribute('name') || 'plus-emails';
 
+    //get the information of the label 
+    const label=this.getAttribute('label') || 'input.tags';  //her we will to get the label of the input
+    
+    //we will to create a label outside of the shadow DOM for show information
+    this.labelInfo = document.createElement('info-label');
+    this.labelInfo.setAttribute('label', label);
+    this.labelInfo.setAttribute('message','tag-message-show');
+    this.appendChild(this.labelInfo);
+
+
+    const name = this.getAttribute('name') || 'plus-tags';
+    const t=this.getAttribute('t') || this.getAttribute('t-placeholder')|| this.getAttribute('placeholder') || 'input.tags';
+    const textPlaceholder=window.translate_text(t);
     const style = document.createElement('style');
     style.textContent = `
         .container {
@@ -3091,13 +3141,12 @@ class PlusEmails extends HTMLElement {
           font-size: 14px;
           background: transparent;
         }
-      `;
+    `;
 
 
     this.shadowRoot.innerHTML = `
       <div class="container">
-        <slot name="emails"></slot>
-        <input type="text" placeholder="Agregar email..." name='emails-inputs'>
+        <input type="text" placeholder="${textPlaceholder}" t-placeholder="${t}">
       </div>
     `;
 
@@ -3758,8 +3807,8 @@ function transform_my_labels_erp() {
     customElements.define("input-color", InputColor);
   }
 
-  if (!customElements.get("plus-emails")) {
-    customElements.define('plus-emails', PlusEmails);
+  if (!customElements.get("plus-tags")) {
+    customElements.define('plus-tags', PlusTag);
   }
 
   if (!customElements.get("plus-comment")) {

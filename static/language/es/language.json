@@ -126,6 +126,8 @@
     "input.number": "Número",
     "input.date": "Fecha",
     "input.time": "Hora",
+    "input.tags":"Agrega un Tag",
+    "tag-message-show": "Agrega un tag y presiona Enter, coma o espacio",
 
     "input.write-a-message": "Escribe un mensaje...",
     "ia-not-can-listen":"Reconocimiento de voz no disponible"

@@ -124,6 +124,8 @@
     "input.number": "Numer",
     "input.date": "Data",
     "input.time": "Godzina",
+    "input.tags":"Dodaj Tag",
+    "tag-message-show": "Dodaj tag i naciśnij Enter, przecinek lub spację",
 
 
     "input.write-a-message": "Napisz wiadomość...",

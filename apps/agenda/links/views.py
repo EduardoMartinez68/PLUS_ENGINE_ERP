@@ -67,7 +67,7 @@ def get_the_first_type_events(request):
             print("Error parsing JSON:", e)
             search_text = ""
 
-
+        search_text=body_json
         if search_text:
             #search the text that the user would like get from the server
             events = TypeAppoint.objects.filter(
