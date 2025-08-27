@@ -1,5 +1,5 @@
 {
-    "new-event": "Nuevo Evento",
+    "new-event": "Nuevo Evento (shift+n)",
     "navbar-2": "Crear Categoria",
     "placeholder-search":"Filtrar por departamento",
 
@@ -66,6 +66,7 @@
     "label-comment":"Agregar comentario",
     "placeholder-comment":"Escribe un comentario para el evento",
 
+    "create-a-new-type-event":"Crear un nuevo tipo de evento (shift+e)",
     "title-create-type-event":"Crear un nuevo tipo de evento",
     "new-type-event":"Nuevo tipo de evento",
 
@@ -96,5 +97,17 @@
 
     "message.error_in_server": "Ocurrio un error en el servidor",
     "message.need_most_data": "Faltan campos obligatorios",
-    "message.need_a_name_for_the_type_event": "Se necesita un nombre para el tipo de evento"
+    "message.need_a_name_for_the_type_event": "Se necesita un nombre para el tipo de evento",
+    "message.error.need-a-name-for-your-event": "Se necesita un nombre para tu evento",
+    "message.error.the-form-have-a-error": "El formulario tiene un error. Revisa los campos",
+
+
+    "message.add-new-type-event.success": "Se ha añadido un nuevo tipo de evento",
+    "message.add-new-type-event.success.description": "Tu nuevo tipo de evento se ha añadido correctamente",
+
+    "message.add-new-type-event.error": "Ocurrió un error",
+    "message.add-new-type-event.error.description": "Ocurrió un error al añadir el nuevo tipo de evento en el servidor. Inténtalo de nuevo más tarde.",
+
+    "message.add-new-event.success": "Se ha añadido un nuevo evento",
+    "message.add-new-event.success.description": "Tu nuevo evento se ha añadido correctamente a tu agenda."
 }

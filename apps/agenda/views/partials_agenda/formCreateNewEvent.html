@@ -1,4 +1,5 @@
 <div class="container-pop">
+    <form  id="formCreateNewEvent">
     <plus-tabs>
         <plus-tab text="Description">
             <div class="section">
@@ -23,7 +24,7 @@
             </div>
 
             <div class="section">
-                <plus-switch text="all-day" name="allDay" onclick="activate_event_all_the_day"></plus-switch>
+                <plus-switch text="all-day" name="activate_event_all_the_day" onclick="activate_event_all_the_day"></plus-switch>
                 <label t="starts" style="margin-bottom: -24px; display: block;"></label>
                 <div class="row section">
                     <plus-date label="starts" name="start_date" id="start_date"></plus-date>
@@ -80,7 +81,7 @@
             </div>
 
 
-            <plus-switch text="repeat_this_event" name="repeat_event" id="repeat_this_event"
+            <plus-switch text="repeat_this_event" name="repeat_this_event" id="repeat_this_event"
                 onclick="hidden_input_repet"></plus-switch>
 
             <div class="section" id="input_repet" style="display: none;">
@@ -112,7 +113,45 @@
             <plus-switch text="i_am_free" name="i_am_free" checked="true"></plus-switch>
         </plus-tab>
     </plus-tabs>
+    </form>
 </div>
 
+<button class="btn btn-add btn-success" t="message.success" onclick="send_new_event_to_the_server()">Save</button>
 
-<button class="btn btn-add btn-success" t="message.success">Save</button>
+
+<script>
+    //her we will send the new event to the server 
+
+
+    async function send_new_event_to_the_server() {
+        //get the information from the form 
+        const form = document.getElementById('formCreateNewEvent');
+        const formData = new FormData(form);
+
+        //convert the formData to a json object
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
+        //send the information to the server 
+        const answer = await window.send_message_to_the_server('/agenda/create_event/', data);
+
+        //if can added the new event, now we will show a message of confirmation and clear the form 
+        if (answer.success) {
+            //hide the pop and refresh the calendar 
+            hide_pop('pop-data-event');
+
+            //refresh the calendar 
+            if (typeof refresh_calendar === 'function') {
+                refresh_calendar();
+            }
+
+            //show a message of success 
+            show_alert('success', window.translate_text('message.add-new-event.success'), window.translate_text('message.add-new-event.success.description'));
+        } else {
+            //show a message of error 
+            show_alert('error', window.translate_text("message.error_in_server"), window.translate_text(answer.message), answer.error);
+        }
+    }
+</script>

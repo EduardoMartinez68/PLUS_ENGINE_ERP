@@ -1108,7 +1108,7 @@ class PlusSelect extends HTMLElement {
     }
 
 
-    async function update_option_for_the_server(term) {
+    async function update_option_for_the_server(textFilter) {
       //after of send the message to the server, we will clear all the container of the previous options
       clear_option_select();
 
@@ -1122,7 +1122,7 @@ class PlusSelect extends HTMLElement {
       //if have a link of search, send this information to the server for get the information. 
       //the that the server can retur is {id:0, text:'name'}
       //send the information to the server and get his answer
-      const result = await window.send_message_to_the_server(link, [term], false); //with this have a error for translate the label 
+      const result = await window.send_message_to_the_server(link, textFilter, false); //with this have a error for translate the label
 
       //when get the answer of the server, other clear all the container 
       clear_option_select();
@@ -2132,6 +2132,13 @@ class PlusDate extends HTMLElement {
     super();
     this.selectedDate = null;
     this.currentDate = new Date();
+
+    //her we will to create a  input hidden outside of the DOM normal 
+    this.hiddenInput = document.createElement('input');
+    this.hiddenInput.type = 'hidden';
+    this.hiddenInput.name = name;
+    this.appendChild(this.hiddenInput);
+
     this.mode = 'days'; // 'days' | 'months'
 
     this.attachShadow({ mode: "open" });
@@ -3035,8 +3042,8 @@ class PlusEmails extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const name = this.getAttribute('name') || 'plus-emails';
 
-    // Crear estilos encapsulados
     const style = document.createElement('style');
     style.textContent = `
         .container {
@@ -3087,56 +3094,53 @@ class PlusEmails extends HTMLElement {
       `;
 
 
-    // Crear HTML del componente
     this.shadowRoot.innerHTML = `
-        <div class="container">
-          <slot name="emails"></slot>
-          <input type="text" placeholder="Agregar email...">
-        </div>
-        <input type="hidden">
-      `;
-
+      <div class="container">
+        <slot name="emails"></slot>
+        <input type="text" placeholder="Agregar email..." name='emails-inputs'>
+      </div>
+    `;
 
     this.shadowRoot.appendChild(style);
+
+    //we will to create a input hidden outside of the shadow DOM
+    this.hiddenInput = document.createElement('input');
+    this.hiddenInput.type = 'hidden';
+    this.hiddenInput.name = name;
+    this.appendChild(this.hiddenInput);
+
+    this.emails = [];
   }
 
   connectedCallback() {
     const input = this.shadowRoot.querySelector('input[type="text"]');
-    const hidden = this.shadowRoot.querySelector('input[type="hidden"]');
     const container = this.shadowRoot.querySelector('.container');
-
-    const nameAttr = this.getAttribute('name');
-    const idAttr = this.getAttribute('id') || generate_unique_dom_id();
-
-    if (nameAttr) hidden.name = nameAttr;
-    if (idAttr) this.shadowRoot.querySelector('.container').id = idAttr;
-
-    const emails = [];
 
     const renderTags = () => {
       const existingTags = container.querySelectorAll('.tag');
       existingTags.forEach(tag => tag.remove());
 
-      emails.forEach(email => {
+      this.emails.forEach(email => {
         const tag = document.createElement('span');
         tag.className = 'tag';
         tag.innerHTML = `${email} <button type="button">&times;</button>`;
         tag.querySelector('button').onclick = () => {
-          emails.splice(emails.indexOf(email), 1);
+          this.emails.splice(this.emails.indexOf(email), 1);
           renderTags();
         };
         container.insertBefore(tag, input);
       });
 
-      hidden.value = JSON.stringify(emails);
+      // update the input hidden outside of the shadow DOM
+      this.hiddenInput.value = JSON.stringify(this.emails);
     };
 
     input.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ',') {
         e.preventDefault();
         const email = input.value.trim();
-        if (email && !emails.includes(email)) {
-          emails.push(email);
+        if (email && !this.emails.includes(email)) {
+          this.emails.push(email);
           renderTags();
         }
         input.value = '';
@@ -3144,6 +3148,9 @@ class PlusEmails extends HTMLElement {
     });
   }
 }
+
+
+
 
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {

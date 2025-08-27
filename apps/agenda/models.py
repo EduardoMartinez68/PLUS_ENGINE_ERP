@@ -3,11 +3,6 @@ from django.db import migrations, connection
 #from django.contrib.auth.models import User
 from django.conf import settings
 
-
-def create_schema(apps, schema_editor):
-    with connection.cursor() as cursor:
-        cursor.execute('CREATE SCHEMA IF NOT EXISTS agenda;')
-
 class TypeAppoint(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
@@ -52,7 +47,6 @@ class Appointment(models.Model):
 
     def __str__(self):
         return self.title
-
 
 class Settings(models.Model):
     email_alert = models.TextField()
