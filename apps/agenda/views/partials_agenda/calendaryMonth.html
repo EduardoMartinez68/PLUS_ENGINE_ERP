@@ -5,6 +5,7 @@
         padding: 20px;
         max-width: 420px;
         width: 100%;
+        overflow-x: auto;
     }
 
     .calendar-header {
@@ -75,6 +76,69 @@
 
     .title-day {
         font-size: 2.5rem;
+    }
+
+   /* 📱 Media Queries para celulares */
+    @media (max-width: 768px) {
+        .calendar {
+            padding: 15px;
+        }
+
+        .day-names div,
+        .days div {
+            font-size: 0.8rem;
+        }
+
+        .title-number-day {
+            font-size: 4rem;
+        }
+
+        .title-day {
+            font-size: 2rem;
+        }
+
+        .nav-buttons button {
+            font-size: 1rem;
+            padding: 4px 8px;
+        }
+
+        .calendar-header h2 {
+            font-size: 1.2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .calendar {
+            padding: 10px;
+        }
+
+        .day-names,
+        .days {
+            gap: 5px;
+        }
+
+        .day-names div,
+        .days div {
+            font-size: 0.7rem;
+            padding: 6px 0;
+        }
+
+        .title-number-day {
+            font-size: 3rem;
+        }
+
+        .title-day {
+            font-size: 1.5rem;
+        }
+
+        .nav-buttons button {
+            font-size: 0.9rem;
+            padding: 3px 6px;
+        }
+
+        .calendar-header h2 {
+            font-size: 1rem;
+        }
     }
 </style>
 

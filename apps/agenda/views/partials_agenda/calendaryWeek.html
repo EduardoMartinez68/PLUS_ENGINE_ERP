@@ -5,7 +5,9 @@
     width: 100%;
     height: 100vh;
     position: relative;
+    overflow-x: auto; /* permitir scroll horizontal en móviles */
   }
+
 
   .calendary-week-header {
     display: contents;
@@ -55,6 +57,57 @@
   .calendary-week-today-column {
     background-color: #e0f7fa79 !important;
   }
+
+  /* 📱 Adaptación a móviles */
+  @media (max-width: 768px) {
+    .calendary-week-calendar {
+      grid-template-columns: 60px repeat(7, minmax(60px, 1fr));
+    }
+
+    .calendary-week-header div {
+      font-size: 10px;
+      padding: 6px 2px;
+    }
+
+    .calendary-week-hour-cell {
+      font-size: 8px;
+      padding: 1px 2px;
+    }
+
+    .calendary-week-time-slot {
+      height: 30px;
+    }
+
+    .calendary-week-current-hour-line {
+      width: calc(100% - 60px);
+      left: 60px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .calendary-week-calendar {
+      grid-template-columns: 40px repeat(7, minmax(40px, 1fr));
+    }
+
+    .calendary-week-header div {
+      font-size: 8px;
+      padding: 4px 1px;
+    }
+
+    .calendary-week-hour-cell {
+      font-size: 7px;
+      padding: 1px;
+    }
+
+    .calendary-week-time-slot {
+      height: 25px;
+    }
+
+    .calendary-week-current-hour-line {
+      width: calc(100% - 40px);
+      left: 40px;
+    }
+  }
 </style>
 
 <div id="calendary-week-calendar" class="calendary-week-calendar"></div>
@@ -66,7 +119,7 @@
 
     const inputDate = new Date(dateStr);
     const weekStart = new Date(inputDate);
-    weekStart.setDate(inputDate.getDate() - inputDate.getDay()); // domingo
+    weekStart.setDate(inputDate.getDate() - inputDate.getDay()); // Sunday
 
     const today = new Date();
     const isSameDay = (d1, d2) =>
@@ -81,7 +134,8 @@
     hourHeader.textContent = '';
     header.appendChild(hourHeader);
 
-    const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    // Here we will get the days of the week in the language that the user uses
+    const dayNames = [window.t('sunday'), window.t('monday'), window.t('tuesday'), window.t('wednesday'), window.t('thursday'), window.t('friday'), window.t('saturday')];
 
     const todayColumnIndices = [];
 
@@ -93,8 +147,8 @@
       dayDiv.textContent = `${dayNames[i]} ${day.getDate()}`;
 
       if (isSameDay(today, day)) {
-        todayColumnIndices.push(i); // Guardar qué día es hoy
-        dayDiv.style.backgroundColor = '#e0f7fa'; // también destacar en encabezado
+        todayColumnIndices.push(i); // save here the day that is today
+        dayDiv.style.backgroundColor = '#e0f7fa'; // also highlight in header
       }
 
       header.appendChild(dayDiv);
@@ -155,4 +209,17 @@
   }
 
   render_this_day();
+
+
+
+  async function get_the_information_of_the_calendary(){
+    //first we will get the range of date that need get
+    
+    const response = await send_message_to_the_server('/agenda/get_info_calendary_week/', {}, false, 'GET');
+    if (response.success) {
+      console.log('Información del calendario semanal:', response.data);
+    } else {
+      console.error('Error al obtener la información del calendario:', response.error);
+    }
+  }
 </script>
