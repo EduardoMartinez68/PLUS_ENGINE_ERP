@@ -263,8 +263,6 @@ def get_events_by_date_range(request):
         if request.method == 'GET':
             start_date = request.GET.get('start_date')
             end_date = request.GET.get('end_date')
-            print("Received start_date:", start_date)
-            print("Received end_date:", end_date)
     
             try:
                 if not start_date or not end_date:
@@ -290,7 +288,7 @@ def get_events_by_date_range(request):
                 user=user,
                 date_start__lte=end_date,
                 date_finish__gte=start_date
-            ).order_by('date_start')
+            ).select_related('id_type_appoint').order_by('date_start')
     
             #her we will to serialize the date 
             events_data = []
@@ -305,7 +303,14 @@ def get_events_by_date_range(request):
                     'date_finish': localtime(date_finish).isoformat(),
                     'time_alert': e.time_alert,
                     'priority': e.priority,
-                    'activate_event_all_the_day': e.activate_event_all_the_day
+                    'activate_event_all_the_day': e.activate_event_all_the_day,
+                    
+                    'type_appoint': {
+                        'id': e.id_type_appoint.id if e.id_type_appoint else None,
+                        'name': e.id_type_appoint.name if e.id_type_appoint else None,
+                        'description': e.id_type_appoint.description if e.id_type_appoint else None,
+                        'color': e.id_type_appoint.color if e.id_type_appoint else None,
+                    }
                 })
     
             #this is for the frontend
@@ -327,8 +332,6 @@ def get_events_by_date_range(request):
         if request.method == 'GET':
             start_date = request.GET.get('start_date')
             end_date = request.GET.get('end_date')
-            print("Received start_date:", start_date)
-            print("Received end_date:", end_date)
     
             try:
                 if not start_date or not end_date:
@@ -354,7 +357,7 @@ def get_events_by_date_range(request):
                 user=user,
                 date_start__lte=end_date,
                 date_finish__gte=start_date
-            ).order_by('date_start')
+            ).select_related('id_type_appoint').order_by('date_start')
     
             #her we will to serialize the date 
             events_data = []
@@ -369,7 +372,14 @@ def get_events_by_date_range(request):
                     'date_finish': localtime(date_finish).isoformat(),
                     'time_alert': e.time_alert,
                     'priority': e.priority,
-                    'activate_event_all_the_day': e.activate_event_all_the_day
+                    'activate_event_all_the_day': e.activate_event_all_the_day,
+                    
+                    'type_appoint': {
+                        'id': e.id_type_appoint.id if e.id_type_appoint else None,
+                        'name': e.id_type_appoint.name if e.id_type_appoint else None,
+                        'description': e.id_type_appoint.description if e.id_type_appoint else None,
+                        'color': e.id_type_appoint.color if e.id_type_appoint else None,
+                    }
                 })
     
             #this is for the frontend
