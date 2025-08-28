@@ -208,7 +208,7 @@
 
       // Posición adaptable
       eventDiv.style.position = 'absolute';
-      eventDiv.style.top = `calc(${top}% + 2%)`; // +2% para header
+      eventDiv.style.top = `calc(${top}% + 4.5%)`; // +2% para header
       eventDiv.style.left = `calc(${(dayIndex / 7) * 100}% + 4%)`; // offset relativo al ancho de columna
       eventDiv.style.width = `calc(${100 / 7 - 2}%)`; // ancho de columna - margen
       eventDiv.style.height = `${height}%`;
@@ -249,10 +249,37 @@
       legend.style.opacity = '0.8';
       legend.style.color = darkenColor(bgColor, 0.3);
 
+
+      const priorityContainer = document.createElement('div');
+      priorityContainer.style.display = 'flex';
+      priorityContainer.style.justifyContent = 'center';
+      priorityContainer.style.marginTop = '0.2em';
+
+      const priority = event.appoints[0].priority || 0; 
+
+      for (let i = 0; i < 3; i++) {
+        const star = document.createElement('span');
+        star.textContent = '★'; // estrella
+        star.style.fontSize = '0.9em';
+        star.style.margin = '0 1px';
+        
+        // color: lleno si menor que prioridad, transparente si no
+        if (i <= priority) {
+          star.style.color = 'gold';
+        } else {
+          star.style.color = 'rgba(255, 215, 0, 0.3)'; // más transparente
+        }
+
+        priorityContainer.appendChild(star);
+      }
+
       eventDiv.appendChild(title);
       eventDiv.appendChild(legend);
+      eventDiv.appendChild(priorityContainer);
 
       calendar.appendChild(eventDiv);
+
+
     });
 
 
