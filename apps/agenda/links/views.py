@@ -7,6 +7,7 @@ from datetime import datetime
 import sys
 import os
 from ..plus_wrapper import Plus
+from django.utils import timezone
 
 def agenda_home(request):
     return render(request, 'home_agenda.html')
@@ -122,6 +123,59 @@ def create_event(request):
         
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
+
+
+
+def get_events_by_date_range(request):
+    """
+   Get all events of a user between start_date and end_date.
+
+    Parameters:
+        user: CustomUser instance
+        start_date: Start datetime of the range
+        end_date: End datetime of the range
+
+    Return:
+        Appointment QuerySet sorted by start date
+    """
+
+    if request.method == 'GET':
+        try:
+            start_date = request.GET.get('start_date')
+            end_date = request.GET.get('end_date')
+
+            if not start_date or not end_date:
+                return JsonResponse({'success': False, 'message': 'message.error.start-end-date-required'}, status=400)
+
+            #Convert dates to datetime objects
+            start_date = timezone.datetime.fromisoformat(start_date)
+            end_date = timezone.datetime.fromisoformat(end_date)
+
+            #Make sure start_date and end_date are timezone-aware
+            if timezone.is_naive(start_date):
+                start_date = timezone.make_aware(start_date, timezone.get_default_timezone())
+            if timezone.is_naive(end_date):
+                end_date = timezone.make_aware(end_date, timezone.get_default_timezone())
+
+        except Exception as e:
+            print("Error parsing JSON:", e)
+            return JsonResponse({'success': False, 'message': 'message.error.invalid-date-format'}, status=400)
+
+        #We filter events that are within the range
+        user = request.user
+        events = Appointment.objects.filter(
+            user=user,
+            date_start__lte=end_date,
+            date_finish__gte=start_date
+        ).order_by('date_start')
+
+        #this is for the frontend
+        events_data = list(events.values(
+            'id', 'title', 'description', 'date_start', 'date_finish',
+            'time_alert', 'priority', 'activate_event_all_the_day'
+        ))
+
+        return JsonResponse({'success': True, 'data': events_data}, status=200)
 
 
 #-----------------------------TYPE EVENTS-------------------------------------

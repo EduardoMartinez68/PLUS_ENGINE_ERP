@@ -101,7 +101,9 @@
     "message.error.need-a-name-for-your-event": "Se necesita un nombre para tu evento",
     "message.error.the-form-have-a-error": "El formulario tiene un error. Revisa los campos",
     "message.error.invalid-date-range": "El rango de fechas no es válido. La fecha de inicio debe ser anterior o igual a la fecha de finalización.",
-
+    "message.error.start-end-date-required": "Se requieren las fechas de inicio y fin",
+    "message.error.invalid-date-format": "El formato de fecha no es válido. Usa AAAA-MM-DD HH:MM",
+    
     "message.success.add-new-event":"Se ha añadido tu nuevo evento correctamente",
     "message.success.not-can-add-new-event":"No se ha podido añadir tu nuevo evento. Inténtalo de nuevo más tarde.",
 

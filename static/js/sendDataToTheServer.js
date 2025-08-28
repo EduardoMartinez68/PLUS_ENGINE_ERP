@@ -1,4 +1,4 @@
-async function send_message_to_the_server(url, data = {}, with_load = true) {
+async function send_message_to_the_server(url, data = {}, with_load = true, type='POST') {
     // show the overlay
     const screenLoad = document.getElementById('loadingOverlay')
     if (with_load) {
@@ -7,35 +7,53 @@ async function send_message_to_the_server(url, data = {}, with_load = true) {
 
 
     try {
-        const response = await fetch(url, {
-            method: 'POST',
+        //here we will to create a fetchOptions for send the information to the server Django
+        let fetchOptions = {
+            method: type.toUpperCase(),
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken()  // Solo si usas Django
-            },
-            body: JSON.stringify(data)
-        });
+                'X-CSRFToken': getCSRFToken()
+            }
+        };
 
+        //now we will see the fetch options. If the type is POST we will add the body
+        //else we will to create the new link
+        let fetchUrl = url;
+        if (type.toUpperCase() === 'POST') {
+            fetchOptions.body = JSON.stringify(data);
+        } else if (type.toUpperCase() === 'GET') {
+            // Convert the 'data' object to query params
+            const queryParams = new URLSearchParams(data).toString();
+            if (queryParams) {
+                fetchUrl += (url.includes('?') ? '&' : '?') + queryParams;
+            }
+        }
+
+
+        //send the information to the server with the fetch options
+        const response = await fetch(fetchUrl, fetchOptions);
+
+        //first we will see if the response is ok
         if (!response.ok) {
             console.log(url)
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
+        //get the information that send the server and the return 
         const result = await response.json();
         return result;
 
     } catch (error) {
         console.log(url)
-        console.error('Error al cargar datos:', error);
-        return { success: false, error: error.message };
-
+        console.error('Error to load the data:', error);
+        return { success: false, error: error };
     } finally {
         screenLoad.style.display = 'none';
     }
 }
 
 
-// Función para obtener CSRF token (Django)
+// Function to get CSRF token (Django)
 function getCSRFToken() {
     const name = 'csrftoken';
     const cookies = document.cookie.split(';');
