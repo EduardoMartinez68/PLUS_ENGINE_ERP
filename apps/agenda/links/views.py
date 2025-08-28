@@ -1,3 +1,4 @@
+from email import parser
 from django.shortcuts import render
 import json
 from django.http import JsonResponse
@@ -8,6 +9,8 @@ import sys
 import os
 from ..plus_wrapper import Plus
 from django.utils import timezone
+from dateutil import parser as ps
+from django.utils.timezone import localtime
 
 def agenda_home(request):
     return render(request, 'home_agenda.html')
@@ -18,22 +21,24 @@ def create_event(request):
     def get_date_of_the_event(user, body_json: json) -> dict:
         #data that get of the user from the frontend
         date_startDay =  body_json.get("start_date", "")
-        date_finishDay =  body_json.get("end_date", "")
         date_startHour =  body_json.get("start_time", "")
+
+        date_finishDay =  body_json.get("end_date", "")
         date_finishHour =  body_json.get("end_time", "")
 
         #convert to datetime 
         date_start = datetime.strptime(f"{date_startDay} {date_startHour}", "%Y-%m-%d %H:%M")
         date_finish = datetime.strptime(f"{date_finishDay} {date_finishHour}", "%Y-%m-%d %H:%M")
-        
+
+
         #get the time zone of the user 
         timezone=user.timezone
         date_start_utc = Plus.convert_to_utc(date_start, timezone)
         date_finish_utc = Plus.convert_to_utc(date_finish, timezone)
 
         return {
-            'start': Plus.convert_from_utc(date_start_utc, timezone),
-            'end': Plus.convert_from_utc(date_finish_utc, timezone)
+            'start': date_start_utc,
+            'end': date_finish_utc
         }
     
     def validate_date_range(start: datetime, end: datetime) -> bool:
@@ -140,16 +145,18 @@ def get_events_by_date_range(request):
     """
 
     if request.method == 'GET':
-        try:
-            start_date = request.GET.get('start_date')
-            end_date = request.GET.get('end_date')
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        print("Received start_date:", start_date)
+        print("Received end_date:", end_date)
 
+        try:
             if not start_date or not end_date:
                 return JsonResponse({'success': False, 'message': 'message.error.start-end-date-required'}, status=400)
 
             #Convert dates to datetime objects
-            start_date = timezone.datetime.fromisoformat(start_date)
-            end_date = timezone.datetime.fromisoformat(end_date)
+            start_date = ps.parse(start_date, fuzzy=True)
+            end_date = ps.parse(end_date, fuzzy=True)
 
             #Make sure start_date and end_date are timezone-aware
             if timezone.is_naive(start_date):
@@ -169,12 +176,24 @@ def get_events_by_date_range(request):
             date_finish__gte=start_date
         ).order_by('date_start')
 
-        #this is for the frontend
-        events_data = list(events.values(
-            'id', 'title', 'description', 'date_start', 'date_finish',
-            'time_alert', 'priority', 'activate_event_all_the_day'
-        ))
+        #her we will to serialize the date 
+        events_data = []
+        for e in events:
+            date_start = Plus.convert_from_utc(e.date_start, request.user.timezone)
+            date_finish = Plus.convert_from_utc(e.date_finish, request.user.timezone)
+            events_data.append({
+                'id': e.id,
+                'title': e.title,
+                'description': e.description,
+                'date_start': localtime(date_start).isoformat(),
+                'date_finish': localtime(date_finish).isoformat(),
+                'time_alert': e.time_alert,
+                'priority': e.priority,
+                'activate_event_all_the_day': e.activate_event_all_the_day
+            })
 
+        #this is for the frontend
+        print(events_data)
         return JsonResponse({'success': True, 'data': events_data}, status=200)
 
 

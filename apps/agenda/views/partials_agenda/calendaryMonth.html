@@ -171,7 +171,7 @@
 </div>
 
 <script>
-    (() => {
+    (async () => {
         let currentDate = new Date(); // Global variable for know in that date be
 
 
@@ -260,10 +260,6 @@
             return currentDate.getMonth();
         }
 
-        change_info_language(); //first we will translate the text of the agenda
-        update_text_day( currentDate.getDate())
-        renderCalendar(currentDate); // ✅ Start with the global variable
-
 
         document.getElementById('btnTodayCalendaryMonth').addEventListener('click', () => {
             currentDate = new Date(); // restart to the day
@@ -277,37 +273,121 @@
         //---------------------------------------------------now get information of the agenda in the backend--------------------------------------
         let listAppoints=[
             { date: '', appoints: [] },
-            { date: '', appoints: [] },
+            { date: '', appoints: [] }, //here is the month 
             { date: '', appoints: [] }
         ]; //here we will save the information of the events
+        listAppoints=[];
 
         async function get_the_information_of_the_calendary(){
             //first we will get the range of date that need get
             const monthCurrent=get_month_current();
-            const nextMonth=monthCurrent+1;
-            const previousMonth=monthCurrent-1;
+            const { startDate, endDate } = get_month_range(monthCurrent);
 
             //now need see if exist the data in the list for render in the agenda
             const existDataCurrentMonth=listAppoints.find(item=>item.month===monthCurrent);
 
             //now with the information of the next and the previous month we can get the events from the server
-            const response = await send_message_to_the_server('/agenda/get_info_calendary_week/', {
-                monthCurrent,
-                nextMonth,
-                previousMonth
+            const response = await send_message_to_the_server('/agenda/get_events_by_date_range/', {
+                start_date: startDate,
+                end_date: endDate
             }, false, 'GET');
 
 
 
             if (response.success) {
-            console.log('Información del calendario semanal:', response.data);
+                add_this_information_to_the_appointments_list(response.data); //update the list with the new information
             } else {
-            console.error('Error al obtener la información del calendario:', response.error);
+                console.error('Error al obtener la información del calendario:', response.error);
             }
         }
 
+        //this function is for create the range of date use a month and get the start and end date
+        //of the next month and the after month
+        function get_month_range(date) {
+            const currentDate = new Date();
+            date=currentDate;
+            const year = date.getFullYear();
+            const month = date.getMonth();
 
+            //first day of the month after
+            const startDate = new Date(year, month - 1, 1);
+
+            // last day of the month after
+            const endDate = new Date(year, month + 2, 0);
+
+            return { startDate, endDate };
+        }
+
+        //this functions is for update the list of appointments when need update a month in the calendar
+        function update_appointments_list(date, appointments) {
+            // Extract month and year from the date
+            const month = date.getMonth();
+            const year = date.getFullYear();
+
+            // Find the month entry in the list
+            const monthEntry = listAppoints.find(item => item.month === month && item.year === year);
+
+            if (monthEntry) {
+                monthEntry.appoints = appointments;
+            } else {
+                // If the month entry doesn't exist, create a new one
+                listAppoints.push({
+                    month,
+                    year,
+                    appoints: appointments
+                });
+            }
+        }
+
+        function add_this_information_to_the_appointments_list(appointments) {
+            //now we will to read all the information of the list and add the new appointments with his month
+            appointments.forEach(appointment => {
+                const { date, ...rest } = appointment;
+
+                //here we get the start and finish date
+                const date_start = new Date(rest.date_start);
+                const date_finish = new Date(rest.date_finish);
+
+                //now we will see if the appointment already exists
+                listAppoints.push({ date_start, date_finish, appoints: [rest] });
+            });
+        }
+
+        function get_the_list_of_appointments() {
+            return listAppoints;
+        }
+
+        function get_the_appointments_of_the_week(weekStart) {
+            console.log(listAppoints)
+
+            const startOfWeek = new Date(weekStart);
+            startOfWeek.setHours(0, 0, 0, 0);
+
+            const endOfWeek = new Date(weekStart);
+            endOfWeek.setDate(endOfWeek.getDate() + 6);
+            endOfWeek.setHours(23, 59, 59, 999);
+
+            return listAppoints.filter(item => {
+                const date_start = new Date(item.date_start); // usa date_start para comparar
+                const date_finish = new Date(item.date_finish); // usa date_finish para comparar
+                return date_start >= startOfWeek && date_finish <= endOfWeek;
+            });
+        }
+
+        ////-------------------------------------------------
+        await get_the_information_of_the_calendary(); //first get the information of the calendar
+        change_info_language(); //second we will translate the text of the agenda
+        update_text_day( currentDate.getDate())
+        renderCalendar(currentDate); // ✅ Start with the global variable
+        
+
+
+        window.get_the_appointments_of_the_week=get_the_appointments_of_the_week;
         window.changeMonth = changeMonth;
+        window.get_the_list_of_appointments = get_the_list_of_appointments;
         window.get_month_current = get_month_current;
+
+
+        window.render_this_day();
     })();
 </script>

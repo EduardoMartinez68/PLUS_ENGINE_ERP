@@ -19,8 +19,8 @@ class TypeAppoint(models.Model):
 class Appointment(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
-    date_start = models.DateTimeField(auto_now_add=True)
-    date_finish = models.DateTimeField(auto_now_add=True)
+    date_start = models.DateTimeField()
+    date_finish = models.DateTimeField()
 
     time_alert = models.IntegerField(default=0) #this is for know when to alert in minute
     priority = models.SmallIntegerField(default=0)

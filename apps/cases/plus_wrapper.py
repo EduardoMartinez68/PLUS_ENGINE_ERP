@@ -15,10 +15,28 @@ class Plus:
 
     @staticmethod
     def convert_to_utc(date_str, timezone_str):
+        # UTC stands for "Coordinated Universal Time."
+        # It is the standard time reference throughout the world.
+        # All time zones are defined relative to UTC.
+        # For example:
+        # - Mexico City is at UTC-6 in standard time
+        # - Madrid is at UTC+1 in standard time
+        #
+        # When working with dates in programming:
+        # 1. UTC allows you to store and compare dates regardless of the user's location.
+        # 2. Converting to UTC prevents errors when users are in different time zones.
+        # 3. In web applications, databases, and APIs, it is common to use UTC internally.
+        #
+        # Practical example:
+        # 2025-08-28 12:00:00 UTC
+        # is the exact same time worldwide, but will be displayed according to the local time zone:
+        # - Mexico City: 06:00 AM (UTC-6)
+        # - Madrid: 02:00 PM (UTC+2 in daylight saving time)
         module = Plus._load_module('converDate')
         return module.convert_to_utc(date_str, timezone_str)
 
     @staticmethod
     def convert_from_utc(utc_datetime, timezone_str):
+        #this funtions converts a UTC datetime to a specific timezone
         module = Plus._load_module('converDate')
         return module.convert_from_utc(utc_datetime, timezone_str)

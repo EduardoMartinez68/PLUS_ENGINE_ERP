@@ -121,6 +121,8 @@
     const weekStart = new Date(inputDate);
     weekStart.setDate(inputDate.getDate() - inputDate.getDay()); // Sunday
 
+    const appointments = window.get_the_appointments_of_the_week(weekStart); //her get the appointments of the week
+
     const today = new Date();
     const isSameDay = (d1, d2) =>
       d1.getFullYear() === d2.getFullYear() &&
@@ -183,6 +185,39 @@
 
       calendar.appendChild(row);
     }
+    /////////////////////////////////////
+    appointments.forEach(event => {
+      const start = new Date(event.date_start);
+      const end = new Date(event.date_finish);
+      
+      const dayIndex = start.getDay(); // 0=domingo, 6=sábado
+
+      const startHour = start.getHours();
+      const startMinutes = start.getMinutes();
+      const durationHours = (end - start) / (1000 * 60 * 60); // duración en horas
+
+      const top = (startHour * 40) + (startMinutes / 60 * 40); // 40px por hora
+      const height = durationHours * 40;
+
+      const eventDiv = document.createElement('div');
+      eventDiv.className = 'calendary-week-event';
+      eventDiv.textContent = event.title;
+
+      // Posición usando grid: columna depende de dayIndex
+      eventDiv.style.position = 'absolute';
+      eventDiv.style.top = `${top + 40}px`; // +40 por header
+      eventDiv.style.left = `${100 + dayIndex * (calendar.offsetWidth - 100)/7}px`; // 100px es columna de horas
+      eventDiv.style.width = `${(calendar.offsetWidth - 100)/7 - 4}px`; // ancho de columna - margen
+      eventDiv.style.height = `${height}px`;
+      eventDiv.style.backgroundColor = 'red';
+      eventDiv.style.color = 'white';
+      eventDiv.style.borderRadius = '4px';
+      eventDiv.style.padding = '2px';
+      eventDiv.style.fontSize = '12px';
+      eventDiv.style.overflow = 'hidden';
+
+      calendar.appendChild(eventDiv);
+    });
 
     // 🔴 Línea roja de la hora actual
     if (today >= weekStart && today <= new Date(weekStart.getTime() + 6 * 86400000)) {
@@ -208,6 +243,7 @@
     renderWeek(todayStr);
   }
 
-  render_this_day();
+  
 
+  window.render_this_day=render_this_day;
 </script>
