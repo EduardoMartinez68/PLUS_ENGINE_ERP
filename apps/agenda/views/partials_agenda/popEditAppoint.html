@@ -1,0 +1,134 @@
+<message-pop title="title-pop-create-event" name="pop-edit-event">
+<div class="container-pop">
+    <form  id="formCreateNewEvent">
+    <plus-tabs>
+        <plus-tab text="Description">
+            <div class="section">
+                <label t="label-input-title">Title of the event</label>
+                <input type="text" name="name_event" class="case-title-input" placeholder="Title"
+                    t-placeholder="placeholder-input-title" required maxlength="300" />
+            </div>
+
+            <div class="section">
+                <div class="row m-1">
+                    <plus-select label="priority" name="priority" required>
+                        <option selected t="priority.low" value="0"></option>
+                        <option t="priority.normal" value="1"></option>
+                        <option t="priority.high" value="2"></option>
+                    </plus-select>
+
+                    <plus-select label="search-type-event" name="type_event" required
+                        link="agenda/get_the_first_type_events/" add="open_pop_new_type_event" edit_data="edit_data"
+                        delete_data="agenda/delete_type_event/">
+                    </plus-select>
+                </div>
+            </div>
+
+            <div class="section">
+                <plus-switch text="all-day" name="activate_event_all_the_day" onclick="activate_event_all_the_day"></plus-switch>
+                <label t="starts" style="margin-bottom: -24px; display: block;"></label>
+                <div class="row section">
+                    <plus-date label="starts" name="start_date" id="start_date"></plus-date>
+                    <plus-time label="min-start" name="start_time" id="start_time"></plus-time>
+                </div>
+
+                <label t="ends" style="margin-bottom: -24px; display: block;"></label>
+                <div class="row section">
+                    <plus-date label="ends" name="end_date" id="end_date"></plus-date>
+                    <plus-time label="min-end" name="end_time" id="end_time"></plus-time>
+                </div>
+
+            </div>
+
+            <div class="section">
+                <plus-select label="time-of-alert" name="alert_time" required>
+                    <option selected t="alert.none" value="0"></option>
+                    <option t="alert.5min" value="5"></option>
+                    <option t="alert.10min" value="10"></option>
+                    <option t="alert.15min" value="15"></option>
+                    <option t="alert.30min" value="30"></option>
+                    <option t="alert.1hr" value="60"></option>
+                    <option t="alert.2hr" value="120"></option>
+                    <option t="alert.1day" value="1440"></option>
+                    <option t="alert.2day" value="2880"></option>
+                    <option t="alert.1week" value="10080"></option>
+                </plus-select>
+            </div>
+
+            <div class="section">
+                <info-label label="emails-guests"
+                    message="email-message-show"></info-label>
+                <plus-tags id="invitados" name="emails_guests" label="emails-guests" message="email-message-show" t-placeholder="input.add-most-email"></plus-tags>
+            </div>
+
+            <div class="section">
+                <label for="description" t="label-description">Description</label>
+                <textarea name="description" id="description" rows="4"
+                    t-placeholder="placeholder-description"></textarea>
+            </div>
+
+
+        </plus-tab>
+
+
+        <plus-tab text="More options">
+            <div class="section">
+                <input-field label="label-input-address" name="location"
+                    placeholder="placeholder-input-address"></input-field>
+            </div>
+
+            <div class="section">
+                <input-field label="label-link" type="text" name="link" placeholder="www/..."></input-field>
+            </div>
+
+
+            <plus-switch text="repeat_this_event" name="repeat_this_event" id="repeat_this_event"
+                onclick="hidden_input_repet"></plus-switch>
+
+            <div class="section" id="input_repet" style="display: none;">
+                <div class="row m-1">
+                    <plus-select label="repeat" name="time_repeat" requerid>
+                        <option selected t="option.never" value="0"></option>
+                        <option t="option.every_day" value="1"></option>
+                        <option t="option.every_week" value="7"></option>
+                        <option t="option.every_2_weeks" value="15"></option>
+                        <option t="option.every_month" value="30"></option>
+                        <option t="option.every_year" value="365"></option>
+                    </plus-select>
+
+
+                    <plus-select label="endRepeat" name="time_end_repeat" requerid>
+                        <option selected t="option.never" value="0">Never</option>
+                        <option t="option.on_day" value="1">On Day</option>
+                        <option t="option.on_week" value="7">A week</option>
+                        <option t="option.on_2_weeks" value="15">Two week</option>
+                        <option t="option.on_month" value="30">A Month</option>
+                        <option t="option.on_year" value="365">A Year</option>
+                    </plus-select>
+                </div>
+
+            </div>
+
+            <plus-switch text="send_notification" name="send_notification" checked="true"></plus-switch>
+
+            <plus-switch text="i_am_free" name="i_am_free" checked="true"></plus-switch>
+        </plus-tab>
+    </plus-tabs>
+    </form>
+</div>
+
+<button class="btn btn-edit btn-success" t="message.edit">Save</button>
+</message-pop>
+
+
+
+<script>
+  window.show_character_appoint = function(id) {
+    const appoints=window.get_the_list_of_appointments();
+    const appoint=appoints.find(app=>app.id===id);
+    if(appoint){
+      console.log("Mostrar detalles de la cita:", appoint);
+      open_my_pop('pop-edit-event');
+    }
+  };
+</script>

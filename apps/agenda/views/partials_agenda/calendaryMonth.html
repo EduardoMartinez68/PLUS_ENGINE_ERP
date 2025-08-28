@@ -347,9 +347,10 @@
                 //here we get the start and finish date
                 const date_start = new Date(rest.date_start);
                 const date_finish = new Date(rest.date_finish);
-
+                const id=rest.id;
+                
                 //now we will see if the appointment already exists
-                listAppoints.push({ date_start, date_finish, appoints: [rest] });
+                listAppoints.push({ id, date_start, date_finish, appoints: [rest] });
             });
         }
 

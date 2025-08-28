@@ -7,6 +7,12 @@
     "recover-password": "Odzyskaj hasło",
     "do-you-have-account": "Nie masz konta?",
     "forgot-password": "Zapomniałeś hasła?",
+    
+    "btn.update": "Aktualizować",
+    "btn.edit": "Edytować",
+    "btn.save": "Zapisz",
+    "btn.delete": "Usunąć",
+    "btn.cancel": "Anulować",
 
     "message.title": "Potwierdzenie",
     "message.success": "Akceptuj",

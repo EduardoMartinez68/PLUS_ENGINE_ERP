@@ -318,7 +318,7 @@
 
 
       eventDiv.addEventListener('click', () => {
-          show_character_appoint(event.appoints[0].id);
+        show_character_appoint(event.appoints[0].id);
       });
 
 
@@ -339,8 +339,6 @@
       eventDiv.appendChild(priorityContainer);
 
       calendar.appendChild(eventDiv);
-
-
     });
 
 
@@ -384,8 +382,6 @@
 
     return `rgb(${r},${g},${b})`;
   }
-
-
 
   function render_this_day() {
     const today = new Date();

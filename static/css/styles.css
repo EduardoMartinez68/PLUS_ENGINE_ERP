@@ -661,11 +661,11 @@ hr {
 }
 
 .btn-edit {
-  background-color: #f0ad4e;
+  background-color: var(--primary);
 }
 
 .btn-edit:hover {
-  background-color: #d9952e;
+  background-color: var(--primary-dark);
 }
 
 .btn-delete {
@@ -1393,6 +1393,27 @@ hr {
 
   .container-pop {
     padding: 15px;
+  }
+
+  .my-pop-header .close-btn {
+    color: white;
+    font-size: 1.5rem;
+    position: absolute; 
+    top: 3.5rem;      
+    right: 1rem;     
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.3s ease;
+  }
+
+  .my-pop-title{
+    margin: 0;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-top: 3rem
   }
 }
 

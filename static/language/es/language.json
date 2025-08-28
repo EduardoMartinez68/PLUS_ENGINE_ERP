@@ -8,6 +8,13 @@
     "do-you-have-account": "¿No tienes cuenta?",
     "forgot-password": "¿Olvidaste tu contraseña?",
 
+    "btn.update": "Actualizar",
+    "btn.edit": "Editar",
+    "btn.save": "Guardar",
+    "btn.delete": "Eliminar",
+    "btn.cancel": "Cancelar",
+
+    
     "message.title": "Confirmación",
     "message.success": "Aceptar",
     "message.save": "Guardar",
