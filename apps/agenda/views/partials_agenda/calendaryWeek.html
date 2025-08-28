@@ -209,8 +209,9 @@
       // Posición adaptable
       eventDiv.style.position = 'absolute';
       eventDiv.style.top = `calc(${top}% + 4.5%)`; // +2% para header
-      eventDiv.style.left = `calc(${(dayIndex / 7) * 100}% + 4%)`; // offset relativo al ancho de columna
-      eventDiv.style.width = `calc(${100 / 7 - 2}%)`; // ancho de columna - margen
+      eventDiv.style.left = `calc(${(dayIndex / 7) * 100}% + 5%)`; // offset relativo al ancho de columna
+      eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 10%)`; // offset relativo al ancho de columna
+      eventDiv.style.width = `calc(${100 / 7 - 0.5}%)`; // ancho de columna - margen
       eventDiv.style.height = `${height}%`;
 
       // Color de fondo
@@ -223,6 +224,7 @@
       eventDiv.style.color = brightness > 125 ? 'black' : 'white';
 
       // Estilo de texto
+      eventDiv.style.cursor = 'pointer';
       eventDiv.style.display = 'flex';
       eventDiv.style.flexDirection = 'column';
       eventDiv.style.alignItems = 'center';
@@ -256,21 +258,22 @@
       priorityContainer.style.marginTop = '0.2em';
 
       const priority = event.appoints[0].priority || 0; 
+      if(priority>0){
+        for (let i = 0; i < 3; i++) {
+          const star = document.createElement('span');
+          star.textContent = '★'; // estrella
+          star.style.fontSize = '0.9em';
+          star.style.margin = '0 1px';
+          
+          // color: lleno si menor que prioridad, transparente si no
+          if (i <= priority) {
+            star.style.color = 'gold';
+          } else {
+            star.style.color = 'rgba(255, 215, 0, 0.3)'; // más transparente
+          }
 
-      for (let i = 0; i < 3; i++) {
-        const star = document.createElement('span');
-        star.textContent = '★'; // estrella
-        star.style.fontSize = '0.9em';
-        star.style.margin = '0 1px';
-        
-        // color: lleno si menor que prioridad, transparente si no
-        if (i <= priority) {
-          star.style.color = 'gold';
-        } else {
-          star.style.color = 'rgba(255, 215, 0, 0.3)'; // más transparente
+          priorityContainer.appendChild(star);
         }
-
-        priorityContainer.appendChild(star);
       }
 
 
@@ -314,7 +317,9 @@
       });
 
 
-
+      eventDiv.addEventListener('click', () => {
+          show_character_appoint(event.appoints[0].id);
+      });
 
 
 
