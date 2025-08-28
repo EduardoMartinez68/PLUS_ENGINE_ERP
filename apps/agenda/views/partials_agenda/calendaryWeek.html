@@ -273,6 +273,62 @@
         priorityContainer.appendChild(star);
       }
 
+
+
+      //-----show the hours of the event when the user 
+      // Tooltip con la hora
+      const startHourStr = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const endHourStr = end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const tooltipText = `${startHourStr} - ${endHourStr}`;
+
+      // Crear un div para el tooltip
+      const tooltip = document.createElement('div');
+      tooltip.className = 'event-tooltip';
+      tooltip.textContent = tooltipText;
+      tooltip.style.position = 'absolute';
+      tooltip.style.padding = '4px 8px';
+      tooltip.style.backgroundColor = 'rgba(0,0,0,0.7)';
+      tooltip.style.color = 'white';
+      tooltip.style.borderRadius = '4px';
+      tooltip.style.fontSize = '12px';
+      tooltip.style.pointerEvents = 'none';
+      tooltip.style.visibility = 'hidden';
+      tooltip.style.zIndex = '1000';
+      document.body.appendChild(tooltip); //add the tooltip to the body
+
+
+      // show the tooltip to move the mouse for one of the events
+      eventDiv.addEventListener('mouseenter', e => {
+        tooltip.style.visibility = 'visible';
+        tooltip.style.left = e.pageX + 10 + 'px'; // 10px a la derecha del cursor
+        tooltip.style.top = e.pageY + 10 + 'px';  // 10px debajo del cursor
+      });
+
+      eventDiv.addEventListener('mousemove', e => {
+        tooltip.style.left = e.pageX + 10 + 'px';
+        tooltip.style.top = e.pageY + 10 + 'px';
+      });
+
+      eventDiv.addEventListener('mouseleave', () => {
+        tooltip.style.visibility = 'hidden';
+      });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       eventDiv.appendChild(title);
       eventDiv.appendChild(legend);
       eventDiv.appendChild(priorityContainer);
