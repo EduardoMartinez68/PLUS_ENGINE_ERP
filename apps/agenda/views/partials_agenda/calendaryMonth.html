@@ -172,7 +172,7 @@
 
 <script>
     (() => {
-        let currentDate = new Date(); // ✅ Variable global
+        let currentDate = new Date(); // Global variable for know in that date be
 
 
 
@@ -252,16 +252,17 @@
         }
 
         function changeMonth(step) {
-            currentDate.setMonth(currentDate.getMonth() + step); // ✅ Usamos la variable global
+            currentDate.setMonth(currentDate.getMonth() + step); // We use the global variable
             renderCalendar(currentDate);
         }
 
-
-
+        function get_month_current() {
+            return currentDate.getMonth();
+        }
 
         change_info_language(); //first we will translate the text of the agenda
         update_text_day( currentDate.getDate())
-        renderCalendar(currentDate); // ✅ Inicio con la variable global
+        renderCalendar(currentDate); // ✅ Start with the global variable
 
 
         document.getElementById('btnTodayCalendaryMonth').addEventListener('click', () => {
@@ -273,10 +274,40 @@
 
 
 
+        //---------------------------------------------------now get information of the agenda in the backend--------------------------------------
+        let listAppoints=[
+            { date: '', appoints: [] },
+            { date: '', appoints: [] },
+            { date: '', appoints: [] }
+        ]; //here we will save the information of the events
+
+        async function get_the_information_of_the_calendary(){
+            //first we will get the range of date that need get
+            const monthCurrent=get_month_current();
+            const nextMonth=monthCurrent+1;
+            const previousMonth=monthCurrent-1;
+
+            //now need see if exist the data in the list for render in the agenda
+            const existDataCurrentMonth=listAppoints.find(item=>item.month===monthCurrent);
+
+            //now with the information of the next and the previous month we can get the events from the server
+            const response = await send_message_to_the_server('/agenda/get_info_calendary_week/', {
+                monthCurrent,
+                nextMonth,
+                previousMonth
+            }, false, 'GET');
 
 
+
+            if (response.success) {
+            console.log('Información del calendario semanal:', response.data);
+            } else {
+            console.error('Error al obtener la información del calendario:', response.error);
+            }
+        }
 
 
         window.changeMonth = changeMonth;
+        window.get_month_current = get_month_current;
     })();
 </script>

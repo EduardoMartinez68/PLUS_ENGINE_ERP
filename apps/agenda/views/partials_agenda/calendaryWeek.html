@@ -210,16 +210,4 @@
 
   render_this_day();
 
-
-
-  async function get_the_information_of_the_calendary(){
-    //first we will get the range of date that need get
-    
-    const response = await send_message_to_the_server('/agenda/get_info_calendary_week/', {}, false, 'GET');
-    if (response.success) {
-      console.log('Información del calendario semanal:', response.data);
-    } else {
-      console.error('Error al obtener la información del calendario:', response.error);
-    }
-  }
 </script>
