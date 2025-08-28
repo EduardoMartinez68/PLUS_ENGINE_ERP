@@ -100,7 +100,10 @@
     "message.need_a_name_for_the_type_event": "Se necesita un nombre para el tipo de evento",
     "message.error.need-a-name-for-your-event": "Se necesita un nombre para tu evento",
     "message.error.the-form-have-a-error": "El formulario tiene un error. Revisa los campos",
+    "message.error.invalid-date-range": "El rango de fechas no es válido. La fecha de inicio debe ser anterior o igual a la fecha de finalización.",
 
+    "message.success.add-new-event":"Se ha añadido tu nuevo evento correctamente",
+    "message.success.not-can-add-new-event":"No se ha podido añadir tu nuevo evento. Inténtalo de nuevo más tarde.",
 
     "message.add-new-type-event.success": "Se ha añadido un nuevo tipo de evento",
     "message.add-new-type-event.success.description": "Tu nuevo tipo de evento se ha añadido correctamente",

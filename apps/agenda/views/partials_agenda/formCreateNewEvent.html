@@ -151,6 +151,7 @@
             show_alert('success', window.translate_text('message.add-new-event.success'), window.translate_text('message.add-new-event.success.description'));
         } else {
             //show a message of error 
+            console.log(answer)
             show_alert('error', window.translate_text("message.error_in_server"), window.translate_text(answer.message), answer.error);
         }
     }
