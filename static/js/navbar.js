@@ -143,18 +143,18 @@ Sortable.create(grid, {
   onEnd: saveAppOrder
 });
 
-// Cargar orden desde localStorage
+//load the order of all the apps from localStorage
 loadAppOrder();
 
 
-// Guarda el orden actual de las apps
+// save the order of all the apps
 function saveAppOrder() {
-  const appItems = document.querySelectorAll('.app-container[data-id]');
+  const appItems = document.querySelectorAll('.plus-app-container[data-id]');
   const order = Array.from(appItems).map(item => item.dataset.id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(order));
 }
 
-// Carga el orden guardado
+//load the order from localStorage
 function loadAppOrder() {
   const savedOrder = JSON.parse(localStorage.getItem(STORAGE_KEY));
   if (!savedOrder) return;
@@ -162,10 +162,10 @@ function loadAppOrder() {
   const grid = document.querySelector('.apps-grid');
   const itemsMap = {};
 
-  document.querySelectorAll('.app-container[data-id]').forEach(item => {
+  document.querySelectorAll('.plus-app-container[data-id]').forEach(item => {
     itemsMap[item.dataset.id] = item;
   });
-
+  console.log(itemsMap)
   savedOrder.forEach(id => {
     if (itemsMap[id]) {
       grid.appendChild(itemsMap[id]);

@@ -1,4 +1,5 @@
 <!---
+apps-grid
 <div id="appMenu" class="app-menu-overlay hidden">
   <div class="menu-header">
     <input type="text" id="searchInput" oninput="filterApps()" placeholder="Buscar una app..." t="menu.search">
@@ -123,12 +124,16 @@
 
   /* Grid apps */
   .plus-app-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    /*
     flex: 1;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     row-gap: 0px;
     column-gap: 16px;
     padding: 0 28%;
+    */
     overflow-y: auto;
     justify-items: center;
   }
@@ -217,23 +222,23 @@
 
     <input type="text" id="searchInput" class="plus-app-search-bar" placeholder="Search an app..." onkeyup="plusFilterApps()" t="menu.search">
 
-    <div class="plus-app-grid" id="plus-appGrid">
+    <div class="plus-app-grid apps-grid" id="plus-appGrid">
         {% load static %}
         {% for app in apps %}
-          <div class="plus-app-app" data-id="{{ app.name }}" onclick="nextWeb('{{ app.path }}{{ app.path }}')">
+          <div class="plus-app-container plus-app-app" data-id="{{ app.name }}" onclick="nextWeb('{{ app.path }}{{ app.path }}')">
               <img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy">
               <div class="app-name plus-app-app-name">{{ app.name }}</div>
           </div>
         {% endfor %}
         
-        <div class="plus-app-app" data-id="app-store" onclick="nextWeb('/app-store')">
+        <div class="plus-app-container plus-app-app" data-id="app-store" onclick="nextWeb('/app-store')">
             <img src="{% static 'img/icons/appstore.webp' %}" alt="App Store" loading="lazy">
             <div class="app-name plus-app-app-name">App Store</div>
         </div>
 
         <form method="post" action="{% url 'logout' %}" style="margin-top: -10px;" >
           {% csrf_token %}
-          <button class="btn app-container" type="submit" style="background-color: transparent;" data-id="app-plus-exit">
+          <button class="btn plus-app-container" type="submit" style="background-color: transparent;" data-id="app-plus-exit">
             <div class="app-box">
               <img src="{% static 'img/icons/exit1.webp' %}" alt="" loading="lazy">
             </div>
@@ -262,7 +267,6 @@
     }
   }
 
-  openModalApp()
   window.openModalApp=openModalApp;
   window.closeModalApp=closeModalApp;
 </script>
