@@ -231,7 +231,7 @@
                 const dayElement = document.createElement('div');
                 dayElement.textContent = day;
 
-                // ✅ Marca el día actual
+                // show the day current
                 if (
                     today.getFullYear() === year &&
                     today.getMonth() === month &&
@@ -240,7 +240,7 @@
                     dayElement.classList.add('today');
                 }
 
-                // ✅ Evento al hacer clic en un día
+                // ✅ event clic when the user do click in a day
                 dayElement.addEventListener('click', () => {
                     const clickedDate = new Date(year, month, day);
                     renderWeek(clickedDate);

@@ -314,7 +314,6 @@ def get_events_by_date_range(request):
                 })
     
             #this is for the frontend
-            print(events_data)
             return JsonResponse({'success': True, 'data': events_data}, status=200)
     else:
         """
@@ -383,7 +382,6 @@ def get_events_by_date_range(request):
                 })
     
             #this is for the frontend
-            print(events_data)
             return JsonResponse({'success': True, 'data': events_data}, status=200)
 
 @login_required(login_url='login')

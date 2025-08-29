@@ -6,12 +6,12 @@
             <div class="section">
                 <label t="label-input-title">Title of the event</label>
                 <input type="text" name="name_event" class="case-title-input" placeholder="Title"
-                    t-placeholder="placeholder-input-title" required maxlength="300" />
+                    t-placeholder="placeholder-input-title" required maxlength="300" id="title_event"/>
             </div>
 
             <div class="section">
                 <div class="row m-1">
-                    <plus-select label="priority" name="priority" required>
+                    <plus-select label="priority" name="priority" id="priority_edit"  required>
                         <option selected t="priority.low" value="0"></option>
                         <option t="priority.normal" value="1"></option>
                         <option t="priority.high" value="2"></option>
@@ -25,17 +25,17 @@
             </div>
 
             <div class="section">
-                <plus-switch text="all-day" name="activate_event_all_the_day" onclick="activate_event_all_the_day"></plus-switch>
+                <plus-switch text="all-day" id="activate_event_all_the_day_edit" name="activate_event_all_the_day_edit" onclick="activate_event_all_the_day_edit"></plus-switch>
                 <label t="starts" style="margin-bottom: -24px; display: block;"></label>
                 <div class="row section">
-                    <plus-date label="starts" name="start_date" id="start_date"></plus-date>
-                    <plus-time label="min-start" name="start_time" id="start_time"></plus-time>
+                    <plus-date label="starts" name="start_date_edit" id="start_date_edit"></plus-date>
+                    <plus-time label="min-start" name="start_time_edit" id="start_time_edit"></plus-time>
                 </div>
 
                 <label t="ends" style="margin-bottom: -24px; display: block;"></label>
                 <div class="row section">
-                    <plus-date label="ends" name="end_date" id="end_date"></plus-date>
-                    <plus-time label="min-end" name="end_time" id="end_time"></plus-time>
+                    <plus-date label="ends" name="end_date_edit" id="end_date_edit"></plus-date>
+                    <plus-time label="min-end" name="end_time_edit" id="end_time_edit"></plus-time>
                 </div>
 
             </div>
@@ -63,7 +63,7 @@
 
             <div class="section">
                 <label for="description" t="label-description">Description</label>
-                <textarea name="description" id="description" rows="4"
+                <textarea name="description" id="edit_description" rows="4"
                     t-placeholder="placeholder-description"></textarea>
             </div>
 
@@ -73,16 +73,16 @@
 
         <plus-tab text="More options">
             <div class="section">
-                <input-field label="label-input-address" name="location"
+                <input-field label="label-input-address" name="location" id="edit_location"
                     placeholder="placeholder-input-address"></input-field>
             </div>
 
             <div class="section">
-                <input-field label="label-link" type="text" name="link" placeholder="www/..."></input-field>
+                <input-field label="label-link" type="text" name="link" id="edit_link" placeholder="www/..."></input-field>
             </div>
 
 
-            <plus-switch text="repeat_this_event" name="repeat_this_event" id="repeat_this_event"
+            <plus-switch text="repeat_this_event" name="repeat_this_event" id="repeat_this_event_edit"
                 onclick="hidden_input_repet"></plus-switch>
 
             <div class="section" id="input_repet" style="display: none;">
@@ -123,12 +123,51 @@
 
 
 <script>
+    function activate_event_all_the_day_edit(status) {
+        //her also update the information of the minutes for get the time 
+        window.change_plus_time('start_time_edit', '00:00');
+        window.change_plus_time('end_time_edit', '23:59');
+    }
+
+
+
   window.show_character_appoint = function(id) {
     const appoints=window.get_the_list_of_appointments();
     const appoint=appoints.find(app=>app.id===id);
+    
     if(appoint){
-      console.log("Mostrar detalles de la cita:", appoint);
-      open_my_pop('pop-edit-event');
+        const dataAppoints=appoint.appoints[0];
+        console.log(JSON.stringify(dataAppoints, null, 2));
+        
+        //update the information of the appoint 
+        document.getElementById('title_event').value=dataAppoints.title || '';
+        window.set_value_plus_select('priority_edit', dataAppoints.priority || '0');
+
+        //here we will to update the format date in the form
+        const date_start=dataAppoints.date_start || '';
+        const date_finish=dataAppoints.date_finish || '';
+        window.set_status_plus_switch('activate_event_all_the_day_edit',dataAppoints.activate_event_all_the_day || false);
+        window.update_input_date_and_time('start_date_edit','start_time_edit',date_start)
+        window.update_input_date_and_time('end_date_edit','end_time_edit',date_finish)
+
+        //her update the information of contact of the appointment
+        document.getElementById('edit_description').value=appoint.description || '';
+        document.getElementById('edit_location').value=appoint.location || '';
+        document.getElementById('edit_link').value=appoint.link || '';
+        document.getElementById('invitados').value=appoint.emails_guests || '';
+
+
+        /*
+        document.getElementById('time_repeat').value=appoint.time_repeat || '';
+        document.getElementById('time_end_repeat').value=appoint.time_end_repeat || '';
+        */
+
+
+        
+        open_my_pop('pop-edit-event');
     }
   };
+
+
+
 </script>

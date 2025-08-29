@@ -922,9 +922,15 @@ class PlusModule extends HTMLElement {
 class PlusSelect extends HTMLElement {
   constructor() {
     super();
+    this._hiddenInput = null;
+    this._selectText = null;
+    this._selectElement = null;
   }
 
   async connectedCallback() {
+    const originalSelect = this.cloneNode(true); 
+    this._selectElement = originalSelect;
+    
     //get the information that the programmer added to the select
     const textLabel =  this.getAttribute('t')|| this.getAttribute('label') || '';
     const textLabelTranslate = window.translate_text(textLabel); //translate the text of the label
@@ -965,6 +971,8 @@ class PlusSelect extends HTMLElement {
       <span class="plus-select-selected-text" t='${textLabel}'>${textLabelTranslate}</span>
       <i class="fi fi-rr-angle-small-right plus-select-icon"></i>
     `;
+    this._selectText = select.querySelector('.plus-select-selected-text'); //save the span of the text that was selected
+
 
     //Create options popup
     const popup = document.createElement('div');
@@ -1042,7 +1050,8 @@ class PlusSelect extends HTMLElement {
       popup.appendChild(div);
     });
     //----
-
+    slotOptions.forEach(opt => opt.remove()); //clear the DOOM of the after options
+    
     //Insert search before options
     popup.insertBefore(searchWrapper, popup.firstChild);
 
@@ -1052,6 +1061,7 @@ class PlusSelect extends HTMLElement {
     hiddenInput.name = name;
     hiddenInput.id = this.getAttribute('id') || generate_unique_dom_id();
     if (isRequired) hiddenInput.required = true;
+    this._hiddenInput = hiddenInput;
 
     //Click event on select visible. This is when the user do clic in the select.
     select.addEventListener('click', async () => {
@@ -1062,6 +1072,7 @@ class PlusSelect extends HTMLElement {
         await update_option_for_the_server('');
       }
     });
+    this._selectText = select.querySelector('.plus-select-selected-text'); 
 
     // Event clic in options
     options.forEach(opt => {
@@ -1074,11 +1085,7 @@ class PlusSelect extends HTMLElement {
       });
     });
 
-    if (thisSlectSendDataToTheServer) {
-      //if the proggramer need that this can be update with data of the server, we will get the information of the seacrk 
-      //await update_option_for_the_server('');
-    }
-
+    
     // Filter
     let debounceTimer;
     searchInput.addEventListener('input', async e => {
@@ -1234,9 +1241,57 @@ class PlusSelect extends HTMLElement {
     wrapper.appendChild(popup);
     wrapper.appendChild(hiddenInput);
 
-    this.replaceWith(wrapper);
+    //this.replaceWith(wrapper);
+    this.appendChild(wrapper);
+  }
+
+  setValue(value, text = null) {
+    if (!this._selectElement) return;
+
+    //her we will see if exist the information of the select
+    const option = Array.from(this._selectElement.querySelectorAll('option'))
+                        .find(opt => opt.getAttribute('value') === value+'');
+
+    //her we will verifiy if exist this option in the select
+    if (option) {
+      //if the option exist in the select, we will get his information and set it in the hidden input and the select text
+      if (this._hiddenInput) {
+        this._hiddenInput.value = option.getAttribute('value');
+      }
+
+      if (this._selectText) {
+        const text=option.getAttribute('t') || option.getAttribute('data-text') || option.textContent;
+        this._selectText.textContent = window.translate_text(text);
+      }
+    }
+  }
+
+  //this return the value of the hidden input
+  getValue() {
+    return this._hiddenInput ? this._hiddenInput.value : null;
   }
 }
+
+function set_value_plus_select(id, newValue, newText = null) {
+  const mySelect = document.getElementById(id);
+  if (!mySelect) return;
+  console.log(mySelect);
+  if (typeof mySelect.setValue === 'function') {
+    mySelect.setValue(newValue, newText);
+  }
+}
+
+function get_value_plus_select(id) {
+  const mySelect = document.getElementById(id);
+  if (!mySelect) return null;
+
+  if (typeof mySelect.getValue === 'function') {
+    return mySelect.getValue();
+  }
+  return null;
+}
+
+
 
 async function plus_delete_with_help_button(id, link) {
   const titleDelete = window.t('info.confirm_delete');
@@ -1343,9 +1398,13 @@ class PlusSwitch extends HTMLElement {
 
     // Replace the original label
     if (this.hasAttribute('id')) {
-      this.removeAttribute('id');
+      //this.removeAttribute('id');
     }
-    this.replaceWith(container);
+    
+    checkbox.id = (this.getAttribute('id') || generate_unique_dom_id()) + "_checkbox";
+
+    //this.replaceWith(container);
+    this.appendChild(container);
 
     //her we will add a event listener
     const eventOnclick=this.getAttribute('onclick');
@@ -1359,6 +1418,15 @@ class PlusSwitch extends HTMLElement {
     });
   }
 
+  setChecked(value) {
+    if (this._checkbox) {
+      this._checkbox.checked = value;
+    }
+  }
+
+  getChecked() {
+    return this._checkbox ? this._checkbox.checked : false;
+  }
 }
 
 //her we will get the information of the status of the switch
@@ -1373,6 +1441,15 @@ function get_status_plus_switch(id) {
 
   const input = shadow.getElementById(id);
   return input.checked ? input.checked : false;
+}
+
+function set_status_plus_switch(id,newValue) {
+  const mySwitch = document.getElementById(id);
+  if (!mySwitch) return;
+
+  if (typeof mySwitch.setChecked === 'function') {
+    mySwitch.setChecked(newValue);
+  }
 }
 
 
@@ -2599,8 +2676,6 @@ function change_plus_date(id, newDate){
   }
 }
 
-
-
 class PlusTime extends HTMLElement {
   constructor() {
     super();
@@ -2848,7 +2923,36 @@ function change_plus_time(id, newTime) {
   }
 }
 
+function update_input_date_and_time(id_date,id_time,data_date){
+  //first we will see if exist the data that we need convert
+  if(data_date){
+      //convert the object to type Date only if the format initial not is YYYY-MM-DD
+      let dateObj;
+      if (data_date instanceof Date) {
+          //when the data_date is Date, not convert
+          dateObj = data_date;
+      } else {
+          //while that when data_date is string or other type, we will to convert this data in a type date
+          dateObj = new Date(data_date);
+      }
 
+
+      // Get only the date in format YYYY-MM-DD
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      const date = new Date(year, dateObj.getMonth(), day);
+
+      // Get only the time in format HH:MM:SS
+      const hours = String(dateObj.getHours()).padStart(2, '0');
+      const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+      const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+      const time = `${hours}:${minutes}:${seconds}`;
+
+      window.change_plus_date(id_date,date);
+      window.change_plus_time(id_time,time);
+  }
+}
 
 function get_value_of_label_true_or_false(value) {
   return value === true || value === 'true' || value === '1' || value === 1;
