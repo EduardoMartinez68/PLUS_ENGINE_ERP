@@ -236,15 +236,16 @@ apps-grid
             <div class="app-name plus-app-app-name">App Store</div>
         </div>
 
-        <form method="post" action="{% url 'logout' %}" style="margin-top: -10px;" >
+        <form method="post" action="{% url 'logout' %}" style="margin-top: -10px;" class="form-app-exit">
           {% csrf_token %}
-          <button class="btn plus-app-container" type="submit" style="background-color: transparent;" data-id="app-plus-exit">
+          <button class="btn " type="submit" style="background-color: transparent;" data-id="app-plus-exit">
             <div class="app-box">
               <img src="{% static 'img/icons/exit1.webp' %}" alt="" loading="lazy">
             </div>
             <p class="app-name">Exit</p>
           </button>
         </form>
+        
     </div>
 </div>
 

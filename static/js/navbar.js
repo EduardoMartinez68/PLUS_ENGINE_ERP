@@ -162,13 +162,20 @@ function loadAppOrder() {
   const grid = document.querySelector('.apps-grid');
   const itemsMap = {};
 
+  //Map all elements with data-id
   document.querySelectorAll('.plus-app-container[data-id]').forEach(item => {
     itemsMap[item.dataset.id] = item;
   });
-  console.log(itemsMap)
+
+  //First we add all the apps according to the saved order
   savedOrder.forEach(id => {
-    if (itemsMap[id]) {
+    // Ignoramos el botón de salida aquí
+    if (id !== 'app-plus-exit' && itemsMap[id]) {
       grid.appendChild(itemsMap[id]);
     }
   });
+
+  //Finally, always add the exit button at the end.
+  const exitForm = document.querySelector('.form-app-exit');
+  if (exitForm) grid.appendChild(exitForm);
 }
