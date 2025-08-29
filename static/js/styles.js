@@ -925,6 +925,7 @@ class PlusSelect extends HTMLElement {
     this._hiddenInput = null;
     this._selectText = null;
     this._selectElement = null;
+    this._thisSlectSendDataToTheServer=false;
   }
 
   async connectedCallback() {
@@ -1013,6 +1014,7 @@ class PlusSelect extends HTMLElement {
 
     //firsrt we will see if this select, can update 
     const thisSlectSendDataToTheServer = this.hasAttribute('link');
+    this._thisSlectSendDataToTheServer=thisSlectSendDataToTheServer;
 
     //also we will see if this data can be edit or delete 
     const delete_data = this.hasAttribute('delete_data');
@@ -1263,6 +1265,12 @@ class PlusSelect extends HTMLElement {
         const text=option.getAttribute('t') || option.getAttribute('data-text') || option.textContent;
         this._selectText.textContent = window.translate_text(text);
       }
+    }else{
+      //if not exist in the select of the options is because is a data of a tabla of search 
+      if(this._thisSlectSendDataToTheServer){
+        this._hiddenInput.value = value;
+        this._selectText.textContent = text;
+      }
     }
   }
 
@@ -1275,7 +1283,7 @@ class PlusSelect extends HTMLElement {
 function set_value_plus_select(id, newValue, newText = null) {
   const mySelect = document.getElementById(id);
   if (!mySelect) return;
-  console.log(mySelect);
+  
   if (typeof mySelect.setValue === 'function') {
     mySelect.setValue(newValue, newText);
   }

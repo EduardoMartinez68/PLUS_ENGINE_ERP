@@ -290,6 +290,7 @@ def get_events_by_date_range(request):
                 date_finish__gte=start_date
             ).select_related('id_type_appoint').order_by('date_start')
     
+    
             #her we will to serialize the date 
             events_data = []
             for e in events:
@@ -304,7 +305,14 @@ def get_events_by_date_range(request):
                     'time_alert': e.time_alert,
                     'priority': e.priority,
                     'activate_event_all_the_day': e.activate_event_all_the_day,
-                    
+                    'emails_guests': e.emails_guests,
+                    'location': e.location,
+                    'link': e.link,
+                    'repeat_this_event': e.repeat_this_event,
+                    'time_repeat': e.time_repeat,
+                    'finish_repeat_date': e.finish_repeat_date.isoformat() if e.finish_repeat_date else None,
+                    'send_notification': e.send_notification,
+                    'i_am_free': e.i_am_free,
                     'type_appoint': {
                         'id': e.id_type_appoint.id if e.id_type_appoint else None,
                         'name': e.id_type_appoint.name if e.id_type_appoint else None,
@@ -312,7 +320,6 @@ def get_events_by_date_range(request):
                         'color': e.id_type_appoint.color if e.id_type_appoint else None,
                     }
                 })
-    
             #this is for the frontend
             return JsonResponse({'success': True, 'data': events_data}, status=200)
     else:
@@ -358,6 +365,7 @@ def get_events_by_date_range(request):
                 date_finish__gte=start_date
             ).select_related('id_type_appoint').order_by('date_start')
     
+    
             #her we will to serialize the date 
             events_data = []
             for e in events:
@@ -372,7 +380,14 @@ def get_events_by_date_range(request):
                     'time_alert': e.time_alert,
                     'priority': e.priority,
                     'activate_event_all_the_day': e.activate_event_all_the_day,
-                    
+                    'emails_guests': e.emails_guests,
+                    'location': e.location,
+                    'link': e.link,
+                    'repeat_this_event': e.repeat_this_event,
+                    'time_repeat': e.time_repeat,
+                    'finish_repeat_date': e.finish_repeat_date.isoformat() if e.finish_repeat_date else None,
+                    'send_notification': e.send_notification,
+                    'i_am_free': e.i_am_free,
                     'type_appoint': {
                         'id': e.id_type_appoint.id if e.id_type_appoint else None,
                         'name': e.id_type_appoint.name if e.id_type_appoint else None,
@@ -380,7 +395,6 @@ def get_events_by_date_range(request):
                         'color': e.id_type_appoint.color if e.id_type_appoint else None,
                     }
                 })
-    
             #this is for the frontend
             return JsonResponse({'success': True, 'data': events_data}, status=200)
 

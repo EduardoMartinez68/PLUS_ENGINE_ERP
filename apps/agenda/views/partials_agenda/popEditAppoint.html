@@ -17,7 +17,7 @@
                         <option t="priority.high" value="2"></option>
                     </plus-select>
 
-                    <plus-select label="search-type-event" name="type_event" required
+                    <plus-select label="search-type-event" name="type_event" required id="type_appoint_edit"
                         link="agenda/get_the_first_type_events/" add="open_pop_new_type_event" edit_data="edit_data"
                         delete_data="agenda/delete_type_event/">
                     </plus-select>
@@ -41,7 +41,7 @@
             </div>
 
             <div class="section">
-                <plus-select label="time-of-alert" name="alert_time" required>
+                <plus-select label="time-of-alert" name="alert_time" required id="alert_time_edit">
                     <option selected t="alert.none" value="0"></option>
                     <option t="alert.5min" value="5"></option>
                     <option t="alert.10min" value="10"></option>
@@ -87,7 +87,7 @@
 
             <div class="section" id="input_repet" style="display: none;">
                 <div class="row m-1">
-                    <plus-select label="repeat" name="time_repeat" requerid>
+                    <plus-select label="repeat" name="time_repeat" requerid id="time_repeat_edit">
                         <option selected t="option.never" value="0"></option>
                         <option t="option.every_day" value="1"></option>
                         <option t="option.every_week" value="7"></option>
@@ -97,7 +97,7 @@
                     </plus-select>
 
 
-                    <plus-select label="endRepeat" name="time_end_repeat" requerid>
+                    <plus-select label="endRepeat" name="time_end_repeat" requerid id="time_end_repeat_edit">
                         <option selected t="option.never" value="0">Never</option>
                         <option t="option.on_day" value="1">On Day</option>
                         <option t="option.on_week" value="7">A week</option>
@@ -142,6 +142,7 @@
         //update the information of the appoint 
         document.getElementById('title_event').value=dataAppoints.title || '';
         window.set_value_plus_select('priority_edit', dataAppoints.priority || '0');
+        window.set_value_plus_select('type_appoint_edit', dataAppoints.type_appoint.id || '', dataAppoints.type_appoint.name || '');
 
         //here we will to update the format date in the form
         const date_start=dataAppoints.date_start || '';
@@ -149,6 +150,7 @@
         window.set_status_plus_switch('activate_event_all_the_day_edit',dataAppoints.activate_event_all_the_day || false);
         window.update_input_date_and_time('start_date_edit','start_time_edit',date_start)
         window.update_input_date_and_time('end_date_edit','end_time_edit',date_finish)
+        window.set_value_plus_select('alert_time_edit', dataAppoints.time_alert || '0');
 
         //her update the information of contact of the appointment
         document.getElementById('edit_description').value=appoint.description || '';
@@ -156,9 +158,11 @@
         document.getElementById('edit_link').value=appoint.link || '';
         document.getElementById('invitados').value=appoint.emails_guests || '';
 
+        window.set_status_plus_switch('repeat_this_event_edit',dataAppoints.repeat_this_event || false);
 
+        window.set_value_plus_select('time_repeat_edit', dataAppoints.time_repeat || '0');
+        window.set_value_plus_select('time_end_repeat_edit', dataAppoints.finish_repeat_date || '0');
         /*
-        document.getElementById('time_repeat').value=appoint.time_repeat || '';
         document.getElementById('time_end_repeat').value=appoint.time_end_repeat || '';
         */
 
