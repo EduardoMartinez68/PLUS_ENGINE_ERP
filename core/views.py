@@ -14,7 +14,11 @@ KEY_TINYMCE = os.getenv('KEY_TINYMCE')
 @login_required(login_url='login')
 def home(request):
     apps = APPS_CACHE
-    return render(request, 'core/home.html',{'apps': apps,'KEY_TINYMCE':KEY_TINYMCE})
+    user = request.user
+    company = user.id_company  # Company instance
+    branch = user.id_branch  # Branch instance
+
+    return render(request, 'core/home.html',{'apps': apps,'KEY_TINYMCE':KEY_TINYMCE,'user': user,'company': company,'branch': branch})
 
 from django.shortcuts import render, redirect
 from core.forms import SignUpForm
@@ -35,7 +39,7 @@ def register(request):
                 company = Company.objects.create(company_name=f'Company of {user.email}')
 
                 # 2️⃣ create a branch
-                branch = Branch.objects.create(id_company=company)
+                branch = Branch.objects.create(id_company=company, branch_name=f'Branch of {user.email}')
 
                 # 3️⃣ save the ids in user
                 user.id_company = company

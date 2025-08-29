@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantalla de Apps</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            background: #f5f5f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Botón abrir */
+        .open-btn {
+            padding: 14px 24px;
+            border: none;
+            background: linear-gradient(135deg, #007aff, #5ac8fa);
+            color: #fff;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.4);
+            transition: 0.3s;
+        }
+
+        .open-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Modal fullscreen */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #DCDAE8, #D9D7E9, #E3DEEC, #E0E0E8);
+            background-size: 400% 400%;
+            flex-direction: column;
+            z-index: 999;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 25px;
+        }
+
+        /* Botón cerrar mejorado */
+        .close-btn {
+            font-size: 18px;
+            color: rgb(27, 27, 27);
+            background: white;
+            border: none;
+            border-radius: 11px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+
+        /* Título de la empresa y user */
+        .header-info {
+            text-align: left;
+            color: #333;
+        }
+
+        .header-info .company {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .header-info .user {
+            font-size: 14px;
+            color: #555;
+            margin: 2px 0 0 0;
+        }
+
+        /* Barra búsqueda */
+        .search-bar {
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto 25px auto;
+            padding: 12px 18px;
+            font-size: 15px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px); /* efecto cristal */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            transition: all 0.25s ease;
+            color: #333;
+        }
+
+        .search-bar:focus {
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Grid apps */
+        .app-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            row-gap: 0px;  /* más pegadas las filas */
+            column-gap: 16px; /* espacio normal entre columnas */
+            padding: 0 28%;
+            overflow-y: auto;
+            justify-items: center;
+        }
+
+        @media (max-width: 1024px) {
+            .app-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .app-grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+
+            .app {
+                padding: 1rem;
+            }
+        }
+
+        .app {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .app img {
+            width: 76px;
+            height: 76px;
+            border-radius: 11px;
+            margin-bottom: 8px;
+            backdrop-filter: blur(6px);
+            padding: 4px;
+            transition: transform 0.2s;
+        }
+
+        .app img:hover {
+            transform: scale(1.1);
+        }
+
+        .app-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #222;
+            line-height: 0;
+        }
+
+        .app-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .app-grid::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        .app-grid::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.35);
+        }
+
+        .app-grid::-webkit-scrollbar-track {
+            background: transparent;
+        }
+    </style>
+</head>
+
+<body>
+
+    <button class="open-btn" onclick="openModal()">Ver mis Apps</button>
+
+    <div class="modal" id="appModal">
+        <div class="modal-header">
+            <div class="header-info">
+                <p class="company">Name Company</p>
+                <p class="user">User</p>
+            </div>
+            <button class="close-btn" onclick="closeModal()">×</button>
+        </div>
+
+        <input type="text" id="searchInput" class="search-bar" placeholder="Buscar apps..." onkeyup="filterApps()">
+
+        <div class="app-grid" id="appGrid">
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Calendario</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Correo</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Notas</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Fotos</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Mapas</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Ajustes</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Música</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Clima</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Clima</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Clima</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Fotos</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Mapas</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Ajustes</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Música</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Clima</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Clima</div>
+            </div>
+            <div class="app"><img src="https://i.pinimg.com/236x/5d/03/07/5d03078b363c8fc5c39319c4b9c049c9.jpg">
+                <div class="app-name">Clima</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById("appModal").style.display = "flex";
+        }
+        function closeModal() {
+            document.getElementById("appModal").style.display = "none";
+        }
+        function filterApps() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let apps = document.getElementById("appGrid").getElementsByClassName("app");
+            for (let i = 0; i < apps.length; i++) {
+                let name = apps[i].getElementsByClassName("app-name")[0].innerText.toLowerCase();
+                apps[i].style.display = name.includes(input) ? "block" : "none";
+            }
+        }
+    </script>
+
+</body>
+
+</html>

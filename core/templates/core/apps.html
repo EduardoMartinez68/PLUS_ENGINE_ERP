@@ -1,3 +1,4 @@
+<!---
 <div id="appMenu" class="app-menu-overlay hidden">
   <div class="menu-header">
     <input type="text" id="searchInput" oninput="filterApps()" placeholder="Buscar una app..." t="menu.search">
@@ -34,3 +35,234 @@
     </form>
   </div>
 </div>
+--->
+
+
+
+
+
+<style>
+  /* Modal fullscreen */
+  .plus-app-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #DCDAE8, #D9D7E9, #E3DEEC, #E0E0E8);
+    background-size: 400% 400%;
+    flex-direction: column;
+    z-index: 999999;
+  }
+
+  @keyframes plus-app-gradientBG {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .plus-app-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 25px;
+  }
+
+  /* Botón cerrar mejorado */
+  .plus-app-close-btn {
+    font-size: 18px;
+    color: rgb(27, 27, 27);
+    background: white;
+    border: none;
+    border-radius: 11px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  /* Título de la empresa y user */
+  .plus-app-header-info {
+    text-align: left;
+    color: #333;
+  }
+
+  .plus-app-header-info .plus-app-company {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .plus-app-header-info .plus-app-user {
+    font-size: 14px;
+    color: #555;
+    margin: 2px 0 0 0;
+  }
+
+  /* Barra búsqueda */
+  .plus-app-search-bar {
+    width: 90%;
+    max-width: 600px;
+    margin: 0 auto 25px auto;
+    padding: 12px 18px;
+    font-size: 15px;
+    outline: none;
+    color: #333;
+  }
+
+
+
+  /* Grid apps */
+  .plus-app-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    row-gap: 0px;
+    column-gap: 16px;
+    padding: 0 28%;
+    overflow-y: auto;
+    justify-items: center;
+  }
+
+  @media (max-width: 1024px) {
+    .plus-app-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .plus-app-grid {
+      grid-template-columns: repeat(1, 1fr);
+    }
+
+    .plus-app-app {
+      padding: 1rem;
+    }
+  }
+
+  .plus-app-app {
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .plus-app-app img {
+    width: 76px;
+    height: 76px;
+    border-radius: 11px;
+    border-radius: 19px;
+    margin-bottom: 8px;
+    backdrop-filter: blur(6px);
+    padding: 4px;
+    transition: transform 0.2s;
+  }
+
+  .plus-app-app img:hover {
+    transform: scale(1.1);
+  }
+
+  .app-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+    text-align: center;
+  }
+
+  .plus-app-app-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #222;
+    margin-top: -6px
+  }
+
+  .plus-app-grid::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .plus-app-grid::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+  }
+
+  .plus-app-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  .plus-app-grid::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+
+
+</style>
+
+
+
+<div class="plus-app-modal" id="appMenu">
+    <div class="plus-app-modal-header">
+        <div class="plus-app-header-info">
+            <p class="plus-app-company">{{ branch.branch_name }}</p>
+            <p class="plus-app-user">{{ user.username }}</p>
+        </div>
+        <button class="plus-app-close-btn" onclick="closeModalApp()">×</button>
+    </div>
+
+    <input type="text" id="searchInput" class="plus-app-search-bar" placeholder="Search an app..." onkeyup="plusFilterApps()" t="menu.search">
+
+    <div class="plus-app-grid" id="plus-appGrid">
+        {% load static %}
+        {% for app in apps %}
+          <div class="plus-app-app" data-id="{{ app.name }}" onclick="nextWeb('{{ app.path }}{{ app.path }}')">
+              <img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy">
+              <div class="app-name plus-app-app-name">{{ app.name }}</div>
+          </div>
+        {% endfor %}
+        
+        <div class="plus-app-app" data-id="app-store" onclick="nextWeb('/app-store')">
+            <img src="{% static 'img/icons/appstore.webp' %}" alt="App Store" loading="lazy">
+            <div class="app-name plus-app-app-name">App Store</div>
+        </div>
+
+        <form method="post" action="{% url 'logout' %}" style="margin-top: -10px;" >
+          {% csrf_token %}
+          <button class="btn app-container" type="submit" style="background-color: transparent;" data-id="app-plus-exit">
+            <div class="app-box">
+              <img src="{% static 'img/icons/exit1.webp' %}" alt="" loading="lazy">
+            </div>
+            <p class="app-name">Exit</p>
+          </button>
+        </form>
+    </div>
+</div>
+
+
+<script>
+  function openModalApp() {
+    document.getElementById("appMenu").style.display = "flex";
+  }
+  function closeModalApp() {
+    document.getElementById("appMenu").style.display = "none";
+  }
+  
+  function plusFilterApps() {
+
+    let input = document.getElementById("searchInput").value.toLowerCase();
+    let apps = document.getElementById("plus-appGrid").getElementsByClassName("plus-app-app");
+    for (let i = 0; i < apps.length; i++) {
+        let name = apps[i].getElementsByClassName("plus-app-app-name")[0].innerText.toLowerCase();
+        apps[i].style.display = name.includes(input) ? "block" : "none";
+    }
+  }
+
+  openModalApp()
+  window.openModalApp=openModalApp;
+  window.closeModalApp=closeModalApp;
+</script>
