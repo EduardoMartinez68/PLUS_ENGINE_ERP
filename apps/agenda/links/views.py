@@ -4,7 +4,7 @@ import json
 from django.http import JsonResponse
 from ..models import TypeAppoint, Appointment
 from django.db.models import F
-from datetime import datetime
+from datetime import datetime, timedelta
 import sys
 import os
 from ..plus_wrapper import Plus
@@ -76,7 +76,7 @@ def create_event(request):
 
         repeat_this_event = body_json.get("repeat_this_event") == "on" #True/False
         time_repeat =  body_json.get("time_repeat") or 0 #this is for that the ERP knows how often to repeat this event in days
-
+        time_end_repeat = body_json.get("time_end_repeat") or None #this is for that the ERP knows when to stop repeating this event in days
 
         send_notification = body_json.get("send_notification") == "on"  # True/False
         i_am_free = body_json.get("i_am_free") == "on"  # True/False
@@ -92,6 +92,8 @@ def create_event(request):
         event_dates = get_date_of_the_event(user, body_json)
         date_start=event_dates['start'] #date when start the event
         date_finish=event_dates['end'] #date when finish the event
+
+        date_end_repeat = date_start + timedelta(days=int(time_end_repeat))
 
         #here we will see if the date start is valid and the date finish is valid
         if not validate_date_range(date_start, date_finish):
@@ -112,7 +114,7 @@ def create_event(request):
                 link=link,
                 repeat_this_event=repeat_this_event,
                 time_repeat=int(time_repeat) if time_repeat else 0,
-                finish_repeat_date=None,
+                finish_repeat_date=date_end_repeat if date_end_repeat else None,
                 send_notification=send_notification,
                 i_am_free=i_am_free,
                 id_type_appoint_id=id_type_appoint, 
@@ -128,7 +130,6 @@ def create_event(request):
         
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
-
 
 
 def get_events_by_date_range(request):
@@ -207,6 +208,135 @@ def get_events_by_date_range(request):
         #this is for the frontend
         return JsonResponse({'success': True, 'data': events_data}, status=200)
 
+def edit_event(request):
+    def get_date_of_the_event(user, body_json: json) -> dict:
+        #data that get of the user from the frontend
+        date_startDay =  body_json.get("start_date_edit", "")
+        date_startHour =  body_json.get("start_time_edit", "")
+
+        date_finishDay =  body_json.get("end_date_edit", "")
+        date_finishHour =  body_json.get("end_time_edit", "")
+
+        #convert to datetime 
+        date_start = datetime.strptime(f"{date_startDay} {date_startHour}", "%Y-%m-%d %H:%M")
+        date_finish = datetime.strptime(f"{date_finishDay} {date_finishHour}", "%Y-%m-%d %H:%M")
+
+
+        #get the time zone of the user 
+        timezone=user.timezone
+        date_start_utc = Plus.convert_to_utc(date_start, timezone)
+        date_finish_utc = Plus.convert_to_utc(date_finish, timezone)
+
+        return {
+            'start': date_start_utc,
+            'end': date_finish_utc
+        }
+    
+    def validate_date_range(start: datetime, end: datetime) -> bool:
+        """
+        Verifies that the start date is less or equals than the end date.
+        Returns True if valid, False otherwise.
+        """
+        if start > end:
+            return False
+        return True
+
+
+
+    if request.method == 'POST':
+        try:
+            body_json = json.loads(request.body)  # convert bytes to Python
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': 'message.error.the-form-have-a-error', 'error': str(e)}, status=400)
+
+        #her we will get all the information that send the frontend
+        event_id = body_json.get('id_event')
+
+
+        #get the data of the user
+        user = request.user
+        print(body_json)
+        #--------------------get the data of the form---------------------
+        titleEvent = body_json.get("name_event", "").strip()
+        description = body_json.get("description", "")
+
+        time_alert = body_json.get("alert_time") or 0 #this is for know when to alert in minute
+        priority = body_json.get("priority") or 0 #for default the priority is equal to 0
+        activate_event_all_the_day = body_json.get("activate_event_all_the_day") == "on"
+
+
+        emails_guests = body_json.get("emails_guests", []) #this is a list of emails
+        location = body_json.get("location", "")
+        link = body_json.get("link", "")
+
+        repeat_this_event = body_json.get("repeat_this_event") == "on" #True/False
+        time_repeat =  body_json.get("time_repeat") or 0 #this is for that the ERP knows how often to repeat this event in days
+        time_end_repeat = body_json.get("time_end_repeat") or 0 #this is for that the ERP knows when to stop repeating this event in days
+
+        send_notification = body_json.get("send_notification") == "on"  # True/False
+        i_am_free = body_json.get("i_am_free") == "on"  # True/False
+        
+        id_type_appoint = body_json.get("type_event", None) #get the id of the type of event
+
+        
+        #first here we will see if the user added a name to the event
+        if not titleEvent:
+            return JsonResponse({'success': False, 'message': 'message.error.need-a-name-for-your-event'}, status=200)
+
+        #---------------------------get the information of the date of the event--------------------------
+        event_dates = get_date_of_the_event(user, body_json)
+        date_start=event_dates['start'] #date when start the event
+        date_finish=event_dates['end'] #date when finish the event
+
+        date_end_repeat = date_start + timedelta(days=int(time_end_repeat))
+
+        #here we will see if the date start is valid and the date finish is valid
+        if not validate_date_range(date_start, date_finish):
+            return JsonResponse({'success': False, 'message': 'message.error.invalid-date-range'}, status=200)
+        
+        #now we will to create a appointment
+        try:
+            appointment = Appointment.objects.get(id=event_id, user=user)
+
+            appointment.title = titleEvent
+            appointment.description = description
+            appointment.date_start = date_start
+            appointment.date_finish = date_finish
+            appointment.time_alert = int(time_alert)
+            appointment.priority = int(priority)
+            appointment.activate_event_all_the_day = activate_event_all_the_day
+            appointment.emails_guests = emails_guests
+            appointment.location = location
+            appointment.link = link
+            appointment.repeat_this_event = repeat_this_event
+            appointment.time_repeat = int(time_repeat) if time_repeat else 0
+            appointment.finish_repeat_date = date_end_repeat if date_end_repeat else None
+            appointment.send_notification = send_notification
+            appointment.i_am_free = i_am_free
+            appointment.id_type_appoint_id = id_type_appoint
+
+            appointment.save()
+
+            return JsonResponse({
+                'success': True,
+                'message': 'message.success.event-updated',
+                'event_id': appointment.id
+            }, status=200)
+
+        except Appointment.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': 'message.error.event-not-found',
+                "error": "The event was not found"
+            }, status=404)
+
+        except Exception as e:
+            print("Error updating event:", e)
+            return JsonResponse({
+                'success': False,
+                'message': 'message.error.cannot-update-event',
+                'error': str(e)
+            }, status=500)
 
 #-----------------------------TYPE EVENTS-------------------------------------
 def get_the_first_type_events(request):

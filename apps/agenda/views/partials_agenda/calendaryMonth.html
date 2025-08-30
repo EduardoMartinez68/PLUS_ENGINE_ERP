@@ -374,19 +374,28 @@
         }
 
         ////-------------------------------------------------
-        await get_the_information_of_the_calendary(); //first get the information of the calendar
         change_info_language(); //second we will translate the text of the agenda
         update_text_day( currentDate.getDate())
-        renderCalendar(currentDate); // ✅ Start with the global variable
         
+        async function update_all_the_information_of_my_calendary() {
+            listAppoints = []; //first we will clear all the list of appointments
+            await get_the_information_of_the_calendary(); //first get the information of the calendar
+            renderCalendar(currentDate); // ✅ Start with the global variable
+            
 
 
-        window.get_the_appointments_of_the_week=get_the_appointments_of_the_week;
-        window.changeMonth = changeMonth;
-        window.get_the_list_of_appointments = get_the_list_of_appointments;
-        window.get_month_current = get_month_current;
+            window.get_the_appointments_of_the_week=get_the_appointments_of_the_week;
+            window.changeMonth = changeMonth;
+            window.get_the_list_of_appointments = get_the_list_of_appointments;
+            window.get_month_current = get_month_current;
 
 
-        window.render_this_day();
+            window.render_this_day();
+        }
+
+        await update_all_the_information_of_my_calendary();
+
+
+        window.update_all_the_information_of_my_calendary=update_all_the_information_of_my_calendary;
     })();
 </script>

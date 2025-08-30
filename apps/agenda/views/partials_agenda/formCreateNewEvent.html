@@ -10,13 +10,13 @@
 
             <div class="section">
                 <div class="row m-1">
-                    <plus-select label="priority" name="priority" required>
+                    <plus-select label="priority" name="priority" required id="priority">
                         <option selected t="priority.low" value="0"></option>
                         <option t="priority.normal" value="1"></option>
                         <option t="priority.high" value="2"></option>
                     </plus-select>
 
-                    <plus-select label="search-type-event" name="type_event" required
+                    <plus-select label="search-type-event" name="type_event" required id="type_event"
                         link="agenda/get_the_first_type_events/" add="open_pop_new_type_event" edit_data="edit_data"
                         delete_data="agenda/delete_type_event/">
                     </plus-select>
@@ -40,7 +40,7 @@
             </div>
 
             <div class="section">
-                <plus-select label="time-of-alert" name="alert_time" required>
+                <plus-select label="time-of-alert" name="alert_time" required id="alert_time">
                     <option selected t="alert.none" value="0"></option>
                     <option t="alert.5min" value="5"></option>
                     <option t="alert.10min" value="10"></option>
@@ -57,7 +57,7 @@
             <div class="section">
                 <info-label label="emails-guests"
                     message="email-message-show"></info-label>
-                <plus-tags id="invitados" name="emails_guests" label="emails-guests" message="email-message-show" t-placeholder="input.add-most-email"></plus-tags>
+                <plus-tags id="invitados" name="emails_guests" label="emails-guests" message="email-message-show" t="input.add-most-email"></plus-tags>
             </div>
 
             <div class="section">
@@ -86,7 +86,7 @@
 
             <div class="section" id="input_repet" style="display: none;">
                 <div class="row m-1">
-                    <plus-select label="repeat" name="time_repeat" requerid>
+                    <plus-select label="repeat" name="time_repeat" requerid id="time_repeat">
                         <option selected t="option.never" value="0"></option>
                         <option t="option.every_day" value="1"></option>
                         <option t="option.every_week" value="7"></option>
@@ -96,7 +96,7 @@
                     </plus-select>
 
 
-                    <plus-select label="endRepeat" name="time_end_repeat" requerid>
+                    <plus-select label="endRepeat" name="time_end_repeat" requerid id="time_end_repeat">
                         <option selected t="option.never" value="0">Never</option>
                         <option t="option.on_day" value="1">On Day</option>
                         <option t="option.on_week" value="7">A week</option>
@@ -108,9 +108,9 @@
 
             </div>
 
-            <plus-switch text="send_notification" name="send_notification" checked="true"></plus-switch>
+            <plus-switch text="send_notification" name="send_notification" checked="true" id="send_notification"></plus-switch>
 
-            <plus-switch text="i_am_free" name="i_am_free" checked="true"></plus-switch>
+            <plus-switch text="i_am_free" name="i_am_free" checked="true" id="i_am_free"></plus-switch>
         </plus-tab>
     </plus-tabs>
     </form>
@@ -121,8 +121,6 @@
 
 <script>
     //her we will send the new event to the server 
-
-
     async function send_new_event_to_the_server() {
         //get the information from the form 
         const form = document.getElementById('formCreateNewEvent');
@@ -149,6 +147,7 @@
 
             //show a message of success 
             clear_form_create_a_new_event();
+            await window.update_all_the_information_of_my_calendary();
             show_alert('success', window.translate_text('message.add-new-event.success'), window.translate_text('message.add-new-event.success.description'));
         } else {
             //show a message of error 
@@ -159,13 +158,23 @@
 
 
     function clear_form_create_a_new_event() {
+        //restart all the inputs of the form
         const form = document.getElementById('formCreateNewEvent');
         form.reset();
 
-        //now here we will restart the information of select
-        const selects = form.querySelectorAll('select');
-        selects.forEach(select => {
-            select.selectedIndex = 0;
-        });
+        //reset the tags
+        document.getElementById('emails_guests').setTags([]);
+
+        //restart all the selects
+        window.set_value_plus_select('priority', '0');
+        window.set_value_plus_select('time_end_repeat', '0');
+        window.set_value_plus_select('time_repeat', '0');
+        window.set_value_plus_select('alert_time', '0');
+        window.set_value_plus_select('type_event', '0');
+
+        //restart all the switch 
+        window.set_status_plus_switch('repeat_this_event', false);
+        window.set_status_plus_switch('send_notification', true);
+        window.set_status_plus_switch('i_am_free', true);
     }
 </script>

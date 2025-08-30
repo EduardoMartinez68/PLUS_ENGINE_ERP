@@ -1,8 +1,9 @@
 <message-pop title="title-pop-edit-event" name="pop-edit-event">
 <div class="container-pop">
-    <form  id="formCreateNewEvent">
+    <form  id="formEditEvent">
     <plus-tabs>
         <plus-tab text="Description">
+            <input type="hidden" name="id_event" id="id_event"/>
             <div class="section">
                 <label t="label-input-title">Title of the event</label>
                 <input type="text" name="name_event" class="case-title-input" placeholder="Title"
@@ -83,9 +84,9 @@
 
 
             <plus-switch text="repeat_this_event" name="repeat_this_event" id="repeat_this_event_edit"
-                onclick="hidden_input_repet"></plus-switch>
+                onclick="hidden_input_repet_edit"></plus-switch>
 
-            <div class="section" id="input_repet" style="display: none;">
+            <div class="section" id="hidden_input_repet_edit" style="display: none;">
                 <div class="row m-1">
                     <plus-select label="repeat" name="time_repeat" requerid id="time_repeat_edit">
                         <option selected t="option.never" value="0"></option>
@@ -117,55 +118,137 @@
     </form>
 </div>
 
-<button class="btn btn-edit btn-success" t="btn.update">Save</button>
+<button class="btn btn-edit btn-success" t="btn.update" onclick="update_event()" type="button">Save</button>
 </message-pop>
 
 
 
 <script>
+    //this functions is for update the event when the user do click on the button save
+    async function update_event() {
+        //first we will get all the information from the form
+        const form = document.getElementById('formEditEvent');
+        const formData = new FormData(form);
+
+        //convert the formData to a json object
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+        console.log(JSON.stringify(data, null, 2));
+
+        //send the information to the server for update the event
+        const answer = await window.send_message_to_the_server('/agenda/edit_event/', data);
+
+        //if can added the new event, now we will show a message of confirmation and clear the form 
+        if (answer.success) {
+            //hide the pop and refresh the calendar 
+            hide_pop('pop-edit-event');
+
+            //refresh the calendar 
+            if (typeof refresh_calendar === 'function') {
+                refresh_calendar();
+            }
+
+            await window.update_all_the_information_of_my_calendary();
+            //show a message of success 
+            show_alert('success', window.translate_text('message.update-new-event.success'), window.translate_text('message.update-new-event.success.description'));
+        } else {
+            //show a message of error 
+            console.log(answer)
+            show_alert('error', window.translate_text("message.error_in_server"), window.translate_text(answer.message), answer.error);
+        }
+    }
+
+    //this functions is call when the user do click in the switch for activate the appoint all the day 
     function activate_event_all_the_day_edit(status) {
         //her also update the information of the minutes for get the time 
         window.change_plus_time('start_time_edit', '00:00');
         window.change_plus_time('end_time_edit', '23:59');
     }
 
+    function this_event_is_activate_all_the_day(date_start, date_finish) {
+        const start = new Date(date_start);
+        const finish = new Date(date_finish);
 
+        // mismo día (año, mes, día)
+        const sameDay = start.getFullYear() === finish.getFullYear() &&
+                        start.getMonth() === finish.getMonth() &&
+                        start.getDate() === finish.getDate();
 
-  window.show_character_appoint = function(id) {
-    const appoints=window.get_the_list_of_appointments();
-    const appoint=appoints.find(app=>app.id===id);
-    
-    if(appoint){
-        const dataAppoints=appoint.appoints[0];
-        console.log(JSON.stringify(dataAppoints, null, 2));
-        
-        //update the information of the appoint 
-        document.getElementById('title_event').value=dataAppoints.title || '';
-        window.set_value_plus_select('priority_edit', dataAppoints.priority || '0');
-        window.set_value_plus_select('type_appoint_edit', dataAppoints.type_appoint.id || '', dataAppoints.type_appoint.name || '');
+        // inicio a las 00:00
+        const startsAtMidnight = start.getHours() === 0 && start.getMinutes() === 0 && start.getSeconds() === 0;
 
-        //here we will to update the format date in the form
-        const date_start=dataAppoints.date_start || '';
-        const date_finish=dataAppoints.date_finish || '';
-        window.set_status_plus_switch('activate_event_all_the_day_edit',dataAppoints.activate_event_all_the_day || false);
-        window.update_input_date_and_time('start_date_edit','start_time_edit',date_start)
-        window.update_input_date_and_time('end_date_edit','end_time_edit',date_finish)
-        window.set_value_plus_select('alert_time_edit', dataAppoints.time_alert || '0');
+        // fin a las 23:59 (o 23:59:59)
+        const endsAtEndOfDay = 
+            (finish.getHours() === 23 && finish.getMinutes() === 59) ||
+            (finish.getHours() === 23 && finish.getMinutes() === 59 && finish.getSeconds() === 59);
 
-        //her update the information of contact of the appointment
-        document.getElementById('edit_description').value=appoint.description || '';
-        document.getElementById('edit_location').value=appoint.location || '';
-        document.getElementById('edit_link').value=appoint.link || '';
-        document.getElementById('invitados').value=appoint.emails_guests || '';
-
-        window.set_status_plus_switch('repeat_this_event_edit',dataAppoints.repeat_this_event || false);
-
-        window.set_value_plus_select('time_repeat_edit', dataAppoints.time_repeat || '0');
-        window.set_value_plus_select('time_end_repeat_edit', dataAppoints.finish_repeat_date || '0');
-
-        document.getElementById('emails_guests_edit').setTags(appoint.emails_guests || '');
-        open_my_pop('pop-edit-event');
+        return sameDay && startsAtMidnight && endsAtEndOfDay;
     }
+
+    function hidden_input_repet_edit(status) {
+        const inputRepet = document.getElementById('hidden_input_repet_edit');
+        if (status) {
+        inputRepet.style.display = 'block';
+        } else {
+        inputRepet.style.display = 'none';
+        }
+    }
+
+    function day_for_finish_the_event(date1,date2){
+        const dateStart = new Date(date1);
+        const finishRepeatDate = new Date(date2);
+
+        // get the difference in milliseconds
+        const diffMs = finishRepeatDate - dateStart;
+
+        //convert to days
+        const diffDays = diffMs / (1000 * 60 * 60 * 24);
+        return diffDays;
+    }
+
+    //this functions is for show the character of the appointment when the user do click on a event
+    window.show_character_appoint = function(id) {
+        const appoints=window.get_the_list_of_appointments();
+        const appoint=appoints.find(app=>app.id===id);
+        
+        if(appoint){
+            const dataAppoints=appoint.appoints[0];
+            console.log(JSON.stringify(dataAppoints, null, 2));
+            
+            //update the information of the appoint 
+            document.getElementById('id_event').value=dataAppoints.id || '';
+            document.getElementById('title_event').value=dataAppoints.title || '';
+            window.set_value_plus_select('priority_edit', dataAppoints.priority || '0');
+            window.set_value_plus_select('type_appoint_edit', dataAppoints.type_appoint.id || '', dataAppoints.type_appoint.name || '');
+
+            //here we will to update the format date in the form
+            const date_start=dataAppoints.date_start || '';
+            const date_finish=dataAppoints.date_finish || '';
+
+            const statusActivateAllTheDay=this_event_is_activate_all_the_day(date_start, date_finish) || false;
+            window.set_status_plus_switch('activate_event_all_the_day_edit',statusActivateAllTheDay);
+            activate_event_all_the_day_edit(statusActivateAllTheDay);
+
+            window.update_input_date_and_time('start_date_edit','start_time_edit',date_start)
+            window.update_input_date_and_time('end_date_edit','end_time_edit',date_finish)
+            window.set_value_plus_select('alert_time_edit', dataAppoints.time_alert || '0');
+
+            //her update the information of contact of the appointment
+            document.getElementById('edit_description').value=dataAppoints.description || '';
+            document.getElementById('edit_location').value=dataAppoints.location || '';
+            document.getElementById('edit_link').value=dataAppoints.link || '';
+
+            window.set_status_plus_switch('repeat_this_event_edit',dataAppoints.repeat_this_event || false);
+            hidden_input_repet_edit(dataAppoints.repeat_this_event || false);
+
+            window.set_value_plus_select('time_repeat_edit', dataAppoints.time_repeat || '0');
+            window.set_value_plus_select('time_end_repeat_edit', day_for_finish_the_event(dataAppoints.date_start, dataAppoints.finish_repeat_date));
+
+            document.getElementById('emails_guests_edit').setTags(JSON.parse(dataAppoints.emails_guests) || '');
+            open_my_pop('pop-edit-event');
+        }
   };
 
 

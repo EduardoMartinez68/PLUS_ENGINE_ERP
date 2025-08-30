@@ -103,7 +103,9 @@
     "message.error.invalid-date-range": "El rango de fechas no es válido. La fecha de inicio debe ser anterior o igual a la fecha de finalización.",
     "message.error.start-end-date-required": "Se requieren las fechas de inicio y fin",
     "message.error.invalid-date-format": "El formato de fecha no es válido. Usa AAAA-MM-DD HH:MM",
-    
+    "message.error.cannot-update-event": "No se pudo actualizar el evento",
+    "message.error.event-not-found": "Evento no encontrado",
+
     "message.success.add-new-event":"Se ha añadido tu nuevo evento correctamente",
     "message.success.not-can-add-new-event":"No se ha podido añadir tu nuevo evento. Inténtalo de nuevo más tarde.",
 
@@ -114,5 +116,7 @@
     "message.add-new-type-event.error.description": "Ocurrió un error al añadir el nuevo tipo de evento en el servidor. Inténtalo de nuevo más tarde.",
 
     "message.add-new-event.success": "Se ha añadido un nuevo evento",
-    "message.add-new-event.success.description": "Tu nuevo evento se ha añadido correctamente a tu agenda."
+    "message.add-new-event.success.description": "Tu nuevo evento se ha añadido correctamente a tu agenda.",
+    "message.update-new-event.success": "Se ha actualizado el evento correctamente",
+    "message.update-new-event.success.description": "Tu evento se ha actualizado correctamente en tu agenda."
 }
