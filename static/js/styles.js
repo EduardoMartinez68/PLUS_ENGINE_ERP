@@ -3221,8 +3221,7 @@ class InputColor extends HTMLElement {
   }
 }
 
-
-class PlusTag extends HTMLElement {
+class PlusTag2 extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
@@ -3344,6 +3343,145 @@ class PlusTag extends HTMLElement {
   }
 }
 
+class PlusTag extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+
+    // label
+    const label = this.getAttribute('label') || 'input.tags';  
+    this.labelInfo = document.createElement('info-label');
+    this.labelInfo.setAttribute('label', label);
+    this.labelInfo.setAttribute('message', 'tag-message-show');
+    this.appendChild(this.labelInfo);
+
+    // atributos
+    const name = this.getAttribute('name') || 'plus-tags';
+    const t = this.getAttribute('t') || this.getAttribute('t-placeholder') || this.getAttribute('placeholder') || 'input.tags';
+    const textPlaceholder = window.translate_text(t);
+
+    // estilos
+    const style = document.createElement('style');
+    style.textContent = `
+      .container {
+        padding: 8px;
+        flex-wrap: wrap;
+        background: transparent;
+        display: flex;
+        gap: 8px;
+        padding: 4px 0;
+        border-bottom: 2px solid #D0D5DD;
+      }
+
+      .tag {
+          background-color: #D6E9F8; 
+          color: #085DA9;           
+          padding: 6px 12px;
+          border-radius: 999px;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          transition: background-color 0.2s ease;
+      }
+
+      .tag:hover {
+          background-color: #C5DFF1;
+      }
+          
+      .tag button {
+        background: none;
+        border: none;
+        color: inherit;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      input[type="text"] {
+        border: none;
+        outline: none;
+        flex: 1;
+        min-width: 120px;
+        font-size: 14px;
+        background: transparent;
+      }
+    `;
+
+    // estructura shadow
+    this.shadowRoot.innerHTML = `
+      <div class="container">
+        <input type="text" placeholder="${textPlaceholder}" t-placeholder="${t}">
+      </div>
+    `;
+    this.shadowRoot.appendChild(style);
+
+    // input hidden fuera del shadow
+    this.hiddenInput = document.createElement('input');
+    this.hiddenInput.type = 'hidden';
+    this.hiddenInput.name = name;
+    this.appendChild(this.hiddenInput);
+
+    // lista de tags
+    this.emails = [];
+  }
+
+  connectedCallback() {
+    this.input = this.shadowRoot.querySelector('input[type="text"]');
+    this.container = this.shadowRoot.querySelector('.container');
+
+    this.input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const email = this.input.value.trim();
+        if (email && !this.emails.includes(email)) {
+          this.addTag(email);
+        }
+        this.input.value = '';
+      }
+    });
+  }
+
+  /** RENDER DE TAGS */
+  renderTags() {
+    const existingTags = this.container.querySelectorAll('.tag');
+    existingTags.forEach(tag => tag.remove());
+
+    this.emails.forEach(email => {
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.innerHTML = `${email} <button type="button">&times;</button>`;
+      tag.querySelector('button').onclick = () => {
+        this.removeTag(email);
+      };
+      this.container.insertBefore(tag, this.input);
+    });
+
+    this.hiddenInput.value = JSON.stringify(this.emails);
+  }
+
+  /** MÉTODOS PÚBLICOS */
+  addTag(value) {
+    if (value && !this.emails.includes(value)) {
+      this.emails.push(value);
+      this.renderTags();
+    }
+  }
+
+  removeTag(value) {
+    this.emails = this.emails.filter(v => v !== value);
+    this.renderTags();
+  }
+
+  setTags(values) {
+    if (Array.isArray(values)) {
+      this.emails = values;
+      this.renderTags();
+    }
+  }
+
+  getTags() {
+    return this.emails;
+  }
+}
 
 
 

@@ -58,7 +58,7 @@
             <div class="section">
                 <info-label label="emails-guests"
                     message="email-message-show"></info-label>
-                <plus-tags id="invitados" name="emails_guests" label="emails-guests" message="email-message-show" t-placeholder="input.add-most-email"></plus-tags>
+                <plus-tags id="emails_guests_edit" name="emails_guests" label="emails-guests" message="email-message-show" t-placeholder="input.add-most-email"></plus-tags>
             </div>
 
             <div class="section">
@@ -162,12 +162,13 @@
 
         window.set_value_plus_select('time_repeat_edit', dataAppoints.time_repeat || '0');
         window.set_value_plus_select('time_end_repeat_edit', dataAppoints.finish_repeat_date || '0');
+
+        document.getElementById('emails_guests_edit').setTags(appoint.emails_guests || '');
+        document.getElementById('emails_guests_edit').addTag('ejemplo');
         /*
         document.getElementById('time_end_repeat').value=appoint.time_end_repeat || '';
         */
 
-
-        
         open_my_pop('pop-edit-event');
     }
   };
