@@ -991,7 +991,7 @@ class PlusSelect extends HTMLElement {
       searchWrapper.innerHTML = `
       <i class="fi fi-rs-search"></i>
       <input type="text" placeholder="${txtSearch}">
-      <button class="search-add-btn" title="${window.t('message.add')}">
+      <button class="search-add-btn" title="${window.t('message.add')}" type="button">
         <i class="fi fi-br-plus"></i>
       </button>
     `;
@@ -1162,6 +1162,7 @@ class PlusSelect extends HTMLElement {
 
           if (edit_data) {
             const editBtn = document.createElement('button');
+            editBtn.setAttribute('type', 'button');
             editBtn.classList.add('edit-btn');
             editBtn.innerHTML = '<i class="fi fi-sr-pencil"></i>';
             editBtn.addEventListener('click', (e) => {
@@ -1173,7 +1174,7 @@ class PlusSelect extends HTMLElement {
 
           if (delete_data) {
             const deleteBtn = document.createElement('button');
-            //const deleteBtn = document.createElement('confirm-button');
+            deleteBtn.setAttribute('type', 'button');
             deleteBtn.setAttribute('message', '')
             //deleteBtn.classList.add('delete-btn');
             deleteBtn.innerHTML = '<i class="fi fi-sr-trash"></i>';
@@ -1477,6 +1478,7 @@ class PlusHelp extends HTMLElement {
 
     //create a button for help to the user
     const button = document.createElement('button');
+    button.setAttribute('type', 'button');
     button.textContent = titleTranslate;
     button.classList.add('plus-help-button');
 
@@ -1489,14 +1491,14 @@ class PlusHelp extends HTMLElement {
     popup.innerHTML = `
         <div class="plus-help-header">
           <span class="plus-help-title">${title}</span>
-          <button class="plus-help-close">X</button>
+          <button class="plus-help-close" type="button">X</button>
         </div>
         <div class="plus-help-progress" id="plus-help-progress"></div>
         <div class="plus-help-step-container" id="plus-help-content"></div>
         <div class="plus-help-footer">
-          <button class="plus-help-nav" id="plus-help-prev">← ${textButtonFormer}</button>
+          <button class="plus-help-nav" id="plus-help-prev" type="button">← ${textButtonFormer}</button>
           <span id="plus-help-status">Paso 1</span>
-          <button class="plus-help-nav" id="plus-help-next">${textButtonAfter} →</button>
+          <button class="plus-help-nav" id="plus-help-next" type="button">${textButtonAfter} →</button>
         </div>
       `;
 
@@ -1785,8 +1787,8 @@ class PlusSelectDate extends HTMLElement {
             <input type="date" class="date-start">
             <input type="date" class="date-end">
             <div class="plus-select-date-buttons">
-              <button class="btn-accept">${success}</button>
-              <button class="btn-cancel">${cancel}</button>
+              <button class="btn-accept" type="button">${success}</button>
+              <button class="btn-cancel" type="button">${cancel}</button>
             </div>
           </div>
         </div>
@@ -1929,6 +1931,7 @@ class PlusActions extends HTMLElement {
     this.classList.add('plus-actions');
 
     const button = document.createElement('button');
+    button.type = 'button';
     button.className = 'plus-action-button';
     button.innerHTML = '<i class="fi fi-rr-menu-dots-vertical"></i>';
 
@@ -2089,6 +2092,7 @@ class PlusActions extends HTMLElement {
       pinIcon.classList.add('fi-ss-thumbtack');
 
       const shortcut = document.createElement('button');
+      shortcut.type = 'button';
       shortcut.className = 'plus-quick-action';
       shortcut.setAttribute('data-id', textTranslate);
 
@@ -2142,18 +2146,18 @@ class PlusComment extends HTMLElement {
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
       <div class="editor">
         <div id="toolbar">
-          <button class="ql-bold"></button>
-          <button class="ql-italic"></button>
-          <button class="ql-underline"></button>
-          <button class="ql-strike"></button>
+          <button class="ql-bold" type="button"></button>
+          <button class="ql-italic" type="button"></button>
+          <button class="ql-underline" type="button"></button>
+          <button class="ql-strike" type="button"></button>
           <select class="ql-size">
             <option value="small"></option>
             <option selected></option>
             <option value="large"></option>
             <option value="huge"></option>
           </select>
-          <button class="ql-list" value="ordered"></button>
-          <button class="ql-list" value="bullet"></button>
+          <button class="ql-list" value="ordered" type="button"></button>
+          <button class="ql-list" value="bullet" type="button"></button>
         </div>
         <div id="editor"></div>
       </div>
@@ -2479,10 +2483,10 @@ class PlusDate extends HTMLElement {
     let html = `
       <div class="plus-calendar-calendar">
         <div class="plus-calendar-calendar-header">
-          <button class="plus-calendar-prev-month">❮</button>
+          <button class="plus-calendar-prev-month" type="button">❮</button>
           <span class="plus-calendar-current-month">${this.currentDate.toLocaleDateString(userLang, { month: 'long', year: 'numeric' })}</span>
-          <button class="plus-calendar-next-month">❯</button>
-          <button class="plus-calendar-today-btn">${textToday}</button>
+          <button class="plus-calendar-next-month" type="button">❯</button>
+          <button class="plus-calendar-today-btn" type="button">${textToday}</button>
         </div>
         <div class="plus-calendar-calendar-days">
         ${textDay}
@@ -2505,7 +2509,7 @@ class PlusDate extends HTMLElement {
 
 
     html += `</div>
-      <button class="btn-restart">${window.t('btn.restart')}</button>
+      <button class="btn-restart" type="button">${window.t('btn.restart')}</button>
     </div>`;
     this.calendarContainer.innerHTML = html;
 
@@ -2583,11 +2587,11 @@ class PlusDate extends HTMLElement {
     let html = `
       <div class="plus-calendar-calendar">
         <div class="plus-calendar-calendar-header">
-          <button class="plus-calendar-prev-month">❮</button>
+          <button class="plus-calendar-prev-month" type="button">❮</button>
           <span class="plus-calendar-current-month">${year}</span>
-          <button class="plus-calendar-next-month">❯</button>
-          <button class="plus-calendar-today-btn">${textToday}</button>
-          <button class="plus-calendar-today-btn">${textToday}</button>
+          <button class="plus-calendar-next-month" type="button">❯</button>
+          <button class="plus-calendar-today-btn" type="button">${textToday}</button>
+          <button class="plus-calendar-today-btn" type="button">${textToday}</button>
         </div>
         <div class="plus-calendar-calendar-days-month">
     `;
@@ -3111,8 +3115,8 @@ class InputColor extends HTMLElement {
                 <input type="text" class="color-code-input" value="${colorInicial}" readonly />
                 <br><br>
               <div class="tabs">
-                <button class="tab-button active">${window.t('input.speed')}</button>
-                <button class="tab-button">${window.t('input.personalize')}</button>
+                <button class="tab-button active" type="button">${window.t('input.speed')}</button>
+                <button class="tab-button" type="button">${window.t('input.personalize')}</button>
               </div>
               <div class="tab-content active">
                 <div class="quick-colors">
@@ -3144,7 +3148,7 @@ class InputColor extends HTMLElement {
               </div>
               <div class="tab-content">
                 <input type="color" class="custom-color" value="${colorInicial}" />
-                <button class="accept-button">${window.t('message.success')}</button>
+                <button class="accept-button" type="button">${window.t('message.success')}</button>
               </div>
               
             </div>
@@ -3221,127 +3225,6 @@ class InputColor extends HTMLElement {
   }
 }
 
-class PlusTag2 extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-
-    //get the information of the label 
-    const label=this.getAttribute('label') || 'input.tags';  //her we will to get the label of the input
-    
-    //we will to create a label outside of the shadow DOM for show information
-    this.labelInfo = document.createElement('info-label');
-    this.labelInfo.setAttribute('label', label);
-    this.labelInfo.setAttribute('message','tag-message-show');
-    this.appendChild(this.labelInfo);
-
-
-    const name = this.getAttribute('name') || 'plus-tags';
-    const t=this.getAttribute('t') || this.getAttribute('t-placeholder')|| this.getAttribute('placeholder') || 'input.tags';
-    const textPlaceholder=window.translate_text(t);
-    const style = document.createElement('style');
-    style.textContent = `
-        .container {
-          padding: 8px;
-          flex-wrap: wrap;
-          background-color: #f9f9f9;
-          background: transparent;
-
-
-          display: flex;
-          gap: 8px;
-          padding: 4px 0;
-
-          border-bottom: 2px solid #D0D5DD;
-        }
-
-        .tag {
-            background-color: #D6E9F8; 
-            color: #085DA9;           
-            padding: 6px 12px;
-            border-radius: 999px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            transition: background-color 0.2s ease;
-        }
-
-        .tag:hover {
-            background-color: #C5DFF1;
-        }
-            
-        .tag button {
-          background: none;
-          border: none;
-          color: inherit;
-          font-weight: bold;
-          cursor: pointer;
-        }
-
-        input[type="text"] {
-          border: none;
-          outline: none;
-          flex: 1;
-          min-width: 120px;
-          font-size: 14px;
-          background: transparent;
-        }
-    `;
-
-
-    this.shadowRoot.innerHTML = `
-      <div class="container">
-        <input type="text" placeholder="${textPlaceholder}" t-placeholder="${t}">
-      </div>
-    `;
-
-    this.shadowRoot.appendChild(style);
-
-    //we will to create a input hidden outside of the shadow DOM
-    this.hiddenInput = document.createElement('input');
-    this.hiddenInput.type = 'hidden';
-    this.hiddenInput.name = name;
-    this.appendChild(this.hiddenInput);
-
-    this.emails = [];
-  }
-
-  connectedCallback() {
-    const input = this.shadowRoot.querySelector('input[type="text"]');
-    const container = this.shadowRoot.querySelector('.container');
-
-    const renderTags = () => {
-      const existingTags = container.querySelectorAll('.tag');
-      existingTags.forEach(tag => tag.remove());
-
-      this.emails.forEach(email => {
-        const tag = document.createElement('span');
-        tag.className = 'tag';
-        tag.innerHTML = `${email} <button type="button">&times;</button>`;
-        tag.querySelector('button').onclick = () => {
-          this.emails.splice(this.emails.indexOf(email), 1);
-          renderTags();
-        };
-        container.insertBefore(tag, input);
-      });
-
-      // update the input hidden outside of the shadow DOM
-      this.hiddenInput.value = JSON.stringify(this.emails);
-    };
-
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ',') {
-        e.preventDefault();
-        const email = input.value.trim();
-        if (email && !this.emails.includes(email)) {
-          this.emails.push(email);
-          renderTags();
-        }
-        input.value = '';
-      }
-    });
-  }
-}
 
 class PlusTag extends HTMLElement {
   constructor() {
@@ -3355,12 +3238,12 @@ class PlusTag extends HTMLElement {
     this.labelInfo.setAttribute('message', 'tag-message-show');
     this.appendChild(this.labelInfo);
 
-    // atributos
+    // atributes of the tag, we will see if need translate the tag
     const name = this.getAttribute('name') || 'plus-tags';
     const t = this.getAttribute('t') || this.getAttribute('t-placeholder') || this.getAttribute('placeholder') || 'input.tags';
     const textPlaceholder = window.translate_text(t);
 
-    // estilos
+    // Styles of the label tags
     const style = document.createElement('style');
     style.textContent = `
       .container {
@@ -3420,7 +3303,7 @@ class PlusTag extends HTMLElement {
     this.hiddenInput.name = name;
     this.appendChild(this.hiddenInput);
 
-    // lista de tags
+    // list of all the tags
     this.emails = [];
   }
 
@@ -3440,25 +3323,51 @@ class PlusTag extends HTMLElement {
     });
   }
 
-  /** RENDER DE TAGS */
+  /** RENDER OF TAGS */
+  /**
+   * Renders the list of email tags inside the container.
+   * 
+   * This function first removes any existing tags to avoid duplicates.
+   * Then, it iterates over the current list of emails and creates a 
+   * visual "tag" element for each one. 
+   * 
+   * Each tag consists of:
+   *  - The email text.
+   *  - A small "×" button to remove the email from the list.
+   * 
+   * When the "×" button is clicked, the corresponding email is removed 
+   * using the `removeTag()` method.
+   * 
+   * Finally, all tags are inserted into the container, before the 
+   * input element, and the hidden input field is updated to contain 
+   * the JSON string of the emails array. This makes the data 
+   * available for form submissions.
+   */
   renderTags() {
+    // Remove any existing tags to re-render from scratch
     const existingTags = this.container.querySelectorAll('.tag');
     existingTags.forEach(tag => tag.remove());
 
+    // Create a new tag element for each email
     this.emails.forEach(email => {
       const tag = document.createElement('span');
       tag.className = 'tag';
       tag.innerHTML = `${email} <button type="button">&times;</button>`;
+
+      // Add event listener for removing this tag
       tag.querySelector('button').onclick = () => {
         this.removeTag(email);
       };
+
+      // Insert the tag before the input field
       this.container.insertBefore(tag, this.input);
     });
 
+    // Store all emails as JSON in the hidden input (for form submission)
     this.hiddenInput.value = JSON.stringify(this.emails);
   }
 
-  /** MÉTODOS PÚBLICOS */
+  /** PUBLIC METHODS */
   addTag(value) {
     if (value && !this.emails.includes(value)) {
       this.emails.push(value);
