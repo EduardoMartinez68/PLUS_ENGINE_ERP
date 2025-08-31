@@ -106,6 +106,9 @@
     "message.error.cannot-update-event": "No se pudo actualizar el evento",
     "message.error.event-not-found": "Evento no encontrado",
 
+    "message.error.event-id-required": "Se requiere el ID del evento",
+    "message.error.event-not-found": "Evento no encontrado",
+
     "message.success.add-new-event":"Se ha añadido tu nuevo evento correctamente",
     "message.success.not-can-add-new-event":"No se ha podido añadir tu nuevo evento. Inténtalo de nuevo más tarde.",
 

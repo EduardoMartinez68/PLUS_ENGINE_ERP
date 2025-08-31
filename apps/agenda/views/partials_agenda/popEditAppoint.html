@@ -209,12 +209,11 @@
     }
 
     //this functions is for show the character of the appointment when the user do click on a event
-    window.show_character_appoint = function(id) {
-        const appoints=window.get_the_list_of_appointments();
-        const appoint=appoints.find(app=>app.id===id);
-        
-        if(appoint){
-            const dataAppoints=appoint.appoints[0];
+    window.show_character_appoint = async function(id) {
+        const answer=await window.send_message_to_the_server(`/agenda/get_appointment_by_id/`,{id}, true, 'GET');
+
+        if(answer.success){
+            const dataAppoints=answer.data;
             console.log(JSON.stringify(dataAppoints, null, 2));
             
             //update the information of the appoint 
@@ -246,7 +245,7 @@
             window.set_value_plus_select('time_repeat_edit', dataAppoints.time_repeat || '0');
             window.set_value_plus_select('time_end_repeat_edit', day_for_finish_the_event(dataAppoints.date_start, dataAppoints.finish_repeat_date));
 
-            document.getElementById('emails_guests_edit').setTags(JSON.parse(dataAppoints.emails_guests) || '');
+            document.getElementById('emails_guests_edit').setTags(Array.isArray(dataAppoints.emails_guests) ? dataAppoints.emails_guests : JSON.parse(dataAppoints.emails_guests || '[]'));
             open_my_pop('pop-edit-event');
         }
   };

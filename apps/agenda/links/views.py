@@ -4,13 +4,16 @@ import json
 from django.http import JsonResponse
 from ..models import TypeAppoint, Appointment
 from django.db.models import F
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 import sys
 import os
 from ..plus_wrapper import Plus
 from django.utils import timezone
 from dateutil import parser as ps
 from django.utils.timezone import localtime
+
+from django.utils.timezone import  make_aware, is_naive, get_default_timezone
+
 
 def agenda_home(request):
     return render(request, 'home_agenda.html')
@@ -131,7 +134,6 @@ def create_event(request):
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
 
-
 def get_events_by_date_range(request):
     """
    Get all events of a user between start_date and end_date.
@@ -144,6 +146,31 @@ def get_events_by_date_range(request):
     Return:
         Appointment QuerySet sorted by start date
     """
+    def add_event_to_the_list(e, date_start, date_finish):
+        return {
+            'id': e.id,
+            'title': e.title,
+            'description': e.description,
+            'date_start': localtime(date_start).isoformat(),
+            'date_finish': localtime(date_finish).isoformat(),
+            'time_alert': e.time_alert,
+            'priority': e.priority,
+            'activate_event_all_the_day': e.activate_event_all_the_day,
+            'emails_guests': e.emails_guests,
+            'location': e.location,
+            'link': e.link,
+            'repeat_this_event': e.repeat_this_event,
+            'time_repeat': e.time_repeat,
+            'finish_repeat_date': e.finish_repeat_date.isoformat() if e.finish_repeat_date else None,
+            'send_notification': e.send_notification,
+            'i_am_free': e.i_am_free,
+            'type_appoint': {
+                'id': e.id_type_appoint.id if e.id_type_appoint else None,
+                'name': e.id_type_appoint.name if e.id_type_appoint else None,
+                'description': e.id_type_appoint.description if e.id_type_appoint else None,
+                'color': e.id_type_appoint.color if e.id_type_appoint else None,
+            }
+        }
 
     if request.method == 'GET':
         start_date = request.GET.get('start_date')
@@ -181,32 +208,88 @@ def get_events_by_date_range(request):
         for e in events:
             date_start = Plus.convert_from_utc(e.date_start, request.user.timezone)
             date_finish = Plus.convert_from_utc(e.date_finish, request.user.timezone)
-            events_data.append({
-                'id': e.id,
-                'title': e.title,
-                'description': e.description,
-                'date_start': localtime(date_start).isoformat(),
-                'date_finish': localtime(date_finish).isoformat(),
-                'time_alert': e.time_alert,
-                'priority': e.priority,
-                'activate_event_all_the_day': e.activate_event_all_the_day,
-                'emails_guests': e.emails_guests,
-                'location': e.location,
-                'link': e.link,
-                'repeat_this_event': e.repeat_this_event,
-                'time_repeat': e.time_repeat,
-                'finish_repeat_date': e.finish_repeat_date.isoformat() if e.finish_repeat_date else None,
-                'send_notification': e.send_notification,
-                'i_am_free': e.i_am_free,
-                'type_appoint': {
-                    'id': e.id_type_appoint.id if e.id_type_appoint else None,
-                    'name': e.id_type_appoint.name if e.id_type_appoint else None,
-                    'description': e.id_type_appoint.description if e.id_type_appoint else None,
-                    'color': e.id_type_appoint.color if e.id_type_appoint else None,
-                }
-            })
+
+            #here we will see if this event is only a day or this event spans multiple days
+            if date_start.date() != date_finish.date():
+                #now we will to create all the event in the week
+                current_date = date_start.date()
+                end_date = date_finish.date()
+
+                while current_date <= end_date:
+                    current_date = date_start.date()
+                    end_date = date_finish.date()
+
+                    while current_date <= end_date:
+                        # start of the day's piece
+                        if current_date == date_start.date():
+                            start_time = date_start.time()
+                        else:
+                            start_time = time(0, 0)
+
+                        # end of the day's piece
+                        if current_date == date_finish.date():
+                            end_time = date_finish.time()
+                        else:
+                            end_time = time(23, 59)
+
+                        # create datetime for the chunk
+                        chunk_start = datetime.combine(current_date, start_time, tzinfo=date_start.tzinfo)
+                        chunk_end = datetime.combine(current_date, end_time, tzinfo=date_start.tzinfo)
+
+                        events_data.append(add_event_to_the_list(e, chunk_start, chunk_end))
+
+                        #next day
+                        current_date += timedelta(days=1)
+            else:
+                # Event is only one day
+                events_data.append(add_event_to_the_list(e, date_start, date_finish))
+    
         #this is for the frontend
         return JsonResponse({'success': True, 'data': events_data}, status=200)
+
+def get_appointment_by_id(request):
+    if request.method == 'GET':
+        event_id = request.GET.get('id')
+        if not event_id:
+            return JsonResponse({'success': False, 'message': 'message.error.event-id-required'}, status=400)
+
+        try:
+            # select_related antes de get
+            e = Appointment.objects.select_related('id_type_appoint').get(id=event_id, user=request.user)
+        except Appointment.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'message.error.event-not-found'}, status=404)
+
+        # serializar
+        date_start = Plus.convert_from_utc(e.date_start, request.user.timezone)
+        date_finish = Plus.convert_from_utc(e.date_finish, request.user.timezone)
+
+        event_data = {
+            'id': e.id,
+            'title': e.title,
+            'description': e.description,
+            'date_start': localtime(date_start).isoformat(),
+            'date_finish': localtime(date_finish).isoformat(),
+            'time_alert': e.time_alert,
+            'priority': e.priority,
+            'activate_event_all_the_day': e.activate_event_all_the_day,
+            'emails_guests': e.emails_guests,
+            'location': e.location,
+            'link': e.link,
+            'repeat_this_event': e.repeat_this_event,
+            'time_repeat': e.time_repeat,
+            'finish_repeat_date': e.finish_repeat_date.isoformat() if e.finish_repeat_date else None,
+            'send_notification': e.send_notification,
+            'i_am_free': e.i_am_free,
+            'type_appoint': {
+                'id': e.id_type_appoint.id if e.id_type_appoint else None,
+                'name': e.id_type_appoint.name if e.id_type_appoint else None,
+                'description': e.id_type_appoint.description if e.id_type_appoint else None,
+                'color': e.id_type_appoint.color if e.id_type_appoint else None,
+            }
+        }
+
+        return JsonResponse({'success': True, 'data': event_data}, status=200)
+
 
 def edit_event(request):
     def get_date_of_the_event(user, body_json: json) -> dict:
@@ -255,7 +338,7 @@ def edit_event(request):
 
         #get the data of the user
         user = request.user
-        print(body_json)
+
         #--------------------get the data of the form---------------------
         titleEvent = body_json.get("name_event", "").strip()
         description = body_json.get("description", "")
