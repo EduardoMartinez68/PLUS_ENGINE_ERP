@@ -263,10 +263,10 @@
 
         document.getElementById('btnTodayCalendaryMonth').addEventListener('click', () => {
             currentDate = new Date(); // restart to the day
+            update_text_day(currentDate.getDate())
             renderCalendar(currentDate);
+            window.render_this_day();
         });
-
-
 
 
 

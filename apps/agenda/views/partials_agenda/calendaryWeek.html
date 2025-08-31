@@ -116,13 +116,15 @@
 
 <script>
   function renderWeek(dateStr) {
+    //clear the calendar of all the old information
     const calendar = document.getElementById('calendary-week-calendar');
     calendar.innerHTML = '';
-
     const inputDate = new Date(dateStr);
     const weekStart = new Date(inputDate);
     weekStart.setDate(inputDate.getDate() - inputDate.getDay()); // Sunday
 
+
+    //get all the appoint of this week
     const appointments = window.get_the_appointments_of_the_week(weekStart); //her get the appointments of the week
 
     const today = new Date();
@@ -373,30 +375,36 @@
     //Red line of the current time for show the hour current of the user for that the user know that evenet next 
     const redLine = document.createElement('div');
     redLine.className = 'calendary-week-current-hour-line';
-    calendar.appendChild(redLine);
+    if (today >= weekStart && today <= new Date(weekStart.getTime() + 6 * 86400000)) {
+      const hours = today.getHours();
+      const minutes = today.getMinutes();
+      const positionY = (hours * 40) + (minutes / 60 * 40); // a hour is equal to 40px
 
-    //now we will to create the function that update the tooltip position
-    function updateLine() {
-      const today = new Date();
-
-      if (today >= weekStart && today <= new Date(weekStart.getTime() + 6 * 86400000)) {
-        const hours = today.getHours();
-        const minutes = today.getMinutes();
-        const positionY = (hours * 40) + (minutes / 60 * 40); // cada hora es 40px
-
-        redLine.style.top = `${positionY + 40}px`; // +40 por el encabezado
-        redLine.style.width = "100%"; // línea que cruce todo el día (opcional)
-        redLine.style.height = "2px";
-        redLine.style.background = "red";
-        redLine.style.position = "absolute";
-        redLine.style.left = "0";
-      } else {
-        redLine.style.display = "none"; // si no está en la semana, no mostrar
-      }
+      redLine.style.top = `${positionY + 40}px`; // +40 for the header
+      redLine.style.width = "100%";
+      redLine.style.height = "2px";
+      redLine.style.background = "red";
+      redLine.style.position = "absolute";
+      redLine.style.left = "0";
+    } else {
+      redLine.style.display = "none"; // if not is the week current not show the line
     }
 
+    calendar.appendChild(redLine);
+  }
 
-    setInterval(updateLine, 60000);
+  function update_line(){
+    console.log('in function')
+    const today = new Date();
+    const lines = document.querySelectorAll('.calendary-week-current-hour-line');
+    
+    lines.forEach(line => {
+      const hours = today.getHours();
+      const minutes = today.getMinutes();
+      const positionY = (hours * 40) + (minutes / 60 * 40); // a hour is equal to 40px
+
+      line.style.top = `${positionY + 40}px`; // +40 for header
+    });
   }
 
   function darkenColor(color, amount = 0.3) {
@@ -430,12 +438,11 @@
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const dd = String(today.getDate()).padStart(2, '0');
-    const todayStr = `${yyyy}-${mm}-${dd}`;
+    const todayStr = `${yyyy}-${mm}-${dd}T00:00:00`;
 
     renderWeek(todayStr);
   }
 
-
-
+  setInterval(update_line, 60000); //update the line for minute 
   window.render_this_day = render_this_day;
 </script>

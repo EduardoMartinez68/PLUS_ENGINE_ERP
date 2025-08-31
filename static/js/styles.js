@@ -2544,6 +2544,7 @@ class PlusDate extends HTMLElement {
         this.display.textContent = this.formatDate(newDate);
         this.calendarContainer.style.display = 'none';
         this.renderCalendar();
+        this.update_input_form();
       };
     });
 
@@ -2556,6 +2557,7 @@ class PlusDate extends HTMLElement {
       this.display.textContent = '00/00/0000';//window.t('btn.select_range_date');
       this.calendarContainer.style.display = 'none';
       this.renderCalendar();
+      this.update_input_form();
     };
 
 
@@ -2642,10 +2644,10 @@ class PlusDate extends HTMLElement {
         const newDate = new Date(selectedISO);
         this.selectedDate = newDate;
 
-        // Actualizar display
+        // update display
         this.display.textContent = this.formatDate(newDate);
 
-        // Actualizar input hidden para que el formulario lo envíe
+        // update input hidden for the form
         this.hiddenInput.value = selectedISO.split('T')[0];
 
         this.calendarContainer.style.display = 'none';
