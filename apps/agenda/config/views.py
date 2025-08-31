@@ -32,7 +32,7 @@ def create_event(request):
             date_finishDay =  body_json.get("end_date", "")
             date_finishHour =  body_json.get("end_time", "")
     
-            #convert to datetime 
+            #convert the information to datetime 
             date_start = datetime.strptime(f"{date_startDay} {date_startHour}", "%Y-%m-%d %H:%M")
             date_finish = datetime.strptime(f"{date_finishDay} {date_finishHour}", "%Y-%m-%d %H:%M")
     
@@ -145,7 +145,7 @@ def create_event(request):
             date_finishDay =  body_json.get("end_date", "")
             date_finishHour =  body_json.get("end_time", "")
     
-            #convert to datetime 
+            #convert the information to datetime 
             date_start = datetime.strptime(f"{date_startDay} {date_startHour}", "%Y-%m-%d %H:%M")
             date_finish = datetime.strptime(f"{date_finishDay} {date_finishHour}", "%Y-%m-%d %H:%M")
     
@@ -290,29 +290,50 @@ def get_events_by_date_range(request):
                 }
             }
     
+        def get_the_events_repeat_of_the_user(user):
+            events = Appointment.objects.filter(
+                user=user,
+                repeat_this_event=True,
+                finish_repeat_date__gte=F('date_start')  # this is for get only appoints that not was finished 
+            ).select_related('id_type_appoint').order_by('date_start') 
+    
+            for e in events:
+                #now we will get the duration of the event 
+                duration = e.date_finish - e.date_start
+                hours = duration.total_seconds() / 3600 #convert to hours 
+    
+                #now we will see when time is repeat the event 1 day, 1 week, 1 month, etc.
+                time_repeat=e.time_repeat
+    
+                #now we will to update the finish_repeat_date
+                if time_repeat == '1':
+                    e.date_start += timedelta(days=1)
+                    e.date_finish += timedelta(days=1)
+                elif time_repeat == '7':
+                    e.date_start += timedelta(weeks=1)
+                    e.date_finish += timedelta(weeks=1)
+                elif time_repeat == '30':
+                    e.date_start += timedelta(weeks=4)
+                    e.date_finish += timedelta(weeks=4)
+    
+                print(e)
+                print(e.date_start)
+                print(e.date_finish)
+    
+                print(e.time_repeat)
+                print(e.finish_repeat_date)
+    
         if request.method == 'GET':
-            start_date = request.GET.get('start_date')
-            end_date = request.GET.get('end_date')
+            #convert to datetime 
+            date_start = request.GET.get('start_date')
+            date_finish = request.GET.get('end_date')
     
-            try:
-                if not start_date or not end_date:
-                    return JsonResponse({'success': False, 'message': 'message.error.start-end-date-required'}, status=400)
     
-                #Convert dates to datetime objects
-                start_date = ps.parse(start_date, fuzzy=True)
-                end_date = ps.parse(end_date, fuzzy=True)
+            #get the date of the user, but need convert to lenguace UTC for search the container in the database
+            start_date = Plus.convert_to_utc(date_start, request.user.timezone)
+            end_date = Plus.convert_to_utc(date_finish, request.user.timezone)
     
-                #Make sure start_date and end_date are timezone-aware
-                if timezone.is_naive(start_date):
-                    start_date = timezone.make_aware(start_date, timezone.get_default_timezone())
-                if timezone.is_naive(end_date):
-                    end_date = timezone.make_aware(end_date, timezone.get_default_timezone())
-    
-            except Exception as e:
-                print("Error parsing JSON:", e)
-                return JsonResponse({'success': False, 'message': 'message.error.invalid-date-format'}, status=400)
-    
-            #We filter events that are within the range
+            #We filter events that are within the range of dates but there is still a lack get the appoints that can repeat 
             user = request.user
             events = Appointment.objects.filter(
                 user=user,
@@ -320,8 +341,9 @@ def get_events_by_date_range(request):
                 date_finish__gte=start_date
             ).select_related('id_type_appoint').order_by('date_start')
     
+            get_the_events_repeat_of_the_user(user)
     
-            #her we will to serialize the date 
+            #here we will to serialize the date
             events_data = []
             for e in events:
                 date_start = Plus.convert_from_utc(e.date_start, request.user.timezone)
@@ -402,29 +424,50 @@ def get_events_by_date_range(request):
                 }
             }
     
+        def get_the_events_repeat_of_the_user(user):
+            events = Appointment.objects.filter(
+                user=user,
+                repeat_this_event=True,
+                finish_repeat_date__gte=F('date_start')  # this is for get only appoints that not was finished 
+            ).select_related('id_type_appoint').order_by('date_start') 
+    
+            for e in events:
+                #now we will get the duration of the event 
+                duration = e.date_finish - e.date_start
+                hours = duration.total_seconds() / 3600 #convert to hours 
+    
+                #now we will see when time is repeat the event 1 day, 1 week, 1 month, etc.
+                time_repeat=e.time_repeat
+    
+                #now we will to update the finish_repeat_date
+                if time_repeat == '1':
+                    e.date_start += timedelta(days=1)
+                    e.date_finish += timedelta(days=1)
+                elif time_repeat == '7':
+                    e.date_start += timedelta(weeks=1)
+                    e.date_finish += timedelta(weeks=1)
+                elif time_repeat == '30':
+                    e.date_start += timedelta(weeks=4)
+                    e.date_finish += timedelta(weeks=4)
+    
+                print(e)
+                print(e.date_start)
+                print(e.date_finish)
+    
+                print(e.time_repeat)
+                print(e.finish_repeat_date)
+    
         if request.method == 'GET':
-            start_date = request.GET.get('start_date')
-            end_date = request.GET.get('end_date')
+            #convert to datetime 
+            date_start = request.GET.get('start_date')
+            date_finish = request.GET.get('end_date')
     
-            try:
-                if not start_date or not end_date:
-                    return JsonResponse({'success': False, 'message': 'message.error.start-end-date-required'}, status=400)
     
-                #Convert dates to datetime objects
-                start_date = ps.parse(start_date, fuzzy=True)
-                end_date = ps.parse(end_date, fuzzy=True)
+            #get the date of the user, but need convert to lenguace UTC for search the container in the database
+            start_date = Plus.convert_to_utc(date_start, request.user.timezone)
+            end_date = Plus.convert_to_utc(date_finish, request.user.timezone)
     
-                #Make sure start_date and end_date are timezone-aware
-                if timezone.is_naive(start_date):
-                    start_date = timezone.make_aware(start_date, timezone.get_default_timezone())
-                if timezone.is_naive(end_date):
-                    end_date = timezone.make_aware(end_date, timezone.get_default_timezone())
-    
-            except Exception as e:
-                print("Error parsing JSON:", e)
-                return JsonResponse({'success': False, 'message': 'message.error.invalid-date-format'}, status=400)
-    
-            #We filter events that are within the range
+            #We filter events that are within the range of dates but there is still a lack get the appoints that can repeat 
             user = request.user
             events = Appointment.objects.filter(
                 user=user,
@@ -432,8 +475,9 @@ def get_events_by_date_range(request):
                 date_finish__gte=start_date
             ).select_related('id_type_appoint').order_by('date_start')
     
+            get_the_events_repeat_of_the_user(user)
     
-            #her we will to serialize the date 
+            #here we will to serialize the date
             events_data = []
             for e in events:
                 date_start = Plus.convert_from_utc(e.date_start, request.user.timezone)
