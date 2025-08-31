@@ -294,8 +294,8 @@ def get_events_by_date_range(request):
         def get_the_events_repeat_of_the_user(user, start_date, end_date):
             events = Appointment.objects.filter(
                 user=user,
-                repeat_this_event=True,
-                finish_repeat_date__gte=F('date_start')  # this is for get only appoints that not was finished 
+                repeat_this_event=True#,
+                #finish_repeat_date__gte=F('date_start')  # this is for get only appoints that not was finished 
             ).select_related('id_type_appoint').order_by('date_start') 
     
             events_data = [] #here we will save all the events that can repeat
@@ -330,6 +330,7 @@ def get_events_by_date_range(request):
     
                 #while the start date be <= end_date of the calendar, we will to create new events
                 #also think that need see if the repeat of the event finish
+                print()
                 while start_date <= end_date and (e.finish_repeat_date is None or e.finish_repeat_date > start_date):
                     time_end=start_date
     
@@ -352,7 +353,8 @@ def get_events_by_date_range(request):
                     time_end += timedelta(hours=hours) #this is for change the time of the event
     
     
-                return events_data
+            return events_data
+        
         if request.method == 'GET':
             #convert to datetime 
             date_start = request.GET.get('start_date')
@@ -457,8 +459,8 @@ def get_events_by_date_range(request):
         def get_the_events_repeat_of_the_user(user, start_date, end_date):
             events = Appointment.objects.filter(
                 user=user,
-                repeat_this_event=True,
-                finish_repeat_date__gte=F('date_start')  # this is for get only appoints that not was finished 
+                repeat_this_event=True#,
+                #finish_repeat_date__gte=F('date_start')  # this is for get only appoints that not was finished 
             ).select_related('id_type_appoint').order_by('date_start') 
     
             events_data = [] #here we will save all the events that can repeat
@@ -493,6 +495,7 @@ def get_events_by_date_range(request):
     
                 #while the start date be <= end_date of the calendar, we will to create new events
                 #also think that need see if the repeat of the event finish
+                print()
                 while start_date <= end_date and (e.finish_repeat_date is None or e.finish_repeat_date > start_date):
                     time_end=start_date
     
@@ -515,7 +518,8 @@ def get_events_by_date_range(request):
                     time_end += timedelta(hours=hours) #this is for change the time of the event
     
     
-                return events_data
+            return events_data
+        
         if request.method == 'GET':
             #convert to datetime 
             date_start = request.GET.get('start_date')
@@ -749,7 +753,11 @@ def edit_event(request):
             date_start=event_dates['start'] #date when start the event
             date_finish=event_dates['end'] #date when finish the event
     
-            date_end_repeat = date_start + timedelta(days=int(time_end_repeat))
+            date_end_repeat=None
+            
+            if time_end_repeat!='0':
+                date_end_repeat = date_start + timedelta(days=int(time_end_repeat))
+    
     
             #here we will see if the date start is valid and the date finish is valid
             if not validate_date_range(date_start, date_finish):
@@ -878,7 +886,11 @@ def edit_event(request):
             date_start=event_dates['start'] #date when start the event
             date_finish=event_dates['end'] #date when finish the event
     
-            date_end_repeat = date_start + timedelta(days=int(time_end_repeat))
+            date_end_repeat=None
+            
+            if time_end_repeat!='0':
+                date_end_repeat = date_start + timedelta(days=int(time_end_repeat))
+    
     
             #here we will see if the date start is valid and the date finish is valid
             if not validate_date_range(date_start, date_finish):
