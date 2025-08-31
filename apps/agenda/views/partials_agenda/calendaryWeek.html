@@ -209,9 +209,33 @@
       // Posición adaptable
       eventDiv.style.position = 'absolute';
       eventDiv.style.top = `calc(${top}% + 4.5%)`; // +2% para header
-      eventDiv.style.left = `calc(${(dayIndex / 7) * 100}% + 5%)`; // offset relativo al ancho de columna
-      eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 10%)`; // offset relativo al ancho de columna
       eventDiv.style.width = `calc(${100 / 7 - 0.5}%)`; // ancho de columna - margen
+
+      if(dayIndex==0){
+        eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 8%)`; // offset relativo al ancho de columna
+      }
+      else if (dayIndex==1){
+        eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 8.2%)`; // offset relativo al ancho de columna
+        eventDiv.style.width = `calc(${100 / 7 - 0.5}%)`; // ancho de columna - margen
+
+      }
+      else if (dayIndex==2){
+        eventDiv.style.width = `calc(${100 / 7 - 0.9}%)`; // ancho de columna - margen
+        eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 8.955%)`;
+      }
+      else if (dayIndex==5){
+        eventDiv.style.width = `calc(${100 / 7 - 0.9}%)`; // ancho de columna - margen
+        eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 11.1%)`;
+      }
+      else if (dayIndex==6){
+        eventDiv.style.width = `calc(${100 / 7 - 0.9}%)`; // ancho de columna - margen
+        eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 11.9%)`;
+      }
+      else{
+        eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 10%)`; // offset relativo al ancho de columna
+      }
+
+
       eventDiv.style.height = `${height}%`;
 
       // Color de fondo
@@ -232,7 +256,7 @@
       eventDiv.style.justifyContent = 'center';
       eventDiv.style.borderRadius = '6px';
       eventDiv.style.padding = '2%';
-      eventDiv.style.fontFamily = 'Arial, sans-serif';
+      //eventDiv.style.fontFamily = 'Arial, sans-serif';
       eventDiv.style.overflow = 'hidden';
       eventDiv.style.textAlign = 'center';
       eventDiv.style.boxShadow = '0 1px 3px rgba(0,0,0,0.2)';
