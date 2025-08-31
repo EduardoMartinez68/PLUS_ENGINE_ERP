@@ -214,7 +214,9 @@ def get_events_by_date_range(request):
         return events_data
  
 
-    def get_the_events_repeat_of_the_user(user, start_date, end_date):
+    def get_the_events_repeat_of_the_user(user, start_date: datetime, end_date: datetime) -> list:
+        #start_date and end_date is date that was transform to the time of the user from the GET
+        #get the appoints in the database that can be repeat
         events = Appointment.objects.filter(
             user=user,
             repeat_this_event=True#,
@@ -222,15 +224,25 @@ def get_events_by_date_range(request):
         ).select_related('id_type_appoint').order_by('date_start') 
 
         events_data = [] #here we will save all the events that can repeat
-
+        
+        #we will to read all the event that get from the database
         for e in events:
             #now we will get the duration of the event 
             duration = e.date_finish - e.date_start
-            hours = duration.total_seconds() / 3600 #convert to hours 
+            hours = duration.total_seconds() / 3600 #convert to hours. This is for add the time after 
 
             #now we will see when time is repeat the event 1 day, 1 week, 1 month, etc.
             time_repeat=e.time_repeat
-            
+
+            #conver the time to the time of the user 
+            #this is for change the time of the event to the time of the user
+            e.date_start=Plus.convert_from_utc(e.date_start, user.timezone) 
+            e.date_finish=Plus.convert_from_utc(e.date_finish, user.timezone) 
+
+            #this is for not have a error when need see when finish the event
+            if e.finish_repeat_date != None:
+                e.finish_repeat_date=Plus.convert_from_utc(e.finish_repeat_date, user.timezone) 
+
             #need see in that day start the event 
             #this is for choose the day when start the event 
             while e.date_start < start_date:
@@ -249,34 +261,36 @@ def get_events_by_date_range(request):
             
             #when we found teh day where start the calendar, now we can start to create the events 
             #that show in the calendar
-            start_date=e.date_start
+            start_date_appoint=e.date_start
 
             #while the start date be <= end_date of the calendar, we will to create new events
             #also think that need see if the repeat of the event finish
-            while start_date <= end_date and (e.finish_repeat_date is None or e.finish_repeat_date > start_date):
-                
-                time_end=Plus.convert_from_utc(start_date, user.timezone)  #this is for change the time of the event
-                date_start = Plus.convert_from_utc(start_date, user.timezone)
+            while start_date_appoint <= end_date and (e.finish_repeat_date is None or e.finish_repeat_date > start_date_appoint):
+
+                time_end = start_date_appoint  #this is for save when start the event for change after 
+                date_start = start_date_appoint
 
                 #now we will to create the appoint that send to the frontend
                 if time_repeat == 1: #day 
-                    start_date += timedelta(days=1)
+                    start_date_appoint += timedelta(days=1)
                 elif time_repeat == 7: #week
-                    start_date += timedelta(weeks=1)
+                    start_date_appoint += timedelta(weeks=1)
                 elif time_repeat == 15: #week
-                    start_date += timedelta(weeks=2)
+                    start_date_appoint += timedelta(weeks=2)
                 elif time_repeat == 30: #month
-                    start_date += relativedelta(months=1)
+                    start_date_appoint += relativedelta(months=1)
                 elif time_repeat == 365: #year
-                    start_date += relativedelta(years=1)
+                    start_date_appoint += relativedelta(years=1)
                 else: 
                     break
                 
                 
 
-
-                time_end += timedelta(hours=hours) #this is for change the time of the event
+                #this is for change the time of the event adding to it the hours of duration
+                time_end += timedelta(hours=hours) 
                 
+                #now we will to create a list for save all struct of the event in the calendar in the frontend
+                #for that if the event have a duration of most of a day, show the event broken
                 events_data+=create_events_that_need_most_of_a_day(e, date_start, time_end)
                 
 
@@ -284,12 +298,12 @@ def get_events_by_date_range(request):
         return events_data
 
     if request.method == 'GET':
-        #convert to datetime 
+        #cget the data that the frontend send with date
         date_start = request.GET.get('start_date')
         date_finish = request.GET.get('end_date')
 
-
         #get the date of the user, but need convert to lenguace UTC for search the container in the database
+        #because in the database the time is UTC
         start_date = Plus.convert_to_utc(date_start, request.user.timezone)
         end_date = Plus.convert_to_utc(date_finish, request.user.timezone)
 
