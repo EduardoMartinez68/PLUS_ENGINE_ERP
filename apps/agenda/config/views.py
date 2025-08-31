@@ -1,6 +1,7 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
 from django.utils.timezone import  make_aware, is_naive, get_default_timezone
+from dateutil.relativedelta import relativedelta
 from django.utils.timezone import localtime
 from dateutil import parser as ps
 from django.utils import timezone
@@ -290,12 +291,14 @@ def get_events_by_date_range(request):
                 }
             }
     
-        def get_the_events_repeat_of_the_user(user):
+        def get_the_events_repeat_of_the_user(user, start_date, end_date):
             events = Appointment.objects.filter(
                 user=user,
                 repeat_this_event=True,
                 finish_repeat_date__gte=F('date_start')  # this is for get only appoints that not was finished 
             ).select_related('id_type_appoint').order_by('date_start') 
+    
+            events_data = [] #here we will save all the events that can repeat
     
             for e in events:
                 #now we will get the duration of the event 
@@ -304,25 +307,52 @@ def get_events_by_date_range(request):
     
                 #now we will see when time is repeat the event 1 day, 1 week, 1 month, etc.
                 time_repeat=e.time_repeat
+                
+                #need see in that day start the event 
+                #this is for choose the day when start the event 
+                while e.date_start < start_date:
+                    if time_repeat == 1: #day 
+                        e.date_start += timedelta(days=1)
+                    elif time_repeat == 7: #week
+                        e.date_start += timedelta(weeks=1)
+                    elif time_repeat == 15: #week
+                        e.date_start += timedelta(weeks=2)
+                    elif time_repeat == 30: #month
+                        e.date_start += relativedelta(months=1)
+                    elif time_repeat == 365: #year
+                        e.date_start += relativedelta(years=1)
+                    else: 
+                        break
+                
+                #when we found teh day where start the calendar, now we can start to create the events 
+                #that show in the calendar
+                start_date=e.date_start
     
-                #now we will to update the finish_repeat_date
-                if time_repeat == '1':
-                    e.date_start += timedelta(days=1)
-                    e.date_finish += timedelta(days=1)
-                elif time_repeat == '7':
-                    e.date_start += timedelta(weeks=1)
-                    e.date_finish += timedelta(weeks=1)
-                elif time_repeat == '30':
-                    e.date_start += timedelta(weeks=4)
-                    e.date_finish += timedelta(weeks=4)
+                #while the start date be <= end_date of the calendar, we will to create new events
+                #also think that need see if the repeat of the event finish
+                while start_date <= end_date and (e.finish_repeat_date is None or e.finish_repeat_date > start_date):
+                    time_end=start_date
     
-                print(e)
-                print(e.date_start)
-                print(e.date_finish)
+                    #now we will to create the appoint that send to the frontend
+                    events_data.append(add_event_to_the_list(e, start_date, time_end))
     
-                print(e.time_repeat)
-                print(e.finish_repeat_date)
+                    if time_repeat == 1: #day 
+                        start_date += timedelta(days=1)
+                    elif time_repeat == 7: #week
+                        start_date += timedelta(weeks=1)
+                    elif time_repeat == 15: #week
+                        start_date += timedelta(weeks=2)
+                    elif time_repeat == 30: #month
+                        start_date += relativedelta(months=1)
+                    elif time_repeat == 365: #year
+                        start_date += relativedelta(years=1)
+                    else: 
+                        break
     
+                    time_end += timedelta(hours=hours) #this is for change the time of the event
+    
+    
+                return events_data
         if request.method == 'GET':
             #convert to datetime 
             date_start = request.GET.get('start_date')
@@ -341,10 +371,10 @@ def get_events_by_date_range(request):
                 date_finish__gte=start_date
             ).select_related('id_type_appoint').order_by('date_start')
     
-            get_the_events_repeat_of_the_user(user)
+            #first get the event that the user would like repeat 
+            events_data=get_the_events_repeat_of_the_user(user, start_date, end_date)
     
             #here we will to serialize the date
-            events_data = []
             for e in events:
                 date_start = Plus.convert_from_utc(e.date_start, request.user.timezone)
                 date_finish = Plus.convert_from_utc(e.date_finish, request.user.timezone)
@@ -424,12 +454,14 @@ def get_events_by_date_range(request):
                 }
             }
     
-        def get_the_events_repeat_of_the_user(user):
+        def get_the_events_repeat_of_the_user(user, start_date, end_date):
             events = Appointment.objects.filter(
                 user=user,
                 repeat_this_event=True,
                 finish_repeat_date__gte=F('date_start')  # this is for get only appoints that not was finished 
             ).select_related('id_type_appoint').order_by('date_start') 
+    
+            events_data = [] #here we will save all the events that can repeat
     
             for e in events:
                 #now we will get the duration of the event 
@@ -438,25 +470,52 @@ def get_events_by_date_range(request):
     
                 #now we will see when time is repeat the event 1 day, 1 week, 1 month, etc.
                 time_repeat=e.time_repeat
+                
+                #need see in that day start the event 
+                #this is for choose the day when start the event 
+                while e.date_start < start_date:
+                    if time_repeat == 1: #day 
+                        e.date_start += timedelta(days=1)
+                    elif time_repeat == 7: #week
+                        e.date_start += timedelta(weeks=1)
+                    elif time_repeat == 15: #week
+                        e.date_start += timedelta(weeks=2)
+                    elif time_repeat == 30: #month
+                        e.date_start += relativedelta(months=1)
+                    elif time_repeat == 365: #year
+                        e.date_start += relativedelta(years=1)
+                    else: 
+                        break
+                
+                #when we found teh day where start the calendar, now we can start to create the events 
+                #that show in the calendar
+                start_date=e.date_start
     
-                #now we will to update the finish_repeat_date
-                if time_repeat == '1':
-                    e.date_start += timedelta(days=1)
-                    e.date_finish += timedelta(days=1)
-                elif time_repeat == '7':
-                    e.date_start += timedelta(weeks=1)
-                    e.date_finish += timedelta(weeks=1)
-                elif time_repeat == '30':
-                    e.date_start += timedelta(weeks=4)
-                    e.date_finish += timedelta(weeks=4)
+                #while the start date be <= end_date of the calendar, we will to create new events
+                #also think that need see if the repeat of the event finish
+                while start_date <= end_date and (e.finish_repeat_date is None or e.finish_repeat_date > start_date):
+                    time_end=start_date
     
-                print(e)
-                print(e.date_start)
-                print(e.date_finish)
+                    #now we will to create the appoint that send to the frontend
+                    events_data.append(add_event_to_the_list(e, start_date, time_end))
     
-                print(e.time_repeat)
-                print(e.finish_repeat_date)
+                    if time_repeat == 1: #day 
+                        start_date += timedelta(days=1)
+                    elif time_repeat == 7: #week
+                        start_date += timedelta(weeks=1)
+                    elif time_repeat == 15: #week
+                        start_date += timedelta(weeks=2)
+                    elif time_repeat == 30: #month
+                        start_date += relativedelta(months=1)
+                    elif time_repeat == 365: #year
+                        start_date += relativedelta(years=1)
+                    else: 
+                        break
     
+                    time_end += timedelta(hours=hours) #this is for change the time of the event
+    
+    
+                return events_data
         if request.method == 'GET':
             #convert to datetime 
             date_start = request.GET.get('start_date')
@@ -475,10 +534,10 @@ def get_events_by_date_range(request):
                 date_finish__gte=start_date
             ).select_related('id_type_appoint').order_by('date_start')
     
-            get_the_events_repeat_of_the_user(user)
+            #first get the event that the user would like repeat 
+            events_data=get_the_events_repeat_of_the_user(user, start_date, end_date)
     
             #here we will to serialize the date
-            events_data = []
             for e in events:
                 date_start = Plus.convert_from_utc(e.date_start, request.user.timezone)
                 date_finish = Plus.convert_from_utc(e.date_finish, request.user.timezone)
