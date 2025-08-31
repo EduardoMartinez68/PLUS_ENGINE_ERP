@@ -1,43 +1,82 @@
 <style>
-.search-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  max-width: 100%;
-  width: 100%;
-  border-radius: 0;
-  background-color: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 0;
-  border-bottom: 1px solid #ccc;
+/* Espaciado tipo Bootstrap (p = padding) */
+.p-1 { padding: .25rem !important; }
+.p-2 { padding: .5rem !important; }
+.p-3 { padding: 1rem !important; }
+.p-4 { padding: 1.5rem !important; }
+.p-5 { padding: 3rem !important; }
+
+/* Padding en eje Y (arriba/abajo) */
+.py-1 { padding-top: .25rem !important; padding-bottom: .25rem !important; }
+.py-2 { padding-top: .5rem !important; padding-bottom: .5rem !important; }
+.py-3 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+
+/* Padding en eje X (izquierda/derecha) */
+.px-1 { padding-left: .25rem !important; padding-right: .25rem !important; }
+.px-2 { padding-left: .5rem !important; padding-right: .5rem !important; }
+.px-3 { padding-left: 1rem !important; padding-right: 1rem !important; }
+
+/* Centrado con Flexbox */
+.d-flex { display: flex !important; }
+.align-items-center { align-items: center !important; }
+.justify-content-center { justify-content: center !important; }
+
+/* Texto centrado */
+.text-center { text-align: center !important; }
+
+
+
+/*----------------------------*/
+.color-box {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.btn-transparent{
+    background-color: transparent;
 }
 </style>
-<div class="row">
-    <div class="col-10">
-        <search-bar placeholder="message.search" function-callback="filter_table_type_event"></search-bar>
-    </div>
-    <div class="col-2">
-        <br>
-        <button class="btn btn-add" onclick="open_pop_new_type_event()">+</button>
-    </div>
+
+<div class="row p-3 d-flex align-items-center justify-content-center">
+  <div class="col-10">
+    <search-bar placeholder="message.search" function-callback="filter_table_type_event"></search-bar>
+  </div>
+  <div class="col-2 text-center">
+    <button class="btn btn-add" onclick="open_pop_new_type_event()">+</button>
+  </div>
 </div>
 
 <table>
     <thead>
         <tr>
-            <th t="event">Event</th>
-            <th t="color">Color</th>
+            <th t="color" style="width:5%;">Color</th>
+            <th t="event" style="width:75%;">Event</th>
+            <th style="width:30%;"></th>
         </tr>
     </thead>
     <tbody id="body-table-type-event">
         <tr>
+            <td>
+                <span class="color-box" style="background:#075EAB;"></span>
+            </td>
             <td>Event 1</td>
-            <td></td>
+            <td>
+                <button class="btn-transparent" onclick="editarEvento(1)">✏️</button>
+                <button class="btn-transparent" onclick="eliminarEvento(1)">🗑️</button>
+            </td>
         </tr>
         <tr>
-            <td>Event 2</td>
-            <td></td>
+            <td>
+                <span class="color-box" style="background:#ab8d07;"></span>
+            </td>
+            <td>Event 1</td>
+            <td>
+                <button class="btn-transparent" onclick="editarEvento(1)">✏️</button>
+                <button class="btn-transparent" onclick="eliminarEvento(1)">🗑️</button>
+            </td>
         </tr>
     </tbody>
 </table>

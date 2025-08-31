@@ -943,6 +943,10 @@ class PlusSelect extends HTMLElement {
     const thisLabelHaveAMessage = this.getAttribute('message');
     let label;
 
+    //get the value for if the programmer would like show other message that not be the default
+    const tilteBtn=this.getAttribute('btn_delete_title') || '';
+    const textBtn=this.getAttribute('btn_delete_text') || '';
+
     //her we will know if the programmer need show a message to the user
     if (thisLabelHaveAMessage) {
       //if the programmer need show a messga, we will to create the special label when the information that need
@@ -1173,6 +1177,7 @@ class PlusSelect extends HTMLElement {
           }
 
           if (delete_data) {
+            //create the button of delete and hsi characters
             const deleteBtn = document.createElement('button');
             deleteBtn.setAttribute('type', 'button');
             deleteBtn.setAttribute('message', '')
@@ -1182,7 +1187,7 @@ class PlusSelect extends HTMLElement {
               e.stopPropagation();
 
               //her we will see if the user delete the item
-              if (await plus_delete_with_help_button(data.id, linkDelete)) {
+              if (await plus_delete_with_help_button(data.id, linkDelete, tilteBtn, textBtn)) {
                 await update_option_for_the_server(''); //update the input when the user delete a item
               }
             });
@@ -1302,9 +1307,15 @@ function get_value_plus_select(id) {
 
 
 
-async function plus_delete_with_help_button(id, link) {
-  const titleDelete = window.t('info.confirm_delete');
-  const messageDelete = window.t('info.description_delete');
+async function plus_delete_with_help_button(id, link , title='', message='') {
+   //her we will see if the proggramer would like show other message that not be the default
+  const titleToTranslate=title || 'info.confirm_delete';
+  const messageToTranslate=message || 'info.description_delete';
+
+
+  const titleDelete = window.translate_text(titleToTranslate);
+  const messageDelete = window.translate_text(messageToTranslate);
+
   if (await show_message_question(titleDelete, messageDelete)) {
     const answer = await send_message_to_the_server(link, [id], true);
     if (answer.success) {
