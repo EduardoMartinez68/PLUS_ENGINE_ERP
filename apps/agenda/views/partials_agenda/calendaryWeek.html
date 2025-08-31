@@ -193,62 +193,64 @@
       const start = new Date(event.date_start);
       const end = new Date(event.date_finish);
 
-      const dayIndex = start.getDay(); // 0=domingo, 6=sábado
+      const dayIndex = start.getDay(); // 0=Sunday, 6=Saturday
       const startHour = start.getHours();
       const startMinutes = start.getMinutes();
-      const durationHours = (end - start) / (1000 * 60 * 60); // duración en horas
+      const durationHours = (end - start) / (1000 * 60 * 60); // duration in hours
 
-      // Altura relativa: cada hora = 1fr del contenedor de horas
-      const hourHeight = 4.1667; // 100% / 24 horas
+      // Relative height: each hour = 1fr of the hour container
+      const hourHeight = 4.1667; // 100% / 24 hours
       const top = startHour * hourHeight + (startMinutes / 60) * hourHeight;
       const height = durationHours * hourHeight;
 
       const eventDiv = document.createElement('div');
       eventDiv.className = 'calendary-week-event';
 
-      // Posición adaptable
+      // Adaptable position for all the devices
       eventDiv.style.position = 'absolute';
-      eventDiv.style.top = `calc(${top}% + 4.5%)`; // +2% para header
-      eventDiv.style.width = `calc(${100 / 7 - 0.5}%)`; // ancho de columna - margen
+      eventDiv.style.top = `calc(${top}% + 4.5%)`; 
+      eventDiv.style.width = `calc(${100 / 7 - 0.5}%)`; 
 
+
+      //here we set the left position based on the day index. All the day need a specific offset
       if(dayIndex==0){
-        eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 8%)`; // offset relativo al ancho de columna
+        eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 8%)`;
       }
       else if (dayIndex==1){
-        eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 8.2%)`; // offset relativo al ancho de columna
-        eventDiv.style.width = `calc(${100 / 7 - 0.5}%)`; // ancho de columna - margen
+        eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 8.2%)`; 
+        eventDiv.style.width = `calc(${100 / 7 - 0.5}%)`; 
 
       }
       else if (dayIndex==2){
-        eventDiv.style.width = `calc(${100 / 7 - 0.9}%)`; // ancho de columna - margen
+        eventDiv.style.width = `calc(${100 / 7 - 0.9}%)`; 
         eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 8.955%)`;
       }
       else if (dayIndex==5){
-        eventDiv.style.width = `calc(${100 / 7 - 0.9}%)`; // ancho de columna - margen
+        eventDiv.style.width = `calc(${100 / 7 - 0.9}%)`; 
         eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 11.1%)`;
       }
       else if (dayIndex==6){
-        eventDiv.style.width = `calc(${100 / 7 - 0.9}%)`; // ancho de columna - margen
+        eventDiv.style.width = `calc(${100 / 7 - 0.9}%)`; 
         eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 11.9%)`;
       }
       else{
-        eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 10%)`; // offset relativo al ancho de columna
+        eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 10%)`;
       }
 
 
-      eventDiv.style.height = `${height}%`;
+      eventDiv.style.height = `${height}%`; //this is for the event duration
 
-      // Color de fondo
+      // Background color
       const bgColor = event.appoints[0].type_appoint?.color || 'rgba(0, 123, 255, 0.2)';
       eventDiv.style.backgroundColor = bgColor;
 
       //---------
-      // Contraste automático del texto
+      // Automatic text contrast
       const rgb = bgColor.match(/\d+/g) || [0, 123, 255];
       const brightness = (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) / 1000;
       eventDiv.style.color = brightness > 125 ? 'black' : 'white';
 
-      // Estilo de texto
+      // Text style
       eventDiv.style.cursor = 'pointer';
       eventDiv.style.display = 'flex';
       eventDiv.style.flexDirection = 'column';
@@ -256,12 +258,11 @@
       eventDiv.style.justifyContent = 'center';
       eventDiv.style.borderRadius = '6px';
       eventDiv.style.padding = '2%';
-      //eventDiv.style.fontFamily = 'Arial, sans-serif';
       eventDiv.style.overflow = 'hidden';
       eventDiv.style.textAlign = 'center';
       eventDiv.style.boxShadow = '0 1px 3px rgba(0,0,0,0.2)';
 
-      // Contenido del evento
+      // container of the appointment
       const title = document.createElement('div');
       title.textContent = event.appoints[0].title;
       title.style.fontWeight = 'bold';
@@ -282,6 +283,7 @@
       priorityContainer.style.justifyContent = 'center';
       priorityContainer.style.marginTop = '0.2em';
 
+      //here we will show the level of the priority of the appointment
       const priority = event.appoints[0].priority || 0; 
       if(priority>0){
         for (let i = 0; i < 3; i++) {
@@ -304,12 +306,12 @@
 
 
       //-----show the hours of the event when the user 
-      // Tooltip con la hora
+      // Tooltip with the time
       const startHourStr = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const endHourStr = end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const tooltipText = `${startHourStr} - ${endHourStr}`;
 
-      // Crear un div para el tooltip
+      // Create a div for the tooltip
       const tooltip = document.createElement('div');
       tooltip.className = 'event-tooltip';
       tooltip.textContent = tooltipText;
@@ -326,10 +328,11 @@
 
 
       // show the tooltip to move the mouse for one of the events
+      //with this we will show the duration of the event
       eventDiv.addEventListener('mouseenter', e => {
         tooltip.style.visibility = 'visible';
-        tooltip.style.left = e.pageX + 10 + 'px'; // 10px a la derecha del cursor
-        tooltip.style.top = e.pageY + 10 + 'px';  // 10px debajo del cursor
+        tooltip.style.left = e.pageX + 10 + 'px'; // 10px to the right of the cursor
+        tooltip.style.top = e.pageY + 10 + 'px';  // 10px below the cursor
       });
 
       eventDiv.addEventListener('mousemove', e => {
@@ -341,7 +344,7 @@
         tooltip.style.visibility = 'hidden';
       });
 
-
+      // Show the character of the event when the user do click
       eventDiv.addEventListener('click', async () => {
         await show_character_appoint(event.appoints[0].id);
       });
@@ -358,28 +361,42 @@
 
 
 
-
+      //add the tooltip
       eventDiv.appendChild(title);
       eventDiv.appendChild(legend);
       eventDiv.appendChild(priorityContainer);
-
       calendar.appendChild(eventDiv);
     });
     
 
 
-    // 🔴 Línea roja de la hora actual
-    if (today >= weekStart && today <= new Date(weekStart.getTime() + 6 * 86400000)) {
-      const hours = today.getHours();
-      const minutes = today.getMinutes();
-      const positionY = (hours * 40) + (minutes / 60 * 40); // cada hora es 40px
+    //Red line of the current time for show the hour current of the user for that the user know that evenet next 
+    const redLine = document.createElement('div');
+    redLine.className = 'calendary-week-current-hour-line';
+    calendar.appendChild(redLine);
 
-      const redLine = document.createElement('div');
-      redLine.className = 'calendary-week-current-hour-line';
-      redLine.style.top = `${positionY + 40}px`; // +40 por el encabezado de días
+    //now we will to create the function that update the tooltip position
+    function updateLine() {
+      const today = new Date();
 
-      calendar.appendChild(redLine);
+      if (today >= weekStart && today <= new Date(weekStart.getTime() + 6 * 86400000)) {
+        const hours = today.getHours();
+        const minutes = today.getMinutes();
+        const positionY = (hours * 40) + (minutes / 60 * 40); // cada hora es 40px
+
+        redLine.style.top = `${positionY + 40}px`; // +40 por el encabezado
+        redLine.style.width = "100%"; // línea que cruce todo el día (opcional)
+        redLine.style.height = "2px";
+        redLine.style.background = "red";
+        redLine.style.position = "absolute";
+        redLine.style.left = "0";
+      } else {
+        redLine.style.display = "none"; // si no está en la semana, no mostrar
+      }
     }
+
+
+    setInterval(updateLine, 60000);
   }
 
   function darkenColor(color, amount = 0.3) {
