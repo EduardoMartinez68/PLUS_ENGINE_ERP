@@ -173,6 +173,47 @@ def get_events_by_date_range(request):
             }
         }
 
+    def create_events_that_need_most_of_a_day(e, date_start, date_finish):
+        events_data=[]
+        #here we will see if this event is only a day or this event spans multiple days
+        if date_start.date() != date_finish.date():
+            #now we will to create all the event in the week
+            current_date = date_start.date()
+            end_date = date_finish.date()
+
+            while current_date <= end_date:
+                current_date = date_start.date()
+                end_date = date_finish.date()
+
+                while current_date <= end_date:
+                    # start of the day's piece
+                    if current_date == date_start.date():
+                        start_time = date_start.time()
+                    else:
+                        start_time = time(0, 0)
+
+                    # end of the day's piece
+                    if current_date == date_finish.date():
+                        end_time = date_finish.time()
+                    else:
+                        end_time = time(23, 59)
+
+                    # create datetime for the chunk
+                    chunk_start = datetime.combine(current_date, start_time, tzinfo=date_start.tzinfo)
+                    chunk_end = datetime.combine(current_date, end_time, tzinfo=date_start.tzinfo)
+
+                    events_data.append(add_event_to_the_list(e, chunk_start, chunk_end))
+
+                    #next day
+                    current_date += timedelta(days=1)
+        else:
+            # Event is only one day
+            events_data.append(add_event_to_the_list(e, date_start, date_finish))
+
+
+        return events_data
+ 
+
     def get_the_events_repeat_of_the_user(user, start_date, end_date):
         events = Appointment.objects.filter(
             user=user,
@@ -212,13 +253,12 @@ def get_events_by_date_range(request):
 
             #while the start date be <= end_date of the calendar, we will to create new events
             #also think that need see if the repeat of the event finish
-            print()
             while start_date <= end_date and (e.finish_repeat_date is None or e.finish_repeat_date > start_date):
-                time_end=start_date
+                
+                time_end=Plus.convert_from_utc(start_date, user.timezone)  #this is for change the time of the event
+                date_start = Plus.convert_from_utc(start_date, user.timezone)
 
                 #now we will to create the appoint that send to the frontend
-                events_data.append(add_event_to_the_list(e, start_date, time_end))
-
                 if time_repeat == 1: #day 
                     start_date += timedelta(days=1)
                 elif time_repeat == 7: #week
@@ -231,12 +271,18 @@ def get_events_by_date_range(request):
                     start_date += relativedelta(years=1)
                 else: 
                     break
+                
+                
+
 
                 time_end += timedelta(hours=hours) #this is for change the time of the event
+                
+                events_data+=create_events_that_need_most_of_a_day(e, date_start, time_end)
+                
 
 
         return events_data
-    
+
     if request.method == 'GET':
         #convert to datetime 
         date_start = request.GET.get('start_date')
@@ -260,10 +306,13 @@ def get_events_by_date_range(request):
 
         #here we will to serialize the date
         for e in events:
+            #convert the format of the date UTC that is save in the server and the transform to the hour of the user 
             date_start = Plus.convert_from_utc(e.date_start, request.user.timezone)
             date_finish = Plus.convert_from_utc(e.date_finish, request.user.timezone)
 
             #here we will see if this event is only a day or this event spans multiple days
+            events_data+=create_events_that_need_most_of_a_day(e, date_start, date_finish)
+            '''
             if date_start.date() != date_finish.date():
                 #now we will to create all the event in the week
                 current_date = date_start.date()
@@ -297,7 +346,7 @@ def get_events_by_date_range(request):
             else:
                 # Event is only one day
                 events_data.append(add_event_to_the_list(e, date_start, date_finish))
-    
+            '''
         #this is for the frontend
         return JsonResponse({'success': True, 'data': events_data}, status=200)
 
