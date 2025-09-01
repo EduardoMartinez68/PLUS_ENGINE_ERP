@@ -1083,6 +1083,12 @@ def get_the_first_type_events(request):
                 search_text = ""
     
             search_text=body_json
+    
+            #we will see if need get the value for a query. This is when need update a table or a container
+            search_text=body_json.get("query", search_text).strip()
+    
+            #now we will see if exist it for search
+            print(search_text)
             if search_text:
                 #search the text that the user would like get from the server
                 events = TypeAppoint.objects.filter(
@@ -1116,6 +1122,12 @@ def get_the_first_type_events(request):
                 search_text = ""
     
             search_text=body_json
+    
+            #we will see if need get the value for a query. This is when need update a table or a container
+            search_text=body_json.get("query", search_text).strip()
+    
+            #now we will see if exist it for search
+            print(search_text)
             if search_text:
                 #search the text that the user would like get from the server
                 events = TypeAppoint.objects.filter(

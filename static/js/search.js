@@ -1,4 +1,49 @@
 
+function show_loader_in_the_div_container_of_plus(contenedorId) {
+    const contenedor = document.getElementById(contenedorId);
+    contenedor.innerHTML = `
+    <style>
+        .loader img {
+            width: 80px;
+            height: auto;
+            opacity: 0.95;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .progress-bar span {
+            display: block;
+            width: 30%;
+            height: 100%;
+            background: #075EAB;
+            animation: move 1.2s infinite linear;
+        }
+
+        @keyframes move {
+            from { margin-left: -30%; }
+            to { margin-left: 100%; }
+        }
+    </style>
+
+    <div class="loader">
+    </div>
+    <div class="progress-bar"><span></span></div>
+    `;
+}
+
+function hidden_loader_in_the_div_container_of_plus(contenedorId, contenido) {
+    const contenedor = document.getElementById(contenedorId);
+    contenedor.innerHTML = contenido;
+}
+
 function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, delay = 500, type='tr') {
     /*
       inputsId=this is a array of all the inputs of filter fot search the objects. inputsId[0] is the id of the search input
@@ -28,6 +73,7 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, del
              //if the input have a value different to his last search, this means that need send a notification to the server
             if (query !== lastQuery) {
                 lastQuery = query;
+                show_loader_in_the_div_container_of_plus(fieldId);
                 await send_information_to_the_server()
             }
         }, delay);
@@ -58,6 +104,9 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, del
             //send a message to the server for get the answer
             data = await send_message_to_the_server(searchUrl, { query }, false);
         }
+
+        //when the server send a answer, we will to hidden the load in the div 
+        hidden_loader_in_the_div_container_of_plus(fieldId)
 
         //we will see if the server can answer with the information or exist a error
         if (data.success) {

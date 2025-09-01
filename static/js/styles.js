@@ -1305,8 +1305,6 @@ function get_value_plus_select(id) {
   return null;
 }
 
-
-
 async function plus_delete_with_help_button(id, link , title='', message='') {
    //her we will see if the proggramer would like show other message that not be the default
   const titleToTranslate=title || 'info.confirm_delete';

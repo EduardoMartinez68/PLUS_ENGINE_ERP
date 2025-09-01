@@ -37,12 +37,13 @@
 
 .btn-transparent{
     background-color: transparent;
+    border: 0;
 }
 </style>
 
 <div class="row p-3 d-flex align-items-center justify-content-center">
   <div class="col-10">
-    <search-bar placeholder="message.search" function-callback="filter_table_type_event"></search-bar>
+    <search-bar placeholder="message.search" function-callback="filter_table_type_event" id="input-search-type-event"></search-bar>
   </div>
   <div class="col-2 text-center">
     <button class="btn btn-add" onclick="open_pop_new_type_event()">+</button>
@@ -58,40 +59,35 @@
         </tr>
     </thead>
     <tbody id="body-table-type-event">
-        <tr>
-            <td>
-                <span class="color-box" style="background:#075EAB;"></span>
-            </td>
-            <td>Event 1</td>
-            <td>
-                <button class="btn-transparent" onclick="editarEvento(1)">✏️</button>
-                <button class="btn-transparent" onclick="eliminarEvento(1)">🗑️</button>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="color-box" style="background:#ab8d07;"></span>
-            </td>
-            <td>Event 1</td>
-            <td>
-                <button class="btn-transparent" onclick="editarEvento(1)">✏️</button>
-                <button class="btn-transparent" onclick="eliminarEvento(1)">🗑️</button>
-            </td>
-        </tr>
+        
     </tbody>
 </table>
 
 
 <script>
     function filter_table_type_event(text){
-        const rows = document.getElementById('body-table-type-event').getElementsByTagName('tr');
-        Array.from(rows).forEach(row => {
-            const eventName = row.cells[0].textContent.toLowerCase();
-            if (eventName.includes(text.toLowerCase())) {
-                row.style.display = "";
-            } else {
-                row.style.display = "none";
-            }
-        });
+        window.update_container_with_seeker(
+        ['input-search-type-event'], // id of the input of the seeker
+        'body-table-type-event',  // id of the container to update
+        divHtml,            // template with placeholders
+        'agenda/get_the_first_type_events/' // url for the search
+        );
     }
+
+
+    const divHtml = `
+        <td><span class="color-box" style="background:{ color };"></span></td>
+        <td>{ text }</td>
+        <td>
+            <button class="btn-transparent" onclick="editarEvento({ id })"><i class="fi fi-sr-pencil"></i></button>
+            <button class="btn-transparent" onclick="eliminarEvento({ id })"><i class="fi fi-sr-trash"></i></button>
+        </td>
+    `;
+
+    window.update_container_with_seeker(
+      ['input-search-type-event'], // id of the input of the seeker
+      'body-table-type-event',  // id of the container to update
+      divHtml,            // template with placeholders
+      'agenda/get_the_first_type_events/' // url for the search
+    );
 </script>
