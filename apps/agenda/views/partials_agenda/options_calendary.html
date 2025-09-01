@@ -19,20 +19,17 @@
 </message-pop>
 
 <script>
-    function open_type_pop() {
-        //first we will to clear all the input of the form 
-        update_pop_information()
-        show_pop('pop-data-event')
-      
-    }
+  function open_type_pop() {
+      //first we will to clear all the input of the form 
+      update_pop_information()
+      show_pop('pop-data-event')
+    
+  }
 
 
-    function clean_form_event() {
-      update_pop_information();
-    }
-
-
-
+  function clean_form_event() {
+    update_pop_information();
+  }
 
 
 
@@ -40,20 +37,21 @@
 
 
 
-    function open_pop_new_type_event() {
-      //clear the container of the input 
-      document.getElementById('title-type-event').value = '';
-
-      show_pop('pop-new-data-event')
-    }
-
-    function open_pop_show_all_type_event(){
-      show_pop('pop-show-all-the-type-event')
-    }
-</script>
 
 
-<script>
+
+  function open_pop_new_type_event() {
+    //clear the container of the input 
+    document.getElementById('title-type-event').value = '';
+
+    show_pop('pop-new-data-event')
+  }
+
+function open_pop_show_all_type_event() {
+  show_pop('pop-show-all-the-type-event');
+  filter_table_type_event('')
+}
+
 
   //------------------her is for update the information of the pop-----------------------//
   function update_pop_information() {

@@ -600,8 +600,6 @@ class SearchBar extends HTMLElement {
       });
     }
 
-
-
     this.replaceWith(wrapper);
   }
 }

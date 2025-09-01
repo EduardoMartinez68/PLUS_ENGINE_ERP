@@ -61,11 +61,10 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, del
     let timer;
     let lastQuery = '';
 
-
     //now forever that the user is writing in the seeker, we will see if we need update the container of the table
-    const triggerSearch = () => {
+    const triggerSearch = async()  => {
         const query = input.value.trim(); //get the value of the search
-
+        console.log(query)
         //this function is for create a delay because if the user is writing
         clearTimeout(timer);
         timer = setTimeout(async () => {
@@ -137,7 +136,6 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, del
         translate_dynamic_content(field); //translate the dynamic content of the field
     }
 
-
     //Listener for the main input (search)
     input.addEventListener('input', triggerSearch);
 
@@ -152,9 +150,29 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, del
         }
     }
 
+    //this script is for load all the information of the server when the input be visible for the user 
+    //this is for when the input and his div container be visible for the user, update the container to the information
+    //most new of the 
+    const observer = new IntersectionObserver(async (entries, obs) => {
+        for (const entry of entries) {
+            if (entry.isIntersecting) {
+                console.log("Input visible en pantalla, ejecutando triggerSearch()");
+                
+                // Aquí sí puedes usar await porque el callback ahora es async
+                show_loader_in_the_div_container_of_plus(fieldId);
+                await send_information_to_the_server()
+                // Si quieres que solo se ejecute una vez
+                obs.unobserve(entry.target);
+            }
+        }
+    }, {
+        root: null,      // viewport
+        threshold: 0.1   // al menos 10% visible
+    });
 
-
-    
+    if (input) {
+        observer.observe(input);
+    }
 }
 
 
