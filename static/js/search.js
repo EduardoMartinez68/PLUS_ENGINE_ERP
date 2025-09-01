@@ -155,14 +155,10 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, del
     //most new of the 
     const observer = new IntersectionObserver(async (entries, obs) => {
         for (const entry of entries) {
-            if (entry.isIntersecting) {
-                console.log("Input visible en pantalla, ejecutando triggerSearch()");
-                
-                // Aquí sí puedes usar await porque el callback ahora es async
+            if (entry.isIntersecting) {                
                 show_loader_in_the_div_container_of_plus(fieldId);
                 await send_information_to_the_server()
-                // Si quieres que solo se ejecute una vez
-                obs.unobserve(entry.target);
+                obs.unobserve(entry.target); //this is for only run once 
             }
         }
     }, {

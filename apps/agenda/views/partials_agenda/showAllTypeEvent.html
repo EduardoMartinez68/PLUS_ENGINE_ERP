@@ -38,6 +38,16 @@
 .btn-transparent{
     background-color: transparent;
     border: 0;
+    color: #8b8a8a;
+}
+
+.btn-transparent:hover{
+    color: #777676;
+}
+
+.table-type-event{
+    max-height:50%; 
+    overflow-y:auto;
 }
 </style>
 
@@ -54,14 +64,39 @@
     <thead>
         <tr>
             <th t="color" style="width:5%;">Color</th>
-            <th t="event" style="width:75%;">Event</th>
-            <th style="width:30%;"></th>
+            <th t="event" style="width:70%;">Event</th>
+            <th style="width:15%;"></th>
+            <th style="width:15%;"></th>
         </tr>
     </thead>
-    <tbody id="body-table-type-event">
+    <tbody id="body-table-type-event" class="table-type-event">
 
     </tbody>
 </table>
+
+
+
+
+
+
+<!---------this is for when the user would like edit this event---------->
+<message-pop title="title.edit-type-of-event" name="pop-edit-data-type-event">
+    <input type="hidden" id="id-type-event">
+    <div class="section">
+        <label t="new-type-event">Title of the event</label>
+        <input type="text" name="title-type-event" class="case-title-input" t-placeholder="new-type-event" required
+            maxlength="300" id="title-type-event-edit" />
+    </div>
+
+    <div class="section">
+        <label for="">Color</label>
+        <input-color id="color-type-event-edit" name="color-type-event"></input-color>
+    </div>
+
+    <button t="btn.update" class="btn btn-success btn-edit" onclick="edit_type_event()">Update</button>
+</message-pop>
+
+
 
 
 <script>
@@ -79,15 +114,67 @@
         <td><span class="color-box" style="background:{ color };"></span></td>
         <td>{ text }</td>
         <td>
-            <button class="btn-transparent" onclick="editarEvento({ id })"><i class="fi fi-sr-pencil"></i></button>
-            <button class="btn-transparent" onclick="eliminarEvento({ id })"><i class="fi fi-sr-trash"></i></button>
+            <button class="btn btn-transparent" onclick="show_information_type_event({ id }, '{ text }', '{ color }')"><i class="fi fi-sr-pencil"></i></button>
         </td>
+        <td>
+            <button class="btn btn-transparent" onclick="plus_delete_with_help_button({ id }, '/agenda/delete_type_event', 'Tipo de evento', 'deseas eliminar este tipo de evento?')"><i class="fi fi-sr-trash"></i></button>
+        </td>    
     `;
 
+
+    //plus_delete_with_help_button(data.id, linkDelete, tilteBtn, textBtn)
     window.update_container_with_seeker(
       ['input-search-type-event'], // id of the input of the seeker
       'body-table-type-event',  // id of the container to update
       divHtml,            // template with placeholders
       'agenda/get_the_first_type_events/' // url for the search
     );
+    
+
+    function show_information_type_event(id, title, color){
+        //first we will get the information of this type event from the server
+        document.getElementById('id-type-event').value=id; 
+        document.getElementById('title-type-event-edit').value=title;
+        const colorInput=document.getElementById('color-type-event-edit');
+        colorInput.updateColor(color);
+        
+        show_pop('pop-edit-data-type-event');
+    }
+
+    async function edit_type_event(){
+        //get the value of the inputs
+        const id=document.getElementById('id-type-event').value;
+        const title = document.getElementById("title-type-event-edit").value;
+        const color = document.getElementById("color-type-event-edit").value;
+       
+
+        if(!id){
+            return;
+        }
+
+        //this is for know if exist a title in <input>
+        if(title.trim() === ''){
+            show_alert('alert', window.translate_text("message.need_most_data"), window.translate_text("message.need_a_name_for_the_type_event"));
+            return;
+        }
+
+        //her we will see that asnwer send of the server
+        const response = await send_message_to_the_server('/agenda/update_type_event/',{
+            id:id,
+            title: title,
+            color: color
+        })
+
+        //we will see if can added the new type of event in the server
+        if(response.success){
+            //hide the pop
+            hide_pop('pop-show-all-the-type-event')
+            hide_pop('pop-edit-data-type-event');
+            await window.update_all_the_information_of_my_calendary(); //update the event that exist in our calendary 
+            show_alert('success', window.translate_text('message.update-edit-type-event'), window.translate_text('message.update-edit-type-event-description'));
+        }else{
+            //if not can save the new event in the server, show a message of error and show the code of error 
+            show_alert('error', window.translate_text("message.error_in_server"), window.translate_text(response.message), response.error);
+        }
+    }
 </script>

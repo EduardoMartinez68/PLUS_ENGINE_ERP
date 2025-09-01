@@ -587,9 +587,9 @@ def create_type_event(request):
         try:
             data = json.loads(request.body)
             title = data.get('title', '').strip()
-            color = data.get('color', '#075EAD')
+            color = data.get('color', '#075EAD').strip()
 
-            if title == '':
+            if title.trip() == '':
                 return JsonResponse({'success': False, 'message': 'message.need_a_name_for_the_type_event', 'error': 'Need the title of the type event'}, status=400)
 
             # create and save the new TypeAppoint
@@ -608,5 +608,36 @@ def create_type_event(request):
 
     return JsonResponse({'success': False, 'message': 'Método no permitido.'}, status=405)
 
+def update_type_event(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            type_id = data.get('id')
+            title = data.get('title', '').strip()
+            color = data.get('color', '').strip()
 
+            if not type_id:
+                return JsonResponse({'success': False, 'message': 'ID del tipo de evento requerido.', 'error': 'Missing type event id'}, status=400)
+
+            if title == '':
+                return JsonResponse({'success': False, 'message': 'Se requiere un nombre para el tipo de evento.', 'error': 'Title is empty'}, status=400)
+
+            # Verificamos que el type event exista y pertenezca al usuario
+            try:
+                type_event = TypeAppoint.objects.get(id=type_id, user=request.user)
+            except TypeAppoint.DoesNotExist:
+                return JsonResponse({'success': False, 'message': 'Tipo de evento no encontrado o no tienes permiso.', 'error': 'Not found or unauthorized'}, status=404)
+
+            # Actualizamos los campos
+            type_event.name = title
+            if color:
+                type_event.color = color
+            type_event.save()
+
+            return JsonResponse({'success': True, 'message': 'Tipo de evento actualizado correctamente.'})
+        
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': 'Error al actualizar el tipo de evento.', 'error': str(e)}, status=500)
+
+    return JsonResponse({'success': False, 'message': 'Método no permitido.'}, status=405)
 

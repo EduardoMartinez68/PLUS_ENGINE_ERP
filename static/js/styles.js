@@ -1,3 +1,4 @@
+let currentPopZIndex = 5000;
 //this functions is for create a id unique for that not exist a error when create a new element
 function generate_unique_dom_id(prefix = "plus-") {
   let id;
@@ -687,9 +688,13 @@ class ConfirmDialog {
     return new Promise((resolve) => {
       const overlay = document.createElement("div");
       overlay.className = "confirm-popup-overlay";
+      currentPopZIndex+=1
+      overlay.zIndex=currentPopZIndex;
 
       const popup = document.createElement("div");
       popup.className = "confirm-popup";
+      currentPopZIndex+=1
+      popup.zIndex=currentPopZIndex;
 
       //here we will create the icon circle and the title and message of the popup
       const iconCircle = document.createElement("div");
@@ -915,7 +920,6 @@ class PlusModule extends HTMLElement {
     this.classList.add('plus-modules-module');
   }
 }
-
 
 class PlusSelect extends HTMLElement {
   constructor() {
@@ -3416,7 +3420,6 @@ function open_tab(evt, tabName) {
 }
 
 /**----------------------------------MESSAGE POP----------------------**/
-let currentPopZIndex = 5000;
 function show_pop(idOverlay) {
   const overlay = document.getElementById(idOverlay);
   if (overlay) {
@@ -3459,9 +3462,11 @@ function show_alert(type, title, description, readmoreText = '') {
   const buttonsEl = document.getElementById('alert-buttons');
   const iconEl = document.getElementById('alert-icon');
 
-  overlay.style.zIndex = currentPopZIndex+1;
+  overlay.style.zIndex = currentPopZIndex;
+  overlay.style.zIndex += 1;
 
-  pop.style.zIndex = currentPopZIndex+1;
+  pop.style.zIndex = currentPopZIndex+2;
+  pop.style.zIndex = currentPopZIndex+3;
   pop.classList.remove('sub-menu-app-pop-info', 'sub-menu-app-pop-alert', 'sub-menu-app-pop-question', 'sub-menu-app-pop-normal');
   pop.classList.add('sub-menu-app-pop-' + type);
 

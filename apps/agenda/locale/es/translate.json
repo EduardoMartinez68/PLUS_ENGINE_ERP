@@ -122,5 +122,10 @@
     "message.add-new-event.success": "Se ha añadido un nuevo evento",
     "message.add-new-event.success.description": "Tu nuevo evento se ha añadido correctamente a tu agenda.",
     "message.update-new-event.success": "Se ha actualizado el evento correctamente",
-    "message.update-new-event.success.description": "Tu evento se ha actualizado correctamente en tu agenda."
+    "message.update-new-event.success.description": "Tu evento se ha actualizado correctamente en tu agenda.",
+
+
+    "title.edit-type-of-event":"Editar tipo de evento",
+    "message.update-edit-type-event":"Tu tipo de evento fue actualizado",
+    "message.update-edit-type-event-description":"Tu evento se ha actualizado correctamente en tu agenda."
 }
