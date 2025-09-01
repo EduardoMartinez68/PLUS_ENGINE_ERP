@@ -117,7 +117,7 @@
             <button class="btn btn-transparent" onclick="show_information_type_event({ id }, '{ text }', '{ color }')"><i class="fi fi-sr-pencil"></i></button>
         </td>
         <td>
-            <button class="btn btn-transparent" onclick="plus_delete_with_help_button({ id }, '/agenda/delete_type_event', 'Tipo de evento', 'deseas eliminar este tipo de evento?')"><i class="fi fi-sr-trash"></i></button>
+            <button class="btn btn-transparent" onclick="delete_type_event({ id })"><i class="fi fi-sr-trash"></i></button>
         </td>    
     `;
 
@@ -177,4 +177,19 @@
             show_alert('error', window.translate_text("message.error_in_server"), window.translate_text(response.message), response.error);
         }
     }
+
+    async function delete_type_event(id){
+        if (await show_message_question('message.delete.title', 'message.delete.description')) {
+            const answer = await send_message_to_the_server('agenda/delete_type_event/', {id}, true);
+            if (answer.success) {
+                hide_pop('pop-show-all-the-type-event')
+                show_alert('success', window.t('success.deleted'), window.t('description.deleted'))
+            } else {
+                show_alert('alert', window.t('error.general'), window.t('error.to_delete'), answer.error)
+                console.error(answer.message || 'Error to delete the item in the server');
+                console.error(answer.error);
+            }
+        }
+    }
+
 </script>

@@ -37,12 +37,12 @@ async function send_message_to_the_server(url, data = {}, with_load = true, type
         if (!response.ok) {
             console.log(url)
             //throw new Error(`HTTP error! Status: ${response.status}`);
-            show_alert('alert', 'Error', 'Error in ' + url, (result.error + '\n' + response.status))
+            show_alert('alert', 'Error', 'Error in ' + url, (response.error + '\n' + response.status))
         }
 
         //get the information that send the server and the return 
-        const result = await response.json();
-        return result;
+        const answer = await response.json();
+        return answer;
 
     } catch (error) {
         console.log(url)

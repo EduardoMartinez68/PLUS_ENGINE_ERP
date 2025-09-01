@@ -10,4 +10,5 @@ urlpatterns = [
     path('get_the_first_type_events/', views.get_the_first_type_events, name='get_the_first_type_events'),
     path('create_type_event/', views.create_type_event, name='create_type_event'),
     path('update_type_event/', views.update_type_event, name='update_type_event'),
+    path('delete_type_event/', views.delete_type_event, name='delete_type_event'),
 ]

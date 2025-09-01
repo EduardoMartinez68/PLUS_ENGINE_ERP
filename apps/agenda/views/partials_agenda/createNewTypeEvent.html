@@ -38,6 +38,8 @@
         if(response.success){
             //hide the pop
             hide_pop('pop-new-data-event')
+            hide_pop('pop-show-all-the-type-event')
+            hide_pop('pop-edit-data-type-event');
             show_alert('success', window.translate_text('message.add-new-type-event.success'), window.translate_text('message.add-new-type-event.success.description'));
         }else{
             //if not can save the new event in the server, show a message of error and show the code of error 

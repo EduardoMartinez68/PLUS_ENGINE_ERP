@@ -127,5 +127,8 @@
 
     "title.edit-type-of-event":"Editar tipo de evento",
     "message.update-edit-type-event":"Tu tipo de evento fue actualizado",
-    "message.update-edit-type-event-description":"Tu evento se ha actualizado correctamente en tu agenda."
+    "message.update-edit-type-event-description":"Tu evento se ha actualizado correctamente en tu agenda.",
+
+    "message.delete.title": "Eliminar tipo de evento",
+    "message.delete.description": "¿Deseas eliminar este tipo de evento?"
 }

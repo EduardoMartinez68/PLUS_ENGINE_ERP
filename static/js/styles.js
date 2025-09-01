@@ -688,13 +688,11 @@ class ConfirmDialog {
     return new Promise((resolve) => {
       const overlay = document.createElement("div");
       overlay.className = "confirm-popup-overlay";
-      currentPopZIndex+=1
-      overlay.zIndex=currentPopZIndex;
+      overlay.style.zIndex=currentPopZIndex;
 
       const popup = document.createElement("div");
       popup.className = "confirm-popup";
-      currentPopZIndex+=1
-      popup.zIndex=currentPopZIndex;
+      popup.style.zIndex=currentPopZIndex;
 
       //here we will create the icon circle and the title and message of the popup
       const iconCircle = document.createElement("div");
@@ -744,6 +742,21 @@ class ConfirmDialog {
 }
 
 async function show_message_question(title, message) {
+  currentPopZIndex+=1
+
+  //now update the z index of the menu of the apps
+  const appMenu = document.getElementById('appMenu');
+  let currentZIndex = window.getComputedStyle(appMenu).getPropertyValue('z-index');
+
+  //we will see if have a z-index, if have we will aument 1 to his value
+  if (!isNaN(currentZIndex)) {
+    let newZIndex = currentZIndex + 1;
+    appMenu.style.zIndex = newZIndex;
+  } else {
+    //if not have a z-index, we will to create a z-index
+    appMenu.style.zIndex = 1000;
+  }
+
   const result = await ConfirmDialog.show(title, message);
   return result;
 }
@@ -1317,7 +1330,7 @@ async function plus_delete_with_help_button(id, link , title='', message='') {
   const messageDelete = window.translate_text(messageToTranslate);
 
   if (await show_message_question(titleDelete, messageDelete)) {
-    const answer = await send_message_to_the_server(link, [id], true);
+    const answer = await send_message_to_the_server(link, {id}, true);
     if (answer.success) {
       show_alert('success', window.t('success.deleted'), window.t('description.deleted'))
       return true;
