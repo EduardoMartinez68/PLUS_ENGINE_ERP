@@ -564,7 +564,7 @@ def get_the_first_type_events(request):
             search_text=body_json.get("query", search_text).strip()
         except:
             pass 
-        
+
         #now we will see if exist it for search
         if search_text:
             #search the text that the user would like get from the server
@@ -584,6 +584,26 @@ def get_the_first_type_events(request):
         return JsonResponse({'success': True, 'results': list(events)})
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
+
+def get_type_event_for_id(request):
+    if request.method == 'GET':
+        type_id = request.GET.get('id')
+
+        try:
+            if type_id:
+                answer = TypeAppoint.objects.filter(id=type_id, user=request.user).annotate(
+                    text=F('name')
+                ).values('id', 'text', 'description', 'color').first()
+
+                if not answer:
+                    return JsonResponse({'success': False, 'message': 'Tipo de evento no encontrado o no tienes permiso.'}, status=404)
+
+                return JsonResponse({'success': True, 'answer': answer})
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': 'Error al obtener el tipo de evento.', 'error': str(e)}, status=500)
+
+    return JsonResponse({'success': False, 'message': 'Método no permitido.'}, status=405)
 
 def create_type_event(request):
     data = json.loads(request.body)
@@ -645,7 +665,6 @@ def update_type_event(request):
             return JsonResponse({'success': False, 'message': 'Error al actualizar el tipo de evento.', 'error': str(e)}, status=500)
 
     return JsonResponse({'success': False, 'message': 'Método no permitido.'}, status=405)
-
 
 def delete_type_event(request):
     if request.method == 'POST':

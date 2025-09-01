@@ -50,7 +50,7 @@
     overflow-y:auto;
 }
 </style>
-
+<message-pop title="type-events" name="pop-show-all-the-type-event">
 <div class="row p-3 d-flex align-items-center justify-content-center">
   <div class="col-10">
     <search-bar placeholder="message.search" function-callback="filter_table_type_event" id="input-search-type-event"></search-bar>
@@ -73,7 +73,7 @@
 
     </tbody>
 </table>
-
+</message-pop>
 
 
 
@@ -137,7 +137,6 @@
         document.getElementById('title-type-event-edit').value=title;
         const colorInput=document.getElementById('color-type-event-edit');
         colorInput.updateColor(color);
-        
         show_pop('pop-edit-data-type-event');
     }
 
@@ -168,6 +167,7 @@
         //we will see if can added the new type of event in the server
         if(response.success){
             //hide the pop
+            window.refresh_calendar();
             hide_pop('pop-show-all-the-type-event')
             hide_pop('pop-edit-data-type-event');
             await window.update_all_the_information_of_my_calendary(); //update the event that exist in our calendary 
@@ -182,6 +182,7 @@
         if (await show_message_question('message.delete.title', 'message.delete.description')) {
             const answer = await send_message_to_the_server('agenda/delete_type_event/', {id}, true);
             if (answer.success) {
+                window.refresh_calendar();
                 hide_pop('pop-show-all-the-type-event')
                 show_alert('success', window.t('success.deleted'), window.t('description.deleted'))
             } else {
@@ -192,4 +193,12 @@
         }
     }
 
+    async function edit_type_event_for_select(id){
+        const answer=await window.send_message_to_the_server('/agenda/get_type_event_for_id/', {id}, true, 'GET')
+        if(answer.success){
+            const title=`${answer.answer.text}`;
+            const color=`${answer.answer.color}`;
+            show_information_type_event(id,title,color)
+        }
+    }
 </script>

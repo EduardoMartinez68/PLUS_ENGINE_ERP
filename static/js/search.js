@@ -64,7 +64,6 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, del
     //now forever that the user is writing in the seeker, we will see if we need update the container of the table
     const triggerSearch = async()  => {
         const query = input.value.trim(); //get the value of the search
-        console.log(query)
         //this function is for create a delay because if the user is writing
         clearTimeout(timer);
         timer = setTimeout(async () => {
