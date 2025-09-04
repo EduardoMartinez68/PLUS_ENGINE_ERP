@@ -1,0 +1,93 @@
+<style>
+    .badge-type {
+        display: inline-block;
+        padding: 4px 12px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 20px;   /* más redondeado estilo "tag" */
+        border: 1px solid rgba(0,0,0,0.1); /* sutil borde */
+        text-transform: capitalize;
+        white-space: nowrap;
+        transition: all 0.2s ease-in-out;
+        color: rgba(0,0,0,0.8);
+    }
+
+    .my-pop-content{
+        min-width: 50vw;
+        width: auto;    
+        height: auto;
+        overflow: auto;
+    }
+</style>
+<message-pop title="title.show-all-my-appoints" name="pop-show-all-my-type-events">
+    <div class="row">
+        <div class="col-5">
+            <search-bar placeholder="message.search" function-callback="filter_table_type_event" id="input-search-all-my-event"></search-bar>
+        </div>
+        <div class="col-2">
+            <plus-select-date id="select-date-serach-event"></plus-select-date>
+        </div>
+        <div class="col-2">
+            <plus-select label="search-type-event" name="type_event" required id="type_event_for_search" link="agenda/get_the_first_type_events/">
+            </plus-select>
+        </div>
+    </div>
+
+    <div class="row">
+        <table>
+            <thead>
+                <tr>
+                    <th t="event">Title</th>
+                    <th t="description">Descripción</th>
+                    <th t="range-date">Inicio</th>
+                    <th t="type">Type event</th>
+                    <th t="priority">Prioridad</th>
+                    <th t="ubication">Ubicación</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="body-table-my-events">
+                <tr>
+                    <td>Junta con Juan</td>
+                    <td>Discutir el desarrollo del contrato</td>
+                    <td>03/09/2025: 15:00 - 03/09/2025: 16:00</td>
+                    <td><span class="badge-type" style="background-color: rgb(179, 179, 240); color: rgb(50,50,150);">Juntas</span></td>
+                    <td>⭐⭐⭐</td>
+                    <td>Soliseo Mexico. SLP. Reyes. Num 32.</td>
+                    <td>
+                        <button class="btn btn-transparent"><i class="fi fi-sr-pencil"></i></button>
+                    </td>
+                    <td>
+                        <button class="btn btn-transparent"><i class="fi fi-sr-trash"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</message-pop>
+
+
+<script>
+(() => {
+    /*
+    const divHtml = `
+        <td><span class="color-box" style="background:{ color };"></span></td>
+        <td>{ text }</td>
+        <td>
+            <button class="btn btn-transparent" onclick="show_information_type_event({ id }, '{ text }', '{ color }')"><i class="fi fi-sr-pencil"></i></button>
+        </td>
+        <td>
+            <button class="btn btn-transparent" onclick="delete_type_event({ id })"><i class="fi fi-sr-trash"></i></button>
+        </td>    
+    `;
+
+    window.update_container_with_seeker(
+        ['input-search-all-my-event'], // id of the input of the seeker
+        'body-table-my-events',  // id of the container to update
+        divHtml,            // template with placeholders
+        'agenda/get_the_first_type_events/' // url for the search
+    );
+    */
+})();
+</script>

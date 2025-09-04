@@ -130,5 +130,13 @@
     "message.update-edit-type-event-description":"Tu evento se ha actualizado correctamente en tu agenda.",
 
     "message.delete.title": "Eliminar tipo de evento",
-    "message.delete.description": "¿Deseas eliminar este tipo de evento?"
+    "message.delete.description": "¿Deseas eliminar este tipo de evento?",
+
+
+
+    "table-type-event":"Tipo de evento",
+
+    
+    "title.show-all-my-appoints":"Mis citas",
+    "table.name-of-my-appoint":"Nombre del evento"
 }

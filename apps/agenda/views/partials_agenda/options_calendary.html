@@ -3,6 +3,7 @@
     <plus-action text="new-event" onclick="open_type_pop" combo="Shift+n"></plus-action>
     <plus-action text="create-a-new-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
     <plus-action text="title-show-all-the-type-event" onclick="open_pop_show_all_type_event"></plus-action>
+    <plus-action text="title.show-all-my-appoints" onclick="open_pop_show_all_my_appoints"></plus-action>
 </plus-actions>
 
 <message-pop title="title-pop-create-event" name="pop-data-event">
@@ -16,6 +17,7 @@
 
 
 {% include 'partials_agenda/showAllTypeEvent.html' %}
+{% include 'partials_agenda/tableAllMyEvents.html' %}
 
 <script>
   function open_type_pop() {
@@ -51,7 +53,9 @@ function open_pop_show_all_type_event() {
   filter_table_type_event('')
 }
 
-
+function open_pop_show_all_my_appoints(){
+  show_pop('pop-show-all-my-type-events')
+}
   //------------------her is for update the information of the pop-----------------------//
   function update_pop_information() {
     //get the date 

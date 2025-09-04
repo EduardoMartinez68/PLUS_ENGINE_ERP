@@ -26,8 +26,8 @@
 <table>
     <thead>
         <tr>
-            <th t="color" style="width:5%;">Color</th>
-            <th t="event" style="width:70%;">Event</th>
+            <th t="color" style="width:5%;"></th>
+            <th t="event" style="width:70%;" t="table-type-event">Event</th>
             <th style="width:15%;"></th>
             <th style="width:15%;"></th>
         </tr>
@@ -130,7 +130,7 @@
         //we will see if can added the new type of event in the server
         if(response.success){
             //hide the pop
-            window.refresh_calendar();
+            window.update_all_the_information_of_my_calendary();
             hide_pop('pop-show-all-the-type-event')
             hide_pop('pop-edit-data-type-event');
             await window.update_all_the_information_of_my_calendary(); //update the event that exist in our calendary 
