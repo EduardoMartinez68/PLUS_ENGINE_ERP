@@ -9,7 +9,7 @@ from ..plus_wrapper import Plus
 import os
 import sys
 from datetime import datetime, timedelta, time
-from django.db.models import F
+from django.db.models import F, Q
 from ..models import TypeAppoint, Appointment
 from django.http import JsonResponse
 import json
@@ -796,6 +796,135 @@ def get_appointment_by_id(request):
             }
     
             return JsonResponse({'success': True, 'data': event_data}, status=200)
+
+@login_required(login_url='login')
+def search_events(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        """
+        Search user events by keyword, date range, and optional type_event filter.
+        """
+        if request.method != 'POST':
+            return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+    
+        print(list(request))
+        user = request.user
+        search = request.GET.get('query', '').strip()
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        type_event_id = request.GET.get('type_event_id')
+    
+        # base query
+        events = Appointment.objects.filter(user=user).select_related('id_type_appoint')
+    
+        # Filtro por rango de fechas
+        if start_date and end_date:
+            start_date = Plus.convert_to_utc(start_date, user.timezone)
+            end_date = Plus.convert_to_utc(end_date, user.timezone)
+            events = events.filter(
+                date_start__lte=end_date,
+                date_finish__gte=start_date
+            )
+    
+        # Filtro por texto en título o descripción
+        if search:
+            events = events.filter(
+                Q(title__icontains=search) | Q(description__icontains=search)
+            )
+    
+        # Filtro por tipo de evento
+        if type_event_id:
+            events = events.filter(id_type_appoint_id=type_event_id)
+    
+        # Ordenar por fecha de inicio
+        events = events.order_by('date_start')
+    
+        # Serializar datos
+        events_data = []
+        for e in events:
+            date_start = Plus.convert_from_utc(e.date_start, user.timezone)
+            date_finish = Plus.convert_from_utc(e.date_finish, user.timezone)
+    
+            events_data.append({
+                'id': e.id,
+                'title': e.title,
+                'description': e.description,
+                'date_start': localtime(date_start).isoformat(),
+                'date_finish': localtime(date_finish).isoformat(),
+                'priority': e.priority,
+                'location': e.location,
+                'link': e.link,
+                'activate_event_all_the_day': e.activate_event_all_the_day,
+                'type_appoint': {
+                    'id': e.id_type_appoint.id if e.id_type_appoint else None,
+                    'name': e.id_type_appoint.name if e.id_type_appoint else None,
+                    'color': e.id_type_appoint.color if e.id_type_appoint else None,
+                }
+            })
+        print(events_data)
+        return JsonResponse({'success': True, 'data': events_data}, status=200)
+    else:
+        """
+        Search user events by keyword, date range, and optional type_event filter.
+        """
+        if request.method != 'POST':
+            return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+    
+        print(list(request))
+        user = request.user
+        search = request.GET.get('query', '').strip()
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        type_event_id = request.GET.get('type_event_id')
+    
+        # base query
+        events = Appointment.objects.filter(user=user).select_related('id_type_appoint')
+    
+        # Filtro por rango de fechas
+        if start_date and end_date:
+            start_date = Plus.convert_to_utc(start_date, user.timezone)
+            end_date = Plus.convert_to_utc(end_date, user.timezone)
+            events = events.filter(
+                date_start__lte=end_date,
+                date_finish__gte=start_date
+            )
+    
+        # Filtro por texto en título o descripción
+        if search:
+            events = events.filter(
+                Q(title__icontains=search) | Q(description__icontains=search)
+            )
+    
+        # Filtro por tipo de evento
+        if type_event_id:
+            events = events.filter(id_type_appoint_id=type_event_id)
+    
+        # Ordenar por fecha de inicio
+        events = events.order_by('date_start')
+    
+        # Serializar datos
+        events_data = []
+        for e in events:
+            date_start = Plus.convert_from_utc(e.date_start, user.timezone)
+            date_finish = Plus.convert_from_utc(e.date_finish, user.timezone)
+    
+            events_data.append({
+                'id': e.id,
+                'title': e.title,
+                'description': e.description,
+                'date_start': localtime(date_start).isoformat(),
+                'date_finish': localtime(date_finish).isoformat(),
+                'priority': e.priority,
+                'location': e.location,
+                'link': e.link,
+                'activate_event_all_the_day': e.activate_event_all_the_day,
+                'type_appoint': {
+                    'id': e.id_type_appoint.id if e.id_type_appoint else None,
+                    'name': e.id_type_appoint.name if e.id_type_appoint else None,
+                    'color': e.id_type_appoint.color if e.id_type_appoint else None,
+                }
+            })
+        print(events_data)
+        return JsonResponse({'success': True, 'data': events_data}, status=200)
 
 @login_required(login_url='login')
 def edit_event(request):

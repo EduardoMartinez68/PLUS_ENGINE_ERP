@@ -3,7 +3,7 @@ from django.shortcuts import render
 import json
 from django.http import JsonResponse
 from ..models import TypeAppoint, Appointment
-from django.db.models import F
+from django.db.models import F, Q
 from datetime import datetime, timedelta, time
 import sys
 import os
@@ -407,19 +407,16 @@ def get_appointment_by_id(request):
 
         return JsonResponse({'success': True, 'data': event_data}, status=200)
 
-from django.http import JsonResponse
-from django.utils.timezone import localtime
-from django.db.models import Q
-
 def search_events(request):
     """
     Search user events by keyword, date range, and optional type_event filter.
     """
-    if request.method != 'GET':
+    if request.method != 'POST':
         return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
+    print(list(request))
     user = request.user
-    search = request.GET.get('search', '').strip()
+    search = request.GET.get('query', '').strip()
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
     type_event_id = request.GET.get('type_event_id')
@@ -471,7 +468,7 @@ def search_events(request):
                 'color': e.id_type_appoint.color if e.id_type_appoint else None,
             }
         })
-
+    print(events_data)
     return JsonResponse({'success': True, 'data': events_data}, status=200)
 
 def edit_event(request):

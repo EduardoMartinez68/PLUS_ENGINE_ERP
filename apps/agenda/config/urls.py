@@ -6,6 +6,7 @@ urlpatterns = [
     path('create_event/', views.create_event, name='create_event'),
     path('get_events_by_date_range/', views.get_events_by_date_range, name='get_events_by_date_range'),
     path('get_appointment_by_id/', views.get_appointment_by_id, name='get_appointment_by_id'),
+    path('search_events/', views.search_events, name='search_events'),
     path('edit_event/', views.edit_event, name='edit_event'),
     path('get_the_first_type_events/', views.get_the_first_type_events, name='get_the_first_type_events'),
     path('get_type_event_for_id/', views.get_type_event_for_id, name='get_type_event_for_id'),
