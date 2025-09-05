@@ -136,7 +136,22 @@
 
     "table-type-event":"Tipo de evento",
 
+    "table-events-title":"Evento",
+    "table-events-description":"Descripción",
+    "table-events-date-start":"Fecha Inicio",
+    "table-events-date-finish":"Fecha Final",
+    "table-events-type-event":"Tipo de Evento",
+    "table-events-priority":"Prioridad",
+    "table-events-ubication":"Ubicación",
     
     "title.show-all-my-appoints":"Mis citas",
-    "table.name-of-my-appoint":"Nombre del evento"
+    "table.name-of-my-appoint":"Nombre del evento",
+    "search.seacrh-all-my-events":"Escibre el nombre de un evento o su descripción...",
+
+    "question.delete-event": "¿Quieres eliminar este evento?",
+    "question.delete-event-description": "Al eliminar este evento ya no se podrá recuperar",
+
+    "message.delte-event-title":"Evento eliminado",
+    "message.delte-event-description":"El evento fue eliminado de la agenda con éxito",
+    "message.delete-event-fail":"El evento no fue eliminado"
 }

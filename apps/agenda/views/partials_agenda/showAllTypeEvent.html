@@ -136,7 +136,7 @@
         if (await show_message_question('message.delete.title', 'message.delete.description')) {
             const answer = await send_message_to_the_server('agenda/delete_type_event/', {id}, true);
             if (answer.success) {
-                window.refresh_calendar();
+                await window.refresh_calendar();
                 hide_pop('pop-show-all-the-type-event')
                 show_alert('success', window.t('success.deleted'), window.t('description.deleted'))
             } else {

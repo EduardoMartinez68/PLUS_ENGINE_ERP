@@ -393,8 +393,12 @@
 
         await update_all_the_information_of_my_calendary();
 
+        function refresh_calendar(){
+            window.renderCalendar(currentDate);
+        }
 
         window.update_all_the_information_of_my_calendary=update_all_the_information_of_my_calendary;
         window.renderCalendar=renderCalendar;
+        window.refresh_calendar=refresh_calendar;
     })();
 </script>

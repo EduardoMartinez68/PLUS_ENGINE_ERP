@@ -82,7 +82,7 @@ def create_event(request):
             link = body_json.get("link", "")
     
             repeat_this_event = body_json.get("repeat_this_event") == "on" #True/False
-            time_repeat =  body_json.get("time_repeat") or 0 #this is for that the ERP knows how often to repeat this event in days
+            time_repeat =  body_json.get("time_repeat", 0) or 0 #this is for that the ERP knows how often to repeat this event in days
             time_end_repeat = body_json.get("time_end_repeat") or None #this is for that the ERP knows when to stop repeating this event in days
     
             send_notification = body_json.get("send_notification") == "on"  # True/False
@@ -100,7 +100,14 @@ def create_event(request):
             date_start=event_dates['start'] #date when start the event
             date_finish=event_dates['end'] #date when finish the event
     
-            date_end_repeat = date_start + timedelta(days=int(time_end_repeat))
+            #here we will see if the time of repeat can be convert to int for save this information
+            if time_end_repeat is not None:
+                try:
+                    date_end_repeat = date_start + timedelta(days=int(time_end_repeat))
+                except ValueError:
+                    date_end_repeat = None  # if it cannot be converted to a number
+            else:
+                date_end_repeat = None
     
             #here we will see if the date start is valid and the date finish is valid
             if not validate_date_range(date_start, date_finish):
@@ -195,7 +202,7 @@ def create_event(request):
             link = body_json.get("link", "")
     
             repeat_this_event = body_json.get("repeat_this_event") == "on" #True/False
-            time_repeat =  body_json.get("time_repeat") or 0 #this is for that the ERP knows how often to repeat this event in days
+            time_repeat =  body_json.get("time_repeat", 0) or 0 #this is for that the ERP knows how often to repeat this event in days
             time_end_repeat = body_json.get("time_end_repeat") or None #this is for that the ERP knows when to stop repeating this event in days
     
             send_notification = body_json.get("send_notification") == "on"  # True/False
@@ -213,7 +220,14 @@ def create_event(request):
             date_start=event_dates['start'] #date when start the event
             date_finish=event_dates['end'] #date when finish the event
     
-            date_end_repeat = date_start + timedelta(days=int(time_end_repeat))
+            #here we will see if the time of repeat can be convert to int for save this information
+            if time_end_repeat is not None:
+                try:
+                    date_end_repeat = date_start + timedelta(days=int(time_end_repeat))
+                except ValueError:
+                    date_end_repeat = None  # if it cannot be converted to a number
+            else:
+                date_end_repeat = None
     
             #here we will see if the date start is valid and the date finish is valid
             if not validate_date_range(date_start, date_finish):
@@ -1224,6 +1238,97 @@ def edit_event(request):
                     'message': 'message.error.cannot-update-event',
                     'error': str(e)
                 }, status=500)
+
+@login_required(login_url='login')
+def delete_event(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        """
+        Delete an event by its ID and the user.
+        """
+        if request.method != 'POST':  
+            return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+    
+        try:
+            body_json = json.loads(request.body)  # Convert request body to dict
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': 'message.error.the-form-have-a-error', 'error': str(e)}, status=400)
+    
+        event_id = body_json.get('id_event')
+        user = request.user
+    
+        if not event_id:
+            return JsonResponse({'success': False, 'message': 'message.error.no-event-id-provided'}, status=400)
+    
+        try:
+            # Buscar el evento que pertenezca al usuario
+            appointment = Appointment.objects.get(id=event_id, user=user)
+    
+            appointment.delete()
+    
+            return JsonResponse({
+                'success': True,
+                'message': 'message.success.event-deleted',
+                'event_id': event_id
+            }, status=200)
+    
+        except Appointment.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': 'message.error.event-not-found',
+                "error": "The event was not found"
+            }, status=404)
+    
+        except Exception as e:
+            print("Error deleting event:", e)
+            return JsonResponse({
+                'success': False,
+                'message': 'message.error.cannot-delete-event',
+                'error': str(e)
+            }, status=500)
+    else:
+        """
+        Delete an event by its ID and the user.
+        """
+        if request.method != 'POST':  
+            return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+    
+        try:
+            body_json = json.loads(request.body)  # Convert request body to dict
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': 'message.error.the-form-have-a-error', 'error': str(e)}, status=400)
+    
+        event_id = body_json.get('id_event')
+        user = request.user
+    
+        if not event_id:
+            return JsonResponse({'success': False, 'message': 'message.error.no-event-id-provided'}, status=400)
+    
+        try:
+            # Buscar el evento que pertenezca al usuario
+            appointment = Appointment.objects.get(id=event_id, user=user)
+    
+            appointment.delete()
+    
+            return JsonResponse({
+                'success': True,
+                'message': 'message.success.event-deleted',
+                'event_id': event_id
+            }, status=200)
+    
+        except Appointment.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': 'message.error.event-not-found',
+                "error": "The event was not found"
+            }, status=404)
+    
+        except Exception as e:
+            print("Error deleting event:", e)
+            return JsonResponse({
+                'success': False,
+                'message': 'message.error.cannot-delete-event',
+                'error': str(e)
+            }, status=500)
 
 @login_required(login_url='login')
 def get_the_first_type_events(request):

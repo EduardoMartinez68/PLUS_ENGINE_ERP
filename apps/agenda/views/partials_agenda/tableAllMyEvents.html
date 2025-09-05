@@ -27,8 +27,11 @@
 </style>
 <message-pop title="title.show-all-my-appoints" name="pop-show-all-my-events" style="width: 80%;">
     <div class="row">
-        <div class="col">
-            <search-bar placeholder="message.search" function-callback="filter_table_appoints" id="input-search-all-my-event"></search-bar>
+        <div class="col-10">
+            <search-bar placeholder="search.seacrh-all-my-events" function-callback="filter_table_appoints" id="input-search-all-my-event"></search-bar>
+        </div>
+        <div class="col-2 text-center">
+            <button class="btn btn-add" onclick="open_type_pop()">+</button>
         </div>
     </div>
 
@@ -36,13 +39,13 @@
         <table id="table-my-events">
             <thead>
                 <tr>
-                    <th t="event" style="width:15%;">Title</th>
-                    <th t="description" style="width:20%;">Descripción</th>
-                    <th t="range-date" style="width:15%;">Inicio</th>
-                    <th t="range-date" style="width:15%;">Finish</th>
-                    <th t="type" style="width:10%;">Type event</th>
-                    <th t="priority" style="width:5%;">Prioridad</th>
-                    <th t="ubication" style="width:10%;">Ubicación</th>
+                    <th t="table-events-title" style="width:15%;">Title</th>
+                    <th t="table-events-description" style="width:20%;">Descripción</th>
+                    <th t="table-events-date-start" style="width:15%;">Inicio</th>
+                    <th t="table-events-date-finish" style="width:15%;">Finish</th>
+                    <th t="table-events-type-event" style="width:10%;">Type event</th>
+                    <th t="table-events-priority" style="width:5%;">Prioridad</th>
+                    <th t="table-events-ubication" style="width:10%;">Ubicación</th>
                     <th style="width:5%;"></th>
                     <th style="width:5%;"></th>
                 </tr>
@@ -72,7 +75,7 @@
                     <button class="btn btn-transparent" onclick='show_character_appoint( { id } )'><i class="fi fi-sr-pencil"></i></button>
                 </td>
                 <td>
-                    <button class="btn btn-transparent"><i class="fi fi-sr-trash"></i></button>
+                    <button class="btn btn-transparent" onclick="delete_event({ id })"><i class="fi fi-sr-trash"></i></button>
                 </td>
             `
 
@@ -83,11 +86,31 @@
                 'agenda/search_events/', // url for the search
                 'GET'
             );
+        }  
+    }
+
+    async function delete_event(id){
+        if (await show_message_question('question.delete-event', 'question.delete-event-description')) {
+            const answer=await window.send_message_to_the_server('/agenda/delete_event/',{id_event: id})
+            if (answer.success) {
+
+                //create a metod for that the script not have a error if the web not can load all the script
+                if (typeof update_all_the_information_of_my_calendary === 'function') {
+                    window.update_all_the_information_of_my_calendary();
+                }
+
+                filter_table_appoints('')
+                show_alert('success', window.translate_text('message.delte-event-title'), window.t('message.delte-event-description'))
+            } else {
+                show_alert('alert', window.translate_text('message.delete-event-fail'), window.t('error.to_delete'), answer.error)
+                console.error(answer.message || 'Error to delete the item in the server');
+                console.error(answer.error);
+            }
         }
     }
 </script>
 <script>
-(() => {
+(async() => {
 
 })();
 </script>
