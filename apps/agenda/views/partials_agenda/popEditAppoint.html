@@ -246,7 +246,7 @@
             window.set_value_plus_select('time_end_repeat_edit', day_for_finish_the_event(dataAppoints.date_start, dataAppoints.finish_repeat_date));
 
             document.getElementById('emails_guests_edit').setTags(Array.isArray(dataAppoints.emails_guests) ? dataAppoints.emails_guests : JSON.parse(dataAppoints.emails_guests || '[]'));
-            open_my_pop('pop-edit-event');
+            show_pop('pop-edit-event');
         }
   };
 

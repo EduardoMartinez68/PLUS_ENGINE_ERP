@@ -42,8 +42,8 @@ class Plus:
         return module.convert_from_utc(utc_datetime, timezone_str)
     
     @staticmethod
-    def format_date_to_text(date, timezone_str):
+    def format_date_to_text(date, language="es",  type=1):
         #this funtions is for transform the date example 2025-09-05T15:00:00-06:00 to lenguace human 
         #type=1 August 27, 2025 at 11:00 AM or type=2 27/06/2025 11:00AM
         module = Plus._load_module('converDate')
-        return module.format_date_to_text(date, timezone_str)
+        return module.format_date_to_text(date, type, language)

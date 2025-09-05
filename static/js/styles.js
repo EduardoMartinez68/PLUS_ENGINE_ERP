@@ -1158,7 +1158,7 @@ class PlusSelect extends HTMLElement {
       //we will see if we can add the new customer
       if (result.success) {
         //get the data that send the server
-        const anserServer = result.results;
+        const anserServer = result.answer;
 
         //read all the data that the server send 
         anserServer.forEach(data => {
@@ -3436,6 +3436,7 @@ function open_tab(evt, tabName) {
 function show_pop(idOverlay) {
   const overlay = document.getElementById(idOverlay);
   if (overlay) {
+    currentPopZIndex += 1;
     overlay.style.zIndex = currentPopZIndex;
     overlay.style.display = 'flex';
 

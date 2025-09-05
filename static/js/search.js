@@ -44,7 +44,7 @@ function hidden_loader_in_the_div_container_of_plus(contenedorId, contenido) {
     contenedor.innerHTML = contenido;
 }
 
-function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, method='POS', delay = 500, type='tr') {
+function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, method='POST', delay = 500, type='tr') {
     /*
       inputsId=this is a array of all the inputs of filter fot search the objects. inputsId[0] is the id of the search input
       fieldId=the field that we will update

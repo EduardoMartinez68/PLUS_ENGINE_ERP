@@ -410,68 +410,78 @@ def get_appointment_by_id(request):
 def search_events(request):
     """
     Search user events by keyword, date range, and optional type_event filter.
+    Always return a maximum of 20 events. If search is empty, return 20 most recent events.
     """
     if request.method != 'GET':
         return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
-    all_filters = request.GET.get('allFilters', '').strip()
-    if all_filters:
-        filters = [f for f in all_filters.split(',') if f]
-        
-    
     user = request.user
-    search = filters[0].strip()
-    type_event = request.GET.get('type_event')
 
+    # Obtener filtros
+    all_filters = request.GET.get('allFilters', '').strip()
+    filters = [f.strip() for f in all_filters.split(',') if f] if all_filters else []
+
+    search=request.GET.get('query')
+    if search==None:
+        search = filters[0] if len(filters) > 0 else ''
+
+
+    type_event = filters[1] if len(filters) > 1 else None
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
-    
-    # base query
+
+    # Base query
     events = Appointment.objects.filter(user=user).select_related('id_type_appoint')
 
-    # Filtro por rango de fechas
+    # Filtro por fechas
     if start_date and end_date:
-        start_date = Plus.convert_to_utc(start_date, user.timezone)
-        end_date = Plus.convert_to_utc(end_date, user.timezone)
-        events = events.filter(
-            date_start__lte=end_date,
-            date_finish__gte=start_date
-        )
+        start_date_utc = Plus.convert_to_utc(start_date, user.timezone)
+        end_date_utc = Plus.convert_to_utc(end_date, user.timezone)
+        events = events.filter(date_start__lte=end_date_utc, date_finish__gte=start_date_utc)
 
     # Filtro por texto en título o descripción
     if search:
-        events = events.filter(
-            Q(title__icontains=search) | Q(description__icontains=search)
-        )
+        events = events.filter(Q(title__icontains=search) | Q(description__icontains=search))
+        # Ordenar por fecha de inicio ascendente (o como quieras)
+        events = events.order_by('date_start')
+    else:
+        # Si no hay búsqueda, obtener los más recientes
+        events = events.order_by('-date_start')
 
-    # Filtro por tipo de evento
+    # Filtro opcional por tipo de evento
     if type_event:
-        events = events.filter(id_type_appoint_id=type_event)
+        try:
+            type_event_id = int(type_event)
+            events = events.filter(id_type_appoint_id=type_event_id)
+        except ValueError:
+            pass  # ignorar si no es un número válido
 
-    # Ordenar por fecha de inicio
-    events = events.order_by('date_start')
+    # Limitar a 20 eventos
+    events = events[:20]
 
-    # Serializar datos
+    # Serializar
     events_data = []
     for e in events:
-        date_start = Plus.convert_from_utc(e.date_start, user.timezone)
-        date_finish = Plus.convert_from_utc(e.date_finish, user.timezone)
-        print(localtime(date_start).isoformat())
+        date_start_local = localtime(Plus.convert_from_utc(e.date_start, user.timezone))
+        date_finish_local = localtime(Plus.convert_from_utc(e.date_finish, user.timezone))
+
+        #here is for show start in the priority and can see better
+        priority='⭐'
+        for p in range(e.priority):
+            priority+='⭐'
+
         events_data.append({
             'id': e.id,
             'title': e.title,
             'description': e.description,
-            'date_start': Plus.format_date_to_text(localtime(date_start).isoformat()),
-            'date_finish': Plus.format_date_to_text(localtime(date_finish).isoformat()),
-            'priority': e.priority,
+            'date_start': Plus.format_date_to_text(date_start_local.isoformat(),  user.language, 2),
+            'date_finish': Plus.format_date_to_text(date_finish_local.isoformat(), user.language, 2),
+            'priority': priority,
             'location': e.location,
             'link': e.link,
             'activate_event_all_the_day': e.activate_event_all_the_day,
-            'type_appoint': {
-                'id': e.id_type_appoint.id if e.id_type_appoint else None,
-                'name': e.id_type_appoint.name if e.id_type_appoint else None,
-                'color': e.id_type_appoint.color if e.id_type_appoint else None,
-            }
+            "type_appoint_name": e.id_type_appoint.name if e.id_type_appoint else None, 
+            "type_appoint_color": e.id_type_appoint.color if e.id_type_appoint else '#91BBEA'
         })
 
     return JsonResponse({'success': True, 'answer': events_data}, status=200)
