@@ -151,6 +151,12 @@
             }
 
             await window.update_all_the_information_of_my_calendary();
+
+            //update the table appoints if be open 
+            if (typeof filter_table_appoints === 'function') {
+                filter_table_appoints('');
+            }
+
             //show a message of success 
             show_alert('success', window.translate_text('message.update-new-event.success'), window.translate_text('message.update-new-event.success.description'));
         } else {

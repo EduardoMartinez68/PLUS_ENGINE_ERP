@@ -33,7 +33,7 @@
     </div>
 
     <div class="row">
-        <table>
+        <table id="table-my-events">
             <thead>
                 <tr>
                     <th t="event" style="width:15%;">Title</th>
@@ -57,29 +57,33 @@
 
 <script>
     function filter_table_appoints(text){
-        const divHtml = `
-            <td> { title } </td>
-            <td>{ description } </td>
-            <td> { date_start } </td>
-            <td> { date_finish } </td>
-            <td><span class="badge-type" style="background-color: ' { type_appoint_color } ';">{ type_appoint_name }</span></td>
-            <td> { priority } </td>
-            <td>{ location }</td>
-            <td>
-                <button class="btn btn-transparent" onclick='show_character_appoint( { id } )'><i class="fi fi-sr-pencil"></i></button>
-            </td>
-            <td>
-                <button class="btn btn-transparent"><i class="fi fi-sr-trash"></i></button>
-            </td>
-        `
+        //here we will see if the pop is visible for the user, if not is visible, we not need update the information
+        const table = document.getElementById('table-my-events');
+        if(table && table.offsetParent !== null){
+            const divHtml = `
+                <td> { title } </td>
+                <td>{ description } </td>
+                <td> { date_start } </td>
+                <td> { date_finish } </td>
+                <td><span class="badge-type" style="background-color: ' { type_appoint_color } ';">{ type_appoint_name }</span></td>
+                <td> { priority } </td>
+                <td>{ location }</td>
+                <td>
+                    <button class="btn btn-transparent" onclick='show_character_appoint( { id } )'><i class="fi fi-sr-pencil"></i></button>
+                </td>
+                <td>
+                    <button class="btn btn-transparent"><i class="fi fi-sr-trash"></i></button>
+                </td>
+            `
 
-        window.update_container_with_seeker(
-            ['input-search-all-my-event'], // id of the input of the seeker
-            'body-table-my-events',  // id of the container to update
-            divHtml,            // template with placeholders
-            'agenda/search_events/', // url for the search
-            'GET'
-        );
+            window.update_container_with_seeker(
+                ['input-search-all-my-event'], // id of the input of the seeker
+                'body-table-my-events',  // id of the container to update
+                divHtml,            // template with placeholders
+                'agenda/search_events/', // url for the search
+                'GET'
+            );
+        }
     }
 </script>
 <script>
