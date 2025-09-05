@@ -44,7 +44,7 @@ function hidden_loader_in_the_div_container_of_plus(contenedorId, contenido) {
     contenedor.innerHTML = contenido;
 }
 
-function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, delay = 500, type='tr') {
+function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, method='POS', delay = 500, type='tr') {
     /*
       inputsId=this is a array of all the inputs of filter fot search the objects. inputsId[0] is the id of the search input
       fieldId=the field that we will update
@@ -77,6 +77,27 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, del
         }, delay);
     };
 
+    function get_the_value_of_the_input(input){
+        //here we will see if the input is a select of plus or a select html normal
+        if (input.tagName.toLowerCase() === 'plus-select') {
+            return window.get_value_plus_select(input)
+        } 
+
+        if (input.tagName.toLowerCase() === 'plus-switch') {
+            return window.get_status_plus_switch(input)
+        } 
+
+        if (input.tagName.toLowerCase() === 'plus-date') {
+            return input.value.trim();
+        } 
+
+        if (input.tagName.toLowerCase() === 'plus-time') {
+            return input.value.trim();
+        } 
+
+        return input.value.trim();
+    }
+
     const send_information_to_the_server=async ()=>{
         const query = input.value.trim();
 
@@ -91,16 +112,16 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, del
                 //we will see if the additional filters exist
                 if (additionalInput) {
                     //get the value of the additional filters
-                    const val = additionalInput.value.trim();
+                    const val = get_the_value_of_the_input(additionalInput)
                     allFilters.push(val);
                 }
             }
 
             //send a message to the server for get the answer
-            data = await send_message_to_the_server(searchUrl, { allFilters }, false);
+            data = await window.send_message_to_the_server(searchUrl, { allFilters }, false, method);
         } else {
             //send a message to the server for get the answer
-            data = await send_message_to_the_server(searchUrl, { query }, false);
+            data = await window.send_message_to_the_server(searchUrl, { query }, false, method);
         }
 
         //when the server send a answer, we will to hidden the load in the div 
@@ -111,10 +132,10 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, del
             field.innerHTML = ''; //clear the container
 
             //we will see if exist container for print in screen
-            if (data.results && data.results.length > 0) {
+            if (data.answer && data.answer.length > 0) {
 
                 //if exist container, we will show in the field
-                data.results.forEach(dataItem => {
+                data.answer.forEach(dataItem => {
                     //here we will get the card or table that need add to the field or table
                     const labelHtml = document.createElement(type);
                     labelHtml.innerHTML = renderTemplate(divHtml, dataItem); //now her create the container of the card or table
@@ -129,7 +150,7 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, del
             console.error('Error en la búsqueda:', data.message);
             const answer=t("info.no_results");
             show_alert('alert', 'Error', `${answer}`, data.message);
-            field.innerHTML = `<tr><td colspan="6" style="text-align:center;color:red;">${answer}</td></tr>`;
+            field.innerHTML = `<tr><td colspan="6" style="text-align:center;">${answer}</td></tr>`;
         }
 
         translate_dynamic_content(field); //translate the dynamic content of the field

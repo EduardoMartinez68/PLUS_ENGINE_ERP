@@ -411,16 +411,21 @@ def search_events(request):
     """
     Search user events by keyword, date range, and optional type_event filter.
     """
-    if request.method != 'POST':
+    if request.method != 'GET':
         return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
-    print(list(request))
+    all_filters = request.GET.get('allFilters', '').strip()
+    if all_filters:
+        filters = [f for f in all_filters.split(',') if f]
+        
+    
     user = request.user
-    search = request.GET.get('query', '').strip()
+    search = filters[0].strip()
+    type_event = request.GET.get('type_event')
+
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
-    type_event_id = request.GET.get('type_event_id')
-
+    
     # base query
     events = Appointment.objects.filter(user=user).select_related('id_type_appoint')
 
@@ -440,8 +445,8 @@ def search_events(request):
         )
 
     # Filtro por tipo de evento
-    if type_event_id:
-        events = events.filter(id_type_appoint_id=type_event_id)
+    if type_event:
+        events = events.filter(id_type_appoint_id=type_event)
 
     # Ordenar por fecha de inicio
     events = events.order_by('date_start')
@@ -451,13 +456,13 @@ def search_events(request):
     for e in events:
         date_start = Plus.convert_from_utc(e.date_start, user.timezone)
         date_finish = Plus.convert_from_utc(e.date_finish, user.timezone)
-
+        print(localtime(date_start).isoformat())
         events_data.append({
             'id': e.id,
             'title': e.title,
             'description': e.description,
-            'date_start': localtime(date_start).isoformat(),
-            'date_finish': localtime(date_finish).isoformat(),
+            'date_start': Plus.format_date_to_text(localtime(date_start).isoformat()),
+            'date_finish': Plus.format_date_to_text(localtime(date_finish).isoformat()),
             'priority': e.priority,
             'location': e.location,
             'link': e.link,
@@ -468,8 +473,8 @@ def search_events(request):
                 'color': e.id_type_appoint.color if e.id_type_appoint else None,
             }
         })
-    print(events_data)
-    return JsonResponse({'success': True, 'data': events_data}, status=200)
+
+    return JsonResponse({'success': True, 'answer': events_data}, status=200)
 
 def edit_event(request):
     def get_date_of_the_event(user, body_json: json) -> dict:
@@ -644,7 +649,7 @@ def get_the_first_type_events(request):
                 text=F('name')
             ).values('id', 'text', 'description', 'color')[:20]
 
-        return JsonResponse({'success': True, 'results': list(events)})
+        return JsonResponse({'success': True, 'answer': list(events)})
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
 

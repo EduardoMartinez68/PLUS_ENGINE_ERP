@@ -24,7 +24,7 @@
         <div class="col-4">
             <search-bar placeholder="message.search" function-callback="filter_table_appoints" id="input-search-all-my-event"></search-bar>
         </div>
-        <div class="col-2">
+        <div class="col-2" style="margin-top:-8px; padding-left:12px;">
             <plus-select label="search-type-event" name="type_event" required id="type_event_for_search" link="agenda/get_the_first_type_events/">
             </plus-select>
         </div>
@@ -67,7 +67,7 @@
         const divHtml = `
             <td> { title } </td>
             <td>{ description } </td>
-            <td>{ date_start } - { date_finish }</td>
+            <td> { date_start } - { date_finish }</td>
             <td><span class="badge-type" style="background-color: '{ type_appoint.color }';">{ type_appoint.name }</span></td>
             <td> { priority } </td>
             <td>{ location }</td>
@@ -80,10 +80,11 @@
         `
 
         window.update_container_with_seeker(
-            ['input-search-all-my-event'], // id of the input of the seeker
+            ['input-search-all-my-event', 'type_event_for_search'], // id of the input of the seeker
             'body-table-my-events',  // id of the container to update
             divHtml,            // template with placeholders
-            'agenda/search_events/' // url for the search
+            'agenda/search_events/', // url for the search
+            'GET'
         );
     }
 </script>

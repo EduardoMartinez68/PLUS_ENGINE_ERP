@@ -1,6 +1,7 @@
 from datetime import datetime
 from dateutil import parser
 import pytz
+from babel.dates import format_datetime
 
 def convert_to_utc(date_obj: datetime, user_timezone_str: str) -> datetime:
     """
@@ -34,3 +35,15 @@ def convert_from_utc(utc_date: datetime, user_timezone_str: str) -> datetime:
     """
     user_tz = pytz.timezone(user_timezone_str)
     return utc_date.astimezone(user_tz)
+
+
+def format_date_to_text(date_string: datetime, type=1, locale="es_ES")->str:
+    date = datetime.fromisoformat(date_string)
+    if type==1:
+        #example 27 of febrary of 2025 to the 11:00 a.m
+        date = datetime.fromisoformat(date_string)
+        return format_datetime(date, "d 'de' MMMM 'de' y 'a las' h:mm a", locale=locale)
+    else:
+        # example: 05/09/2025 15:00
+        return format_datetime(date, "dd/MM/yyyy HH:mm", locale=locale)
+    

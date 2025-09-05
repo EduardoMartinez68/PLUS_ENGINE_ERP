@@ -17,7 +17,7 @@ const langCode = userLang.split('-')[0];
   };
 
 // Format a date string 'YYYY-MM-DD' to 'DD/mmm/YYYY' based on language
-function formatDate(dateISO, lang = 'en') {
+function format_date(dateISO, lang = 'en') {
   if (!dateISO) return '';
   const dateObj = new Date(dateISO);
   if (isNaN(dateObj)) return dateISO; // fallback if invalid date
@@ -58,3 +58,42 @@ function formatDate(dateISO, lang = 'en') {
       default: return '';
     }
   }
+
+
+
+function format_date_to_text(dateString, type=1, locale = 'es-ES') {
+    // Convertir la cadena ISO a objeto Date
+    const date = new Date(dateString);
+
+    if(type==1){
+      // Configuración del formateador
+      const optionsDate = {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+      };
+
+      const optionsTime = {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+      };
+
+      // Crear los formateadores para fecha y hora
+      const formatterDate = new Intl.DateTimeFormat(locale, optionsDate);
+      const formatterTime = new Intl.DateTimeFormat(locale, optionsTime);
+
+      // Retornar el resultado como texto
+      return `${formatterDate.format(date)} a las ${formatterTime.format(date)}`;
+    }
+    else{
+        // Formato corto: 05/09/2025 15:00
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Mes empieza en 0
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    } 
+}

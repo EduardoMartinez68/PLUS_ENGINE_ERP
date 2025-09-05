@@ -1,4 +1,4 @@
-async function send_message_to_the_server(url, data = {}, with_load = true, type='POST') {
+async function send_message_to_the_server(url, data = {}, with_load = true, method='POST') {
     // show the overlay
     const screenLoad = document.getElementById('loadingOverlay')
     if (with_load) {
@@ -9,7 +9,7 @@ async function send_message_to_the_server(url, data = {}, with_load = true, type
     try {
         //here we will to create a fetchOptions for send the information to the server Django
         let fetchOptions = {
-            method: type.toUpperCase(),
+            method: method.toUpperCase(),
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCSRFToken()
@@ -19,9 +19,9 @@ async function send_message_to_the_server(url, data = {}, with_load = true, type
         //now we will see the fetch options. If the type is POST we will add the body
         //else we will to create the new link
         let fetchUrl = url;
-        if (type.toUpperCase() === 'POST') {
+        if (method.toUpperCase() === 'POST') {
             fetchOptions.body = JSON.stringify(data);
-        } else if (type.toUpperCase() === 'GET') {
+        } else if (method.toUpperCase() === 'GET') {
             // Convert the 'data' object to query params
             const queryParams = new URLSearchParams(data).toString();
             if (queryParams) {
