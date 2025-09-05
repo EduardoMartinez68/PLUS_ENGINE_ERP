@@ -12,6 +12,20 @@
         color: rgba(0,0,0,0.8);
     }
 
+    .btn-add-f {
+    color: white;
+    font-size: 22px;
+    font-weight: 400;
+    border: none;
+    border-radius: 8px; /* esquinas suaves */
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    margin-top: 15px; /* lo baja más */
+    transition: background 0.3s ease;
+    }
+
+
     table{
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -31,7 +45,7 @@
             <search-bar placeholder="search.seacrh-all-my-events" function-callback="filter_table_appoints" id="input-search-all-my-event"></search-bar>
         </div>
         <div class="col-2 text-center">
-            <button class="btn btn-add" onclick="open_type_pop()">+</button>
+            <button class="btn-add btn-add-f" onclick="open_type_pop()">+</button>
         </div>
     </div>
 
