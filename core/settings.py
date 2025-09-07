@@ -155,6 +155,14 @@ AUTH_USER_MODEL = 'core.CustomUser' #this is the model that need the login of th
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
-# files upload for the user (for example PDFs)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+#----------------------------files upload for the user (for example PDFs, images, etc)-------------------------------------
+#first we will see if the user have the version of desktop or the version cloud 
+TYPE_VERSION = os.getenv('TYPE_VERSION', 'DESKTOP')
+if(TYPE_VERSION=='CLOUD'):
+    #if the version is type cloud, we will get the path of our server for save the file
+    MEDIA_URL = os.getenv('PATH_CLOUD_URL', '/media/')
+    MEDIA_ROOT = os.getenv('PATH_CLOUD_ROOT', BASE_DIR / 'media')
+else:
+    #if the version is of desktop, we will to save the file in the drive of the user
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media' 

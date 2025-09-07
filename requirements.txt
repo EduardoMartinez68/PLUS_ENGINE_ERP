@@ -1,1 +1,2 @@
 pip install django-q
+pip install Pillow
