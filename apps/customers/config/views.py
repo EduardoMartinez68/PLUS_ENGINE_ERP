@@ -15,15 +15,15 @@ def customers_home(request):
         id_company = request.user.id_company
     
         # get the first 20 answers from the branch ordered by ID and that his status is True
-        customers = Customer.objects.filter(id_company=id_company.id, activated=True).order_by('id')[:20]
-    
+        #customers = Customer.objects.filter(id_company=id_company.id, activated=True).order_by('id')[:20]
+        customers=[]
         return render(request, 'customers.html', {'customers': customers})
     else:
         id_company = request.user.id_company
     
         # get the first 20 answers from the branch ordered by ID and that his status is True
-        customers = Customer.objects.filter(id_company=id_company.id, activated=True).order_by('id')[:20]
-    
+        #customers = Customer.objects.filter(id_company=id_company.id, activated=True).order_by('id')[:20]
+        customers=[]
         return render(request, 'customers.html', {'customers': customers})
 
 @login_required(login_url='login')

@@ -107,7 +107,7 @@ class Product(models.Model):
     description = models.TextField(blank=True, null=True)
     
     # cost of buy
-    cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)   # costo del producto/servicio
+    cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)   # product/service cost
 
     #inventory
     this_product_use_inventory=models.BooleanField(default=True, null=False)
@@ -128,8 +128,8 @@ class Product(models.Model):
         help_text="Presentación del producto"
     )
 
-    min=quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)  
-    max=quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0) 
+    min = models.DecimalField(max_digits=10, decimal_places=2, default=0)  
+    max = models.DecimalField(max_digits=10, decimal_places=2, default=0) 
 
     #this is if the product have batch added, for that automatically PLUS discount of batch most about to expire and that the user no do this manually
     #this input only can show in the frontend when this product have batches
@@ -161,7 +161,7 @@ class Product(models.Model):
         db_table = "products.product"
         indexes = [
             models.Index(fields=["name"], name="idx_product_name"),
-            models.Index(fields=["skus"], name="idx_product_skus"),
+            models.Index(fields=["sku"], name="idx_product_sku"),
             models.Index(fields=["id_company"], name="idx_product_id_company"),
             models.Index(fields=["activated"], name="idx_product_activated"),
         ]
@@ -197,25 +197,27 @@ class Pack(models.Model):
     tags = models.JSONField(blank=True, null=True) 
     note = models.TextField(blank=True, null=True)
 
-
-
     # date of creation or update
     creation_date = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
 
     #this is because need 
-    is_service = models.BooleanField(default=False) 
+    PACK_TYPE_CHOICES = [
+        (0, 'product'),
+        (1, 'service'),
+        (2, 'pack/combo')
+    ]
+    pack_type = models.IntegerField(choices=PACK_TYPE_CHOICES, default=1, help_text="Tipo de pack") #0--product, 1--service, 2--pack (combo)
 
-
-    id_company = models.BigIntegerField(blank=True, null=True) 
+    id_company = models.BigIntegerField(blank=True, null=False) 
 
     class Meta:
-        db_table = "products.product"
+        db_table = "products.packs"
         indexes = [
-            models.Index(fields=["name"], name="idx_product_name"),
-            models.Index(fields=["sku"], name="idx_product_sku"),
-            models.Index(fields=["id_company"], name="idx_product_id_company"),
-            models.Index(fields=["activated"], name="idx_product_activated"),
+            models.Index(fields=["name"], name="idx_pack_name"),
+            models.Index(fields=["skus"], name="idx_pack_sku"),
+            models.Index(fields=["id_company"], name="idx_pack_id_company"),
+            models.Index(fields=["activated"], name="idx_pack_activated"),
         ]
 
     # -------------------------------------------------
@@ -229,7 +231,7 @@ class Pack(models.Model):
     
 
     def __str__(self):
-        return f"{self.name} ({'Servicio' if self.is_service else 'Producto'})"
+        return f"{self.name}"
 
 
 # -------------------------------------------------
@@ -338,28 +340,28 @@ class Promotion(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
 
-    # Tipo de descuento
+    #Discount type
     promo_type = models.CharField(max_length=20, choices=DISCOUNT_TYPE_CHOICES, default='percentage')
 
     # Vigencia
     start_date = models.DateTimeField()
-    end_date = models.DateTimeField(blank=True, null=True)  # si es null, se aplica indefinidamente
+    end_date = models.DateTimeField(blank=True, null=True)  # If it is null, it applies indefinitely.
 
-    # Días de la semana y horas (opcional)
+    # Days of the week and times (optional)
     days_of_week = models.JSONField(blank=True, null=True)  # ej: ["Mon","Tue","Wed"]
     start_hour = models.TimeField(blank=True, null=True)     # hora inicio
     end_hour = models.TimeField(blank=True, null=True)       # hora fin
 
-    # Productos y packs aplicables
+    # Applicable products and packages
     packs = models.ManyToManyField('products.Pack', blank=True, related_name='promotions')
 
-    # Empresa/negocio
+    # Company/business
     id_company = models.BigIntegerField(blank=True, null=True)
 
-    # Activación
+    # Activation
     activated = models.BooleanField(default=True)
 
-    # Fechas
+    # dates of creatiuon and update
     creation_date = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
 
@@ -379,8 +381,8 @@ class Promotion(models.Model):
 # -------------------------------------------------
 class PromotionQuantityTier(models.Model):
     promotion = models.ForeignKey(Promotion, on_delete=models.CASCADE, related_name="quantity_tiers")
-    min_quantity = models.PositiveIntegerField()  # cantidad mínima para aplicar
-    discount_value = models.DecimalField(max_digits=10, decimal_places=2)  # porcentaje o monto fijo según promo_type
+    min_quantity = models.PositiveIntegerField()  # minimum quantity to apply
+    discount_value = models.DecimalField(max_digits=10, decimal_places=2)  # percentage or fixed amount depending on promo_type
 
     class Meta:
         db_table = "products.promotion_quantity_tier"

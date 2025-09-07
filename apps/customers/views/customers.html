@@ -1,158 +1,178 @@
-<br>
-{% include 'partialsCustomers/navbarHome.html' %}
-<br>
 
-<plus-modules>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f9fafb;
+      color: #1c1c1e;
+      margin: 0;
+      padding: 0;
+    }
 
-  <plus-module>
+    header {
+      padding: 20px 40px;
+      border-bottom: 1px solid #e5e5ea;
+      background: #fff;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
 
-  <plus-tabs>
-    <plus-tab text="Tab 1">
-      <div class="row">
-        <div class="col-10">
+    .container {
+      padding: 30px 40px;
+    }
 
-        </div>
-        <div class="col-2">
-          <plus-actions>
-            <plus-action icon="fi fi-rr-pencil" text="Editar" t="action-edit" onclick="editarCliente()" pin="false"></plus-action>
-            <plus-action icon="fi fi-rr-pencil" text="Editar" t="action-edit" onclick="editarCliente()" pin="false"></plus-action>
-            <plus-action icon="fi fi-rr-trash" text="Eliminar" t="action-delete" onclick="eliminarCliente()"></plus-action>
+    /* Métricas */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .metric-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    .metric-card h2 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    .metric-card p {
+      margin: 8px 0 0;
+      font-size: 0.95rem;
+      color: #555;
+    }
 
+    /* Tabla */
+    .table-wrapper {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    thead {
+      background: #f2f2f7;
+    }
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+    }
+    th {
+      font-weight: 600;
+      color: #3a3a3c;
+      border-bottom: 1px solid #e5e5ea;
+    }
+    tbody tr {
+      border-bottom: 1px solid #f0f0f0;
+    }
+    tbody tr:hover {
+      background: #f9f9fb;
+    }
 
-            <plus-action text="Eliminar" t="action-delete" onclick="eliminarCliente()" type="switch" checked="false"></plus-action>
-            <plus-action icon="fi fi-rr-trash" text="Eliminar" t="action-delete" onclick="eliminarCliente()" type="switch" checked="true"></plus-action>
-            <plus-action text="Eliminar" t="action-delete" onclick="eliminarCliente()" type="switch" checked></plus-action>
-          </plus-actions>
-        </div>
+    /* Avatar */
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #fff;
+    }
+    .badge.success { background-color: #34c759; }
+    .badge.danger { background-color: #ff3b30; }
+    .badge.info { background-color: #007aff; }
+    .badge.gray { background-color: #8e8e93; }
+  </style>
+
+  <div class="container">
+
+    <!-- Métricas -->
+    <div class="metrics">
+      <div class="metric-card">
+        <h2>128</h2>
+        <p>Total Clientes</p>
       </div>
-
-    </plus-tab>
-
-    <plus-tab t="label-search-home" text="Tab 2">
-      {% include 'partialsCustomers/customerForm1.html' %}
-    </plus-tab>
-  </plus-tabs>
-
-
-
-  </plus-module>
-
-  <plus-module name="Ayuda">
-
-    <plus-help title="¿Cómo cobrar con recibo?" data='ayuda-recibo' t="label-search-home"></plus-help>
-
-
-  </plus-module>
-
-  <plus-module name="Alertas" icon="<i class='fi fi-sr-shopping-cart'></i>">
-
-    
-    <input-field label="label-search-home" type="email" name="search-1" placeholder="placeholder-search-home" required
-      message-label="placeholder-search-home"></input-field>
-
-    <br>
-    <confirm-button title="Delete Product" message="Are you sure you want to delete this product?"
-      onclick="deleteProduct()">
-      Delete
-    </confirm-button>
-
-  </plus-module>
-
-  <plus-module name="Clientes" icon="👨‍💼">
-    <message-pop title="label-search-home" name="pop-data-facture">
-      <p t="placeholder-search-home"></p>
-    </message-pop>
-    <button onclick="show_pop('pop-data-facture')" t="message.succes">open pop</button>
-  </plus-module>
-
-  <plus-module name="label-search-home">
-    <info-label label="label-search-home" message="placeholder-search-home">
-    </info-label>
-  </plus-module>
-
-  <plus-module name="Inputs" icon="<i class='fi fi-sr-shopping-cart'></i>">
-    <plus-select-date name-start="fecha_inicio" name-end="fecha_fin"></plus-select-date>
-
-    <plus-select-date name-start="fecha_inicio" name-end="fecha_fin" filter required></plus-select-date>
-    
-    <div class="row">
-      <div class="col-5">
-        <plus-switch text="label-search-home" name="notificaciones" checked="true"
-          message="placeholder-search-home"></plus-switch>
+      <div class="metric-card">
+        <h2>102</h2>
+        <p>Activos</p>
+      </div>
+      <div class="metric-card">
+        <h2>26</h2>
+        <p>Inactivos</p>
+      </div>
+      <div class="metric-card">
+        <h2>18</h2>
+        <p>Pacientes Nuevos (mes)</p>
       </div>
     </div>
-    <plus-switch text="label-search-home" name="notificaciones" checked="false"></plus-switch>
 
-    <plus-select label="label-search-home" message="placeholder-search-home" name="tipo_documento" requerid link="customers/search_customers_select/" add="open_pop()" edit_data="edit_data" delete_data="customers/search_customers_select/">
-
-    </plus-select>
-
-
-  </plus-module>
-
-
-</plus-modules>
-
-
-
-
-<key-bind combo="Shift+V" action="abrir_menu"></key-bind>
-<key-bind combo="Shift+p" action="abrir_menu"></key-bind>
-
-<div class="container-section">
-
-
-
-
-
-  <br><br>
-
-  <div class="row">
-    <div class="col-10">
-      <label for="" t="label-search-home">Buscar un Cliente</label>
-      <input type="text" class="search-input-in-form" id="search-customers"
-        placeholder="Buscar clientes por email o nombre..." t-placeholder="placeholder-search-home">
+    <!-- Tabla -->
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Avatar</th>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Fuente</th>
+            <th>Crédito</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><img src="https://randomuser.me/api/portraits/men/32.jpg" class="avatar"></td>
+            <td>Dr. Juan Pérez</td>
+            <td><span class="badge info">Dentista</span></td>
+            <td>juan.perez@example.com</td>
+            <td>+52 55 1234 5678</td>
+            <td>Facebook Ads</td>
+            <td>$1,200</td>
+            <td><span class="badge success">Activo</span></td>
+          </tr>
+          <tr>
+            <td><img src="https://randomuser.me/api/portraits/women/44.jpg" class="avatar"></td>
+            <td>Dra. Laura Gómez</td>
+            <td><span class="badge info">Doctora</span></td>
+            <td>laura.gomez@example.com</td>
+            <td>+52 55 8765 4321</td>
+            <td>Sitio Web</td>
+            <td>$0</td>
+            <td><span class="badge success">Activo</span></td>
+          </tr>
+          <tr>
+            <td><img src="https://randomuser.me/api/portraits/men/76.jpg" class="avatar"></td>
+            <td>Clínica Smile</td>
+            <td><span class="badge gray">Proveedor</span></td>
+            <td>contacto@smile.com</td>
+            <td>+52 55 1111 2222</td>
+            <td>Referencia</td>
+            <td>$5,000</td>
+            <td><span class="badge danger">Inactivo</span></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <div class="col">
-      <label for="" t="label-status-contract">Estado del Cliente</label>
-      <select id="select-status">
-        <option value="true">Activos</option>
-        <option value="false">Desactivados</option>
-        <option value="">Todos</option>
-      </select>
-    </div>
+
   </div>
 
-  <table id="table-customer">
-    <thead>
-      <tr>
-        <th t="table-name">Name</th>
-        <th t="table-email">E-mail</th>
-        <th t="table-phone">Cellphone</th>
-        <th t="table-cellphone">Phone</th>
-        <th t="table-company-name">Company Name</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody id="container-table">
-      {% for customer in customers %}
-      <tr>
-        <td>{{ customer.name }}</td>
-        <td>{{ customer.email }}</td>
-        <td>{{ customer.phone }}</td>
-        <td>{{ customer.cellphone }}</td>
-        <td>{{ customer.company_name }}</td>
-        <th><button class="btn btn-normal" type="button"
-            onclick="nextWeb('customers/edit_customer/{{ customer.id }}/')"><i class="fi fi-sr-pencil"></i></button>
-        </th>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
-
-
-</div>
 
 <script>
   (() => {
@@ -164,7 +184,7 @@
         <td>{ company_name }</td>
         <th><button class="btn btn-normal" type="button" onclick="nextWeb('customers/edit_customer/{ id }/')"><i class="fi fi-sr-pencil"></i></button></th>
     `;
-
+    /*
     update_container_with_seeker(
       ['search-customers', 'select-status'], // id of the input of the seeker
       'container-table',  // id of the container to update
@@ -172,7 +192,7 @@
       'customers/search_customers/' // url for the search
     );
 
-
+    */
     //her we will create the information of the help
     //her is for save the information of the data
     PLUS_HELP_DATA = {};

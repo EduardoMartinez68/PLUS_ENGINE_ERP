@@ -14,6 +14,6 @@ python manage.py runserver 0.0.0.0:8000
 ------------------------------------------------------------------------------------------------------------------
 python manage.py qcluster --this is for run the server of notifications
 
-python manage.py makemigrations --this is for create a new database
+python manage.py makemigrations [NAME APP]--this is for create a new database
 python manage.py migrate --this is for create a new database
 
