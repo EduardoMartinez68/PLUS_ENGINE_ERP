@@ -56,29 +56,30 @@
     <div class="metrics">
       <div class="metric-card">
         <h2>128</h2>
-        <p>Total Clientes</p>
+        <p t="dashboard-total-customer">Total Customer</p>
       </div>
       <div class="metric-card">
         <h2>102</h2>
-        <p>Activos</p>
+        <p>Customer Activate</p>
       </div>
       <div class="metric-card">
         <h2>26</h2>
-        <p>Inactivos</p>
+        <p t="dashboard-customer-activate">Inactive</p>
       </div>
       <div class="metric-card">
         <h2>18</h2>
-        <p>Pacientes Nuevos (mes)</p>
+        <p t="dashboard-new-customer">New Customer (month)</p>
       </div>
     </div>
 
     <!-- Tabla -->
     <div class="table-wrapper">
       <div class="row">
-        <div class="col-10">
+        <div class="col-11">
           <search-bar label="search"></search-bar>
         </div>
-        <div class="col-2">
+        <div class="col-1">
+          <br>
           <plus-filter-table table-id="table-customers">
             <plus-column index="0" label="table-home-avatar" checked></plus-column>
             <plus-column index="1" label="table-home-name" checked></plus-column>

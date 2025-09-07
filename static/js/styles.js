@@ -2256,7 +2256,7 @@ class PlusFilterTable extends HTMLElement {
     // Botón de filtro
     const button = document.createElement('button');
     button.classList.add('filter-button');
-    button.innerHTML = '<i>⋮</i>';
+    button.innerHTML = '⋮';
     button.addEventListener('click', () => this.toggleMenu());
 
     // Contenedor flotante de filtros
@@ -2264,8 +2264,22 @@ class PlusFilterTable extends HTMLElement {
     container.classList.add('table-controls');
     container.style.display = 'none';
 
+    // Input buscador
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = 'Search...';
+    searchInput.classList.add('filter-search');
+    searchInput.addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+      container.querySelectorAll('.switch-label').forEach(label => {
+        const text = label.textContent.toLowerCase();
+        label.style.display = text.includes(term) ? 'flex' : 'none';
+      });
+    });
+    container.appendChild(searchInput);
+
     columns.forEach(col => {
-      const t=col.label;
+      const t = col.label;
       const label = document.createElement('label');
       label.setAttribute('t', t);
       label.classList.add('switch-label');
@@ -2307,6 +2321,7 @@ class PlusFilterTable extends HTMLElement {
         position: relative;
         z-index: 1001;
       }
+
       .table-controls {
         position: absolute;
         top: 30px;
@@ -2324,6 +2339,21 @@ class PlusFilterTable extends HTMLElement {
         z-index: 1000;
         min-width: 140px;
       }
+
+      .filter-search {
+        padding: 4px 2px;
+        border: none;
+        border-bottom: 1px solid #ccc;
+        outline: none;
+        font-size: 14px;
+        margin-bottom: 6px;
+        transition: border-color 0.3s;
+      }
+
+      .filter-search:focus {
+        border-color: ${colors.color_company};
+      }
+
       .switch-label {
         position: relative;
         display: flex;
@@ -2333,11 +2363,13 @@ class PlusFilterTable extends HTMLElement {
         cursor: pointer;
         user-select: none;
       }
+
       .switch-label input {
         opacity: 0;
         width: 0;
         height: 0;
       }
+
       .slider {
         position: relative;
         width: 36px;
@@ -2347,6 +2379,7 @@ class PlusFilterTable extends HTMLElement {
         transition: 0.3s;
         flex-shrink: 0;
       }
+
       .slider:before {
         content: "";
         position: absolute;
@@ -2358,9 +2391,11 @@ class PlusFilterTable extends HTMLElement {
         border-radius: 50%;
         transition: 0.3s;
       }
+
       input:checked + .slider {
         background-color: ${colors.color_company};
       }
+
       input:checked + .slider:before {
         transform: translateX(16px);
       }
@@ -2377,7 +2412,6 @@ class PlusFilterTable extends HTMLElement {
         padding: 10px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         z-index: 1000;
-
         width: max-content;     
         min-width: 150px;       
       }
@@ -2420,22 +2454,27 @@ class PlusFilterTable extends HTMLElement {
           font-size: 18px;
           padding: 2px 6px;
         }
+
+        .filter-search {
+          font-size: 13px;
+        }
       }
     `;
     this.shadowRoot.appendChild(style);
   }
-
 
   toggleMenu() {    
     const container = this.shadowRoot.querySelector('.table-controls');
     const buttonRect = this.shadowRoot.querySelector('.filter-button').getBoundingClientRect();
     this.open = !this.open;
     container.style.display = this.open ? 'flex' : 'none';
-    container.style.position = 'fixed'; // usar fixed para que no dependa de contenedores padres
-    container.style.top = `${buttonRect.bottom + 4}px`; // 4px debajo del botón
+    container.style.position = 'fixed';
+    container.style.top = `${buttonRect.bottom + 4}px`;
     container.style.left = `${buttonRect.left}px`;
   }
 }
+
+
 
 /*----------------DATE------------------------------------- */
 function format_date_to_text(date) {

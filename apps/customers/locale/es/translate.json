@@ -1,4 +1,8 @@
 {
+  "dashboard-total-customer":"Total de Clientes",
+  "dashboard-customer-activate":"Activos",
+  "dashboard-total-inactive":"Inactivos",
+  "dashboard-new-customer":"Nuevos Clientes (mes)",
 
   "table-home-avatar": "Imagen",
   "table-home-name": "Nombre",
