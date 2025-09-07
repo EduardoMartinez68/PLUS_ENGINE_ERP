@@ -1,4 +1,9 @@
 let currentPopZIndex = 5000;
+const colors = {
+  color_company: '#075EAC',
+  color_company_hover: '#075192ff'
+}
+
 //this functions is for create a id unique for that not exist a error when create a new element
 function generate_unique_dom_id(prefix = "plus-") {
   let id;
@@ -1952,6 +1957,7 @@ class PlusActions extends HTMLElement {
   }
 
   connectedCallback() {
+
     this.classList.add('plus-actions');
 
     const button = document.createElement('button');
@@ -2224,14 +2230,214 @@ class PlusComment extends HTMLElement {
   }
 }
 
+class PlusFilterTable extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    this.table = null;
+    this.open = false;
+  }
+
+  connectedCallback() {
+    const tableId = this.getAttribute('table-id');
+    this.table = document.getElementById(tableId);
+    if (!this.table) {
+      console.warn(`Table with id "${tableId}" not found.`);
+      return;
+    }
+
+    const columnElements = this.querySelectorAll('plus-column');
+    const columns = Array.from(columnElements).map(col => ({
+      index: parseInt(col.getAttribute('index')),
+      label: col.getAttribute('t') || col.getAttribute('label'),
+      checked: col.hasAttribute('checked')
+    }));
+
+    // Botón de filtro
+    const button = document.createElement('button');
+    button.classList.add('filter-button');
+    button.innerHTML = '<i>⋮</i>';
+    button.addEventListener('click', () => this.toggleMenu());
+
+    // Contenedor flotante de filtros
+    const container = document.createElement('div');
+    container.classList.add('table-controls');
+    container.style.display = 'none';
+
+    columns.forEach(col => {
+      const t=col.label;
+      const label = document.createElement('label');
+      label.setAttribute('t', t);
+      label.classList.add('switch-label');
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = col.checked;
+      checkbox.dataset.col = col.index;
+
+      const slider = document.createElement('span');
+      slider.classList.add('slider');
+
+      label.appendChild(checkbox);
+      label.appendChild(slider);
+      label.appendChild(document.createTextNode(col.label));
+
+      checkbox.addEventListener('change', (e) => {
+        const colIndex = parseInt(e.target.dataset.col);
+        const checked = e.target.checked;
+        Array.from(this.table.rows).forEach(row => {
+          if (row.cells[colIndex]) row.cells[colIndex].style.display = checked ? '' : 'none';
+        });
+      });
+
+      container.appendChild(label);
+    });
+
+    this.shadowRoot.appendChild(button);
+    this.shadowRoot.appendChild(container);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .filter-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 20px;
+        padding: 4px 8px;
+        position: relative;
+        z-index: 1001;
+      }
+      .table-controls {
+        position: absolute;
+        top: 30px;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 250px;
+        overflow-y: auto;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: white;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        min-width: 140px;
+      }
+      .switch-label {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .switch-label input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: relative;
+        width: 36px;
+        height: 20px;
+        background-color: #ccc;
+        border-radius: 20px;
+        transition: 0.3s;
+        flex-shrink: 0;
+      }
+      .slider:before {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        border-radius: 50%;
+        transition: 0.3s;
+      }
+      input:checked + .slider {
+        background-color: ${colors.color_company};
+      }
+      input:checked + .slider:before {
+        transform: translateX(16px);
+      }
+
+      .table-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        max-height: 250px;
+        overflow-y: auto;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+
+        width: max-content;     
+        min-width: 150px;       
+      }
+
+      /* Scrollbar minimalista */
+      .table-controls::-webkit-scrollbar {
+        width: 3px;
+      }
+
+      .table-controls::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .table-controls::-webkit-scrollbar-thumb {
+        background-color: rgba(0,0,0,0.25);
+        border-radius: 3px;
+        transition: background 0.3s;
+      }
+
+      .table-controls::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(0,0,0,0.4);
+      }
+
+      @media (max-width: 768px) {
+        .table-controls {
+          right: 10px;
+          top: 40px;
+          max-height: 200px;
+          min-width: 120px;
+          width: 90vw;
+          padding: 8px;
+          gap: 3px;
+        }
+
+        .switch-label {
+          font-size: 13px;
+        }
+
+        .filter-button {
+          font-size: 18px;
+          padding: 2px 6px;
+        }
+      }
+    `;
+    this.shadowRoot.appendChild(style);
+  }
 
 
-/*----------------DATE------------------------------------- */
-const colors = {
-  color_company: '#075EAC',
-  color_company_hover: '#075192ff'
+  toggleMenu() {    
+    const container = this.shadowRoot.querySelector('.table-controls');
+    const buttonRect = this.shadowRoot.querySelector('.filter-button').getBoundingClientRect();
+    this.open = !this.open;
+    container.style.display = this.open ? 'flex' : 'none';
+    container.style.position = 'fixed'; // usar fixed para que no dependa de contenedores padres
+    container.style.top = `${buttonRect.bottom + 4}px`; // 4px debajo del botón
+    container.style.left = `${buttonRect.left}px`;
+  }
 }
 
+/*----------------DATE------------------------------------- */
 function format_date_to_text(date) {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0'); // the month goes from 0 to 11
@@ -4039,7 +4245,10 @@ function transform_my_labels_erp() {
   if (!customElements.get("edit-quantity")) {
     customElements.define('edit-quantity', EditQuantity);
   }
-  
+
+  if (!customElements.get("plus-filter-table")) {
+    customElements.define('plus-filter-table', PlusFilterTable);
+  }
 }
 
 /**---------------------------------TAB----------------------------- */

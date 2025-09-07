@@ -1,4 +1,47 @@
 {
+
+  "table-home-avatar": "Imagen",
+  "table-home-name": "Nombre",
+  "table-home-email": "Email",
+  "table-home-phone": "Teléfono",
+  "table-home-cellphone": "Celular",
+  "table-home-country": "País",
+  "table-home-address": "Dirección",
+  "table-home-city": "Ciudad",
+  "table-home-state": "Estado",
+  "table-home-postal_code": "Código Postal",
+  "table-home-company": "Es Empresa",
+  "table-home-company_name": "Nombre de la Empresa",
+  "table-home-contact_name": "Contacto",
+  "table-home-contact_email": "Email Contacto",
+  "table-home-contact_cellphone": "Celular Contacto",
+  "table-home-contact_phone": "Teléfono Contacto",
+  "table-home-website": "Sitio Web",
+  "table-home-note": "Nota",
+  "table-home-id_company": "ID de la Empresa",
+  "table-home-points": "Puntos",
+  "table-home-credit": "Crédito",
+  "table-home-tags": "Etiquetas",
+  "table-home-customer_type": "Tipo Cliente",
+  "table-home-source": "Fuente",
+  "table-home-priority": "Prioridad",
+  "table-home-creation_date": "Fecha de Creación",
+  "table-home-activated": "Activo/Inactivo",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   "navbar-customers": "Mis Clientes",
   "navbar-add": "Nuevo Cliente +",
   "label-search-home": "Buscar un Cliente",
