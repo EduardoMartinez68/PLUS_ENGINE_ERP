@@ -21,14 +21,14 @@ class CustomerSource(models.Model):
     def __str__(self):
         return self.name
     
-
 class CustomerType(models.Model):
     """
     Type or category of customer. 
     Example: Customer, Supplier, Distributor, Patient, Student.
     """
     id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=50, unique=True)
+    color = models.CharField(max_length=7, default="#3498db",help_text="Hex color code, e.g., #3498db",  null=False)
+    name = models.CharField(max_length=50, unique=True, null=False)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -44,7 +44,7 @@ class Customer(models.Model):
     id = models.BigAutoField(primary_key=True)  
     avatar = models.ImageField(upload_to="customers/", blank=True, null=True)
     name = models.CharField(max_length=300)
-    email = models.EmailField(blank=True, null=True)
+    email = models.EmailField(blank=True, null=True, unique=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
     cellphone = models.CharField(max_length=50, blank=True, null=True)
 

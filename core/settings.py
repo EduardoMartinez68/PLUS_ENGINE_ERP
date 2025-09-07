@@ -16,6 +16,9 @@ print("""
     -----------------------------------------------------------------
 """"")
 
+#character of the ERP
+TYPE_VERSION = os.getenv('TYPE_VERSION', 'DESKTOP')
+
 #------------------------------------------------------run server---------------------------------------------
 # Ruta base
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -106,19 +109,29 @@ Q_CLUSTER = {
 '''
 
 # Base de datos PostgreSQL
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'default_db_name'),
-        'USER': os.getenv('DB_USER', 'default_user'),
-        'PASSWORD': os.getenv('DB_PASS', 'default_password'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-        'OPTIONS': {
-            'options': '-c search_path=customer,public',
-        },
+if(TYPE_VERSION=='CLOUD'):
+    #This allows you to connect to your cloud database, such as PostgreSQL, MySQL, etc.
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME', 'default_db_name'),
+            'USER': os.getenv('DB_USER', 'default_user'),
+            'PASSWORD': os.getenv('DB_PASS', 'default_password'),
+            'HOST': os.getenv('DB_HOST', 'localhost'),
+            'PORT': os.getenv('DB_PORT', '5432'),
+            'OPTIONS': {
+                'options': '-c search_path=customer,public',
+            },
+        }
     }
-}
+else:
+    #when the software is intall in a desktop, we will use sqlite 
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'plus.sqlite3',  # file SQLite local
+        }
+    }
 
 # Password validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -130,7 +143,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = 'es'
-TIME_ZONE = 'America/Mexico_City'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+TIME_ZONE = 'UTC'  # save all the information of type date like UTC in the database
 
 LANGUAGES = [
     ('es', 'Spanish'),
@@ -157,7 +173,6 @@ LOGIN_REDIRECT_URL = '/'
 
 #----------------------------files upload for the user (for example PDFs, images, etc)-------------------------------------
 #first we will see if the user have the version of desktop or the version cloud 
-TYPE_VERSION = os.getenv('TYPE_VERSION', 'DESKTOP')
 if(TYPE_VERSION=='CLOUD'):
     #if the version is type cloud, we will get the path of our server for save the file
     MEDIA_URL = os.getenv('PATH_CLOUD_URL', '/media/')

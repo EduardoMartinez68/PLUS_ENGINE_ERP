@@ -6,6 +6,19 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
 from django.http import HttpResponse
+from ..models import Customer
+
+
+def customers_home(request):
+    id_company = request.user.id_company
+
+    # get the first 20 answers from the branch ordered by ID and that his status is True
+    customers = Customer.objects.filter(id_company=id_company.id, activated=True).order_by('id')[:20]
+
+    return render(request, 'customers.html', {'customers': customers})
+
+
+
 
 '''
 from database.models import Customer

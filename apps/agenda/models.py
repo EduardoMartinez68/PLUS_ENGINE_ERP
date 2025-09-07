@@ -4,7 +4,7 @@ from django.db import migrations, connection
 from django.conf import settings
 
 class TypeAppoint(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     description = models.TextField(null=True, blank=True)
     color = models.CharField(max_length=25, default="#075EAD")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
