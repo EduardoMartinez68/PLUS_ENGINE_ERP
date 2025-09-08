@@ -53,6 +53,8 @@ class Customer(models.Model):
     city = models.CharField(max_length=100, blank=True, null=True)
     state = models.CharField(max_length=100, blank=True, null=True)
     postal_code = models.CharField(max_length=20, blank=True, null=True)
+    num_ext = models.CharField(max_length=5, null=True) 
+    num_int = models.CharField(max_length=5, null=True) 
 
     #--information of the company 
     this_customer_is_a_company = models.BooleanField(default=False)

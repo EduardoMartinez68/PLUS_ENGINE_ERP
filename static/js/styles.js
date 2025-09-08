@@ -1306,6 +1306,69 @@ class PlusSelect extends HTMLElement {
   }
 }
 
+class PlusCountry extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    //List of countries with ISO code and name
+    const countries = [
+      // América del Norte
+      { code: "US", name: "United States" },
+      { code: "CA", name: "Canada" },
+      { code: "MX", name: "Mexico" },
+
+      // América Latina
+      { code: "AR", name: "Argentina" },
+      { code: "BO", name: "Bolivia" },
+      { code: "CL", name: "Chile" },
+      { code: "CO", name: "Colombia" },
+      { code: "CR", name: "Costa Rica" },
+      { code: "CU", name: "Cuba" },
+      { code: "DO", name: "Dominican Republic" },
+      { code: "EC", name: "Ecuador" },
+      { code: "SV", name: "El Salvador" },
+      { code: "GT", name: "Guatemala" },
+      { code: "HN", name: "Honduras" },
+      { code: "NI", name: "Nicaragua" },
+      { code: "PA", name: "Panama" },
+      { code: "PY", name: "Paraguay" },
+      { code: "PE", name: "Peru" },
+      { code: "UY", name: "Uruguay" },
+      { code: "VE", name: "Venezuela" },
+
+      // Europa
+      { code: "ES", name: "Spain" },
+      { code: "PL", name: "Poland" }
+    ];
+
+    // create the plus-select
+    const plusSelect = document.createElement('plus-select');
+
+    // Pass attributes from the plus-country tag to the plus-select tag
+    plusSelect.setAttribute('label','info.select-a-country')
+    if (this.hasAttribute('t')) plusSelect.setAttribute('t', this.getAttribute('t') || 'info.select-a-country');
+    if (this.hasAttribute('name')) plusSelect.setAttribute('name', this.getAttribute('name'));
+    if (this.hasAttribute('requerid')) plusSelect.setAttribute('requerid', '');
+    if (this.hasAttribute('link')) plusSelect.setAttribute('link', this.getAttribute('link'));
+
+    //Add all country options
+    countries.forEach(country => {
+      const option = document.createElement('option');
+      option.value = country.code;
+      option.setAttribute('t', country.name);
+      option.textContent = country.name;
+      plusSelect.appendChild(option);
+    });
+
+     this.replaceWith(plusSelect);
+      setTimeout(() => {
+        plusSelect.setValue('MX');
+      }, 0);
+  }
+}
+
 function set_value_plus_select(id, newValue, newText = null) {
   const mySelect = document.getElementById(id);
   if (!mySelect) return;
@@ -2267,7 +2330,7 @@ class PlusFilterTable extends HTMLElement {
     // Input buscador
     const searchInput = document.createElement('input');
     searchInput.type = 'text';
-    searchInput.placeholder = 'Search...';
+    searchInput.placeholder = window.t('message.search');
     searchInput.classList.add('filter-search');
     searchInput.addEventListener('input', (e) => {
       const term = e.target.value.toLowerCase();
@@ -2294,6 +2357,8 @@ class PlusFilterTable extends HTMLElement {
 
       label.appendChild(checkbox);
       label.appendChild(slider);
+
+      const text=document.createTextNode(col.label);
       label.appendChild(document.createTextNode(col.label));
 
       checkbox.addEventListener('change', (e) => {
@@ -3663,8 +3728,59 @@ class PlusTag extends HTMLElement {
   }
 }
 
+class ShowMore extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
 
+  connectedCallback() {
+    const text = this.getAttribute("t") || this.getAttribute("label") || this.getAttribute("text") || "Show more";
+    const onclickFn = this.getAttribute("onclick") || null;
 
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("show-more-wrapper");
+
+    wrapper.innerHTML = `
+      <style>
+        .show-more-wrapper {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          cursor: pointer;
+          font-weight: 500;
+          font-size: 14px;
+          color: #131313ff;
+          background-color: #fff;
+          padding: 16px 12px;
+          border-radius: 8px;
+          user-select: none;
+        }
+        .show-more-wrapper:hover {
+          background-color: #ebebebff;
+        }
+        .label {
+          flex: 1;
+          text-align: left;
+        }
+        .icon {
+          font-weight: bold;
+        }
+      </style>
+      <span class="label">${text}</span>
+      <span class="icon">&gt;</span>
+    `;
+
+    this.shadowRoot.appendChild(wrapper);
+
+    // evento click
+    wrapper.addEventListener("click", () => {
+      if (onclickFn && typeof window[onclickFn.replace("()", "")] === "function") {
+        window[onclickFn.replace("()", "")]();
+      }
+    });
+  }
+}
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
   const tabs = document.querySelectorAll('.tab-content');
@@ -4288,6 +4404,15 @@ function transform_my_labels_erp() {
   if (!customElements.get("plus-filter-table")) {
     customElements.define('plus-filter-table', PlusFilterTable);
   }
+
+  if (!customElements.get("plus-country")) {
+    customElements.define('plus-country', PlusCountry);
+  }
+
+  if (!customElements.get("show-more")) {
+    customElements.define("show-more", ShowMore);
+  }
+  
 }
 
 /**---------------------------------TAB----------------------------- */

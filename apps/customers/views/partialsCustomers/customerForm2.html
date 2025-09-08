@@ -1,41 +1,39 @@
-<div class="tab-content" id="form2">
-    <div class="form-grid">
-        <div>
-            <label t="form2-label-is_company">¿Este cliente es una empresa?</label>
-            <label class="switch">
-                <input type="checkbox" name="this_customer_is_a_company" id="isCompanySwitch" {% if customer.this_customer_is_a_company %}checked{% endif %}/>
-                <span class="slider round"></span>
-            </label>
-        </div>
-        <div></div>
-        <div>
-            <label t="form2-label-company_name">Nombre de la Empresa</label>
-            <input type="text" name="company_name" 
-                   placeholder="Nombre de la empresa" 
-                   t-placeholder="form2-placeholder-company_name"
-                   value="{{customer.company_name}}" maxlength="255"/>
-        </div>
-        <div>
-            <label t="form2-label-website">Sitio Web</label>
-            <input type="url" name="website" 
-                   placeholder="Sitio web" 
-                   t-placeholder="form2-placeholder-website"
-                   value="{{customer.website}}" />
-        </div>
-        <div>
-            <label t="form2-label-rfc">RFC</label>
-            <input type="text" name="rfc" 
-                   placeholder="RFC" 
-                   t-placeholder="form2-placeholder-rfc"
-                   value="{{customer.rfc}}" maxlength="50" />
-        </div>
+<div class="form-grid">
+    <div>
+        <label t="form2-label-is_company">¿Este cliente es una empresa?</label>
+        <label class="switch">
+            <input type="checkbox" name="this_customer_is_a_company" id="isCompanySwitch" {% if customer.this_customer_is_a_company %}checked{% endif %}/>
+            <span class="slider round"></span>
+        </label>
+    </div>
+    <div></div>
+    <div>
+        <label t="form2-label-company_name">Nombre de la Empresa</label>
+        <input type="text" name="company_name" 
+                placeholder="Nombre de la empresa" 
+                t-placeholder="form2-placeholder-company_name"
+                value="{{customer.company_name}}" maxlength="255"/>
+    </div>
+    <div>
+        <label t="form2-label-website">Sitio Web</label>
+        <input type="url" name="website" 
+                placeholder="Sitio web" 
+                t-placeholder="form2-placeholder-website"
+                value="{{customer.website}}" />
+    </div>
+    <div>
+        <label t="form2-label-rfc">RFC</label>
+        <input type="text" name="rfc" 
+                placeholder="RFC" 
+                t-placeholder="form2-placeholder-rfc"
+                value="{{customer.rfc}}" maxlength="50" />
+    </div>
 
-        <div>
-            <label t="form2-label-curp">CURP</label>
-            <input type="text" name="curp" 
-                   placeholder="CURP" 
-                   t-placeholder="form2-placeholder-curp"
-                   value="{{customer.curp}}" maxlength="50"/>
-        </div>
+    <div>
+        <label t="form2-label-curp">CURP</label>
+        <input type="text" name="curp" 
+                placeholder="CURP" 
+                t-placeholder="form2-placeholder-curp"
+                value="{{customer.curp}}" maxlength="50"/>
     </div>
 </div>

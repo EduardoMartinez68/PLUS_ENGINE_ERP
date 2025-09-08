@@ -222,10 +222,8 @@ header {
   position: relative;
   width: 90%;
   margin: 20px auto;
-  background: white;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
 }
 
 .section {
@@ -417,7 +415,6 @@ input.case-title-input::placeholder {
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  /* gris por default */
   transition: 0.4s;
   border-radius: 34px;
 }
@@ -437,7 +434,6 @@ input.case-title-input::placeholder {
 /* Cuando el switch está "checked" */
 .switch input:checked+.slider {
   background-color: var(--primary-light);
-  /* verde activo */
 }
 
 .switch input:checked+.slider:before {
