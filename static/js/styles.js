@@ -1090,9 +1090,29 @@ class PlusSelect extends HTMLElement {
     this._hiddenInput = hiddenInput;
 
     //Click event on select visible. This is when the user do clic in the select.
+    let top=0;
+    let left=0;
+    let width=0;
     select.addEventListener('click', async () => {
       popup.classList.toggle('active');
       searchInput.focus();
+
+      if (popup.classList.contains('active')) {
+        const rect = select.getBoundingClientRect();
+        popup.style.zIndex = currentPopZIndex + 1;
+        popup.style.position = 'absolute';
+
+        if(top==0 && left==0 && width==0){
+          top=rect.bottom + window.scrollY;
+          left=rect.left + window.scrollX+30;
+          width=rect.width;
+        }
+
+        popup.style.top = `${rect.bottom + window.scrollY-43}px`;
+        popup.style.left = `${left}px`;
+        popup.style.minWidth = `${width}px`;
+      }
+
 
       if (thisSlectSendDataToTheServer) {
         await update_option_for_the_server('');
@@ -1264,6 +1284,7 @@ class PlusSelect extends HTMLElement {
     });
 
     //show structure of the label
+    /*
     wrapper.appendChild(label);
     wrapper.appendChild(select);
     wrapper.appendChild(popup);
@@ -1271,6 +1292,15 @@ class PlusSelect extends HTMLElement {
 
     //this.replaceWith(wrapper);
     this.appendChild(wrapper);
+    */
+    //show structure of the label
+    wrapper.appendChild(label);
+    wrapper.appendChild(select);
+    wrapper.appendChild(hiddenInput);
+    this.appendChild(wrapper);
+
+    // mover el popup al body para que no rompa el layout
+    document.body.appendChild(popup);
   }
 
   setValue(value, text = null) {
@@ -1977,13 +2007,13 @@ class PlusTabs extends HTMLElement {
     const tabs = Array.from(this.querySelectorAll('plus-tab'));
 
     tabs.forEach((tab, index) => {
-      const tAttr = tab.getAttribute('t');
-      const textAttr = tab.getAttribute('text');
-      const title = window.translate_text(tAttr || textAttr);
+      const tAttr = tab.getAttribute('t') || tab.getAttribute('text') || 'tab';
+      const title = window.translate_text(tAttr);
 
       const button = document.createElement('button');
       button.textContent = title;
       button.type = 'button';
+      button.setAttribute('t', tAttr);
       if (index === 0) button.classList.add('active');
 
       button.addEventListener('click', () => {
@@ -3737,12 +3767,19 @@ class ShowMore extends HTMLElement {
   connectedCallback() {
     const text = this.getAttribute("t") || this.getAttribute("label") || this.getAttribute("text") || "Show more";
     const onclickFn = this.getAttribute("onclick") || null;
-
     const wrapper = document.createElement("div");
     wrapper.classList.add("show-more-wrapper");
 
     wrapper.innerHTML = `
       <style>
+        :host {
+          display: block;
+          margin: 8px 0;
+        }
+        show-more {
+          display: block;
+          margin: 8px 0;
+        }
         .show-more-wrapper {
           display: flex;
           justify-content: space-between;
@@ -3767,8 +3804,8 @@ class ShowMore extends HTMLElement {
           font-weight: bold;
         }
       </style>
-      <span class="label">${text}</span>
-      <span class="icon">&gt;</span>
+      <span class="label" t='${text}'>${text}</span>
+      <span class="icon">></span>
     `;
 
     this.shadowRoot.appendChild(wrapper);

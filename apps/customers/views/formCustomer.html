@@ -3,27 +3,18 @@
 
 {% include 'partialsCustomers/navbarHome.html' %}
 
-{% if customer.id %}
-<form action="/customers/edit_customer/{{ customer.id }}" method="post" id="form-edit-customer">
-<input type="hidden" id="id-customer" value="{{ customer.id }}">
-{% else %}
-<form action="/customers/add_customer" method="post" id="form-create-a-new-customer">
-{% endif %}
-    {% csrf_token %}
-    <div class="container-section">
-        <plus-tabs>
-            <plus-tab text="info-general">
-                {% include 'partialsCustomers/customerForm1.html' %}
-            </plus-tab>
-            <plus-tab text="info-empresa">
-                {% include 'partialsCustomers/customerForm2.html' %}
-            </plus-tab>
-            <button class="btn btn-add btn-success" style="width: 100%;" t="save">Guardar</button>
-        </plus-tabs>
-    </div>
-</form>
 
-
+<div class="container-section">
+    <plus-tabs>
+        <plus-tab text="info-general">
+            {% include 'partialsCustomers/customerForm1.html' %}
+        </plus-tab>
+        <plus-tab text="info-empresa">
+            {% include 'partialsCustomers/customerForm2.html' %}
+        </plus-tab>
+        <button class="btn btn-add btn-success" style="width: 100%;" t="save">Save</button>
+    </plus-tabs>
+</div>
 
 <script>
 (() => {

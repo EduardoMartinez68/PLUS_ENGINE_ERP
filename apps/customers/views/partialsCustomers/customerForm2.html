@@ -1,39 +1,27 @@
 <div class="form-grid">
-    <div>
-        <label t="form2-label-is_company">¿Este cliente es una empresa?</label>
-        <label class="switch">
-            <input type="checkbox" name="this_customer_is_a_company" id="isCompanySwitch" {% if customer.this_customer_is_a_company %}checked{% endif %}/>
-            <span class="slider round"></span>
-        </label>
-    </div>
-    <div></div>
-    <div>
-        <label t="form2-label-company_name">Nombre de la Empresa</label>
-        <input type="text" name="company_name" 
-                placeholder="Nombre de la empresa" 
-                t-placeholder="form2-placeholder-company_name"
-                value="{{customer.company_name}}" maxlength="255"/>
-    </div>
-    <div>
-        <label t="form2-label-website">Sitio Web</label>
-        <input type="url" name="website" 
-                placeholder="Sitio web" 
-                t-placeholder="form2-placeholder-website"
-                value="{{customer.website}}" />
-    </div>
-    <div>
-        <label t="form2-label-rfc">RFC</label>
-        <input type="text" name="rfc" 
-                placeholder="RFC" 
-                t-placeholder="form2-placeholder-rfc"
-                value="{{customer.rfc}}" maxlength="50" />
+    <plus-switch text="form2-label-is_company"></plus-switch>
+
+    <div class="row section">
+        <input-field type="text" label="form2-label-company_name" t-placeholder="form2-placeholder-company_name" name="company_name" value="{{customer.company_name}}" maxlength="255"></input-field>
     </div>
 
-    <div>
-        <label t="form2-label-curp">CURP</label>
-        <input type="text" name="curp" 
-                placeholder="CURP" 
-                t-placeholder="form2-placeholder-curp"
-                value="{{customer.curp}}" maxlength="50"/>
+    <div class="row section">
+        <input-field type="text" label="form2-label-contact" t-placeholder="form2-contact-placeholder" name="contact_name" value="{{customer.contact_name}}" maxlength="150"></input-field>
+    </div>
+
+    <div class="row section">
+        <input-field type="text" label="form2-label-contact-email" t-placeholder="form2-placeholder-contact-email" name="contact_email" value="{{customer.contact_email}}"></input-field>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <input-field type="text" label="form2-label-contact-phone" t-placeholder="form2-placeholder-contact-phone" name="contact_phone" value="{{customer.contact_phone}}" maxlength="20"></input-field>
+        </div>
+        <div class="col">
+            <input-field type="text" label="form2-label-contact-cellphone" t-placeholder="form2-placeholder-contact-phone" name="contact_cellphone" value="{{customer.contact_cellphone}}" maxlength="20"></input-field>
+        </div>
+    </div>
+    <div class="row section">
+        <input-field type="url" label="form2-label-website" t-placeholder="form2-placeholder-website" name="website" value="{{customer.website}}"></input-field>
     </div>
 </div>
