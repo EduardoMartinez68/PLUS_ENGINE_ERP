@@ -3337,7 +3337,7 @@ function get_value_of_label_true_or_false(value) {
 }
 
 
-class InputColor extends HTMLElement {
+class InputColor2 extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
@@ -3590,7 +3590,243 @@ class InputColor extends HTMLElement {
     this.setAttribute('value', val);
   }
 }
+class InputColor extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
 
+    const colorInicial = this.getAttribute('value') || '#3b82f6';
+    const name = this.getAttribute('name') || '';
+    const id = this.getAttribute('id') || generate_unique_dom_id();
+
+    this.value = colorInicial;
+
+    const container = document.createElement('div');
+    container.innerHTML = `
+      <style>
+        .input-color-container {
+          display: inline-block;
+        }
+        .color-box {
+          width: 42px;
+          height: 42px;
+          border-radius: 12px;
+          border: 1px solid #ccc;
+          cursor: pointer;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          transition: all 0.2s ease;
+        }
+        .color-box:hover {
+          box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+      </style>
+      <input type="hidden" name="${name}" id="${id}" value="${colorInicial}" />
+      <div class="input-color-container">
+        <div class="color-box" style="background-color: ${colorInicial}"></div>
+      </div>
+    `;
+
+    // Label descriptivo
+    const label = document.createElement('info-label');
+    label.textContent = window.t('input.color');
+    label.setAttribute('t', 'input.color');
+    label.setAttribute('text', window.t('input.color'));
+    this.shadowRoot.appendChild(label);
+
+    this.shadowRoot.appendChild(container);
+
+    // referencias
+    this.box = this.shadowRoot.querySelector('.color-box');
+    this.hiddenInput = this.shadowRoot.querySelector('input[type="hidden"]');
+
+    // evento abrir
+    this.box.addEventListener('click', (e) => {
+      e.stopPropagation(); // evitar que el click en la caja cierre el popup
+      if (this.popupEl && document.body.contains(this.popupEl)) {
+        this.closePopup();
+      } else {
+        this.openPopup();
+      }
+    });
+  }
+
+  openPopup() {
+    // cerrar si ya está abierto
+    if (this.popupEl) {
+      this.closePopup();
+      return;
+    }
+
+    const rect = this.box.getBoundingClientRect();
+
+    // Crear popup fuera del shadow DOM
+    this.popupEl = document.createElement('div');
+    this.popupEl.classList.add('color-picker-popup-global');
+    this.popupEl.innerHTML = `
+      <style>
+        .color-picker-popup-global {
+          position: absolute;
+          top: ${rect.bottom + window.scrollY}px;
+          left: ${rect.left + window.scrollX}px;
+          background: #fff;
+          border: 1px solid #e0e0e0;
+          border-radius: 16px;
+          box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+          padding: 16px;
+          width: 260px;
+          z-index: ${currentPopZIndex+1};
+        }
+        .tabs {
+          display: flex;
+          margin-bottom: 12px;
+          background: #f0f0f0;
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .tab-button {
+          flex: 1;
+          padding: 6px;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          font-size: 14px;
+          color: #444;
+        }
+        .tab-button.active {
+          background: #e0e0e0;
+          font-weight: 600;
+        }
+        .tab-content {
+          display: none;
+        }
+        .tab-content.active {
+          display: block;
+        }
+        .quick-colors {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        .color-circle {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          cursor: pointer;
+          border: 1px solid #ccc;
+        }
+        .color-circle:hover {
+          border-color: #999;
+        }
+        .color-code-input {
+          margin-top: 8px;
+          width: 100%;
+          padding: 6px 10px;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          font-size: 13px;
+          font-family: monospace;
+          color: #333;
+        }
+        .accept-button {
+          margin-top: 12px;
+          width: 100%;
+          padding: 8px;
+          background: ${colors.color_company};
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-size: 14px;
+          cursor: pointer;
+        }
+      </style>
+      <div class="tabs">
+        <button class="tab-button active" type="button">${window.t('input.speed')}</button>
+        <button class="tab-button" type="button">${window.t('input.personalize')}</button>
+      </div>
+      <div class="tab-content active">
+        <div class="quick-colors">
+          ${[
+            '#ff3b30','#ff6b81','#a55eea','#8e44ad','#0050ef',
+            '#5ac8fa','#007aff','#00ffff','#20c997','#006400',
+            '#34c759','#ffff00','#f1c40f','#f39c12','#ffa500',
+            '#e67e22','#8b4513','#95a5a6','#000000','#ffffff'
+          ].map(c => `<div class="color-circle" data-color="${c}" style="background:${c}"></div>`).join('')}
+        </div>
+      </div>
+      <div class="tab-content">
+        <input type="color" class="custom-color" value="${this.value}" />
+        <input type="text" class="color-code-input" value="${this.value}" readonly />
+        <button class="accept-button" type="button">${window.t('message.success')}</button>
+      </div>
+    `;
+    document.body.appendChild(this.popupEl);
+
+    // referencias internas
+    const tabs = this.popupEl.querySelectorAll('.tab-button');
+    const contents = this.popupEl.querySelectorAll('.tab-content');
+    const colorInput = this.popupEl.querySelector('.custom-color');
+    const acceptButton = this.popupEl.querySelector('.accept-button');
+
+    // tabs
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        contents[i].classList.add('active');
+      });
+    });
+
+    // quick colors
+    this.popupEl.querySelectorAll('.color-circle').forEach(circle => {
+      circle.addEventListener('click', () => {
+        const color = circle.getAttribute('data-color');
+        this.updateColor(color);
+        this.closePopup();
+      });
+    });
+
+    // aceptar color personalizado
+    acceptButton.addEventListener('click', () => {
+      const color = colorInput.value;
+      this.updateColor(color);
+      this.closePopup();
+    });
+
+    // cerrar al hacer click fuera
+    setTimeout(() => {
+      const handler = (e) => {
+        if (this.popupEl && !this.popupEl.contains(e.target) && e.target !== this.box) {
+          this.closePopup();
+          document.removeEventListener('click', handler);
+        }
+      };
+      document.addEventListener('click', handler);
+    }, 0);
+  }
+
+  closePopup() {
+    if (this.popupEl && document.body.contains(this.popupEl)) {
+      this.popupEl.remove();
+      this.popupEl = null;
+    }
+  }
+
+  updateColor(color) {
+    this.value = color;
+    this.box.style.backgroundColor = color;
+    this.hiddenInput.value = color;
+    this.dispatchEvent(new CustomEvent('change', { detail: { color } }));
+  }
+
+  get value() {
+    return this.getAttribute('value');
+  }
+
+  set value(val) {
+    this.setAttribute('value', val);
+  }
+}
 
 class PlusTag extends HTMLElement {
   constructor() {
