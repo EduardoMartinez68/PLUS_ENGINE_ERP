@@ -61,8 +61,8 @@
   "save": "Guardar",
   "cancel": "Cancelar",
   
-   "info-general"   : "Información General",
-   "info-empresa"   : "Información de la Empresa",
+  "info-general"   : "Información General",
+  "info-empresa"   : "Información de la Empresa",
 
   "title-pop-info-address":"Información de dirección",
   "form1-label-name": "Nombre del Cliente",
@@ -74,8 +74,32 @@
   "form1-placeholder-phone": "Teléfono",
   "form1-label-cellphone": "Celular",
   "form1-placeholder-cellphone": "Celular",
+
+  "label-address":"Dirección",
+  "placeholder-address": "Ej. Av. Reforma 123, Col. Centro",
+
+  "label-num_ext":"No. Exterior",
+  "placeholder-num_ext": "Ej. 245",
+
+  "label-num_int":"No. Interior",
+  "placeholder-num_int": "Ej. Depto. 4B",
+
+  "label-postal_code":"Código Postal",
+  "placeholder-postal_code": "Ej. 06500",
+
+  "label-street":"Calle",
+  "placeholder-street": "Ej. Calle Juárez",
+
+  "label-estate":"Estado",
+  "placeholder-estate": "Estado del cliente",
+
+  "label-city":"Ciudad",
+  "placeholder-city": "Ciudad del Cliente",
+
   "form1-label-country": "País",
   "form1-placeholder-country": "País",
+
+  "label-reference":"Referencia",
 
   "advanced-information":"Información avanzada",
   "select-type-customer":"Tipo de cliente",

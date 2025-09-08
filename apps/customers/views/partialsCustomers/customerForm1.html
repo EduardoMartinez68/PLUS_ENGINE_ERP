@@ -8,7 +8,9 @@
   </div>
 
   <div class="row section">
-    <input-field type="email" label="Email" name="email" placeholder="Enter email"></input-field>
+    <div class="col">
+      <input-field type="email" label="Email" name="email" placeholder="Enter email"></input-field>
+    </div>
   </div>
 
   <div class="row section">
@@ -22,9 +24,6 @@
     </div>
   </div>
 
-        <plus-select label="select-source-customer" name="source">
-          <option value="">1</option>
-        </plus-select>
 
   <show-more text="add-info-address-customer" onclick="show_pop('pop-data-address')"></show-more>
 
@@ -43,28 +42,30 @@
 <message-pop title="title-pop-info-address" name="pop-data-address">
   <div class="container-pop">
     <div class="row section">
-      <input-field type="text" label="address" placeholder="form1-placeholder-name" name="address"
-        value="{{customer.name}}" maxlength="300"></input-field>
+      <div class="col">
+        <input-field type="text" label="label-address" placeholder="placeholder-address" name="address"
+          value="{{customer.address}}"></input-field>
+      </div>
     </div>
     <div class="row section">
       <div class="col">
-        <input-field type="text" label="num_ext" placeholder="form1-placeholder-name" name="num_ext"
-          value="{{customer.name}}" maxlength="300"></input-field>
+        <input-field type="text" label="label-num_ext" placeholder="placeholder-num_ext" name="num_ext"
+          value="{{customer.num_ext}}" maxlength="5"></input-field>
       </div>
       <div class="col">
-        <input-field type="text" label="num_int" placeholder="form1-placeholder-name" name="num_int"
-          value="{{customer.name}}" maxlength="300"></input-field>
+        <input-field type="text" label="label-num_int" placeholder="placeholder-num_int" name="num_int"
+          value="{{customer.num_int}}" maxlength="5"></input-field>
       </div>
     </div>
 
     <div class="row section">
       <div class="col">
-        <input-field type="text" label="city" placeholder="form1-placeholder-name" name="city" value="{{customer.name}}"
-          maxlength="300"></input-field>
+        <input-field type="text" label="label-city" placeholder="placeholder-city" name="city" value="{{customer.name}}"
+          maxlength="100"></input-field>
       </div>
       <div class="col">
-        <input-field type="text" label="states" placeholder="form1-placeholder-name" name="states"
-          value="{{customer.name}}" maxlength="300"></input-field>
+        <input-field type="text" label="label-estate" placeholder="placeholder-estate" name="states"
+          value="{{customer.name}}" maxlength="100"></input-field>
       </div>
     </div>
 
@@ -74,9 +75,14 @@
         <plus-country name="country" requerid></plus-country>
       </div>
       <div class="col">
-        <input-field type="text" label="postal_code" placeholder="form1-placeholder-name" name="postal_code"
-          value="{{customer.name}}" maxlength="300"></input-field>
+        <input-field type="text" label="label-postal_code" placeholder="placeholder-postal_code" name="postal_code"
+          value="{{customer.postal_code}}" maxlength="20"></input-field>
       </div>
+    </div>
+
+    <div class="row section">
+      <label for="" t="label-reference"></label>
+      <textarea name="reference">{{customer.reference}}</textarea>
     </div>
     <br>
   </div>
@@ -87,7 +93,7 @@
 
 <message-pop title="advanced-information" name="pop-advanced-information">
   <div class="container-pop">
-    <plus-switch text="form1-label-status"></plus-switch>
+    <plus-switch text="form1-label-status" checked="True"></plus-switch>
 
     <div class="row section">
       <div class="col">
@@ -103,25 +109,27 @@
     </div>
 
     <div class="row section">
-      <input-field type="number" label="points-user-label" placeholder="points-user-placeholder" name="points"
-        value="{{customer.points}}"></input-field>
+      <div class="col">
+        <input-field type="number" label="points-user-label" placeholder="points-user-placeholder" name="points"
+          value="{{customer.points}}"></input-field>
+      </div>
+      <div class="col">
+        <input-field type="number" label="credit-user-label" placeholder="credit-user-placeholder" name="credit"
+          value="{{customer.credit}}"></input-field>  
+      </div>
     </div>
 
     <div class="row section">
-      <input-field type="number" label="credit-user-label" placeholder="credit-user-placeholder" name="credit"
-        value="{{customer.credit}}"></input-field>
-    </div>
-    <div class="row section">
+      <div class="col">
       <info-label label="tags"
           message="email-message-show"></info-label>
       <plus-tags id="tags" name="tags" label="emails-guests" message="email-message-show" placeholder="input.add-most-email"></plus-tags>
+      </div>
     </div>
 
     <div class="row section">
         <label for="" t="note"></label>
-        <textarea t-placeholder="note-placeholder">
-
-        </textarea>
+        <textarea t-placeholder="note-placeholder"></textarea>
     </div>
 
   </div>
@@ -130,10 +138,3 @@
 </message-pop>
 
 
-
-
-<script>
-  function show_pop_address() {
-    show_pop('pop-data-address');
-  }
-</script>

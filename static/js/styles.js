@@ -3765,7 +3765,8 @@ class ShowMore extends HTMLElement {
   }
 
   connectedCallback() {
-    const text = this.getAttribute("t") || this.getAttribute("label") || this.getAttribute("text") || "Show more";
+    const t = this.getAttribute("t") || this.getAttribute("label") || this.getAttribute("text") || "Show more";
+    const textTranslate=window.translate_text(t)
     const onclickFn = this.getAttribute("onclick") || null;
     const wrapper = document.createElement("div");
     wrapper.classList.add("show-more-wrapper");
@@ -3804,8 +3805,9 @@ class ShowMore extends HTMLElement {
           font-weight: bold;
         }
       </style>
-      <span class="label" t='${text}'>${text}</span>
-      <span class="icon">></span>
+      <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+      <span class="label" t='${t}'>${textTranslate}</span>
+      <span class="icon"><i class="fi fi-rr-angle-right"></i></span>
     `;
 
     this.shadowRoot.appendChild(wrapper);

@@ -55,6 +55,7 @@ class Customer(models.Model):
     postal_code = models.CharField(max_length=20, blank=True, null=True)
     num_ext = models.CharField(max_length=5, null=True) 
     num_int = models.CharField(max_length=5, null=True) 
+    reference=models.TextField(blank=True, null=True)
 
     #--information of the company 
     this_customer_is_a_company = models.BooleanField(default=False)
