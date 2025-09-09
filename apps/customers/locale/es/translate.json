@@ -3,6 +3,11 @@
   "dashboard-customer-activate":"Activos",
   "dashboard-total-inactive":"Inactivos",
   "dashboard-new-customer":"Nuevos Clientes (mes)",
+  "dashboard-no-customer-selected":"Ningún Cliente seleccionado",
+
+  "card-points":"Puntos",
+  "card-credit":"Crédito",
+
 
   "table-home-avatar": "Imagen",
   "table-home-name": "Nombre",
@@ -65,7 +70,7 @@
   "info-empresa"   : "Información de la Empresa",
 
   "title-pop-info-address":"Información de dirección",
-  "form1-label-name": "Nombre del Cliente",
+  "form1-label-name": "* Nombre del Cliente",
   "form1-placeholder-name": "Nombre del cliente",
   "form1-label-email": "Email",
   "form1-placeholder-email": "Correo electrónico",

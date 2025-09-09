@@ -1,0 +1,192 @@
+<div class="container-padding">
+    <div class="row">
+        <div class="col-10">
+            <search-bar label="search"></search-bar>
+        </div>
+        <div class="col-2">
+            <label for=""></label>
+            <plus-actions>
+                <plus-action text="new-event" onclick="open_type_pop" combo="Shift+n"></plus-action>
+                <plus-action text="create-a-new-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
+                <plus-action text="title-show-all-the-type-event" onclick="open_pop_show_all_type_event"></plus-action>
+                <plus-action text="title.show-all-my-appoints" onclick="open_pop_show_all_my_appoints"></plus-action>
+            </plus-actions>
+        </div>
+    </div>
+    <br>
+
+    <div class="customers-list">
+
+        <plus-customers name="Ana Gómez" email="ana.gomez@email.com" phone="+57 320 123 4567" tag="VIP" points="480"
+            credit="3000" priority="2" image="https://cdn-icons-png.flaticon.com/512/3177/3177440.png" status="active">
+        </plus-customers>
+
+        <plus-customers id-customer="2" name="Carlos Ruiz" email="carlos.ruiz@email.com" phone="+52 55 2222 3333"
+            tag="Básico" points="120" credit="500" priority="1"
+            image="https://static.vecteezy.com/system/resources/previews/041/642/168/non_2x/ai-generated-portrait-of-handsome-smiling-young-man-with-folded-arms-isolated-free-png.png"
+            status="inactive">
+        </plus-customers>
+
+    </div>
+</div>
+
+
+
+<script>
+    class PlusCustomers extends HTMLElement {
+        constructor() {
+            super();
+            this.attachShadow({ mode: "open" });
+        }
+
+        connectedCallback() {
+            if (this._rendered) return;
+            this._rendered = true;
+
+            // atributos recibidos
+            const customerId = this.getAttribute("customer-id") || "";
+            const name = this.getAttribute("name") || "Sin nombre";
+            const email = this.getAttribute("email") || "Sin email";
+            const phone = this.getAttribute("phone") || "Sin celular";
+            const tag = this.getAttribute("tag") || "General";
+            const points = this.getAttribute("points") || "0";
+            const credit = this.getAttribute("credit") || "0";
+            const image = this.getAttribute("image") || "https://via.placeholder.com/80";
+            const status = this.getAttribute("status") || "active"; // active | inactive
+            const priority = parseInt(this.getAttribute("priority")) || 0; // 0-3
+
+            // estilos
+            const style = document.createElement("style");
+            style.textContent = `
+      .card-customer {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition: all 0.3s ease-in-out;
+        width:100%;
+      }
+
+      .card-customer:hover{
+        cursor:pointer;
+      }
+
+      .card-customer.inactive {
+        opacity: 0.6;
+        filter: grayscale(60%);
+      }
+
+      .customer-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .customer-img {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e5e7eb;
+      }
+
+      .customer-name {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #111827;
+        margin: 0;
+      }
+
+      .customer-info {
+        font-size: 0.9rem;
+        color: #374151;
+      }
+
+      .customer-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        background-color: var(--tag-color, #3B82F6);
+        color: var(--tag-text-color, #ffffff);       
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-top: 4px;
+        width: auto;          
+        max-width: 100px;
+        text-align: center;   
+      }
+
+      .customer-stats {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        margin-top: 8px;
+      }
+
+      .customer-stat {
+        background: #f9fafb;
+        padding: 6px 10px;
+        border-radius: 8px;
+      }
+
+      .priority {
+        display: flex;
+        gap: 4px;
+        font-size: 1.2rem;
+        margin-top: 6px;
+      }
+
+      .star {
+        color: #d1d5db; 
+      }
+
+      .star.filled {
+        color: #fbbf24; 
+        text-shadow: 0px 2px 6px rgba(0,0,0,0.15);
+      }
+    `;
+
+            // generar estrellas según prioridad
+            const renderStars = () => {
+                let starsHTML = "";
+                for (let i = 1; i <= 3; i++) {
+                    starsHTML += `<span class="star ${i <= priority ? "filled" : ""}">★</span>`;
+                }
+                return starsHTML;
+            };
+
+            // estructura HTML
+            const wrapper = document.createElement("div");
+            wrapper.classList.add("card-customer");
+            if (status === "inactive") wrapper.classList.add("inactive");
+
+
+            wrapper.innerHTML = `
+      <div class="customer-header">
+        <img class="customer-img" src="${image}" alt="${name}">
+        <div>
+          <p class="customer-name">${name}</p>
+          <div class="customer-info">${email}</div>
+          <div class="customer-info">${phone}</div>
+        </div>
+      </div>
+      <span class="customer-tag">${tag}</span>
+      <div class="priority">${renderStars()}</div>
+      <div class="customer-stats">
+        <div class="customer-stat" t='card-points'>${window.translate_text('card-points')}: ${points}</div>
+        <div class="customer-stat" t='card-credit'>${window.translate_text('card-credit')}: $${credit}</div>
+      </div>
+      <input type="hidden" name="customer_id" value="${customerId}">
+    `;
+
+            this.shadowRoot.append(style, wrapper);
+        }
+    }
+
+    customElements.define("plus-customers", PlusCustomers);
+</script>

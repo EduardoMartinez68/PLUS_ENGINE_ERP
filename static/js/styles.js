@@ -538,13 +538,14 @@ class PlusTitle extends HTMLElement {
 
   connectedCallback() {
     // Texto del label = contenido del componente
-    const labelText = this.textContent.trim() || "";
+    const labelText = this.getAttribute('label');
 
     // Creamos label
     const label = document.createElement("label");
     if (this.hasAttribute("label")) {
       label.setAttribute("label", this.getAttribute("label"));
     }
+    label.setAttribute('t', labelText)
     label.textContent = labelText;
 
     // Creamos input

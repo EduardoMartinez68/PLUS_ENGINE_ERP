@@ -1,0 +1,48 @@
+<style>
+.metrics {
+  display: flex;
+  gap: 12px; /* espacio entre tarjetas */
+  align-items: center;
+}
+
+.metric-card {
+  background-color: #ffffff; /* blanco elegante */
+  border-radius: 12px; /* esquinas redondeadas */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* sombra sutil */
+  padding: 10px 16px; /* espacio interno */
+  min-width: 100px; /* ancho mínimo */
+  text-align: center;
+  cursor: default;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-card h2 {
+  font-size: 1rem; /* tamaño de número pequeño */
+  margin: 0;
+  color: var(--primary); /* color principal azul */
+}
+
+.metric-card p {
+  font-size: 0.7rem; /* texto pequeño */
+  margin: 2px 0 0 0;
+  color: #6b7280; /* gris elegante para el texto */
+}
+</style>
+<div class="metrics">
+    <div class="metric-card">
+        <h2>128</h2>
+        <p t="dashboard-total-customer">Total Customer</p>
+    </div>
+    <div class="metric-card">
+        <h2>102</h2>
+        <p>Customer Activate</p>
+    </div>
+    <div class="metric-card">
+        <h2>26</h2>
+        <p t="dashboard-customer-activate">Inactive</p>
+    </div>
+    <div class="metric-card">
+        <h2>18</h2>
+        <p t="dashboard-new-customer">New Customer (month)</p>
+    </div>
+</div>
