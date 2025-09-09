@@ -1,39 +1,40 @@
-
-  <div class="row section">
-    <div class="col-2">
-      <image-uploader max="1"></image-uploader>
-    </div>
-    <div class="col-10">
-      <label t="form1-label-name">Name Customer</label>
-      <input type="text" name="name" class="case-title-input" t-placeholder="form1-placeholder-name" required
-        value="{{customer.name}}" maxlength="300" />
-
-        <plus-priority max="3"></plus-priority>
-    </div>
+<div class="row section">
+  <div class="col-2">
+    <image-uploader max="1"></image-uploader>
   </div>
+  
+  <div class="col-10">
+    <plus-title t="form1-label-name" type="text" name="name" t-placeholder="form1-placeholder-name" required
+      value="{{customer.name}}" maxlength="300">
+      Name Customer
+    </plus-title>
 
-  <div class="row section">
-    <div class="col">
-      <input-field type="email" label="Email" name="email" placeholder="Enter email"></input-field>
-    </div>
+    <plus-priority max="3"></plus-priority>
   </div>
+</div>
 
-  <div class="row section">
-    <div class="col">
-      <input-field type="text" label="form1-label-phone" name="phone" placeholder="form1-placeholder-phone"
-        maxlength="15" value="{{customer.phone}}"></input-field>
-    </div>
-    <div class="col">
-      <input-field type="text" label="form1-label-cellphone" name="cellphone"
-        t-placeholder="form1-placeholder-cellphone" value="{{customer.cellphone}}" maxlength="15"></input-field>
-    </div>
+<div class="row section">
+  <div class="col">
+    <input-field type="email" label="Email" name="email" placeholder="Enter email"></input-field>
   </div>
+</div>
+
+<div class="row section">
+  <div class="col">
+    <input-field type="text" label="form1-label-phone" name="phone" placeholder="form1-placeholder-phone" maxlength="15"
+      value="{{customer.phone}}"></input-field>
+  </div>
+  <div class="col">
+    <input-field type="text" label="form1-label-cellphone" name="cellphone" t-placeholder="form1-placeholder-cellphone"
+      value="{{customer.cellphone}}" maxlength="15"></input-field>
+  </div>
+</div>
 
 
-  <show-more text="add-info-address-customer" onclick="show_pop('pop-data-address')"></show-more>
+<show-more text="add-info-address-customer" onclick="show_pop('pop-data-address')"></show-more>
 
 
-  <show-more text="advanced-information" onclick="show_pop('pop-advanced-information')"></show-more>
+<show-more text="advanced-information" onclick="show_pop('pop-advanced-information')"></show-more>
 
 
 
@@ -91,7 +92,8 @@
     </div>
     <br>
   </div>
-  <button class="btn btn-edit btn-success" t="message.success" onclick="hide_pop('pop-data-address')" type="button"></button>
+  <button class="btn btn-edit btn-success" t="message.success" onclick="hide_pop('pop-data-address')"
+    type="button"></button>
 </message-pop>
 
 
@@ -108,7 +110,7 @@
       </div>
       <div class="col">
         <plus-select label="select-source-customer" name="source">
-          
+
         </plus-select>
       </div>
     </div>
@@ -120,26 +122,25 @@
       </div>
       <div class="col">
         <input-field type="number" label="credit-user-label" placeholder="credit-user-placeholder" name="credit"
-          value="{{customer.credit}}"></input-field>  
+          value="{{customer.credit}}"></input-field>
       </div>
     </div>
 
     <div class="row section">
       <div class="col">
-      <info-label label="tags"
-          message="email-message-show"></info-label>
-      <plus-tags id="tags" name="tags" label="emails-guests" message="email-message-show" placeholder="input.add-most-email"></plus-tags>
+        <info-label label="tags" message="email-message-show"></info-label>
+        <plus-tags id="tags" name="tags" label="emails-guests" message="email-message-show"
+          placeholder="input.add-most-email"></plus-tags>
       </div>
     </div>
 
     <div class="row section">
-        <label for="" t="note"></label>
-        <textarea t-placeholder="note-placeholder"></textarea>
+      <label for="" t="note"></label>
+      <textarea t-placeholder="note-placeholder"></textarea>
     </div>
 
   </div>
 
-  <button class="btn btn-edit btn-success" t="message.success" onclick="hide_pop('pop-advanced-information')" type="button"></button>
+  <button class="btn btn-edit btn-success" t="message.success" onclick="hide_pop('pop-advanced-information')"
+    type="button"></button>
 </message-pop>
-
-

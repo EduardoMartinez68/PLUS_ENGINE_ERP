@@ -531,6 +531,42 @@ class InputField extends HTMLElement {
   }
 }
 
+class PlusTitle extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    // Texto del label = contenido del componente
+    const labelText = this.textContent.trim() || "";
+
+    // Creamos label
+    const label = document.createElement("label");
+    if (this.hasAttribute("label")) {
+      label.setAttribute("label", this.getAttribute("label"));
+    }
+    label.textContent = labelText;
+
+    // Creamos input
+    const input = document.createElement("input");
+    input.classList.add("case-title-input");
+
+    // Pasamos todos los atributos menos "t" y "class"
+    [...this.attributes].forEach(attr => {
+      if (attr.name !== "class") {
+        input.setAttribute(attr.name, attr.value);
+      }
+    });
+
+    // Reemplazamos <plus-title> con label + input
+    const wrapper = document.createDocumentFragment();
+    wrapper.appendChild(label);
+    wrapper.appendChild(input);
+
+    this.replaceWith(wrapper);
+  }
+}
+
 class SearchBar extends HTMLElement {
   constructor() {
     super();
@@ -4697,6 +4733,10 @@ function transform_my_labels_erp() {
   
   if (!customElements.get("plus-priority")) {
     customElements.define("plus-priority", PlusPriority);
+  }
+
+  if (!customElements.get("plus-title")) {
+    customElements.define("plus-title", PlusTitle);
   }
 }
 
