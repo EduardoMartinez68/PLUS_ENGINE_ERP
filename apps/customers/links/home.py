@@ -129,7 +129,7 @@ def edit_customer(request, id_customer):
     return render(request, 'formCustomer.html', {'customer': customer})
 
 
-
+#-------------------------type user-------------------------
 
 '''
 

@@ -1090,27 +1090,26 @@ class PlusSelect extends HTMLElement {
     this._hiddenInput = hiddenInput;
 
     //Click event on select visible. This is when the user do clic in the select.
-    let top=0;
     let left=0;
     let width=0;
     select.addEventListener('click', async () => {
       popup.classList.toggle('active');
+      popup.style.zIndex = currentPopZIndex;
       searchInput.focus();
 
       if (popup.classList.contains('active')) {
         const rect = select.getBoundingClientRect();
-        popup.style.zIndex = currentPopZIndex + 1;
         popup.style.position = 'absolute';
+        const insideMessagePop = this.closest("message-pop") !== null;
 
-        if(top==0 && left==0 && width==0){
-          top=rect.bottom + window.scrollY;
-          left=rect.left + window.scrollX+30;
-          width=rect.width;
+        if (insideMessagePop) {
+          left = rect.left + window.scrollX + 30;
+        } else {
+          left = rect.left + window.scrollX + rect.width;
         }
 
         popup.style.top = `${rect.bottom + window.scrollY-43}px`;
         popup.style.left = `${left}px`;
-        popup.style.minWidth = `${width}px`;
       }
 
 
@@ -3336,260 +3335,6 @@ function get_value_of_label_true_or_false(value) {
   return value === true || value === 'true' || value === '1' || value === 1;
 }
 
-
-class InputColor2 extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-
-    const colorInicial = this.getAttribute('value') || '#3b82f6';
-    const name = this.getAttribute('name') || '';
-    const id = this.getAttribute('id') || generate_unique_dom_id();
-
-    this.value = colorInicial;
-
-    const container = document.createElement('div');
-    container.innerHTML = `
-          <style>
-            .input-color-container {
-              position: relative;
-              display: inline-block;
-              font-family: inherit;
-            }
-
-            .color-box {
-              width: 42px;
-              height: 42px;
-              border-radius: 12px;
-              border: 1px solid #ccc;
-              cursor: pointer;
-              box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-              transition: all 0.2s ease;
-            }
-
-            .color-box:hover {
-              box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-            }
-
-            .color-picker-popup {
-              position: absolute;
-              top: 52px;
-              left: 0;
-              background: #fff;
-              border: 1px solid #e0e0e0;
-              border-radius: 16px;
-              box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-              padding: 16px;
-              z-index: 10000000;
-              width: 260px;
-              display: none;
-              animation: fadeIn 0.2s ease;
-            }
-
-            @keyframes fadeIn {
-              from { opacity: 0; transform: translateY(-5px); }
-              to { opacity: 1; transform: translateY(0); }
-            }
-
-            .tabs {
-              display: flex;
-              margin-bottom: 12px;
-              background: #f0f0f0;
-              border-radius: 12px;
-              overflow: hidden;
-            }
-
-            .tab-button {
-              flex: 1;
-              padding: 8px;
-              background: transparent;
-              border: none;
-              cursor: pointer;
-              font-size: 14px;
-              color: #444;
-              transition: background 0.2s;
-            }
-
-            .tab-button.active {
-              background: #e0e0e0;
-              font-weight: 600;
-            }
-
-            .tab-content {
-              display: none;
-              margin-top: 8px;
-            }
-
-            .tab-content.active {
-              display: block;
-            }
-
-            .quick-colors {
-              display: flex;
-              flex-wrap: wrap;
-              gap: 10px;
-              justify-content: start;
-            }
-
-            .color-circle {
-              width: 28px;
-              height: 28px;
-              border-radius: 50%;
-              cursor: pointer;
-              border: 1px solid #ccc;
-              transition: transform 0.1s;
-            }
-
-            .color-circle:hover {
-              border-color: #999;
-            }
-
-            .color-code-input {
-              margin-top: 12px;
-              width: 100%;
-              padding: 6px 10px;
-              border: 1px solid #ccc;
-              border-radius: 8px;
-              font-size: 13px;
-              font-family: monospace;
-              color: #333;
-              background: #fdfdfd;
-              box-sizing: border-box;
-            }
-
-            .accept-button {
-              margin-top: 12px;
-              width: 100%;
-              padding: 8px;
-              background: ${colors.color_company};
-              color: white;
-              border: none;
-              border-radius: 8px;
-              font-size: 14px;
-              cursor: pointer;
-              transition: background 0.2s;
-            }
-
-            .accept-button:hover {
-              background: ${colors.color_company_hover};
-            }
-          </style>
-          <input type="hidden" name="${name}" id="${id}" value="${colorInicial}" />
-          <div class="input-color-container">
-            <div class="color-box" style="background-color: ${colorInicial}"></div>
-            <div class="color-picker-popup">
-                <input type="text" class="color-code-input" value="${colorInicial}" readonly />
-                <br><br>
-              <div class="tabs">
-                <button class="tab-button active" type="button">${window.t('input.speed')}</button>
-                <button class="tab-button" type="button">${window.t('input.personalize')}</button>
-              </div>
-              <div class="tab-content active">
-                <div class="quick-colors">
-                ${[
-        '#ff3b30', // red
-        '#ff6b81', // pink
-        '#a55eea', // purple
-        '#8e44ad', // dark purple
-        '#0050ef', // strong blue
-        '#5ac8fa', // light blue
-        '#007aff', // royal blue
-        '#00ffff', // aqua blue
-        '#20c997', // aqua green
-        '#006400', // dark green
-        '#34c759', // light green (Apple green)
-        '#ffff00', // classic yellow
-        '#f1c40f', // warm yellow
-        '#f39c12', // intense yellow
-        '#ffa500', // orange
-        '#e67e22', // dark orange
-        '#8b4513', // brown
-        '#95a5a6', // gray
-        '#000000', // black
-        '#ffffff'  // white
-      ]
-        .map(color => `<div class="color-circle" style="background:${color}" data-color="${color}"></div>`)
-        .join('')}
-                </div>
-              </div>
-              <div class="tab-content">
-                <input type="color" class="custom-color" value="${colorInicial}" />
-                <button class="accept-button" type="button">${window.t('message.success')}</button>
-              </div>
-              
-            </div>
-            
-          </div>
-        `;
-
-
-    //her we will to create a label for that the user know that this is a input of color
-    const label = document.createElement('info-label');
-    label.textContent = window.t('input.color');
-    label.setAttribute('t', 'input.color');
-    label.setAttribute('text', window.t('input.color'));
-    this.shadowRoot.appendChild(label);
-
-    //add the container
-    this.shadowRoot.appendChild(container);
-
-    const box = this.shadowRoot.querySelector('.color-box');
-    const popup = this.shadowRoot.querySelector('.color-picker-popup');
-    const tabs = this.shadowRoot.querySelectorAll('.tab-button');
-    const contents = this.shadowRoot.querySelectorAll('.tab-content');
-    const hiddenInput = this.shadowRoot.querySelector('input[type="hidden"]');
-    const textInput = this.shadowRoot.querySelector('.color-code-input');
-    const acceptButton = this.shadowRoot.querySelector('.accept-button');
-    const colorInput = this.shadowRoot.querySelector('.custom-color');
-
-    // open / close popup
-    box.addEventListener('click', () => {
-      popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
-    });
-
-    // Tabs
-    tabs.forEach((tab, i) => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        contents.forEach(c => c.classList.remove('active'));
-        tab.classList.add('active');
-        contents[i].classList.add('active');
-      });
-    });
-
-    //Quick Color Circles
-    this.shadowRoot.querySelectorAll('.color-circle').forEach(circle => {
-      circle.addEventListener('click', () => {
-        const color = circle.getAttribute('data-color');
-        this.updateColor(color);
-        popup.style.display = 'none';
-      });
-    });
-
-    // Accept button
-    acceptButton.addEventListener('click', () => {
-      const color = colorInput.value;
-      this.updateColor(color);
-      popup.style.display = 'none';
-    });
-  }
-
-  updateColor(color) {
-    this.value = color;
-    this.shadowRoot.querySelector('.color-box').style.backgroundColor = color;
-    this.shadowRoot.querySelector('.color-code-input').value = color;
-    this.shadowRoot.querySelector('input[type="hidden"]').value = color;
-    this.dispatchEvent(new CustomEvent('change', { detail: { color } }));
-  }
-
-  get value() {
-    return this.getAttribute('value');
-  }
-
-  set value(val) {
-    this.setAttribute('value', val);
-  }
-}
 class InputColor extends HTMLElement {
   constructor() {
     super();
@@ -3894,7 +3639,7 @@ class PlusTag extends HTMLElement {
     // estructura shadow
     this.shadowRoot.innerHTML = `
       <div class="container">
-        <input type="text" placeholder="${textPlaceholder}" t-placeholder="${t}">
+        <input type="text" t-placeholder="${t}">
       </div>
     `;
     this.shadowRoot.appendChild(style);
@@ -4056,6 +3801,197 @@ class ShowMore extends HTMLElement {
     });
   }
 }
+class ImageUploader extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
+
+  connectedCallback() {
+    // Atributos configurables
+    const maxImages = parseInt(this.getAttribute("max")) || 1;
+    const styleType = this.getAttribute("style") || "square"; // square | rounded | circle
+
+    // Crear estilos aislados para Shadow DOM
+    const style = document.createElement("style");
+    style.textContent = `
+      .uploader-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 20px;
+        border-radius: 16px;
+        justify-content: flex-start;
+        align-items: center;
+      }
+
+      .image-box {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transition: all 0.3s ease-in-out;
+      }
+
+      .image-box:hover {
+        border-color: ${colors.color_company};
+        cursor:pointer;
+      }
+
+      .image-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .image-square img {
+        border-radius: 0;
+      }
+      .image-rounded img {
+        border-radius: 12px;
+      }
+      .image-circle img {
+        border-radius: 50%;
+      }
+
+      .delete-btn {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out, background 0.2s;
+      }
+
+      .image-box:hover .delete-btn {
+        opacity: 1;
+      }
+
+      .delete-btn:hover {
+        background: rgba(220,38,38,0.9); /* rojo elegante */
+      }
+
+      .add-button {
+        width: 120px;
+        height: 120px;
+        border: 2px dashed #9ca3af;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: #f3f4f6;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .add-button:hover {
+        background: #e5e7eb;
+        border-color: ${colors.color_company};
+      }
+
+      .add-button:hover span {
+        color: ${colors.color_company};
+      }
+
+      .add-button span {
+        font-size: 2rem;
+        color: #6b7280;
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+    `;
+
+    // Contenedor principal
+    const container = document.createElement("div");
+    container.classList.add("uploader-container");
+
+    // Input file oculto
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.multiple = false;
+
+    // Botón de añadir
+    const addButton = document.createElement("div");
+    addButton.classList.add("add-button");
+    addButton.innerHTML = `<span>＋</span>`;
+
+    // Eventos
+    const images = [];
+
+    const addImage = (file) => {
+      if (images.length >= maxImages) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const box = document.createElement("div");
+        box.classList.add("image-box", `image-${styleType}`);
+
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.alt = "Uploaded Image";
+
+        // Botón eliminar
+        const deleteBtn = document.createElement("div");
+        deleteBtn.classList.add("delete-btn");
+        deleteBtn.textContent = "✖";
+
+        deleteBtn.addEventListener("click", () => {
+          container.removeChild(box);
+          images.splice(images.indexOf(file), 1);
+
+          // Mostrar el botón de añadir si ya no se ha alcanzado el límite
+          if (images.length < maxImages) {
+            addButton.style.display = "flex";
+          }
+        });
+
+        box.appendChild(img);
+        box.appendChild(deleteBtn);
+        container.insertBefore(box, addButton);
+        images.push(file);
+
+        // Si ya alcanzamos el límite, ocultamos el botón
+        if (images.length >= maxImages) {
+          addButton.style.display = "none";
+        }
+      };
+      reader.readAsDataURL(file);
+    };
+
+    addButton.addEventListener("click", () => input.click());
+    input.addEventListener("change", (e) => {
+      if (e.target.files.length > 0) {
+        addImage(e.target.files[0]);
+      }
+    });
+
+    container.appendChild(addButton);
+    this.shadowRoot.append(style, container, input);
+  }
+}
+
+
+
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
   const tabs = document.querySelectorAll('.tab-content');
@@ -4686,6 +4622,10 @@ function transform_my_labels_erp() {
 
   if (!customElements.get("show-more")) {
     customElements.define("show-more", ShowMore);
+  }
+  
+  if (!customElements.get("image-uploader")) {
+    customElements.define("image-uploader", ImageUploader);
   }
   
 }

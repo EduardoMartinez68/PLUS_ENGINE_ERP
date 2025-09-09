@@ -1,10 +1,17 @@
-  <div class="section">
-    <!-- Avatar -->
-    <input-filed type="file" label="Avatar" name="avatar"></input-filed>
 
-    <label t="form1-label-name">Name Customer</label>
-    <input type="text" name="name" class="case-title-input" t-placeholder="form1-placeholder-name" required
-      value="{{customer.name}}" maxlength="300" />
+  <div class="row section">
+    <div class="col-2">
+      <image-uploader max="1"></image-uploader>
+    </div>
+    <div class="col-10">
+      <label t="form1-label-name">Name Customer</label>
+      <input type="text" name="name" class="case-title-input" t-placeholder="form1-placeholder-name" required
+        value="{{customer.name}}" maxlength="300" />
+
+        <plus-select label="select-type-customer" name="customer_type">
+
+        </plus-select>
+    </div>
   </div>
 
   <div class="row section">
