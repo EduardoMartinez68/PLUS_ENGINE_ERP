@@ -147,7 +147,7 @@ function translate_text(key) {
 //this functions is for translate the menu of the apps, this function is called when the user load the web or change the language
 function translate_menu_apps(){
   //get the list of the apps in the menu
-  const menuApps = document.querySelectorAll('.app-name');
+  const menuApps = document.querySelectorAll('.app-name, .app-name-2');
   const searchApp=document.getElementById('searchInput'); //get the search input
   if (menuApps && searchApp){
     //update the placeholder of the search input

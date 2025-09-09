@@ -174,14 +174,12 @@ apps-grid
     transform: scale(1.1);
   }
 
-  .app-name {
+  .plus-app-app-name {
     font-size: 13px;
     font-weight: 500;
     color: #333;
     text-align: center;
-  }
 
-  .plus-app-app-name {
     font-size: 14px;
     font-weight: 500;
     color: #222;
@@ -204,68 +202,322 @@ apps-grid
   .plus-app-grid::-webkit-scrollbar-track {
     background: transparent;
   }
-
-
-
 </style>
 
+
 <div class="plus-app-modal" id="appMenu">
-    <div class="plus-app-modal-header">
-        <div class="plus-app-header-info">
-            <p class="plus-app-company">{{ branch.branch_name }}</p>
-            <p class="plus-app-user">{{ user.username }}</p>
-        </div>
-        <button class="plus-app-close-btn" onclick="closeModalApp()">×</button>
+  <div class="plus-app-modal-header">
+    <div class="plus-app-header-info">
+      <p class="plus-app-company">{{ branch.branch_name }}</p>
+      <p class="plus-app-user">{{ user.username }}</p>
+    </div>
+    <button class="plus-app-close-btn" onclick="closeModalApp()">×</button>
+  </div>
+
+  <input type="text" id="searchInput" class="plus-app-search-bar" placeholder="Search an app..."
+    onkeyup="plusFilterApps()" t="menu.search">
+
+  <div class="plus-app-grid apps-grid" id="plus-appGrid">
+    {% load static %}
+    {% for app in apps %}
+    <div class="plus-app-container plus-app-app" data-id="{{ app.name }}"
+      onclick="nextWeb('{{ app.path }}{{ app.path }}')">
+      <img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy">
+      <div class="app-name plus-app-app-name">{{ app.name }}</div>
+    </div>
+    {% endfor %}
+
+    <div class="plus-app-container plus-app-app" data-id="app-store" onclick="nextWeb('/app-store')">
+      <img src="{% static 'img/icons/appstore.webp' %}" alt="App Store" loading="lazy">
+      <div class="app-name plus-app-app-name">App Store</div>
     </div>
 
-    <input type="text" id="searchInput" class="plus-app-search-bar" placeholder="Search an app..." onkeyup="plusFilterApps()" t="menu.search">
-
-    <div class="plus-app-grid apps-grid" id="plus-appGrid">
-        {% load static %}
-        {% for app in apps %}
-          <div class="plus-app-container plus-app-app" data-id="{{ app.name }}" onclick="nextWeb('{{ app.path }}{{ app.path }}')">
-              <img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy">
-              <div class="app-name plus-app-app-name">{{ app.name }}</div>
-          </div>
-        {% endfor %}
-        
-        <div class="plus-app-container plus-app-app" data-id="app-store" onclick="nextWeb('/app-store')">
-            <img src="{% static 'img/icons/appstore.webp' %}" alt="App Store" loading="lazy">
-            <div class="app-name plus-app-app-name">App Store</div>
+    <form method="post" action="{% url 'logout' %}" style="margin-top: -10px;" class="form-app-exit">
+      {% csrf_token %}
+      <button class="btn " type="submit" style="background-color: transparent;" data-id="app-plus-exit">
+        <div class="app-box">
+          <img src="{% static 'img/icons/exit1.webp' %}" alt="" loading="lazy">
         </div>
+        <p class="app-name">Exit</p>
+      </button>
+    </form>
 
-        <form method="post" action="{% url 'logout' %}" style="margin-top: -10px;" class="form-app-exit">
-          {% csrf_token %}
-          <button class="btn " type="submit" style="background-color: transparent;" data-id="app-plus-exit">
-            <div class="app-box">
-              <img src="{% static 'img/icons/exit1.webp' %}" alt="" loading="lazy">
-            </div>
-            <p class="app-name">Exit</p>
-          </button>
-        </form>
-        
-    </div>
+  </div>
 </div>
 
 
 <script>
   function openModalApp() {
-    document.getElementById("appMenu").style.display = "flex";
+    if (window.innerWidth <= 1024) {
+      document.getElementById("appMenu").style.display = "flex";
+    } else {
+      openSideMenu();
+    }
+
   }
   function closeModalApp() {
-    document.getElementById("appMenu").style.display = "none";
+    if (window.innerWidth <= 1024) {
+      document.getElementById("appMenu").style.display = "none";
+    } else {
+      closeSideMenu();
+    }
   }
-  
+
   function plusFilterApps() {
 
     let input = document.getElementById("searchInput").value.toLowerCase();
     let apps = document.getElementById("plus-appGrid").getElementsByClassName("plus-app-app");
     for (let i = 0; i < apps.length; i++) {
-        let name = apps[i].getElementsByClassName("plus-app-app-name")[0].innerText.toLowerCase();
-        apps[i].style.display = name.includes(input) ? "block" : "none";
+      let name = apps[i].getElementsByClassName("plus-app-app-name")[0].innerText.toLowerCase();
+      apps[i].style.display = name.includes(input) ? "block" : "none";
     }
   }
 
-  window.openModalApp=openModalApp;
-  window.closeModalApp=closeModalApp;
+  window.openModalApp = openModalApp;
+  window.closeModalApp = closeModalApp;
+// Opcional: actualizar dinámicamente si el usuario cambia tamaño de ventana
+window.addEventListener('resize', () => {
+  // cerramos ambos menús para evitar inconsistencias
+  closeModalApp();
+  closeSideMenu();
+});
+</script>
+
+
+
+
+
+
+
+
+
+<style>
+  /* Fondo desenfocado cuando el menú está abierto */
+  .menu-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(6px);
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 9998;
+    transition: opacity 0.3s ease;
+    
+  }
+
+  /* Menú lateral */
+  .side-menu {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 300px;
+    height: 100%;
+    background: white;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 9999;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+  }
+
+  /* Menú activo */
+  .side-menu.active {
+    left: 0;
+  }
+
+  /* Botón de cierre */
+  .side-menu .close-btn {
+    align-self: flex-end;
+    font-size: 22px;
+    background: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s;
+  }
+
+  .side-menu .close-btn:hover {
+    transform: scale(1.1);
+  }
+
+  /* Links del menú */
+  .side-menu a {
+    text-decoration: none;
+    color: #222;
+    font-weight: 500;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background 0.2s;
+  }
+
+  .side-menu a:hover {
+    background: #E6EFF6;
+    color:var(--primary);
+  }
+  .image-icon-user-menu{
+    border-radius: 15px;
+    width: 70px;
+    height: 70px;
+  }
+  /* Solo mostrar en desktop */
+  @media (max-width: 1024px) {
+
+    .side-menu,
+    .menu-overlay {
+      display: none;
+    }
+  }
+
+/* Logo empresa */
+.info-branch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.icon-company-menu {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.name_company {
+  font-weight: 600;
+  font-size: 16px;
+  color: #222;
+}
+/* Info empleado */
+.info-employee {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.image-icon-user-menu {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+}
+
+.employee-details {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  color: #222;
+}
+
+.name-menu {
+  font-weight: 600;
+}
+.departament-menu, .area-menu {
+  font-weight: 400;
+  color: #555;
+}
+
+.menu-links {
+  flex: 1; /* ocupa espacio disponible */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.menu-links a {
+  text-decoration: none;
+  color: #222;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+
+/* Scroll personalizado */
+.menu-links::-webkit-scrollbar {
+  width: 6px;
+}
+.menu-links::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+.menu-links::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.35);
+}
+
+/* Botón salir siempre abajo */
+.btn-exit {
+  margin-top: auto;
+  background: #075EAB;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.2s;
+  width: 100%;
+}
+
+.btn-exit:hover {
+  background: #054a87;
+}
+</style>
+<!-- Fondo desenfocado -->
+<div class="menu-overlay" id="menuOverlay" onclick="closeSideMenu()"></div>
+
+<!-- Menú lateral -->
+<div class="side-menu" id="sideMenu">
+  <!-- Logo empresa -->
+  <div class="info-branch">
+    <img src="https://www.nicepng.com/png/detail/204-2049937_logo-de-farmacia-png.png" alt="" class="icon-company-menu">
+    <span class="name_company">{{ branch.branch_name }}</span>
+  </div>
+
+
+  <!-- Menú módulos -->
+  <div class="menu-links">
+    {% for app in apps %}
+    <a href="{{ app.path }}{{ app.path }}" class="app-name-2">{{ app.name }}</a>
+    {% endfor %}
+  </div>
+
+  <!-- Info empleado -->
+  <div class="info-employee">
+    <img src="https://thumbs.dreamstime.com/b/imagen-de-perfil-un-empleado-cauc%C3%A1sico-posando-en-el-cargo-joven-y-feliz-trabajador-masculino-mira-la-c%C3%A1mara-trabajo-oficina-190186649.jpg" alt="" class="image-icon-user-menu">
+    <div class="employee-details">
+      <label class="name-menu">{{ user.username }}</label>
+      <label class="departament-menu">Cajas</label>
+      <label class="area-menu">Ventas</label>
+    </div>
+  </div>
+
+  <!-- Botón salir -->
+  <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button class="btn-exit" type="submit">Salir</button>
+  </form>
+</div>
+
+<script>
+  function openSideMenu() {
+    document.getElementById("sideMenu").classList.add("active");
+    document.getElementById("menuOverlay").style.display = "block";
+  }
+
+  function closeSideMenu() {
+    document.getElementById("sideMenu").classList.remove("active");
+    document.getElementById("menuOverlay").style.display = "none";
+  }
 </script>
