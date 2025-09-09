@@ -4031,12 +4031,19 @@ class PlusPriority extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
+    this._value = 0;
+    this._max = 3;
+    this._allowNone = false;
+    this._hiddenInput = null;
   }
 
   connectedCallback() {
-    const max = parseInt(this.getAttribute("max")) || 5; // cantidad de estrellas
-    let value = parseInt(this.getAttribute("value")) || 0; // valor inicial
-    const allowNone = this.hasAttribute("allow-none"); // permite quitar todas
+    this._max = parseInt(this.getAttribute("max")) || 3;
+    this._value = parseInt(this.getAttribute("value")) || 0;
+    this._allowNone = this.hasAttribute("allow-none");
+    const isEditable = !this.hasAttribute("notIsEditable");
+    const name = this.getAttribute("name") || "";
+    const id = this.getAttribute("id") || "";
 
     // estilos
     const style = document.createElement("style");
@@ -4061,39 +4068,71 @@ class PlusPriority extends HTMLElement {
       }
     `;
 
-    // contenedor
+    // contenedor de estrellas
     const wrapper = document.createElement("div");
     wrapper.classList.add("stars");
 
+    // input oculto para formularios
+    this._hiddenInput = document.createElement("input");
+    this._hiddenInput.type = "hidden";
+    if (name) this._hiddenInput.name = name;
+    if (id) this._hiddenInput.id = id;
+    this._hiddenInput.value = this._value;
+
     const renderStars = () => {
       wrapper.innerHTML = "";
-      for (let i = 1; i <= max; i++) {
+      for (let i = 1; i <= this._max; i++) {
         const star = document.createElement("span");
         star.classList.add("star");
         star.innerHTML = "★";
-        if (i <= value) {
+        if (i <= this._value) {
           star.classList.add("filled");
         }
-        star.addEventListener("click", () => {
-          if (allowNone && i === value) {
-            value = 0; // deseleccionar todas
-          } else {
-            value = i; // asignar valor
-          }
-          this.setAttribute("value", value);
-          this.dispatchEvent(new CustomEvent("change", { detail: { value } }));
-          renderStars();
-        });
+
+        //this is only if the input is editable
+        if (isEditable) {
+          star.addEventListener("click", () => {
+            if (this._allowNone && i === this._value) {
+              this._value = 0; // deseleccionar todas
+            } else {
+              this._value = i;
+            }
+            this._hiddenInput.value = this._value;
+            this.setAttribute("value", this._value);
+            this.dispatchEvent(new CustomEvent("change", { detail: { value: this._value } }));
+            renderStars();
+          });
+        }
+        else {
+          star.style.cursor = "default"; // only for see
+        }
+
         wrapper.appendChild(star);
       }
     };
 
     renderStars();
 
-    this.shadowRoot.append(style, wrapper);
+    this.shadowRoot.append(style, wrapper, this._hiddenInput);
+  }
+
+  // ===== Métodos públicos =====
+
+  setValue(val) {
+    const newValue = parseInt(val);
+    if (!isNaN(newValue) && newValue >= 0 && newValue <= this._max) {
+      this._value = newValue;
+      this._hiddenInput.value = this._value;
+      this.setAttribute("value", this._value);
+      this.shadowRoot.querySelector(".stars").innerHTML = "";
+      this.connectedCallback(); // volver a renderizar
+    }
+  }
+
+  getValue() {
+    return this._value;
   }
 }
-
 
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
