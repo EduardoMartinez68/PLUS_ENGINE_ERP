@@ -3801,6 +3801,7 @@ class ShowMore extends HTMLElement {
     });
   }
 }
+
 class ImageUploader extends HTMLElement {
   constructor() {
     super();
@@ -3990,6 +3991,72 @@ class ImageUploader extends HTMLElement {
   }
 }
 
+class PlusPriority extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
+
+  connectedCallback() {
+    const max = parseInt(this.getAttribute("max")) || 5; // cantidad de estrellas
+    let value = parseInt(this.getAttribute("value")) || 0; // valor inicial
+    const allowNone = this.hasAttribute("allow-none"); // permite quitar todas
+
+    // estilos
+    const style = document.createElement("style");
+    style.textContent = `
+      .stars {
+        display: flex;
+        gap: 6px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .star {
+        font-size: 28px;
+        color: #d1d5db; /* gris elegante */
+        transition: transform 0.2s ease, color 0.3s ease;
+      }
+      .star.filled {
+        color: #fbbf24; /* dorado elegante */
+        text-shadow: 0px 2px 6px rgba(0,0,0,0.15);
+      }
+      .star:hover {
+        transform: scale(1.2);
+      }
+    `;
+
+    // contenedor
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("stars");
+
+    const renderStars = () => {
+      wrapper.innerHTML = "";
+      for (let i = 1; i <= max; i++) {
+        const star = document.createElement("span");
+        star.classList.add("star");
+        star.innerHTML = "★";
+        if (i <= value) {
+          star.classList.add("filled");
+        }
+        star.addEventListener("click", () => {
+          if (allowNone && i === value) {
+            value = 0; // deseleccionar todas
+          } else {
+            value = i; // asignar valor
+          }
+          this.setAttribute("value", value);
+          this.dispatchEvent(new CustomEvent("change", { detail: { value } }));
+          renderStars();
+        });
+        wrapper.appendChild(star);
+      }
+    };
+
+    renderStars();
+
+    this.shadowRoot.append(style, wrapper);
+  }
+}
 
 
 /**----------------------------------TABS----------------------**/
@@ -4628,6 +4695,9 @@ function transform_my_labels_erp() {
     customElements.define("image-uploader", ImageUploader);
   }
   
+  if (!customElements.get("plus-priority")) {
+    customElements.define("plus-priority", PlusPriority);
+  }
 }
 
 /**---------------------------------TAB----------------------------- */
