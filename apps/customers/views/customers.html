@@ -42,18 +42,21 @@
   --->
 
 
-<plus-switch-column>
-  <div slot="col1">
-    <button class="open-col2-btn">Ver más</button>
+<plus-switch-column id="customers-switch">
+  <div slot="col1" class="col-9">
     {% include 'partialsCustomers/tableCustomers.html' %}
   </div>
 
-  <div slot="col2">
+  <div slot="col2" class="col-7">
     <br><br>
-    <button class="close-col2-btn">×</button>
+    <button class="close-col2-btn" onclick="toggle_switch_column('customers-switch',false)">×</button>
     {% include 'partialsCustomers/infoCustomer.html' %}
   </div>
 </plus-switch-column>
+
+
+
+
 
 <script>
 class PlusSwitchColumn extends HTMLElement {
@@ -152,8 +155,23 @@ class PlusSwitchColumn extends HTMLElement {
     const isMobile = window.innerWidth <= 768;
     if(isMobile && openBtn) openBtn.addEventListener('click', () => col2.classList.add('active'));
     if(isMobile && closeBtn) closeBtn.addEventListener('click', () => col2.classList.remove('active'));
+
+    this.col2 = col2;
   }
 }
 
 customElements.define('plus-switch-column', PlusSwitchColumn);
+
+
+function toggle_switch_column(id, open = true) {
+  const element = document.getElementById(id);
+  if (!element || !element.col2) return;
+  const isMobile = window.innerWidth <= 768;
+  if (!isMobile) return; // Solo aplica en móviles
+  if (open) {
+    element.col2.classList.add('active');
+  } else {
+    element.col2.classList.remove('active');
+  }
+}
 </script>

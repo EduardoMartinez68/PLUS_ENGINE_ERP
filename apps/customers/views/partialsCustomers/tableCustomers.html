@@ -18,7 +18,7 @@
     <div class="customers-list">
 
         <plus-customers name="Ana Gómez" email="ana.gomez@email.com" phone="+57 320 123 4567" tag="VIP" points="480"
-            credit="3000" priority="2" image="https://cdn-icons-png.flaticon.com/512/3177/3177440.png" status="active">
+            credit="3000" priority="2" image="https://cdn-icons-png.flaticon.com/512/3177/3177440.png" status="active" onclick="toggle_switch_column('customers-switch')">
         </plus-customers>
 
         <plus-customers id-customer="2" name="Carlos Ruiz" email="carlos.ruiz@email.com" phone="+52 55 2222 3333"
@@ -185,6 +185,18 @@
     `;
 
             this.shadowRoot.append(style, wrapper);
+
+            const onClickFunction = this.getAttribute("onclick") || null;
+            if (onClickFunction) {
+                wrapper.style.cursor = "pointer"; // opcional: mostrar que es clickable
+                wrapper.addEventListener("click", () => {
+                    if (typeof window[onClickFunction] === "function") {
+                        window[onClickFunction]();
+                    } else {
+                        console.warn(`La función ${onClickFunction} no existe en window`);
+                    }
+                });
+            }
         }
     }
 
