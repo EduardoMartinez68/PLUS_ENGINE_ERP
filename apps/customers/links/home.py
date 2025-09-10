@@ -263,6 +263,38 @@ def search_type_customer(request):
     return JsonResponse({"success": True, "answer": data})
 
 
+def search_type_customer_for_id(request):
+    if request.method != "GET":
+        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+    
+    customer_type_id = request.GET.get("id", "").strip()
+
+    if not customer_type_id.isdigit():
+        return JsonResponse({"success": False, "message": "Invalid ID"}, status=400)
+
+    # filter for id and for the company of the user
+    try:
+        customer_type = CustomerType.objects.filter(
+            company_id=request.user.id_company.id,
+            id=int(customer_type_id)
+        ).first()  # return None if not exist
+    except Exception as e:
+        return JsonResponse({"success": False, "message": str(e)}, status=500)
+    
+    #if the type customer not exist return a message of error to the frontend
+    if not customer_type:
+        return JsonResponse({"success": False, "message": "message.this-type-customer-not-exist"}, status=404)
+    
+    data = {
+        "id": customer_type.id,
+        "name": customer_type.name,
+        "description": customer_type.description,
+        "color": customer_type.color
+    }
+
+    return JsonResponse({"success": True, "answer": data})
+
+
 def add_type_customer(request):
     if request.method != "POST":
         return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)

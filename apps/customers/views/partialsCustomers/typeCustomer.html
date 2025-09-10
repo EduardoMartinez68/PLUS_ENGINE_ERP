@@ -12,6 +12,7 @@
 </message-pop>
 
 <message-pop title="title-edit-type-customer" name="pop-edit-type-customer">
+    <input type="hidden" id="id-type-customer">
     <div class="section">
         <plus-title label="label-type-customer" placeholder="title-type-customer" required id="title-customer-edit"></plus-title>
     </div>
@@ -30,8 +31,22 @@
         window.show_pop('pop-create-type-customer')
     }
 
-    function open_pop_edit_type_customer(){
-        window.show_pop('pop-edit-type-customer')
+    async function open_pop_edit_type_customer(id){
+        //first we will get the information of the type customer for show in the form of edit type customer 
+        const server=await send_message_to_the_server('/customers/search_type_customer_for_id/',{id: id}, true, 'GET') 
+        if(server.success){
+            //get the information that we get from the server and update the input of the form
+            const data=server.answer;
+            document.getElementById('id-type-customer').value=data.id;
+            document.getElementById('title-customer-edit').value=data.name;
+            document.getElementById('description-customer-edit').value=data.description;
+            document.getElementById(`color-customer-edit`).updateColor(data.color);
+
+            window.show_pop('pop-edit-type-customer') //show the form
+        }else{
+            //if nor can save this type customer we will to show a message of error
+            show_alert('error', 'message.no-can-add-this-type-of-customer', server.message, server.error)
+        }
     }
 
     function get_information_of_the_form_type_customer(typeForm){

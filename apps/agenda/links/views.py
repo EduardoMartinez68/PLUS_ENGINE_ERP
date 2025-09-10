@@ -673,47 +673,46 @@ def delete_event(request):
         }, status=500)
 
 #-----------------------------TYPE EVENTS-------------------------------------
+from django.http import JsonResponse
+from django.db.models import F
+import json
+
 def get_the_first_type_events(request):
+    search_text = ""
+
     if request.method == 'POST':
         try:
             body_json = json.loads(request.body)  # convert bytes to Python
-
-            #if exist a list we will get the first data 
-            if isinstance(body_json, list) and len(body_json) > 0:
-                search_text = body_json[0]
-            else:
-                search_text = ""
+            if isinstance(body_json, dict):
+                search_text = body_json.get("query", "").strip()
+            elif isinstance(body_json, list) and len(body_json) > 0:
+                search_text = str(body_json[0]).strip()
         except Exception as e:
             print("Error parsing JSON:", e)
             search_text = ""
 
-        try:
-            search_text=body_json
+    elif request.method == 'GET':
+        search_text = request.GET.get("query", "").strip()
 
-            #we will see if need get the value for a query. This is when need update a table or a container
-            search_text=body_json.get("query", search_text).strip()
-        except:
-            pass 
+    else:
+        return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
 
-        #now we will see if exist it for search
-        if search_text:
-            #search the text that the user would like get from the server
-            events = TypeAppoint.objects.filter(
-                user=request.user, name__icontains=search_text
-            ).annotate(
-                text=F('name')
-            ).values('id', 'text', 'description', 'color')[:20]
-        else:
-            # if not exist a text for search, we will get the first 20 object from the database and return the information
-            events = TypeAppoint.objects.filter(
-                user=request.user
-            ).annotate(
-                text=F('name')
-            ).values('id', 'text', 'description', 'color')[:20]
+    # Filtramos según el texto de búsqueda si existe, o devolvemos los primeros 20
+    if search_text:
+        events = TypeAppoint.objects.filter(
+            user=request.user,
+            name__icontains=search_text
+        ).annotate(
+            text=F('name')
+        ).values('id', 'text', 'description', 'color')[:20]
+    else:
+        events = TypeAppoint.objects.filter(
+            user=request.user
+        ).annotate(
+            text=F('name')
+        ).values('id', 'text', 'description', 'color')[:20]
 
-        return JsonResponse({'success': True, 'answer': list(events)})
-
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
+    return JsonResponse({'success': True, 'answer': list(events)})
 
 def get_type_event_for_id(request):
     if request.method == 'GET':

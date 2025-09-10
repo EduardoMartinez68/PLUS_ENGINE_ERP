@@ -164,6 +164,7 @@
   "message.need-the-name-of-the-type-event":"Necesitas agregar el nombre de la categoria del cliente",
   "message.this-name-exist-in-your-company":"Ya existe una categoria de clientes con este nombre en tu compañía",
   "message.not-exist-this-type-customer-in-your-company":"No se encontró esta categoria de clientes en tu empresa",
-  "message.need-the-id-of-the-type-customer":"El ID de la categoria del cliente es requerido"
+  "message.need-the-id-of-the-type-customer":"El ID de la categoria del cliente es requerido",
 
+  "message.this-type-customer-not-exist":"Esta categoria de clientes no existe en la base de datos."
   }
