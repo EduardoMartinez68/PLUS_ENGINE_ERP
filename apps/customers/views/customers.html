@@ -17,7 +17,7 @@
 {% load static %}
 
 
-
+{% include 'partialsCustomers/navbarHome.html' %}
 <plus-switch-column id="customers-switch">
   <div slot="col1">
     {% include 'partialsCustomers/tableCustomers.html' %}
@@ -25,7 +25,9 @@
 
   <div slot="col2">
     <br><br>
+    <!--
     <button class="close-col2-btn" onclick="toggle_switch_column('customers-switch',false)">×</button>
+    --->
     {% include 'partialsCustomers/infoCustomer.html' %}
   </div>
 </plus-switch-column>

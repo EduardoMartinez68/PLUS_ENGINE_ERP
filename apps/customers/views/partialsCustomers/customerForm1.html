@@ -103,7 +103,9 @@
 
     <div class="row section">
       <div class="col">
-        <plus-select label="select-type-customer" name="customer_type">
+        <plus-select label="select-type-customer" name="customer_type" required id="type_event" 
+        link="/customers/search_type_customer/" add="open_pop_create_type_customer" edit_data="edit_type_event_for_select"
+        delete_data="agenda/delete_type_event/" btn_delete_title="message.delte-type-event-title" btn_delete_text="message.delte-type-event-description" method="GET">
 
         </plus-select>
       </div>
@@ -143,3 +145,5 @@
   <button class="btn btn-edit btn-success" t="message.success" onclick="hide_pop('pop-advanced-information')"
     type="button"></button>
 </message-pop>
+
+{% include 'partialsCustomers/typeCustomer.html' %}

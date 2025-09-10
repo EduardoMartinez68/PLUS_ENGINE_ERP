@@ -549,9 +549,12 @@ class PlusTitle extends HTMLElement {
     label.textContent = labelText;
 
     // Creamos input
+    const id = this.getAttribute('id') || generate_unique_dom_id();
     const input = document.createElement("input");
     input.classList.add("case-title-input");
-
+    input.setAttribute('t-placeholder',this.getAttribute('t-placeholder') || this.getAttribute('placeholder') || '');
+    input.setAttribute('id', id);
+    
     // Pasamos todos los atributos menos "t" y "class"
     [...this.attributes].forEach(attr => {
       if (attr.name !== "class") {
@@ -982,12 +985,14 @@ class PlusSelect extends HTMLElement {
     this._selectText = null;
     this._selectElement = null;
     this._thisSlectSendDataToTheServer=false;
+    this._method='GET'
   }
 
   async connectedCallback() {
     const originalSelect = this.cloneNode(true); 
     this._selectElement = originalSelect;
-    
+    this._method=this.getAttribute('method') || 'GET'
+
     //get the information that the programmer added to the select
     const textLabel =  this.getAttribute('t')|| this.getAttribute('label') || '';
     const textLabelTranslate = window.translate_text(textLabel); //translate the text of the label
@@ -1214,7 +1219,7 @@ class PlusSelect extends HTMLElement {
       //if have a link of search, send this information to the server for get the information. 
       //the that the server can retur is {id:0, text:'name'}
       //send the information to the server and get his answer
-      const result = await window.send_message_to_the_server(link, textFilter, false); //with this have a error for translate the label
+      const result = await window.send_message_to_the_server(link, {query : textFilter}, false, 'GET'); //with this have a error for translate the label
 
       //when get the answer of the server, other clear all the container 
       clear_option_select();

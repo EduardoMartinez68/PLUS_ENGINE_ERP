@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
 from django.http import HttpResponse
-from ..models import Customer
+from ..models import Customer, CustomerType
 
 
 def customers_home(request):
@@ -221,172 +221,146 @@ def get_information_of_the_customer(request):
         return JsonResponse({"success": True, "message": "Customer found", "answer": data}, status=200)
 
     return JsonResponse({"success": False, "message": "Invalid request"}, status=400)
-#-------------------------type user-------------------------
-
-'''
-
-@csrf_exempt
-def edit_customer(request, id_customer):
-    if request.method == 'POST':
-            try:
-                data = json.loads(request.body)
-
-                name = data.get('name', '').strip()
-                email = data.get('email', '').strip()
-                is_company = data.get('this_customer_is_a_company') in [True, 'true', 'on', '1']
-                company_name = data.get('company_name', '').strip()
-                rfc = data.get('rfc', '').strip()
-                curp = data.get('curp', '').strip()
-                phone = data.get('phone', '').strip()
-                cellphone = data.get('cellphone', '').strip()
-                website = data.get('website', '').strip()
-                country = data.get('country', '').strip()
-                status = data.get('this_customer_is_a_company') in [True, 'true', 'on', '1']
-
-                if not name:
-                    return JsonResponse({'success': False, 'message': 'El nombre del cliente es obligatorio.', 'error': ''}, status=400)
-
-                try:
-                    customer = Customer.objects.get(id=id_customer, id_branch=request.user.id_branch)
-                except Customer.DoesNotExist:
-                    return JsonResponse({'success': False, 'message': 'Cliente no encontrado.', 'error': ''}, status=404)
-
-                # Actualizar campos
-                customer.name = name
-                customer.email = email
-                customer.this_customer_is_a_company = is_company
-                customer.company_name = company_name
-                customer.rfc = rfc
-                customer.curp = curp
-                customer.phone = phone
-                customer.cellphone = cellphone
-                customer.website = website
-                customer.country = country
-                customer.status = status
-                customer.save()
-
-                return JsonResponse({'success': True, 'message': 'Cliente editado exitosamente.'})
-
-            except Exception as e:
-                print('--------------------- ERROR edit_customer ---------------------')
-                print(e)
-                return JsonResponse({'success': False, 'message': 'Error al editar el cliente.', 'error': str(e)}, status=500)
 
 
-    # GET
-    try:
-        customer = Customer.objects.get(id=id_customer)
-    except Customer.DoesNotExist:
-        return HttpResponse("Cliente no encontrado.", status=404)
-
-    return render(request, 'formCustomer.html', {'customer': customer})
-
-
-
-
-@csrf_exempt
-def add_customer(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)  # El body lo mandas en JSON con fetch
-
-            name = data.get('name', '').strip()
-            email = data.get('email')
-            is_company = data.get('this_customer_is_a_company') in [True, 'true', 'on', '1']
-            company_name = data.get('company_name')
-            rfc = data.get('rfc')
-            curp = data.get('curp')
-            phone = data.get('phone')
-            cellphone = data.get('cellphone')
-            website = data.get('website')
-            country = data.get('country')
-            status = data.get('status') in [True, 'true', 'on', '1']
-
-            if not name:
-                return JsonResponse({'success': False, 'error': 'El nombre del cliente es obligatorio.'}, status=400)
-
-            id_branch = request.user.id_branch
-            creation_date = datetime.now()
-
-            customer = Customer(
-                id_branch=id_branch,
-                name=name,
-                email=email,
-                this_customer_is_a_company=is_company,
-                company_name=company_name,
-                rfc=rfc,
-                curp=curp,
-                phone=phone,
-                cellphone=cellphone,
-                website=website,
-                country=country,
-                status=status,
-                creation_date=creation_date
-            )
-            customer.save()
-
-            return JsonResponse({'success': True, 'message': 'Cliente agregado exitosamente.'})
-
-        except Exception as e:
-            print('--------------------- ERROR al guardar cliente ---------------------')
-            print(e)
-            return JsonResponse({'success': False, 'error': f'Error al guardar cliente: {str(e)}'}, status=500)
-
-
-
-    return render(request, 'formCustomer.html')
-
-
-
-@csrf_exempt
-def search_customers(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        all_filters = data.get('allFilters', [])
-        query = all_filters[0].strip() if len(all_filters) > 0 else ''
-        status = all_filters[1].strip().lower() if len(all_filters) > 1 else ''
-
-        customers = Customer.objects.filter(
-            Q(name__icontains=query) | Q(email__icontains=query)
-        )
-
-        if status == 'true':
-            customers = customers.filter(status=True)
-        elif status == 'false':
-            customers = customers.filter(status=False)
-
-        result_list = []
-        for c in customers:
-            result_list.append({
-                'id': c.id,
-                'name': c.name,
-                'email': c.email,
-                'phone': c.phone,
-                'cellphone': c.cellphone,
-                'company_name': c.company_name
-            })
-
-        return JsonResponse({'success': True,'results': result_list})
-    else:
-        return JsonResponse({'message': 'Método no permitido'}, status=405)
     
 
-
+#-------------------------type user-------------------------
 @csrf_exempt
-def search_customers_select(request):
-    if request.method == 'POST':
-        result_list = []
+def search_type_customer(request):
+    if request.method != "GET":
+        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+    
+    """
+    Search customer types by query or return first 20 if query is empty.
+    Only search in the company of the logged-in user.
+    """
+    user = request.user
 
-        result_list.append({
-            'id': 1,
-            'text': 'pablo'
+    query = request.GET.get("query", "").strip()
+
+    # We filter by the user's company
+    types = CustomerType.objects.filter(company_id=request.user.id_company.id)
+
+    if query:
+        # We search for matches in the name (case-insensitive)
+        types = types.filter(name__icontains=query)
+
+    # we limit to 20 results
+    types = types[:20]
+
+    # We prepared the response in JSON format.
+    data = [
+        {
+            "id": t.id,
+            "text": t.name,
+            "description": t.description,
+            "color": t.color
+        }
+        for t in types
+    ]
+
+    return JsonResponse({"success": True, "answer": data})
+
+
+def add_type_customer(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+    
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+
+        #get the information that send the frontend
+        title = data.get("title", "").strip()
+        description = data.get("description", "").strip()
+        color = data.get("color", "#3498db").strip()
+
+        #we will see if exist the title of the type customer
+        if not title:
+            return JsonResponse({"success": False, "message": "message.need-the-name-of-the-type-event", 'error':"Need the name of the type customer"}, status=200)
+
+        #here we will see if exist this type customer in the company
+        if CustomerType.objects.filter(company=request.user.id_company, name=title).exists():
+            return JsonResponse({"success": False, "message": "message.this-name-exist-in-your-company", 'error':"This type customer already exist in the database"}, status=200)
+
+        # Create the new customer type
+        customer_type = CustomerType.objects.create(
+            company=request.user.id_company,
+            name=title,
+            description=description,
+            color=color,
+        )
+
+        answer={
+            "id": customer_type.id,
+            "name": customer_type.name,
+            "color": customer_type.color,
+            "description": customer_type.description
+        }
+
+        return JsonResponse({
+            "success": True,
+            "message": "Customer added with success",
+            "answer": answer
         })
-        return JsonResponse({'success': True,'results': result_list})
-    else:
-        return JsonResponse({'message': 'Método no permitido'}, status=405)
+
+    except Exception as e:
+        return JsonResponse({"success": False, "message": "Error in the server", "error": str(e)}, status=500)
+    
+
+def edit_customer(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+
+        #get the information that the frontend send
+        customer_type_id = data.get("id")
+        title = data.get("title", "").strip()
+        description = data.get("description", "").strip()
+        color = data.get("color", "#3498db").strip()
+
+        #here eval if have all the data that need 
+        if not customer_type_id:
+            return JsonResponse({"success": False, "message": "message.need-the-id-of-the-type-customer"}, status=400)
+
+        if not title:
+            return JsonResponse({"success": False, "message": "message.need-the-name-of-the-type-event"}, status=400)
+
+        #Find the customer type within the user's company
+        try:
+            customer_type = CustomerType.objects.get(id=customer_type_id, company=request.user.id_company)
+        except CustomerType.DoesNotExist:
+            return JsonResponse({"success": False, "message": "message.not-exist-this-type-customer-in-your-company"}, status=404)
+
+        # Validate for duplicates (another CustomerType with the same name within the company)
+        if CustomerType.objects.filter(company=request.user.company, name=title).exclude(id=customer_type_id).exists():
+            return JsonResponse({"success": False, "message": "message.this-name-exist-in-your-company"}, status=400)
+
+        # update the value
+        customer_type.name = title
+        customer_type.description = description
+        customer_type.color = color
+        customer_type.save()
 
 
-'''
+        #send the answer success
+        answer={
+            "id": customer_type.id,
+            "name": customer_type.name,
+            "color": customer_type.color,
+            "description": customer_type.description
+        }
+
+        return JsonResponse({
+            "success": True,
+            "message": "Tipo de cliente actualizado con éxito",
+            "answer": answer
+        })
+
+    except Exception as e:
+        return JsonResponse({"success": False, "message": "Error in the server", "error": str(e)}, status=500)
 
 @csrf_exempt
 def search_customers_select(request):

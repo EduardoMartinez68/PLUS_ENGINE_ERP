@@ -1,6 +1,6 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
-from ..models import Customer
+from ..models import Customer, CustomerType
 from django.http import HttpResponse
 import json
 from django.http import JsonResponse
@@ -423,6 +423,275 @@ def get_information_of_the_customer(request):
             return JsonResponse({"success": True, "message": "Customer found", "answer": data}, status=200)
     
         return JsonResponse({"success": False, "message": "Invalid request"}, status=400)
+
+@login_required(login_url='login')
+def search_type_customer(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != "GET":
+            return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+        
+        """
+        Search customer types by query or return first 20 if query is empty.
+        Only search in the company of the logged-in user.
+        """
+        user = request.user
+    
+        query = request.GET.get("query", "").strip()
+    
+        # We filter by the user's company
+        types = CustomerType.objects.filter(company_id=request.user.id_company.id)
+    
+        if query:
+            # We search for matches in the name (case-insensitive)
+            types = types.filter(name__icontains=query)
+    
+        # we limit to 20 results
+        types = types[:20]
+    
+        # We prepared the response in JSON format.
+        data = [
+            {
+                "id": t.id,
+                "text": t.name,
+                "description": t.description,
+                "color": t.color
+            }
+            for t in types
+        ]
+    
+        return JsonResponse({"success": True, "answer": data})
+    else:
+        if request.method != "GET":
+            return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+        
+        """
+        Search customer types by query or return first 20 if query is empty.
+        Only search in the company of the logged-in user.
+        """
+        user = request.user
+    
+        query = request.GET.get("query", "").strip()
+    
+        # We filter by the user's company
+        types = CustomerType.objects.filter(company_id=request.user.id_company.id)
+    
+        if query:
+            # We search for matches in the name (case-insensitive)
+            types = types.filter(name__icontains=query)
+    
+        # we limit to 20 results
+        types = types[:20]
+    
+        # We prepared the response in JSON format.
+        data = [
+            {
+                "id": t.id,
+                "text": t.name,
+                "description": t.description,
+                "color": t.color
+            }
+            for t in types
+        ]
+    
+        return JsonResponse({"success": True, "answer": data})
+
+@login_required(login_url='login')
+def add_type_customer(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != "POST":
+            return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+        
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+    
+            #get the information that send the frontend
+            title = data.get("title", "").strip()
+            description = data.get("description", "").strip()
+            color = data.get("color", "#3498db").strip()
+    
+            #we will see if exist the title of the type customer
+            if not title:
+                return JsonResponse({"success": False, "message": "message.need-the-name-of-the-type-event", 'error':"Need the name of the type customer"}, status=200)
+    
+            #here we will see if exist this type customer in the company
+            if CustomerType.objects.filter(company=request.user.id_company, name=title).exists():
+                return JsonResponse({"success": False, "message": "message.this-name-exist-in-your-company", 'error':"This type customer already exist in the database"}, status=200)
+    
+            # Create the new customer type
+            customer_type = CustomerType.objects.create(
+                company=request.user.id_company,
+                name=title,
+                description=description,
+                color=color,
+            )
+    
+            answer={
+                "id": customer_type.id,
+                "name": customer_type.name,
+                "color": customer_type.color,
+                "description": customer_type.description
+            }
+    
+            return JsonResponse({
+                "success": True,
+                "message": "Customer added with success",
+                "answer": answer
+            })
+    
+        except Exception as e:
+            return JsonResponse({"success": False, "message": "Error in the server", "error": str(e)}, status=500)
+    else:
+        if request.method != "POST":
+            return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+        
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+    
+            #get the information that send the frontend
+            title = data.get("title", "").strip()
+            description = data.get("description", "").strip()
+            color = data.get("color", "#3498db").strip()
+    
+            #we will see if exist the title of the type customer
+            if not title:
+                return JsonResponse({"success": False, "message": "message.need-the-name-of-the-type-event", 'error':"Need the name of the type customer"}, status=200)
+    
+            #here we will see if exist this type customer in the company
+            if CustomerType.objects.filter(company=request.user.id_company, name=title).exists():
+                return JsonResponse({"success": False, "message": "message.this-name-exist-in-your-company", 'error':"This type customer already exist in the database"}, status=200)
+    
+            # Create the new customer type
+            customer_type = CustomerType.objects.create(
+                company=request.user.id_company,
+                name=title,
+                description=description,
+                color=color,
+            )
+    
+            answer={
+                "id": customer_type.id,
+                "name": customer_type.name,
+                "color": customer_type.color,
+                "description": customer_type.description
+            }
+    
+            return JsonResponse({
+                "success": True,
+                "message": "Customer added with success",
+                "answer": answer
+            })
+    
+        except Exception as e:
+            return JsonResponse({"success": False, "message": "Error in the server", "error": str(e)}, status=500)
+
+@login_required(login_url='login')
+def edit_customer(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != "POST":
+            return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+    
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+    
+            #get the information that the frontend send
+            customer_type_id = data.get("id")
+            title = data.get("title", "").strip()
+            description = data.get("description", "").strip()
+            color = data.get("color", "#3498db").strip()
+    
+            #here eval if have all the data that need 
+            if not customer_type_id:
+                return JsonResponse({"success": False, "message": "message.need-the-id-of-the-type-customer"}, status=400)
+    
+            if not title:
+                return JsonResponse({"success": False, "message": "message.need-the-name-of-the-type-event"}, status=400)
+    
+            #Find the customer type within the user's company
+            try:
+                customer_type = CustomerType.objects.get(id=customer_type_id, company=request.user.id_company)
+            except CustomerType.DoesNotExist:
+                return JsonResponse({"success": False, "message": "message.not-exist-this-type-customer-in-your-company"}, status=404)
+    
+            # Validate for duplicates (another CustomerType with the same name within the company)
+            if CustomerType.objects.filter(company=request.user.company, name=title).exclude(id=customer_type_id).exists():
+                return JsonResponse({"success": False, "message": "message.this-name-exist-in-your-company"}, status=400)
+    
+            # update the value
+            customer_type.name = title
+            customer_type.description = description
+            customer_type.color = color
+            customer_type.save()
+    
+    
+            #send the answer success
+            answer={
+                "id": customer_type.id,
+                "name": customer_type.name,
+                "color": customer_type.color,
+                "description": customer_type.description
+            }
+    
+            return JsonResponse({
+                "success": True,
+                "message": "Tipo de cliente actualizado con éxito",
+                "answer": answer
+            })
+    
+        except Exception as e:
+            return JsonResponse({"success": False, "message": "Error in the server", "error": str(e)}, status=500)
+    else:
+        if request.method != "POST":
+            return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+    
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+    
+            #get the information that the frontend send
+            customer_type_id = data.get("id")
+            title = data.get("title", "").strip()
+            description = data.get("description", "").strip()
+            color = data.get("color", "#3498db").strip()
+    
+            #here eval if have all the data that need 
+            if not customer_type_id:
+                return JsonResponse({"success": False, "message": "message.need-the-id-of-the-type-customer"}, status=400)
+    
+            if not title:
+                return JsonResponse({"success": False, "message": "message.need-the-name-of-the-type-event"}, status=400)
+    
+            #Find the customer type within the user's company
+            try:
+                customer_type = CustomerType.objects.get(id=customer_type_id, company=request.user.id_company)
+            except CustomerType.DoesNotExist:
+                return JsonResponse({"success": False, "message": "message.not-exist-this-type-customer-in-your-company"}, status=404)
+    
+            # Validate for duplicates (another CustomerType with the same name within the company)
+            if CustomerType.objects.filter(company=request.user.company, name=title).exclude(id=customer_type_id).exists():
+                return JsonResponse({"success": False, "message": "message.this-name-exist-in-your-company"}, status=400)
+    
+            # update the value
+            customer_type.name = title
+            customer_type.description = description
+            customer_type.color = color
+            customer_type.save()
+    
+    
+            #send the answer success
+            answer={
+                "id": customer_type.id,
+                "name": customer_type.name,
+                "color": customer_type.color,
+                "description": customer_type.description
+            }
+    
+            return JsonResponse({
+                "success": True,
+                "message": "Tipo de cliente actualizado con éxito",
+                "answer": answer
+            })
+    
+        except Exception as e:
+            return JsonResponse({"success": False, "message": "Error in the server", "error": str(e)}, status=500)
 
 @login_required(login_url='login')
 def search_customers_select(request):

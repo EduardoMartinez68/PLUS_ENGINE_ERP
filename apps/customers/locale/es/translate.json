@@ -144,5 +144,26 @@
   "form2-label-contact-cellphone":"Celular del contacto",
   "form2-placeholder-contact-phone":"ej. +1 444 444 444",
   "note":"Nota",
-  "note-placeholder":"Agrega un comentario..."
-    }
+  "note-placeholder":"Agrega un comentario...",
+
+  "title-create-type-customer":"Crear categoria de Cliente",
+  "title-edit-type-customer":"Editar categoria de Cliente",
+  "title-type-customer":"Categoria de Cliente",
+  "label-type-customer":"Nombre de la categoria del Cliente",
+  "color-type-customer":"Color",
+  "description-type-customer":"Descripción",
+
+  "message.no-can-add-this-type-of-customer":"No se pudo agregar este tipo de categoria",
+  "message.the-type-customer-can-added-with-success-title":"Categoria agregada",
+  "message.the-type-customer-can-added-with-success-description":"La categoria del Cliente fue agregado con éxito",
+
+  "message.no-can-edit-this-type-of-customer":"No se pudo editar la categoria del cliente",
+  "message.the-type-customer-can-edited-with-success-title":"Categoria de Cliente editado",
+  "message.the-type-customer-can-edited-with-success-description":"La categoria del Cliente fue editado con éxito",
+
+  "message.need-the-name-of-the-type-event":"Necesitas agregar el nombre de la categoria del cliente",
+  "message.this-name-exist-in-your-company":"Ya existe una categoria de clientes con este nombre en tu compañía",
+  "message.not-exist-this-type-customer-in-your-company":"No se encontró esta categoria de clientes en tu empresa",
+  "message.need-the-id-of-the-type-customer":"El ID de la categoria del cliente es requerido"
+
+  }

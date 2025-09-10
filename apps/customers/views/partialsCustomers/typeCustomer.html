@@ -1,0 +1,102 @@
+<message-pop title="title-create-type-customer" name="pop-create-type-customer">
+    <div class="section">
+        <plus-title label="label-type-customer" placeholder="title-type-customer" required id="title-customer-add"></plus-title>
+    </div>
+    <div class="section">
+        <label t="description-type-customer"></label>
+        <textarea id="description-customer-add"></textarea>
+    </div>
+    <input-color required id="color-customer-add"></input-color>
+    <br>
+    <button t="message.success" class="btn btn-add btn-success" onclick="create_type_customer()">Search</button>
+</message-pop>
+
+<message-pop title="title-edit-type-customer" name="pop-edit-type-customer">
+    <div class="section">
+        <plus-title label="label-type-customer" placeholder="title-type-customer" required id="title-customer-edit"></plus-title>
+    </div>
+    <div class="section">
+        <label t="description-type-customer"></label>
+        <textarea id="description-customer-edit"></textarea>
+    </div>
+    <input-color required id="color-customer-edit"></input-color>
+    <br>
+    <button t="btn.edit" class="btn btn-edit btn-success" onclick="edit_type_customer()">Edit</button>
+</message-pop>
+
+
+<script>
+    function open_pop_create_type_customer(){
+        window.show_pop('pop-create-type-customer')
+    }
+
+    function open_pop_edit_type_customer(){
+        window.show_pop('pop-edit-type-customer')
+    }
+
+    function get_information_of_the_form_type_customer(typeForm){
+        //her we define the input that need get
+        const fields = ["title", "description", "color"];
+
+        //We iterate through the fields and build the object with the values.
+        const data = fields.reduce((acc, field) => {
+            const el = document.getElementById(`${field}-customer-${typeForm}`);
+            acc[field] = el ? el.value.trim() : "";
+            return acc;
+        }, {});
+
+        return data;
+    }
+
+    function clear_form_type_customer(typeForm) {
+        //We define the same fields that we use to obtain information.
+        const fields = ["title", "description", "color"];
+
+        fields.forEach(field => {
+            const el = document.getElementById(`${field}-customer-${typeForm}`);
+            if (el) el.value = ""; // clear the input
+        });
+
+        //here we will clear the input type color
+        document.getElementById(`color-customer-${typeForm}`).updateColor('#3b82f6');
+    }
+
+    async function create_type_customer(){
+        //here we will to get all the information of the form create type customer
+        const form=get_information_of_the_form_type_customer('add');
+
+        //when get the information of the form we will send this information to the server for save this information
+        const server=await send_message_to_the_server('/customers/add_type_customer/',form) 
+        if(server.success){
+            clear_form_type_customer('add') //here clear the form 
+            close_my_pop('pop-create-type-customer')
+            show_alert('success', 'message.the-type-customer-can-added-with-success-title', 'message.the-type-customer-can-added-with-success-description')
+        }else{
+            //if nor can save this type customer we will to show a message of error
+            show_alert('error', 'message.no-can-add-this-type-of-customer', server.message, server.error)
+        }
+    }
+
+    async function edit_type_customer(){
+        //here we will to get all the information of the form create type customer
+        const form=get_information_of_the_form_type_customer('edit');
+
+        //when get the information of the form we will send this information to the server for save this information
+        const server=send_message_to_the_server('/customers/edit_customer/',form) 
+        if(server.success){
+            clear_form_type_customer('edit') //here clear the form 
+            close_my_pop('pop-edit-type-customer')
+            show_alert('success', 'message.the-type-customer-can-edited-with-success-title', 'message.the-type-customer-can-edited-with-success-description')
+        }else{
+            //if nor can save this type customer we will to show a message of error
+            show_alert('error', 'message.no-can-edit-this-type-of-customer', server.message, server.error)
+        }
+    }
+
+
+    //do this function global for that can use in other scripts
+    window.create_type_customer=create_type_customer;
+    window.edit_type_customer=edit_type_customer;
+    window.open_pop_create_type_customer=open_pop_create_type_customer;
+    window.open_pop_edit_type_customer=open_pop_edit_type_customer;
+</script>

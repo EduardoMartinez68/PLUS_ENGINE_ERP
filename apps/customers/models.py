@@ -10,6 +10,7 @@ class CustomerSource(models.Model):
     Example: Website, referral, Facebook ad, trade show, e-commerce platform.
     """
     id = models.BigAutoField(primary_key=True)
+    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="customer_sources", null=True, blank=True)
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
 
@@ -17,6 +18,7 @@ class CustomerSource(models.Model):
         db_table = "customer.customer_source"
         verbose_name = "Customer Source"
         verbose_name_plural = "Customer Sources"
+        unique_together = ("company", "name") #this is for that not exist type repeat in the company 
 
     def __str__(self):
         return self.name
@@ -27,6 +29,7 @@ class CustomerType(models.Model):
     Example: Customer, Supplier, Distributor, Patient, Student.
     """
     id = models.BigAutoField(primary_key=True)
+    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="customer_types", null=True, blank=True)
     color = models.CharField(max_length=7, default="#3498db",help_text="Hex color code, e.g., #3498db",  null=False)
     name = models.CharField(max_length=50, unique=True, null=False)
     description = models.TextField(blank=True, null=True)
@@ -35,6 +38,7 @@ class CustomerType(models.Model):
         db_table = "customer.customer_type"
         verbose_name = "Customer Type"
         verbose_name_plural = "Customer Types"
+        unique_together = ("company", "name") #this is for that not exist type repeat in the company 
 
     def __str__(self):
         return self.name
@@ -68,7 +72,7 @@ class Customer(models.Model):
     note = models.TextField(blank=True, null=True)
 
     #--information of the customer in the company
-    id_company = models.BigIntegerField(blank=True, null=True)
+    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="customer_customer", null=True, blank=True)
     points = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     credit = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     tags = models.JSONField(blank=True, null=True)
@@ -79,7 +83,7 @@ class Customer(models.Model):
         "CustomerSource", on_delete=models.SET_NULL, null=True, blank=True
     ) #how get this customer, google, facebook, ads, etc
     priority = models.SmallIntegerField(default=0)
-
+    number_of_price_of_sale = models.SmallIntegerField(default=1)
 
     creation_date = models.DateTimeField(auto_now_add=True)
     activated = models.BooleanField(default=True)
@@ -90,10 +94,10 @@ class Customer(models.Model):
             models.Index(fields=["name"], name="idx_customer_name"),
             models.Index(fields=["email"], name="idx_customer_email"),
             models.Index(fields=["cellphone"], name="idx_customer_cellphone"),
-            models.Index(fields=["id_company"], name="idx_customer_id_company"),
+            models.Index(fields=["company"], name="idx_customer_company"),
             models.Index(fields=["activated"], name="idx_customer_activated"),
             models.Index(fields=["company_name"], name="idx_customer_company_name"),
-            models.Index(fields=["email", "id_company"], name="idx_customer_email_branch"),
+            models.Index(fields=["email", "company"], name="idx_customer_email_branch"),
         ]
 
 
