@@ -342,10 +342,6 @@ window.addEventListener('resize', () => {
     transition: transform 0.2s;
   }
 
-  .side-menu .close-btn:hover {
-    transform: scale(1.1);
-  }
-
   /* Links del menú */
   .side-menu a {
     text-decoration: none;
@@ -443,6 +439,9 @@ window.addEventListener('resize', () => {
   transition: background 0.2s, color 0.2s;
 }
 
+.menu-links a:hover{
+  cursor: pointer;
+}
 
 /* Scroll personalizado */
 .menu-links::-webkit-scrollbar {
@@ -479,6 +478,8 @@ window.addEventListener('resize', () => {
 
 <!-- Menú lateral -->
 <div class="side-menu" id="sideMenu">
+  <button class="close-btn" onclick="closeSideMenu()">✕</button>
+
   <!-- Logo empresa -->
   <div class="info-branch">
     <img src="https://www.nicepng.com/png/detail/204-2049937_logo-de-farmacia-png.png" alt="" class="icon-company-menu">
@@ -489,7 +490,7 @@ window.addEventListener('resize', () => {
   <!-- Menú módulos -->
   <div class="menu-links">
     {% for app in apps %}
-    <a href="{{ app.path }}{{ app.path }}" class="app-name-2">{{ app.name }}</a>
+    <a onclick="nextWeb('{{ app.path }}{{ app.path }}')" class="app-name-2">{{ app.name }}</a>
     {% endfor %}
   </div>
 

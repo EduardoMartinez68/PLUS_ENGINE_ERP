@@ -1,31 +1,9 @@
 <div class="container-padding">
-    <div class="row">
-        <div class="col-10">
-            <search-bar label="search"></search-bar>
-        </div>
-        <div class="col-2">
-            <label for=""></label>
-            <plus-actions>
-                <plus-action text="new-event" onclick="open_type_pop" combo="Shift+n"></plus-action>
-                <plus-action text="create-a-new-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
-                <plus-action text="title-show-all-the-type-event" onclick="open_pop_show_all_type_event"></plus-action>
-                <plus-action text="title.show-all-my-appoints" onclick="open_pop_show_all_my_appoints"></plus-action>
-            </plus-actions>
-        </div>
-    </div>
+    {% include 'partialsCustomers/seekerHome.html' %}
     <br>
 
-    <div class="customers-list">
-
-        <plus-customers name="Ana Gómez" email="ana.gomez@email.com" phone="+57 320 123 4567" tag="VIP" points="480"
-            credit="3000" priority="2" image="https://cdn-icons-png.flaticon.com/512/3177/3177440.png" status="active" onclick="toggle_switch_column('customers-switch')">
-        </plus-customers>
-
-        <plus-customers id-customer="2" name="Carlos Ruiz" email="carlos.ruiz@email.com" phone="+52 55 2222 3333"
-            tag="Básico" points="120" credit="500" priority="1"
-            image="https://static.vecteezy.com/system/resources/previews/041/642/168/non_2x/ai-generated-portrait-of-handsome-smiling-young-man-with-folded-arms-isolated-free-png.png"
-            status="inactive">
-        </plus-customers>
+    <!---here is for update the container of the table---->
+    <div class="customers-list" id="customer-list">
 
     </div>
 </div>
@@ -201,4 +179,31 @@
     }
 
     customElements.define("plus-customers", PlusCustomers);
+</script>
+<script>
+(() => {
+  const divHtml = `
+    <plus-customers 
+    id-customer="{ id }" 
+    name="{ name }" 
+    email="{ email }" 
+    phone="{ phone }"
+    tag="{ tag }" 
+    points="{ points }" 
+    credit="{ credit }" 
+    priority="{ priority }"
+    image="{ avatar }"
+    status="{ status }"
+    onclick="toggle_switch_column('customers-switch')">
+    </plus-customers>
+  `;
+
+  update_container_with_seeker(
+    'search-customer',
+    'customer-list',
+    divHtml,
+    '/customers/customers_search',
+    'GET'
+  );
+})();
 </script>

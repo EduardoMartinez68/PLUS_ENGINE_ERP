@@ -894,7 +894,6 @@ class KeyBind extends HTMLElement {
   }
 }
 
-
 class PlusModules extends HTMLElement {
   connectedCallback() {
     //hwe we will read the atribute 'col' and we will calculate the propotion of the modules
@@ -2035,6 +2034,9 @@ class PlusSelectDate extends HTMLElement {
 
 class PlusTabs extends HTMLElement {
   connectedCallback() {
+    if (this._rendered) return;
+    this._rendered = true;
+
     this.classList.add('plus-tabs');
 
     const tabButtonsContainer = document.createElement('div');
@@ -2086,7 +2088,8 @@ class PlusActions extends HTMLElement {
   }
 
   connectedCallback() {
-
+    if (this._rendered) return;
+    this._rendered = true;
     this.classList.add('plus-actions');
 
     const button = document.createElement('button');
@@ -4135,6 +4138,219 @@ class PlusPriority extends HTMLElement {
   }
 }
 
+
+
+  
+class PlusSwitchColumn2 extends HTMLElement {
+  connectedCallback() {
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('switch-wrapper');
+
+    const col1 = document.createElement('div');
+    col1.classList.add('col1');
+    const col2 = document.createElement('div');
+    col2.classList.add('col2');
+
+    const slot1 = this.querySelector('[slot="col1"]');
+    const slot2 = this.querySelector('[slot="col2"]');
+    if(slot1) col1.appendChild(slot1);
+    if(slot2) col2.appendChild(slot2);
+
+    wrapper.appendChild(col1);
+    wrapper.appendChild(col2);
+    this.appendChild(wrapper);
+
+    if(!document.getElementById('plus-switch-column-styles')) {
+      const style = document.createElement('style');
+      style.id = 'plus-switch-column-styles';
+      style.textContent = `
+        plus-switch-column {
+          display: block;
+          width: 100%;
+        }
+
+        .switch-wrapper {
+          position: relative;
+          width: 100%;
+        }
+
+        .switch-wrapper .col1,
+        .switch-wrapper .col2 {
+          padding: 10px;
+          box-sizing: border-box;
+        }
+
+        /* MÓVIL: columna superpuesta */
+        @media (max-width: 768px) {
+          .switch-wrapper .col1,
+          .switch-wrapper .col2 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            background-color: #F6F5F8;
+            z-index: ${currentPopZIndex};
+          }
+
+          .switch-wrapper .col1 { z-index: 1; }
+          .switch-wrapper .col2 { transform: translateX(100%); }
+          .switch-wrapper .col2.active { transform: translateX(0); }
+        }
+
+        /* DESKTOP: columnas lado a lado */
+        @media (min-width: 769px) {
+          .switch-wrapper {
+            display: flex;
+          }
+          .switch-wrapper .col1,
+          .switch-wrapper .col2 {
+            position: relative;
+            width: 50%;
+            height: auto;
+            transform: none !important;
+          }
+          .open-col2-btn,
+          .close-col2-btn { display: none; }
+        }
+
+        .open-col2-btn,
+        .close-col2-btn {
+          cursor: pointer;
+          font-size: 1.2rem;
+          padding: 6px 12px;
+          border: none;
+          color: white;
+          border-radius: 6px;
+          margin-bottom: 10px;
+          background:#075EAB;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    const openBtn = col1.querySelector('.open-col2-btn');
+    const closeBtn = col2.querySelector('.close-col2-btn');
+
+    const isMobile = window.innerWidth <= 768;
+    if(isMobile && openBtn) openBtn.addEventListener('click', () => col2.classList.add('active'));
+    if(isMobile && closeBtn) closeBtn.addEventListener('click', () => col2.classList.remove('active'));
+
+    this.col2 = col2;
+  }
+}
+
+class PlusSwitchColumn extends HTMLElement {
+  connectedCallback() {
+    // Evitar duplicar wrapper si ya existe
+    if (this.querySelector(".switch-wrapper")) return;
+
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("switch-wrapper");
+
+    // Col1 y Col2 envuelven lo que ya existe
+    const slot1 = this.querySelector('[slot="col1"]');
+    const slot2 = this.querySelector('[slot="col2"]');
+
+    const col1 = document.createElement("div");
+    col1.classList.add("col1");
+    if (slot1) col1.appendChild(slot1);
+
+    const col2 = document.createElement("div");
+    col2.classList.add("col2");
+    if (slot2) col2.appendChild(slot2);
+
+    wrapper.appendChild(col1);
+    wrapper.appendChild(col2);
+
+    // Reemplazar contenido solo una vez
+    this.innerHTML = "";
+    this.appendChild(wrapper);
+
+    // Insertar estilos globales una sola vez
+    if (!document.getElementById("plus-switch-column-styles")) {
+      const style = document.createElement("style");
+      style.id = "plus-switch-column-styles";
+      style.textContent = `
+        plus-switch-column {
+          display: block;
+          width: 100%;
+        }
+
+        .switch-wrapper {
+          position: relative;
+          width: 100%;
+        }
+
+        .switch-wrapper .col1,
+        .switch-wrapper .col2 {
+          padding: 10px;
+          box-sizing: border-box;
+        }
+
+        /* --- MÓVIL: col2 oculta y deslizable --- */
+        @media (max-width: 768px) {
+          .switch-wrapper .col1 {
+            width: 100%;
+          }
+          .switch-wrapper .col2 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+            background-color: #F6F5F8;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 9999;
+          }
+          .switch-wrapper .col2.active {
+            transform: translateX(0);
+          }
+        }
+
+        /* --- DESKTOP: columnas lado a lado --- */
+        @media (min-width: 769px) {
+          .switch-wrapper {
+            display: flex;
+          }
+          .switch-wrapper .col1,
+          .switch-wrapper .col2 {
+            width: 50%;
+            position: relative;
+            height: auto;
+            transform: none !important;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    this.col2 = col2;
+  }
+}
+
+// Registrar componente
+customElements.define("plus-switch-column", PlusSwitchColumn);
+
+// Función para abrir/cerrar col2 en móviles
+function toggle_switch_column(id, open = true) {
+  const element = document.getElementById(id);
+  if (!element || !element.col2) return;
+
+  const isMobile = window.innerWidth <= 768;
+  if (!isMobile) return; // Solo aplica en móviles
+
+  if (open) {
+    element.col2.classList.add("active");
+  } else {
+    element.col2.classList.remove("active");
+  }
+}
+
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
   const tabs = document.querySelectorAll('.tab-content');
@@ -4778,6 +4994,11 @@ function transform_my_labels_erp() {
   if (!customElements.get("plus-title")) {
     customElements.define("plus-title", PlusTitle);
   }
+
+  if (!customElements.get("plus-switch-column")) {
+    customElements.define('plus-switch-column', PlusSwitchColumn);
+  }
+
 }
 
 /**---------------------------------TAB----------------------------- */

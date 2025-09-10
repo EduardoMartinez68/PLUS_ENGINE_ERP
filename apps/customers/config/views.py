@@ -241,6 +241,83 @@ def edit_customer(request, id_customer):
         return render(request, 'formCustomer.html', {'customer': customer})
 
 @login_required(login_url='login')
+def customers_search(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == 'GET':
+            customers = [
+                {
+                    "id": 1,
+                    "name": "Luis Miguel",
+                    "email": "luis.miguel@example.com",
+                    "phone": "+52 444 123 4567",
+                    "tag": "VIP",
+                    "points": 1200,
+                    "credit": 500.0,
+                    "priority": "Alta",
+                    "avatar": "https://example.com/avatars/luis.jpg",
+                    "status": "active"
+                },
+                {
+                    "id": 2,
+                    "name": "Ana Torres",
+                    "email": "ana.torres@example.com",
+                    "phone": "+52 444 765 4321",
+                    "tag": "Frecuente",
+                    "points": 300,
+                    "credit": 150.0,
+                    "priority": "Media",
+                    "avatar": "https://example.com/avatars/ana.jpg",
+                    "status": "inactive"
+                }
+            ]
+    
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": "Consulta exitosa",
+                    "answer": customers
+                },
+                status=200
+            )
+    else:
+        if request.method == 'GET':
+            customers = [
+                {
+                    "id": 1,
+                    "name": "Luis Miguel",
+                    "email": "luis.miguel@example.com",
+                    "phone": "+52 444 123 4567",
+                    "tag": "VIP",
+                    "points": 1200,
+                    "credit": 500.0,
+                    "priority": "Alta",
+                    "avatar": "https://example.com/avatars/luis.jpg",
+                    "status": "active"
+                },
+                {
+                    "id": 2,
+                    "name": "Ana Torres",
+                    "email": "ana.torres@example.com",
+                    "phone": "+52 444 765 4321",
+                    "tag": "Frecuente",
+                    "points": 300,
+                    "credit": 150.0,
+                    "priority": "Media",
+                    "avatar": "https://example.com/avatars/ana.jpg",
+                    "status": "inactive"
+                }
+            ]
+    
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": "Consulta exitosa",
+                    "answer": customers
+                },
+                status=200
+            )
+
+@login_required(login_url='login')
 def search_customers_select(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == 'POST':

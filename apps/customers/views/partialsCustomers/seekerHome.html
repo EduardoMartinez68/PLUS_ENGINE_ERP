@@ -1,0 +1,29 @@
+<div class="row">
+    <div class="col-8">
+        <input type="text" t-placeholder="search" id="search-customer">
+    </div>
+    <div class="col-2">
+        <label for=""></label>
+        <button class="btn btn-edit" onclick="open_my_pop('pop-filter-customer')"><i class="fi fi-rr-settings-sliders"></i></button>
+    </div>
+    <div class="col-2">
+        <label for=""></label>
+        <plus-actions>
+            <plus-action text="new-event" onclick="open_type_pop" combo="Shift+n"></plus-action>
+            <plus-action text="create-a-new-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
+            <plus-action text="title-show-all-the-type-event" onclick="open_pop_show_all_type_event"></plus-action>
+            <plus-action text="title.show-all-my-appoints" onclick="open_pop_show_all_my_appoints"></plus-action>
+        </plus-actions>
+    </div>
+</div>
+
+
+<message-pop title="title-filter" name="pop-filter-customer">
+    <select name="" id="">
+        <option value="">true</option>
+    </select>
+
+    <plus-select label="select-type-customer">
+        <option value="">Ganancias</option>
+    </plus-select>
+</message-pop>
