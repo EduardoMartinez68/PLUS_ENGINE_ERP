@@ -6,9 +6,11 @@
         <label t="description-type-customer"></label>
         <textarea id="description-customer-add"></textarea>
     </div>
-    <input-color required id="color-customer-add"></input-color>
+    <div class="section">
+        <input-color required id="color-customer-add"></input-color>
+    </div>
     <br>
-    <button t="message.success" class="btn btn-add btn-success" onclick="create_type_customer()">Search</button>
+    <button t="btn.save" class="btn btn-add btn-success" onclick="create_type_customer()">Search</button>
 </message-pop>
 
 <message-pop title="title-edit-type-customer" name="pop-edit-type-customer">
@@ -20,9 +22,11 @@
         <label t="description-type-customer"></label>
         <textarea id="description-customer-edit"></textarea>
     </div>
-    <input-color required id="color-customer-edit"></input-color>
+    <div class="section">
+        <input-color required id="color-customer-edit"></input-color>
+    </div>
     <br>
-    <button t="btn.edit" class="btn btn-edit btn-success" onclick="edit_type_customer()">Edit</button>
+    <button t="btn.update" class="btn btn-edit btn-success" onclick="edit_type_customer()">Edit</button>
 </message-pop>
 
 
@@ -95,9 +99,10 @@
     async function edit_type_customer(){
         //here we will to get all the information of the form create type customer
         const form=get_information_of_the_form_type_customer('edit');
+        form.id=document.getElementById('id-type-customer').value; //save the id of the type customer that the user would like edit 
 
         //when get the information of the form we will send this information to the server for save this information
-        const server=send_message_to_the_server('/customers/edit_customer/',form) 
+        const server=await send_message_to_the_server('/customers/edit_type_customer/',form) 
         if(server.success){
             clear_form_type_customer('edit') //here clear the form 
             close_my_pop('pop-edit-type-customer')
