@@ -194,7 +194,7 @@
     priority="{ priority }"
     image="{ avatar }"
     status="{ status }"
-    onclick="toggle_switch_column('customers-switch')">
+    onclick="update_information_div_customer('{ id }')">
     </plus-customers>
   `;
 
@@ -205,5 +205,7 @@
     '/customers/customers_search',
     'GET'
   );
+
+
 })();
 </script>

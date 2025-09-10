@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-8">
-        <input type="text" t-placeholder="search" id="search-customer">
+        <input type="text" t-placeholder="input-seacrh-customer" id="search-customer">
     </div>
     <div class="col-2">
         <label for=""></label>
@@ -19,11 +19,35 @@
 
 
 <message-pop title="title-filter" name="pop-filter-customer">
-    <select name="" id="">
-        <option value="">true</option>
-    </select>
+    <div class="row">
+        <div class="col">
+            <plus-select label="select-type-customer">
+            </plus-select>
+        </div>
+        <div class="col">
+            <plus-select label="select-priority">
+                <option value="" t="select-priority-0"></option>
+                <option value="" t="select-priority-1"></option>
+                <option value="" t="select-priority-2"></option>
+                <option value="" t="select-priority-3"></option>
+                <option value="" t="select-priority-all"></option>
+            </plus-select>
+        </div>
+        <div class="col">
+            <plus-select label="select-type-customer">
+                <option value="" t="option-status-activated">Activate</option>
+                <option value="" t="option-status-deleted">Delete</option>
+                <option value="" t="option-status-all">All</option>
+            </plus-select>
+        </div>
+    </div>
 
-    <plus-select label="select-type-customer">
-        <option value="">Ganancias</option>
-    </plus-select>
+    <button t="message.success" class="btn btn-edit btn-success" onclick="filter_the_customer()">Search</button>
 </message-pop>
+
+
+<script>
+    async function filter_the_customer(){
+        hide_pop('pop-filter-customer')
+    }
+</script>

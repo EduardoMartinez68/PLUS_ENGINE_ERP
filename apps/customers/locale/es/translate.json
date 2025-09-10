@@ -8,8 +8,20 @@
   "card-points":"Puntos",
   "card-credit":"Crédito",
 
+  "input-seacrh-customer":"Filtra por nombre, email, celular, telefono o Tag...",
   "title-filter":"Filtrar Cliente",
+  "select-status":"Estatus",
+  "option-status-activated":"Activos",
+  "option-status-deleted":"Eliminados",
+  "option-status-all":"Todos",
 
+
+  "select-priority":"Prioridad",
+  "select-priority-0":"Ninguna",
+  "select-priority-1":"Baja",
+  "select-priority-2":"Media",
+  "select-priority-3":"Alta",
+  "select-priority-all":"Todas",
 
   "table-home-avatar": "Imagen",
   "table-home-name": "Nombre",

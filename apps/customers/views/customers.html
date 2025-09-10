@@ -1,11 +1,10 @@
 <style>
-  .customers-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    /* Espacio entre clientes */
-    width: 100%;
-  }
+.customers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
 
 .container-padding {
   padding-top: 0px;
@@ -20,16 +19,17 @@
 
 
 <plus-switch-column id="customers-switch">
-  <div slot="col1" class="col-9">
+  <div slot="col1">
     {% include 'partialsCustomers/tableCustomers.html' %}
   </div>
 
-  <div slot="col2" class="col-7">
+  <div slot="col2">
     <br><br>
     <button class="close-col2-btn" onclick="toggle_switch_column('customers-switch',false)">×</button>
     {% include 'partialsCustomers/infoCustomer.html' %}
   </div>
 </plus-switch-column>
+
 
 
 

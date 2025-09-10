@@ -244,6 +244,13 @@ def edit_customer(request, id_customer):
 def customers_search(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == 'GET':
+            #name, email, phone in the input of search
+            #Tags (input)
+            #type customer (select)
+            #source (select)
+            #Prioridad (select)
+            #activated (select only true or not)
+    
             customers = [
                 {
                     "id": 1,
@@ -281,6 +288,13 @@ def customers_search(request):
             )
     else:
         if request.method == 'GET':
+            #name, email, phone in the input of search
+            #Tags (input)
+            #type customer (select)
+            #source (select)
+            #Prioridad (select)
+            #activated (select only true or not)
+    
             customers = [
                 {
                     "id": 1,
@@ -316,6 +330,99 @@ def customers_search(request):
                 },
                 status=200
             )
+
+@login_required(login_url='login')
+def get_information_of_the_customer(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == "GET":
+            id_customer = request.GET.get("id_customer")
+    
+            data = {
+                "id": id_customer,
+                "name": "Juan Pérez",
+                "email": "juan.perez@example.com",
+                "phone": "444-123-4567",
+                "cellphone": "444-987-6543",
+                "country": "MX",
+                "address": "Av. Universidad #123",
+                "city": "San Luis Potosí",
+                "state": "SLP",
+                "postal_code": "78000",
+                "num_ext": "15",
+                "num_int": "2B",
+                "reference": "Frente a la farmacia Guadalajara",
+                "this_customer_is_a_company": False,
+                "company_name": None,
+                "contact_name": None,
+                "website": None,
+                "points": "150.00",
+                "credit": "2000.00",
+                "tags": ["VIP", "Frecuente"],
+                "priority": 2,
+                "customer_type": {
+                    "id": 1,
+                    "name": "Paciente",
+                    "color": "#3498db",
+                    "description": "Clientes que reciben atención médica"
+                },
+                "source": {
+                    "id": 1,
+                    "name": "Facebook Ads",
+                    "description": "Campaña publicitaria en Facebook"
+                },
+                "avatar": "/media/customers/default.png",
+                "creation_date": "2025-09-09T12:30:00",
+                "activated": True
+            }
+    
+            return JsonResponse({"success": True, "message": "Customer found", "answer": data}, status=200)
+    
+        return JsonResponse({"success": False, "message": "Invalid request"}, status=400)
+    else:
+        if request.method == "GET":
+            id_customer = request.GET.get("id_customer")
+    
+            data = {
+                "id": id_customer,
+                "name": "Juan Pérez",
+                "email": "juan.perez@example.com",
+                "phone": "444-123-4567",
+                "cellphone": "444-987-6543",
+                "country": "MX",
+                "address": "Av. Universidad #123",
+                "city": "San Luis Potosí",
+                "state": "SLP",
+                "postal_code": "78000",
+                "num_ext": "15",
+                "num_int": "2B",
+                "reference": "Frente a la farmacia Guadalajara",
+                "this_customer_is_a_company": False,
+                "company_name": None,
+                "contact_name": None,
+                "website": None,
+                "points": "150.00",
+                "credit": "2000.00",
+                "tags": ["VIP", "Frecuente"],
+                "priority": 2,
+                "customer_type": {
+                    "id": 1,
+                    "name": "Paciente",
+                    "color": "#3498db",
+                    "description": "Clientes que reciben atención médica"
+                },
+                "source": {
+                    "id": 1,
+                    "name": "Facebook Ads",
+                    "description": "Campaña publicitaria en Facebook"
+                },
+                "avatar": "/media/customers/default.png",
+                "creation_date": "2025-09-09T12:30:00",
+                "activated": True
+            }
+    
+            return JsonResponse({"success": True, "message": "Customer found", "answer": data}, status=200)
+    
+        return JsonResponse({"success": False, "message": "Invalid request"}, status=400)
 
 @login_required(login_url='login')
 def search_customers_select(request):

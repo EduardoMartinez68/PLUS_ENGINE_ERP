@@ -1138,9 +1138,13 @@ class PlusSelect extends HTMLElement {
         popup.style.position = 'absolute';
         const insideMessagePop = this.closest("message-pop") !== null;
 
-        if (insideMessagePop) {
-          left = rect.left + window.scrollX + 30;
-        } else {
+        if(left==0){
+          if (insideMessagePop) {
+            left = rect.left + window.scrollX + 30;
+          } else {
+            left = rect.left + window.scrollX + rect.width;
+          }
+        }else{
           left = rect.left + window.scrollX + rect.width;
         }
 
@@ -4135,110 +4139,6 @@ class PlusPriority extends HTMLElement {
 
   getValue() {
     return this._value;
-  }
-}
-
-
-
-  
-class PlusSwitchColumn2 extends HTMLElement {
-  connectedCallback() {
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('switch-wrapper');
-
-    const col1 = document.createElement('div');
-    col1.classList.add('col1');
-    const col2 = document.createElement('div');
-    col2.classList.add('col2');
-
-    const slot1 = this.querySelector('[slot="col1"]');
-    const slot2 = this.querySelector('[slot="col2"]');
-    if(slot1) col1.appendChild(slot1);
-    if(slot2) col2.appendChild(slot2);
-
-    wrapper.appendChild(col1);
-    wrapper.appendChild(col2);
-    this.appendChild(wrapper);
-
-    if(!document.getElementById('plus-switch-column-styles')) {
-      const style = document.createElement('style');
-      style.id = 'plus-switch-column-styles';
-      style.textContent = `
-        plus-switch-column {
-          display: block;
-          width: 100%;
-        }
-
-        .switch-wrapper {
-          position: relative;
-          width: 100%;
-        }
-
-        .switch-wrapper .col1,
-        .switch-wrapper .col2 {
-          padding: 10px;
-          box-sizing: border-box;
-        }
-
-        /* MÓVIL: columna superpuesta */
-        @media (max-width: 768px) {
-          .switch-wrapper .col1,
-          .switch-wrapper .col2 {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            overflow-y: auto;
-            transition: transform 0.3s ease;
-            background-color: #F6F5F8;
-            z-index: ${currentPopZIndex};
-          }
-
-          .switch-wrapper .col1 { z-index: 1; }
-          .switch-wrapper .col2 { transform: translateX(100%); }
-          .switch-wrapper .col2.active { transform: translateX(0); }
-        }
-
-        /* DESKTOP: columnas lado a lado */
-        @media (min-width: 769px) {
-          .switch-wrapper {
-            display: flex;
-          }
-          .switch-wrapper .col1,
-          .switch-wrapper .col2 {
-            position: relative;
-            width: 50%;
-            height: auto;
-            transform: none !important;
-          }
-          .open-col2-btn,
-          .close-col2-btn { display: none; }
-        }
-
-        .open-col2-btn,
-        .close-col2-btn {
-          cursor: pointer;
-          font-size: 1.2rem;
-          padding: 6px 12px;
-          border: none;
-          color: white;
-          border-radius: 6px;
-          margin-bottom: 10px;
-          background:#075EAB;
-        }
-      `;
-      document.head.appendChild(style);
-    }
-
-    const openBtn = col1.querySelector('.open-col2-btn');
-    const closeBtn = col2.querySelector('.close-col2-btn');
-
-    const isMobile = window.innerWidth <= 768;
-    if(isMobile && openBtn) openBtn.addEventListener('click', () => col2.classList.add('active'));
-    if(isMobile && closeBtn) closeBtn.addEventListener('click', () => col2.classList.remove('active'));
-
-    this.col2 = col2;
   }
 }
 
