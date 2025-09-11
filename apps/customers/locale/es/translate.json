@@ -194,6 +194,7 @@
   "message.the-source-can-edited-with-success-title": "Canal de Adquisición editado",
   "message.the-source-can-edited-with-success-description": "El canal de adquisición fue actualizado con éxito",
 
+  "message.error-to-get-the-information-of-the-source":"Error al intentar obtener la Información del Canal de adquisición",
   "message.need-the-name-of-the-source": "Necesitas agregar el nombre del canal de adquisición",
   "message.this-name-exist-in-your-company": "Ya existe un canal de adquisición con este nombre en tu compañía",
   "message.not-exist-this-source-in-your-company": "No se encontró este canal de adquisición en tu empresa",

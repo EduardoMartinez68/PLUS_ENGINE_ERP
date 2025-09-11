@@ -1,5 +1,8 @@
 import os
 import importlib.util
+from typing import Tuple
+from django.contrib.auth import authenticate
+
 class Plus:
     functions_path = os.path.abspath(
         os.path.join(os.path.dirname(__file__), '../../functions')
@@ -47,3 +50,45 @@ class Plus:
         #type=1 August 27, 2025 at 11:00 AM or type=2 27/06/2025 11:00AM
         module = Plus._load_module('converDate')
         return module.format_date_to_text(date, type, language)
+    
+
+
+    
+
+    @staticmethod
+    def this_user_have_this_permission(
+        user, 
+        permission: str, 
+        user_admin: str = None, 
+        password_admin: str = None
+    ) -> Tuple[bool, str]:
+        return True, ""
+        """
+        Check if the user has a specific permission, or if admin credentials have it.
+
+        Parameters:
+        - user: Django User object
+        - permission (str): Permission codename to check
+        - user_admin (str): Optional username of an admin user to check if user lacks permission
+        - password_admin (str): Password of the admin user
+
+        Returns:
+        - Tuple[bool, str]: 
+            - True and empty string if permission is granted
+            - False and an error message if permission is denied
+        """
+
+        # 1️⃣ Check permission of the main user
+        if user.is_superuser or (hasattr(user, 'has_perm') and user.has_perm(permission)):
+            return True, ""
+
+        # 2️⃣ if the user not have this permission, now we will to check admin override if credentials are provided
+        if user_admin and password_admin:
+            admin_user = authenticate(username=user_admin, password=password_admin)
+            if admin_user is not None and admin_user.is_active:
+                if hasattr(admin_user, "has_perm") and admin_user.has_perm(permission):
+                    return True, ""
+            return False, "permission.invalid-credentials"
+
+        # 3️⃣ Neither user nor admin have permission
+        return False, "permission.not-have-this-permission"

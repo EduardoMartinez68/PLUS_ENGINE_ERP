@@ -10,5 +10,10 @@ urlpatterns = [
     path('search_type_customer_for_id/', views.search_type_customer_for_id, name='search_type_customer_for_id'),
     path('add_type_customer/', views.add_type_customer, name='add_type_customer'),
     path('edit_type_customer/', views.edit_type_customer, name='edit_type_customer'),
-    path('search_customers_select/', views.search_customers_select, name='search_customers_select'),
+    path('delete_type_customer/', views.delete_type_customer, name='delete_type_customer'),
+    path('search_source/', views.search_source, name='search_source'),
+    path('search_source_by_id/', views.search_source_by_id, name='search_source_by_id'),
+    path('add_source/', views.add_source, name='add_source'),
+    path('edit_source/', views.edit_source, name='edit_source'),
+    path('delete_source/', views.delete_source, name='delete_source'),
 ]

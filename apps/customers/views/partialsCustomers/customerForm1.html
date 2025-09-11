@@ -111,9 +111,9 @@
       <div class="col">
         <plus-select label="select-source-customer" name="source" id="source"
         link="/customers/search_source/" 
-        add="open_pop_create_type_customer" 
-        edit_data="open_pop_edit_type_customer"
-        delete_data="/customers/delete_type_customer/"
+        add="open_pop_create_source" 
+        edit_data="open_pop_edit_source"
+        delete_data="/customers/delete_source/"
         btn_delete_title="message.do-you-like-delete-this-source" 
         btn_delete_text="message.description-delete-source" method="GET">
         </plus-select>
@@ -149,9 +149,3 @@
   <button class="btn btn-edit btn-success" t="message.success" onclick="hide_pop('pop-advanced-information')"
     type="button"></button>
 </message-pop>
-
-
-
-<!---this is for get the pop of the type customer and the source--->
-{% include 'partialsCustomers/typeCustomer.html' %}
-{% include 'partialsCustomers/source.html' %}

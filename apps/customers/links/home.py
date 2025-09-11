@@ -178,8 +178,8 @@ def search_type_customer(request):
     query = request.GET.get("query", "").strip()
 
     # Call business logic
-    result, status = search_type_customer(request.user, query)
-    return JsonResponse(result, status=status)
+    answer, status = search_type_customer(request.user, query)
+    return JsonResponse(answer, status=status)
 
 def search_type_customer_for_id(request):
     # Ensure the request method is GET
@@ -232,16 +232,16 @@ def delete_type_customer(request):
 
 
 #-------------------------type user-------------------------
-from ..services.customer_source import get_customer_source, add_a_new_source, update_source, delete_a_source_with_his_id, get_source_by_id
+from ..services.customer_source import get_customer_source, add_a_new_source, update_source, delete_a_source_with_his_id, get_source_by_id, get_customer_source_select
 
 def search_source(request):
     if request.method != "GET":
         return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
 
     query = request.GET.get("query", "").strip()
-    result = get_customer_source(request.user, query)
+    result = get_customer_source_select(request.user, query)
 
-    return JsonResponse({"success": True, "data": result}, status=200)
+    return JsonResponse({"success": True, "answer": result}, status=200)
 
 def search_source_by_id(request):
     if request.method != "GET":
@@ -256,8 +256,8 @@ def search_source_by_id(request):
     except ValueError:
         return JsonResponse({"success": False, "message": "The source ID must be an integer", "error": "The source ID must be an integer"}, status=400)
 
-    result = get_source_by_id(request.user, source_id)
-    return JsonResponse(result, status=200 if result["success"] else 404)
+    answer = get_source_by_id(request.user, source_id)
+    return JsonResponse(answer, status=200 if answer["success"] else 404)
 
 def add_source(request):
     if request.method != "POST":
@@ -274,8 +274,8 @@ def add_source(request):
     if not name:
         return JsonResponse({"success": False, "message": "message.need-the-name-of-the-source", 'error':"the name is obligatory"}, status=400)
 
-    result = add_a_new_source(request.user, name, description)
-    return JsonResponse(result, status=200 if result["success"] else 400)
+    answer = add_a_new_source(request.user, name, description)
+    return JsonResponse(answer, status=200 if answer["success"] else 400)
 
 def edit_source(request):
     if request.method != "POST":
@@ -295,9 +295,8 @@ def edit_source(request):
     if not name:
         return JsonResponse({"success": False, "message": "message.need-the-name-of-the-source", "error":"The name not exist"}, status=400)
 
-    result = update_source(request.user, source_id, name, description)
-    return JsonResponse(result, status=200 if result["success"] else 400)
-
+    answer = update_source(request.user, source_id, name, description)
+    return JsonResponse(answer, status=200 if answer["success"] else 400)
 
 def delete_source(request):
     if request.method != "POST":
@@ -312,5 +311,5 @@ def delete_source(request):
     if not source_id:
         return JsonResponse({"success": False, "message": "message.need-the-name-of-the-source", "error": "The source ID is required"}, status=400)
 
-    result = delete_a_source_with_his_id(request.user, source_id)
-    return JsonResponse(result, status=200 if result["success"] else 400)
+    answer = delete_a_source_with_his_id(request.user, source_id)
+    return JsonResponse(answer, status=200 if answer["success"] else 400)

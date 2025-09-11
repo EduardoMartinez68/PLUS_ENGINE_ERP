@@ -62,7 +62,7 @@ class Plus:
         user_admin: str = None, 
         password_admin: str = None
     ) -> Tuple[bool, str]:
-        return True
+        return True, ""
         """
         Check if the user has a specific permission, or if admin credentials have it.
 

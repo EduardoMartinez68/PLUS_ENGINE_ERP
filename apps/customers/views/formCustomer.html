@@ -16,6 +16,10 @@
     </plus-tabs>
 </div>
 
+<!---this is for get the pop of the type customer and the source--->
+{% include 'partialsCustomers/typeCustomer.html' %}
+{% include 'partialsCustomers/source.html' %}
+
 <script>
 (() => {
     create_form_for_send_the_server('form-create-a-new-customer', `/customers/add_customer`);
