@@ -161,10 +161,45 @@
   "message.the-type-customer-can-edited-with-success-title":"Categoria de Cliente editado",
   "message.the-type-customer-can-edited-with-success-description":"La categoria del Cliente fue editado con éxito",
 
+  "message.need-all-the-field":"Necesitas llenar todos los campos obligatorios",
   "message.need-the-name-of-the-type-event":"Necesitas agregar el nombre de la categoria del cliente",
   "message.this-name-exist-in-your-company":"Ya existe una categoria de clientes con este nombre en tu compañía",
   "message.not-exist-this-type-customer-in-your-company":"No se encontró esta categoria de clientes en tu empresa",
   "message.need-the-id-of-the-type-customer":"El ID de la categoria del cliente es requerido",
 
-  "message.this-type-customer-not-exist":"Esta categoria de clientes no existe en la base de datos."
+  "message.this-type-customer-not-exist":"Esta categoria de clientes no existe en la base de datos.",
+
+
+  "message.do-you-like-delete-this-type-customer":"Eliminar categoria",
+  "message.description-delete-type-customer":"¿Quisieras eliminar esta categoria de los clientes?",
+
+
+  "option-create-a-new-source":"Crear un nuevo canal de adquisición",
+  "title-pop-create-a-new-source":"Canal de adquisición",
+  "title-pop-edit-source":"Editar Canal de adquisición",
+
+  "table-name-source":"Canal de Adquisición",
+  "table-description-source":"Descripción",
+
+  "label-name-source":"Escribe el nombre de un Canal de Adquisición",
+  "placeholder-name-source":"Facebook, Whatsapp, Google, etc...",
+  "message-name-source": "Indica de dónde provienen tus clientes, por ejemplo un anuncio, referencia o plataforma online.",
+
+
+  "message.no-can-add-this-source": "No se pudo agregar este canal de adquisición",
+  "message.the-source-can-added-with-success-title": "Canal de Adquisición agregado",
+  "message.the-source-can-added-with-success-description": "El canal de adquisición fue agregado con éxito en tu base de datos.",
+
+  "message.no-can-edit-this-source": "No se pudo editar el canal de adquisición",
+  "message.the-source-can-edited-with-success-title": "Canal de Adquisición editado",
+  "message.the-source-can-edited-with-success-description": "El canal de adquisición fue actualizado con éxito",
+
+  "message.need-the-name-of-the-source": "Necesitas agregar el nombre del canal de adquisición",
+  "message.this-name-exist-in-your-company": "Ya existe un canal de adquisición con este nombre en tu compañía",
+  "message.not-exist-this-source-in-your-company": "No se encontró este canal de adquisición en tu empresa",
+  "message.need-the-id-of-the-source": "El ID del canal de adquisición es requerido",
+
+  "message.this-source-not-exist": "Este canal de adquisición no existe en la base de datos.",
+  "message.do-you-like-delete-this-source": "Eliminar Canal de Adquisición",
+  "message.description-delete-source": "Si eliminas este canal, ya no estará disponible como opción para asignar a futuros clientes."
   }

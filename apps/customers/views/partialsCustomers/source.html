@@ -1,0 +1,99 @@
+<div class="section">
+    <div class="row">
+        <div class="col-8">
+            <input type="text" id="serach-source">
+        </div>
+        <div class="col-2">
+            <button class="btn btn-add" onclick="open_pop_create_type_customer()">+</button>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th t="table-name-source" style="width: 30%;">Name</th>
+                <th t="table-description-source" style="width: 50%;">Description</th>
+                <th style="width: 10%;"></th>
+                <th style="width: 10%;"></th>
+            </tr>
+        </thead>
+        <tbody id="container-table-source">
+        </tbody>
+    </table>
+</div>
+
+<message-pop title="title-pop-create-a-new-source" name="pop-create-source">
+    <div class="section">
+        <plus-title label="label-type-customer" placeholder="placeholder-name-source" required  message="message-name-source" id="title-source-add"></plus-title>
+    </div>
+    <div class="section">
+        <label t="description-type-customer"></label>
+        <textarea id="ddescription-source-add"></textarea>
+    </div>
+    <br>
+    <button t="btn.save" class="btn btn-add btn-success" onclick="create_a_new_source()">Search</button>
+</message-pop>
+
+
+
+<message-pop title="title-pop-create-a-new-source" name="title-pop-edit-source">
+    <div class="section">
+        <plus-title label="label-type-customer" placeholder="placeholder-name-source" required  message="message-name-source" id="title-source-edit"></plus-title>
+    </div>
+    <div class="section">
+        <label t="description-type-customer"></label>
+        <textarea id="ddescription-source-edit"></textarea>
+    </div>
+    <br>
+    <button t="btn.update" class="btn btn-edit btn-success" onclick="edit_type_customer()">Edit</button>
+</message-pop>
+
+<script>
+(() => {
+    //here is for update the table of source 
+    const divHtml=`
+        <th>{ name }</th>
+        <th>{ description } </th>
+        <th><button onclick='edit_source( { id } )'></button><th>
+        <th><button onclick='delete_source( { id } )'></button><th>
+    `
+    window.update_container_with_seeker('serach-source', 'container-table-source', divHtml, '/customers/get_customers_with_seeker', 'GET');
+
+    function clear_the_form_source(type){
+        document.getElementById(`title-source-${type}`).value='';
+        document.getElementById(`description-source-${type}`).value='';
+    }
+
+    function get_the_information_of_the_form(type){
+        const name=document.getElementById(`title-source-${type}`).value;
+        const description=document.getElementById(`description-source-${type}`).value;
+
+        return {
+            name,
+            description
+        }
+    }
+
+    function open_pop_create_type_customer(){
+        clear_the_form_for_create_source();
+        window.show_pop('pop-create-type-customer')
+    }
+
+    async function create_a_new_source(){
+        //get the information of the form and see if the user added the name of the source
+        const form=get_the_information_of_the_form('add');
+        if (form.name && form.name.trim() !== '') {
+            //when get the information of the form we will send this information to the server for save this information
+            const server=await send_message_to_the_server('/customers/add_source/',form) 
+            if(server.success){
+                close_my_pop('pop-create-source')
+                show_alert('success', 'message.the-source-can-added-with-success-title', 'message.the-source-can-added-with-success-description')
+            }else{
+                //if nor can save this type customer we will to show a message of error
+                show_alert('error', 'message.no-can-add-this-source', server.message, server.error)
+            }
+        } else {
+            show_alert('alert', 'message.need-all-the-field', 'message.need-the-name-of-the-source')
+        }
+    }
+})();
+</script>

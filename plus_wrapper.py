@@ -1,5 +1,7 @@
 import os
 import importlib.util
+from typing import Tuple
+
 class Plus:
     functions_path = os.path.abspath(
         os.path.join(os.path.dirname(__file__), '../../functions')
@@ -47,3 +49,32 @@ class Plus:
         #type=1 August 27, 2025 at 11:00 AM or type=2 27/06/2025 11:00AM
         module = Plus._load_module('converDate')
         return module.format_date_to_text(date, type, language)
+    
+
+
+    
+
+    @staticmethod
+    def this_user_have_this_permission(user, permission: str, user_admin: str, password_admin: str) -> Tuple[bool, str]:
+        """
+        Check if the user has a specific permission.
+
+        Parameters:
+        - user: Django User object
+        - permission (str): Name of the permission to check
+        - user_admin (str): a user admin that can do this permission 
+        - password_admin (str): the password of a admin that can do this permission
+        Returns:
+        - Tuple[bool, str]: 
+            - True and empty string if user has permission
+            - False and error message if user does not have permission
+        """
+        if user.is_superuser:
+            # Superuser always has all permissions
+            return True, ""
+        
+        # Assume user has a many-to-many field called 'permissions' or a method to check permissions
+        if hasattr(user, 'has_perm') and user.has_perm(permission):
+            return True, ""
+        
+        return False, "You do not have permission to perform this action"

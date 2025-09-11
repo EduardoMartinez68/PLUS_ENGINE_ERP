@@ -83,16 +83,19 @@
     async function create_type_customer(){
         //here we will to get all the information of the form create type customer
         const form=get_information_of_the_form_type_customer('add');
-
-        //when get the information of the form we will send this information to the server for save this information
-        const server=await send_message_to_the_server('/customers/add_type_customer/',form) 
-        if(server.success){
-            clear_form_type_customer('add') //here clear the form 
-            close_my_pop('pop-create-type-customer')
-            show_alert('success', 'message.the-type-customer-can-added-with-success-title', 'message.the-type-customer-can-added-with-success-description')
-        }else{
-            //if nor can save this type customer we will to show a message of error
-            show_alert('error', 'message.no-can-add-this-type-of-customer', server.message, server.error)
+        if (form.title && form.title.trim() !== '') { //here we will see if exist a data in the title field 
+            //when get the information of the form we will send this information to the server for save this information
+            const server=await send_message_to_the_server('/customers/add_type_customer/',form) 
+            if(server.success){
+                clear_form_type_customer('add') //here clear the form 
+                close_my_pop('pop-create-type-customer')
+                show_alert('success', 'message.the-type-customer-can-added-with-success-title', 'message.the-type-customer-can-added-with-success-description')
+            }else{
+                //if nor can save this type customer we will to show a message of error
+                show_alert('error', 'message.no-can-add-this-type-of-customer', server.message, server.error)
+            }
+        } else {
+            show_alert('alert', 'message.need-all-the-field', 'message.need-the-name-of-the-type-event')
         }
     }
 
@@ -101,15 +104,23 @@
         const form=get_information_of_the_form_type_customer('edit');
         form.id=document.getElementById('id-type-customer').value; //save the id of the type customer that the user would like edit 
 
-        //when get the information of the form we will send this information to the server for save this information
-        const server=await send_message_to_the_server('/customers/edit_type_customer/',form) 
-        if(server.success){
-            clear_form_type_customer('edit') //here clear the form 
-            close_my_pop('pop-edit-type-customer')
-            show_alert('success', 'message.the-type-customer-can-edited-with-success-title', 'message.the-type-customer-can-edited-with-success-description')
-        }else{
-            //if nor can save this type customer we will to show a message of error
-            show_alert('error', 'message.no-can-edit-this-type-of-customer', server.message, server.error)
+        if (form.title && form.title.trim() !== '') {
+            if(form.id){
+                //when get the information of the form we will send this information to the server for save this information
+                const server=await send_message_to_the_server('/customers/edit_type_customer/',form) 
+                if(server.success){
+                    clear_form_type_customer('edit') //here clear the form 
+                    close_my_pop('pop-edit-type-customer')
+                    show_alert('success', 'message.the-type-customer-can-edited-with-success-title', 'message.the-type-customer-can-edited-with-success-description')
+                }else{
+                    //if nor can save this type customer we will to show a message of error
+                    show_alert('error', 'message.no-can-edit-this-type-of-customer', server.message, server.error)
+                }
+            }else{
+                show_alert('alert', 'message.need-all-the-field', 'message.need-the-id-of-the-source')
+            }
+        } else {
+            show_alert('alert', 'message.need-all-the-field', 'message.need-the-name-of-the-type-event')
         }
     }
 

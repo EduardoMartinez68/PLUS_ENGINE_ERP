@@ -8,6 +8,7 @@ def create_app(app_name):
     os.makedirs(os.path.join(base_path, 'config'), exist_ok=True)
     os.makedirs(os.path.join(base_path, 'links'), exist_ok=True)
     os.makedirs(os.path.join(base_path, 'locale'), exist_ok=True)
+    os.makedirs(os.path.join(base_path, 'services'), exist_ok=True)
 
 
     os.makedirs(os.path.join(base_path, 'static', 'css'), exist_ok=True)

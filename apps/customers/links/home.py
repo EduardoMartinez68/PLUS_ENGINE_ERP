@@ -69,9 +69,6 @@ def add_customer(request):
 
     return render(request, 'formCustomer.html')
 
-
-
-
 @csrf_exempt
 def customers_search(request):
     if request.method == 'GET':
@@ -169,182 +166,151 @@ def get_information_of_the_customer(request):
     
 
 #-------------------------type user-------------------------
+from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service
+
 @csrf_exempt
 def search_type_customer(request):
+    # Ensure request method is GET
     if request.method != "GET":
         return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
-    
-    """
-    Search customer types by query or return first 20 if query is empty.
-    Only search in the company of the logged-in user.
-    """
-    user = request.user
 
+    # Extract query param
     query = request.GET.get("query", "").strip()
 
-    # We filter by the user's company
-    types = CustomerType.objects.filter(company_id=request.user.id_company.id)
-
-    if query:
-        # We search for matches in the name (case-insensitive)
-        types = types.filter(name__icontains=query)
-
-    # we limit to 20 results
-    types = types[:20]
-
-    # We prepared the response in JSON format.
-    data = [
-        {
-            "id": t.id,
-            "text": t.name,
-            "description": t.description,
-            "color": t.color
-        }
-        for t in types
-    ]
-
-    return JsonResponse({"success": True, "answer": data})
+    # Call business logic
+    result, status = search_type_customer(request.user, query)
+    return JsonResponse(result, status=status)
 
 def search_type_customer_for_id(request):
+    # Ensure the request method is GET
     if request.method != "GET":
         return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
-    
+
+    # Extract ID from query params
     customer_type_id = request.GET.get("id", "").strip()
 
-    if not customer_type_id.isdigit():
-        return JsonResponse({"success": False, "message": "Invalid ID"}, status=400)
-
-    # filter for id and for the company of the user
-    try:
-        customer_type = CustomerType.objects.filter(
-            company_id=request.user.id_company.id,
-            id=int(customer_type_id)
-        ).first()  # return None if not exist
-    except Exception as e:
-        return JsonResponse({"success": False, "message": str(e)}, status=500)
-    
-    #if the type customer not exist return a message of error to the frontend
-    if not customer_type:
-        return JsonResponse({"success": False, "message": "message.this-type-customer-not-exist"}, status=404)
-
-    data = {
-        "id": customer_type.id,
-        "name": customer_type.name,
-        "description": customer_type.description,
-        "color": customer_type.color
-    }
-
-    return JsonResponse({"success": True, "answer": data})
+    # Call business logic
+    result, status = search_type_customer_for_id_service(request.user, customer_type_id)
+    return JsonResponse(result, status=status)
 
 def add_type_customer(request):
+    # Ensure the request method is POST
     if request.method != "POST":
         return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
-    
+
+    # Parse request body as JSON
     try:
         data = json.loads(request.body.decode("utf-8"))
-
-        #get the information that send the frontend
-        title = data.get("title", "").strip()
-        description = data.get("description", "").strip()
-        color = data.get("color", "#3498db").strip()
-
-        #we will see if exist the title of the type customer
-        if not title:
-            return JsonResponse({"success": False, "message": "message.need-the-name-of-the-type-event", 'error':"Need the name of the type customer"}, status=200)
-
-        #here we will see if exist this type customer in the company
-        if CustomerType.objects.filter(company=request.user.id_company, name=title).exists():
-            return JsonResponse({"success": False, "message": "message.this-name-exist-in-your-company", 'error':"This type customer already exist in the database"}, status=200)
-
-        # Create the new customer type
-        customer_type = CustomerType.objects.create(
-            company=request.user.id_company,
-            name=title,
-            description=description,
-            color=color,
-        )
-
-        answer={
-            "id": customer_type.id,
-            "name": customer_type.name,
-            "color": customer_type.color,
-            "description": customer_type.description
-        }
-
-        return JsonResponse({
-            "success": True,
-            "message": "Customer added with success",
-            "answer": answer
-        })
-
     except Exception as e:
-        return JsonResponse({"success": False, "message": "Error in the server", "error": str(e)}, status=500)
-    
+        return JsonResponse({"success": False, "message": "Invalid JSON", "error": str(e)}, status=400)
+
+    # Call business logic from service
+    result, status = add_type_customer_service(request.user, data)
+    return JsonResponse(result, status=status)
+
 def edit_type_customer(request):
     if request.method != "POST":
         return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
 
     try:
         data = json.loads(request.body.decode("utf-8"))
-
-        customer_type_id = data.get("id")
-        title = data.get("title", "").strip()
-        description = data.get("description", "").strip()
-        color = data.get("color", "#3498db").strip()
-
-        if not customer_type_id:
-            return JsonResponse({"success": False, "message": "message.need-the-id-of-the-type-customer"}, status=400)
-
-        if not title:
-            return JsonResponse({"success": False, "message": "message.need-the-name-of-the-type-event"}, status=400)
-
-        # Obtener el customer type dentro de la compañía del usuario
-        try:
-            customer_type = CustomerType.objects.get(
-                id=customer_type_id,
-                company=request.user.id_company  # <-- objeto Company
-            )
-        except CustomerType.DoesNotExist:
-            return JsonResponse({"success": False, "message": "message.not-exist-this-type-customer-in-your-company"}, status=404)
-
-        # Validar duplicados (otro CustomerType con el mismo nombre en la compañía)
-        if CustomerType.objects.filter(
-            company=request.user.id_company,  # <-- objeto Company
-            name=title
-        ).exclude(id=customer_type_id).exists():
-            return JsonResponse({"success": False, "message": "message.this-name-exist-in-your-company"}, status=400)
-
-        # Actualizar los valores
-        customer_type.name = title
-        customer_type.description = description
-        customer_type.color = color
-        customer_type.save()
-
-        answer = {
-            "id": customer_type.id,
-            "name": customer_type.name,
-            "color": customer_type.color,
-            "description": customer_type.description
-        }
-
-        return JsonResponse({
-            "success": True,
-            "message": "Tipo de cliente actualizado con éxito",
-            "answer": answer
-        })
-
     except Exception as e:
-        return JsonResponse({"success": False, "message": "Error in the server", "error": str(e)}, status=500)
+        return JsonResponse({"success": False, "message": "Invalid JSON", "error": str(e)}, status=400)
 
-@csrf_exempt
-def search_customers_select(request):
-    if request.method == 'POST':
-        result_list = []
+    result, status = edit_type_customer_service(request.user, data)
+    return JsonResponse(result, status=status)
 
-        result_list.append({
-            'id': 1,
-            'text': 'pablo'
-        })
-        return JsonResponse({'success': True,'results': result_list})
-    else:
-        return JsonResponse({'message': 'Método no permitido'}, status=405)
+def delete_type_customer(request):
+    #here we will see if the method that the user send is POST
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+
+    #now we will get the id of the type customer that the user would like delete 
+    customer_type_id = request.POST.get("id", "").strip()
+    result, status = delete_type_customer_service(request.user, customer_type_id)
+    return JsonResponse(result, status=status)
+
+
+#-------------------------type user-------------------------
+from ..services.customer_source import get_customer_source, add_a_new_source, update_source, delete_a_source_with_his_id, get_source_by_id
+
+def search_source(request):
+    if request.method != "GET":
+        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+
+    query = request.GET.get("query", "").strip()
+    result = get_customer_source(request.user, query)
+
+    return JsonResponse({"success": True, "data": result}, status=200)
+
+def search_source_by_id(request):
+    if request.method != "GET":
+        return JsonResponse({"success": False, "message":"Invalid request method","error": "Invalid request method"}, status=405)
+
+    source_id = request.GET.get("id")
+    if not source_id:
+        return JsonResponse({"success": False, "message": "message.need-the-id-of-the-source", "error": "The source ID is required"}, status=400)
+
+    try:
+        source_id = int(source_id)
+    except ValueError:
+        return JsonResponse({"success": False, "message": "The source ID must be an integer", "error": "The source ID must be an integer"}, status=400)
+
+    result = get_source_by_id(request.user, source_id)
+    return JsonResponse(result, status=200 if result["success"] else 404)
+
+def add_source(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Not can do this", "error":"Invalid request method"}, status=405)
+
+    # get all the field that the frontend send
+    try:
+        data = json.loads(request.body)
+        name = data.get("name", "").strip()
+        description = data.get("description", "").strip()
+    except Exception:
+        return JsonResponse({"success": False, "error": "Invalid JSON"}, status=400)
+
+    if not name:
+        return JsonResponse({"success": False, "message": "message.need-the-name-of-the-source", 'error':"the name is obligatory"}, status=400)
+
+    result = add_a_new_source(request.user, name, description)
+    return JsonResponse(result, status=200 if result["success"] else 400)
+
+def edit_source(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+
+    try:
+        #get the data that send the frontend
+        data = json.loads(request.body)
+        source_id = data.get("id")
+        name = data.get("name", "").strip()
+        description = data.get("description", "").strip()
+    except Exception:
+        return JsonResponse({"success": False, "message": "Invalid JSON"}, status=400)
+
+    if not source_id:
+        return JsonResponse({"success": False, "message": "message.need-the-id-of-the-source", "error": "The source ID is required"}, status=400)
+    if not name:
+        return JsonResponse({"success": False, "message": "message.need-the-name-of-the-source", "error":"The name not exist"}, status=400)
+
+    result = update_source(request.user, source_id, name, description)
+    return JsonResponse(result, status=200 if result["success"] else 400)
+
+
+def delete_source(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        source_id = data.get("id")
+    except Exception:
+        return JsonResponse({"success": False, "message": "Invalid JSON"}, status=400)
+
+    if not source_id:
+        return JsonResponse({"success": False, "message": "message.need-the-name-of-the-source", "error": "The source ID is required"}, status=400)
+
+    result = delete_a_source_with_his_id(request.user, source_id)
+    return JsonResponse(result, status=200 if result["success"] else 400)
