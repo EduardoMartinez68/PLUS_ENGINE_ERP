@@ -121,7 +121,7 @@
   "label-reference":"Referencia",
 
   "advanced-information":"Información avanzada",
-  "select-type-customer":"Tipo de cliente",
+  "select-type-customer":"Categoria de cliente",
   "select-source-customer":"Medio por el que llegó el cliente",
   "points-user-label":"Puntos del usuario",
   "points-user-placeholder":"Ej. 80",

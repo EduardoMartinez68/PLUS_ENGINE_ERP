@@ -3833,15 +3833,14 @@ class ShowMore extends HTMLElement {
     const textTranslate=window.translate_text(t)
     const onclickFn = this.getAttribute("onclick") || null;
     const wrapper = document.createElement("div");
+    const description=this.getAttribute('description') || '';
+    const translateDescription=window.translate_text(description);
     wrapper.classList.add("show-more-wrapper");
+
 
     wrapper.innerHTML = `
       <style>
         :host {
-          display: block;
-          margin: 8px 0;
-        }
-        show-more {
           display: block;
           margin: 8px 0;
         }
@@ -3865,13 +3864,27 @@ class ShowMore extends HTMLElement {
           flex: 1;
           text-align: left;
         }
+        .right-container {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .description {
+          font-weight: normal;
+          font-size: 13px;
+          color: #555;
+        }
         .icon {
           font-weight: bold;
         }
       </style>
       <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+      
       <span class="label" t='${t}'>${textTranslate}</span>
-      <span class="icon"><i class="fi fi-rr-angle-right"></i></span>
+      <div class="right-container">
+        ${description ? `<span class="description" t='${description}'>${translateDescription}</span>` : ''}
+        <span class="icon"><i class="fi fi-rr-angle-right"></i></span>
+      </div>
     `;
 
     this.shadowRoot.appendChild(wrapper);
