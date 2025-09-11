@@ -152,6 +152,7 @@
   "label-type-customer":"Nombre de la categoria del Cliente",
   "color-type-customer":"Color",
   "description-type-customer":"Descripción",
+  "search-type-customer":"Buscar categoria de usuarios...",
 
   "message.no-can-add-this-type-of-customer":"No se pudo agregar este tipo de categoria",
   "message.the-type-customer-can-added-with-success-title":"Categoria agregada",

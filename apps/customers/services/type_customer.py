@@ -153,6 +153,7 @@ def search_type_customer_service(user, query, quantity=20):
         data = [
             {
                 "id": t.id,
+                "name": t.name,
                 "text": t.name,
                 "description": t.description,
                 "color": t.color

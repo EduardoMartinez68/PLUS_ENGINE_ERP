@@ -1,3 +1,29 @@
+<message-pop title="title-type-customer" name="pop-type-customer">
+    <div class="container-pop">
+        <div class="row">
+            <div class="col-8">
+                 <input t-placeholder="search-type-customer" id="serach-type-customer"></input>
+            </div>
+            <div class="col-2">
+                <button class="btn btn-add" onclick="open_pop_create_type_customer()">+</button>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 10%;"></th>
+                    <th t="table-name-source" style="width: 20%;">Name</th>
+                    <th t="table-description-source" style="width: 50%;">Description</th>
+                    <th style="width: 5%;"></th>
+                    <th style="width: 5%;"></th>
+                </tr>
+            </thead>
+            <tbody id="container-table-type-customer">
+            </tbody>
+        </table>
+    </div>
+</message-pop>
+
 <message-pop title="title-create-type-customer" name="pop-create-type-customer">
     <div class="section">
         <plus-title label="label-type-customer" placeholder="title-type-customer" required id="title-customer-add"></plus-title>
@@ -13,7 +39,7 @@
     <button t="btn.save" class="btn btn-add btn-success" onclick="create_type_customer()">Search</button>
 </message-pop>
 
-<message-pop title="title-edit-type-customer" name="pop-edit-type-customer">
+<message-pop title="title-edit-type-customer" name="pop-edit-type-customer" >
     <input type="hidden" id="id-type-customer">
     <div class="section">
         <plus-title label="label-type-customer" placeholder="title-type-customer" required id="title-customer-edit"></plus-title>
@@ -31,8 +57,22 @@
 
 
 <script>
+(() => {
+    const divHtml=`
+        <td style="background-color: { color } ;"> </td>
+        <td> { name } </td>
+        <td> { description } </td>
+        <td> <button onclick='open_pop_edit_type_customer( { id } )' class='btn btn-transparent'><i class="fi fi-sr-user-pen"></i></button></td>
+        <td><button onclick='delete_button_type_customer( { id } )' class='btn btn-transparent'><i class="fi fi-sr-trash"></i></button></td>
+    `
+
     function open_pop_create_type_customer(){
         window.show_pop('pop-create-type-customer')
+    }
+
+    function open_pop_table_type_customer(){
+        window.show_pop('pop-type-customer')
+        window.update_container_with_seeker('serach-type-customer', 'container-table-type-customer', divHtml, '/customers/search_type_customer', 'GET');
     }
 
     async function open_pop_edit_type_customer(id){
@@ -87,6 +127,7 @@
             //when get the information of the form we will send this information to the server for save this information
             const server=await send_message_to_the_server('/customers/add_type_customer/',form) 
             if(server.success){
+                await update_table_type_customer();
                 clear_form_type_customer('add') //here clear the form 
                 close_my_pop('pop-create-type-customer')
                 show_alert('success', 'message.the-type-customer-can-added-with-success-title', 'message.the-type-customer-can-added-with-success-description')
@@ -109,6 +150,7 @@
                 //when get the information of the form we will send this information to the server for save this information
                 const server=await send_message_to_the_server('/customers/edit_type_customer/',form) 
                 if(server.success){
+                    await update_table_type_customer();
                     clear_form_type_customer('edit') //here clear the form 
                     close_my_pop('pop-edit-type-customer')
                     show_alert('success', 'message.the-type-customer-can-edited-with-success-title', 'message.the-type-customer-can-edited-with-success-description')
@@ -124,10 +166,25 @@
         }
     }
 
+    async function update_table_type_customer(){
+        window.update_container_from_the_server('serach-type-customer', 'container-table-type-customer', divHtml, '/customers/search_type_customer', 'GET')
+    }
+
+
+    async function delete_button_type_customer(id){
+        if(await window.plus_delete_with_help_button( id , '/customers/delete_type_customer/' ,'message.do-you-like-delete-this-type-customer', 'message.description-delete-type-customer')){
+            await update_table_type_customer();
+        }
+    }
+
 
     //do this function global for that can use in other scripts
+    window.open_pop_table_type_customer=open_pop_table_type_customer;
     window.create_type_customer=create_type_customer;
     window.edit_type_customer=edit_type_customer;
     window.open_pop_create_type_customer=open_pop_create_type_customer;
     window.open_pop_edit_type_customer=open_pop_edit_type_customer;
+    window.delete_button_type_customer=delete_button_type_customer;
+
+})();
 </script>

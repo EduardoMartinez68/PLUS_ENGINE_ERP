@@ -138,7 +138,7 @@
     }
 
     async function delete_button_source(id){
-        if(await window.plus_delete_with_help_button( id , '/customers/delete_source/' ,' message.do-you-like-delete-this-source', 'message.description-delete-source')){
+        if(await window.plus_delete_with_help_button( id , '/customers/delete_source/' ,'message.do-you-like-delete-this-source', 'message.description-delete-source')){
             await update_table_source();
         }
     }
