@@ -1,25 +1,27 @@
-<div class="section">
-    <div class="row">
-        <div class="col-8">
-            <input type="text" id="serach-source">
+<message-pop title="title-source" name="pop-data-source">
+    <div class="container-pop">
+        <div class="row">
+            <div class="col-8">
+                <input type="text" id="serach-source">
+            </div>
+            <div class="col-2">
+                <button class="btn btn-add" onclick="open_pop_create_source()">+</button>
+            </div>
         </div>
-        <div class="col-2">
-            <button class="btn btn-add" onclick="open_pop_create_source()">+</button>
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th t="table-name-source" style="width: 30%;">Name</th>
+                    <th t="table-description-source" style="width: 50%;">Description</th>
+                    <th style="width: 10%;"></th>
+                    <th style="width: 10%;"></th>
+                </tr>
+            </thead>
+            <tbody id="container-table-source">
+            </tbody>
+        </table>
     </div>
-    <table>
-        <thead>
-            <tr>
-                <th t="table-name-source" style="width: 30%;">Name</th>
-                <th t="table-description-source" style="width: 50%;">Description</th>
-                <th style="width: 10%;"></th>
-                <th style="width: 10%;"></th>
-            </tr>
-        </thead>
-        <tbody id="container-table-source">
-        </tbody>
-    </table>
-</div>
+</message-pop>
 
 <message-pop title="title-pop-create-a-new-source" name="pop-create-source">
     <div class="section">
@@ -139,8 +141,9 @@
     }
 
     async function delete_button_source(id){
-        await window.plus_delete_with_help_button( id , '/customers/delete_source/' ,' message.do-you-like-delete-this-source', 'message.description-delete-source')
-        await update_table_source();
+        if(await window.plus_delete_with_help_button( id , '/customers/delete_source/' ,' message.do-you-like-delete-this-source', 'message.description-delete-source')){
+            await update_table_source();
+        }
     }
 
     window.open_pop_create_source=open_pop_create_source;
@@ -148,5 +151,6 @@
     window.create_a_new_source=create_a_new_source;
     window.edit_source=edit_source;
     window.delete_button_source=delete_button_source;
+    window.update_table_source=update_table_source;
 })();
 </script>

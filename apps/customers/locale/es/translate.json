@@ -185,7 +185,7 @@
   "placeholder-name-source":"Facebook, Whatsapp, Google, etc...",
   "message-name-source": "Indica de dónde provienen tus clientes, por ejemplo un anuncio, referencia o plataforma online.",
 
-
+  "title-source":"Canales de Adquisición",
   "message.no-can-add-this-source": "No se pudo agregar este canal de adquisición",
   "message.the-source-can-added-with-success-title": "Canal de Adquisición agregado",
   "message.the-source-can-added-with-success-description": "El canal de adquisición fue agregado con éxito en tu base de datos.",

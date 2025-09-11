@@ -191,7 +191,7 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
     }
 }
 
-function update_container_from_the_server(inputsId, fieldId, divHtml, searchUrl, method = 'POST', delay = 500, type = 'tr') {
+function update_container_from_the_server(inputsId, fieldId, divHtml, searchUrl, method = 'POST', delay = 100, type = 'tr') {
     /*
       inputsId: array de todos los inputs de filtro (usamos solo el primero como búsqueda)
       fieldId: id del contenedor que se actualizará
@@ -223,6 +223,8 @@ function update_container_from_the_server(inputsId, fieldId, divHtml, searchUrl,
 
     // Función principal para enviar datos al servidor
     const send_information_to_the_server = async () => {
+        show_loader_in_the_div_container_of_plus(fieldId);
+
         const query = input.value.trim();
         const allFilters = [query];
 
@@ -237,8 +239,8 @@ function update_container_from_the_server(inputsId, fieldId, divHtml, searchUrl,
             ? await window.send_message_to_the_server(searchUrl, { allFilters }, false, method)
             : await window.send_message_to_the_server(searchUrl, { query }, false, method);
 
-        // Ocultar loader
-        hidden_loader_in_the_div_container_of_plus(fieldId);
+        //when the server send a answer, we will to hidden the load in the div 
+        hidden_loader_in_the_div_container_of_plus(fieldId)
 
         if (data.success) {
             field.innerHTML = '';
