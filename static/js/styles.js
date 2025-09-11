@@ -4317,10 +4317,16 @@ function show_alert(type, title, description, readmoreText = '') {
 
   pop.style.zIndex = currentPopZIndex+2;
   pop.style.zIndex = currentPopZIndex+3;
-  pop.classList.remove('sub-menu-app-pop-info', 'sub-menu-app-pop-alert', 'sub-menu-app-pop-question', 'sub-menu-app-pop-normal');
+  pop.classList.remove('sub-menu-app-pop-info', 'sub-menu-app-pop-alert', 'sub-menu-app-pop-question', 'sub-menu-app-pop-normal', 'sub-menu-app-pop-error');
   pop.classList.add('sub-menu-app-pop-' + type);
 
   //icon for type
+  /*
+    success==green
+    info, question==blue
+    alert==yellow
+    error==red
+  */
   if (type === 'info') iconEl.innerHTML = '<i class="fi fi-sr-info"></i>';
   else if (type === 'success') iconEl.innerHTML = '<i class="fi fi-sr-check-circle"></i>';
   else if (type === 'alert') iconEl.innerHTML = '<i class="fi fi-sr-exclamation"></i>';

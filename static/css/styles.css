@@ -1137,11 +1137,15 @@ hr {
 }
 
 .sub-menu-app-pop-alert .sub-menu-app-pop-icon {
+  color: #ea9533;
+}
+
+.sub-menu-app-pop-error .sub-menu-app-pop-icon {
   color: #EF4444;
 }
 
 .sub-menu-app-pop-question .sub-menu-app-pop-icon {
-  color: #ea9533;
+  color: #3B82F6;
 }
 
 .sub-menu-app-pop-title {
