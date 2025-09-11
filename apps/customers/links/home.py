@@ -178,7 +178,7 @@ def search_type_customer(request):
     query = request.GET.get("query", "").strip()
 
     # Call business logic
-    answer, status = search_type_customer(request.user, query)
+    answer, status = search_type_customer_service(request.user, query)
     return JsonResponse(answer, status=status)
 
 def search_type_customer_for_id(request):
@@ -221,18 +221,25 @@ def edit_type_customer(request):
     return JsonResponse(result, status=status)
 
 def delete_type_customer(request):
-    #here we will see if the method that the user send is POST
     if request.method != "POST":
         return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
 
-    #now we will get the id of the type customer that the user would like delete 
-    customer_type_id = request.POST.get("id", "").strip()
-    result, status = delete_type_customer_service(request.user, customer_type_id)
-    return JsonResponse(result, status=status)
-
+    data = json.loads(request.body)
+    customer_type_id = data.get("id")
+    answer, status = delete_type_customer_service(request.user, customer_type_id)
+    return JsonResponse(answer, status=status)
 
 #-------------------------type user-------------------------
 from ..services.customer_source import get_customer_source, add_a_new_source, update_source, delete_a_source_with_his_id, get_source_by_id, get_customer_source_select
+
+def get_customers_with_seeker(request):
+    if request.method != "GET":
+        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+
+    query = request.GET.get("query", "").strip()
+    result = get_customer_source(request.user, query)
+
+    return JsonResponse({"success": True, "answer": result}, status=200)
 
 def search_source(request):
     if request.method != "GET":

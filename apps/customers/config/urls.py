@@ -11,6 +11,7 @@ urlpatterns = [
     path('add_type_customer/', views.add_type_customer, name='add_type_customer'),
     path('edit_type_customer/', views.edit_type_customer, name='edit_type_customer'),
     path('delete_type_customer/', views.delete_type_customer, name='delete_type_customer'),
+    path('get_customers_with_seeker/', views.get_customers_with_seeker, name='get_customers_with_seeker'),
     path('search_source/', views.search_source, name='search_source'),
     path('search_source_by_id/', views.search_source_by_id, name='search_source_by_id'),
     path('add_source/', views.add_source, name='add_source'),

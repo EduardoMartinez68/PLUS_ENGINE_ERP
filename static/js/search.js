@@ -191,7 +191,80 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
     }
 }
 
+function update_container_from_the_server(inputsId, fieldId, divHtml, searchUrl, method = 'POST', delay = 500, type = 'tr') {
+    /*
+      inputsId: array de todos los inputs de filtro (usamos solo el primero como búsqueda)
+      fieldId: id del contenedor que se actualizará
+      divHtml: template HTML para cada item
+      searchUrl: URL del backend para buscar la información
+      method: método HTTP (POST o GET)
+      delay: tiempo de espera antes de enviar la solicitud
+      type: tipo de elemento a crear ('tr', 'div', etc.)
+    */
 
+    const inputId = Array.isArray(inputsId) ? inputsId[0] : inputsId;
+    const input = document.getElementById(inputId);
+    const field = document.getElementById(fieldId);
+
+    if (!input || !field) return;
+
+    // Comprueba si el contenedor es visible
+    const isVisible = field.offsetParent !== null;
+    if (!isVisible) return;
+
+    // Función para obtener valores de inputs (igual que en tu otra función)
+    function get_the_value_of_the_input(input) {
+        if (input.tagName.toLowerCase() === 'plus-select') return window.get_value_plus_select(input);
+        if (input.tagName.toLowerCase() === 'plus-switch') return window.get_status_plus_switch(input);
+        if (input.tagName.toLowerCase() === 'plus-date') return input.value.trim();
+        if (input.tagName.toLowerCase() === 'plus-time') return input.value.trim();
+        return input.value.trim();
+    }
+
+    // Función principal para enviar datos al servidor
+    const send_information_to_the_server = async () => {
+        const query = input.value.trim();
+        const allFilters = [query];
+
+        if (Array.isArray(inputsId) && inputsId.length > 1) {
+            for (let i = 1; i < inputsId.length; i++) {
+                const additionalInput = document.getElementById(inputsId[i]);
+                if (additionalInput) allFilters.push(get_the_value_of_the_input(additionalInput));
+            }
+        }
+
+        const data = Array.isArray(inputsId) && inputsId.length > 1 
+            ? await window.send_message_to_the_server(searchUrl, { allFilters }, false, method)
+            : await window.send_message_to_the_server(searchUrl, { query }, false, method);
+
+        // Ocultar loader
+        hidden_loader_in_the_div_container_of_plus(fieldId);
+
+        if (data.success) {
+            field.innerHTML = '';
+            if (data.answer && data.answer.length > 0) {
+                data.answer.forEach(item => {
+                    const el = document.createElement(type);
+                    el.innerHTML = renderTemplate(divHtml, item);
+                    field.appendChild(el);
+                });
+            } else {
+                const answer = t("info.no_results");
+                field.innerHTML = `<tr><td colspan="6" style="text-align:center;">${answer}</td></tr>`;
+            }
+        } else {
+            console.error('Error en la búsqueda:', data.message);
+            const answer = t("info.no_results");
+            show_alert('alert', 'Error', answer, data.message);
+            field.innerHTML = `<tr><td colspan="6" style="text-align:center;">${answer}</td></tr>`;
+        }
+
+        translate_dynamic_content(field);
+    };
+
+    // Solo ejecuta la actualización después del delay
+    setTimeout(send_information_to_the_server, delay);
+}
 
 //this function is for remplace the template with the data
 // it will replace the {key} in the template with the value from data[key]

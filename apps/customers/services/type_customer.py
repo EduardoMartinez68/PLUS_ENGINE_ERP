@@ -112,33 +112,25 @@ def edit_type_customer_service(user, data):
         "answer": answer
     }, 200
 
-def delete_type_customer_service(request):
-    if request.method != "POST":
-        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
-    
-    customer_type_id = request.POST.get("id", "").strip()
-
-    if not customer_type_id.isdigit():
-        return JsonResponse({"success": False, "message": "Invalid ID"}, status=400)
-
+def delete_type_customer_service(user, customer_type_id):
     try:
         customer_type = CustomerType.objects.filter(
-            company_id=request.user.id_company.id,
+            company_id=user.id_company.id,
             id=int(customer_type_id)
         ).first()
     except Exception as e:
-        return JsonResponse({"success": False, "message": str(e)}, status=500)
+        return {"success": False, "message": "", "error":str(e)}, 500
 
     if not customer_type:
-        return JsonResponse({"success": False, "message": "message.this-type-customer-not-exist"}, status=404)
+        return {"success": False, "message": "message.this-type-customer-not-exist", "error":""}, 404
 
     try:
         customer_type.delete()
-        return JsonResponse({"success": True, "message": "message.type-customer-deleted"})
+        return {"success": True, "message": "", "error":""}, 200
     except Exception as e:
-        return JsonResponse({"success": False, "message": str(e)}, status=500)
+        return {"success": False, "message": "message.this-type-customer-not-exist", "error":str(e)}, 500
 
-def search_type_customer_service(user, query):
+def search_type_customer_service(user, query, quantity=20):
     """
     Business logic to search customer types by query.
     If query is empty, returns the first 20 results.
@@ -155,7 +147,7 @@ def search_type_customer_service(user, query):
             types = types.filter(name__icontains=query)
 
         # Limit to 20 results
-        types = types[:20]
+        types = types[:quantity]
 
         # Build response data
         data = [

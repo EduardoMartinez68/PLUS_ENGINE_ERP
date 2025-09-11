@@ -326,7 +326,7 @@ def search_type_customer(request):
         query = request.GET.get("query", "").strip()
     
         # Call business logic
-        answer, status = search_type_customer(request.user, query)
+        answer, status = search_type_customer_service(request.user, query)
         return JsonResponse(answer, status=status)
     else:
         # Ensure request method is GET
@@ -337,7 +337,7 @@ def search_type_customer(request):
         query = request.GET.get("query", "").strip()
     
         # Call business logic
-        answer, status = search_type_customer(request.user, query)
+        answer, status = search_type_customer_service(request.user, query)
         return JsonResponse(answer, status=status)
 
 @login_required(login_url='login')
@@ -424,23 +424,40 @@ def edit_type_customer(request):
 @login_required(login_url='login')
 def delete_type_customer(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        #here we will see if the method that the user send is POST
         if request.method != "POST":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
     
-        #now we will get the id of the type customer that the user would like delete 
-        customer_type_id = request.POST.get("id", "").strip()
-        result, status = delete_type_customer_service(request.user, customer_type_id)
-        return JsonResponse(result, status=status)
+        data = json.loads(request.body)
+        customer_type_id = data.get("id")
+        answer, status = delete_type_customer_service(request.user, customer_type_id)
+        return JsonResponse(answer, status=status)
     else:
-        #here we will see if the method that the user send is POST
         if request.method != "POST":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
     
-        #now we will get the id of the type customer that the user would like delete 
-        customer_type_id = request.POST.get("id", "").strip()
-        result, status = delete_type_customer_service(request.user, customer_type_id)
-        return JsonResponse(result, status=status)
+        data = json.loads(request.body)
+        customer_type_id = data.get("id")
+        answer, status = delete_type_customer_service(request.user, customer_type_id)
+        return JsonResponse(answer, status=status)
+
+@login_required(login_url='login')
+def get_customers_with_seeker(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != "GET":
+            return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+    
+        query = request.GET.get("query", "").strip()
+        result = get_customer_source(request.user, query)
+    
+        return JsonResponse({"success": True, "answer": result}, status=200)
+    else:
+        if request.method != "GET":
+            return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+    
+        query = request.GET.get("query", "").strip()
+        result = get_customer_source(request.user, query)
+    
+        return JsonResponse({"success": True, "answer": result}, status=200)
 
 @login_required(login_url='login')
 def search_source(request):
