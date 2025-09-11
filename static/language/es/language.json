@@ -138,6 +138,9 @@
     "tag-message-show": "Agrega un tag y presiona Enter, coma o espacio",
 
     "input.write-a-message": "Escribe un mensaje...",
-    "ia-not-can-listen":"Reconocimiento de voz no disponible"
+    "ia-not-can-listen":"Reconocimiento de voz no disponible",
+
+    "permission.not-have-this-permission":"No dispone de los permisos necesarios para realizar esta acción.",
+    "permission.invalid-credentials":"Las credenciales que intentó utilizar no tienen los permisos necesarios para realizar esta acción."
 }
 

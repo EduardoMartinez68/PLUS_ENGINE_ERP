@@ -1,6 +1,6 @@
 from ..models import CustomerSource
 from django.http import JsonResponse
-
+from ..plus_wrapper import Plus
 
 def get_customer_source(user, query: str = "", quantity: int = 20) -> list[Dict[str, Any]]:
     """
@@ -19,7 +19,7 @@ def get_customer_source(user, query: str = "", quantity: int = 20) -> list[Dict[
         - description (str): The description, empty if none exists. 
         - company (str | None): The company name, None if no company is associated.
     """
-
+    
     # Filter by user's company and query, limit the number of results
     if query:
         sources = CustomerSource.objects.filter(
@@ -43,7 +43,7 @@ def get_customer_source(user, query: str = "", quantity: int = 20) -> list[Dict[
     ]
     return result
 
-def get_source_by_id(user, source_id: int) -> Dict[str, Any]:
+def get_source_by_id(user, source_id: int, user_admin:str=None, password_admin:str=None) -> Dict[str, Any]:
     """
     Retrieve a CustomerSource by ID, only if it belongs to the user's company.
 
@@ -57,6 +57,13 @@ def get_source_by_id(user, source_id: int) -> Dict[str, Any]:
         - message (str): Descriptive message.
         - data (Dict[str, Any] | None): Information about the CustomerSource if found.
     """
+
+    #first we will see if the user have the permission that need 
+    has_perm, message = Plus.this_user_have_this_permission(user, 'see_customer_source', user_admin, password_admin)
+
+    if not has_perm:
+        return {"success": False, "message": message}
+    
     try:
         source = CustomerSource.objects.get(id=source_id, company_id=user.id_company)
         result = {
@@ -84,7 +91,7 @@ def get_source_by_id(user, source_id: int) -> Dict[str, Any]:
 
     return result
 
-def add_a_new_source(user, name: str, description: str = "") -> Dict[str, Any]:
+def add_a_new_source(user, name: str, description: str = "", user_admin:str=None, password_admin:str=None) -> Dict[str, Any]:
     """
     Create a new CustomerSource associated with the user's company.
 
@@ -99,6 +106,13 @@ def add_a_new_source(user, name: str, description: str = "") -> Dict[str, Any]:
         - message (str): A descriptive message.
         - data (Dict[str, Any] | None): Information about the created CustomerSource if success is True.
     """
+
+    #first we will see if the user have the permission that need 
+    has_perm, message = Plus.this_user_have_this_permission(user, 'add_customer_source', user_admin, password_admin)
+
+    if not has_perm:
+        return {"success": False, "message": message}
+    
     try:
         source = CustomerSource.objects.create(
             name=name.strip(),
@@ -123,7 +137,7 @@ def add_a_new_source(user, name: str, description: str = "") -> Dict[str, Any]:
         }
     return result
 
-def update_source(user, source_id: int, name: str, description: str = "") -> Dict[str, Any]:
+def update_source(user, source_id: int, name: str, description: str = "", user_admin:str=None, password_admin:str=None) -> Dict[str, Any]:
     """
     Edit a CustomerSource only if it belongs to the same company as the user. 
 
@@ -139,6 +153,13 @@ def update_source(user, source_id: int, name: str, description: str = "") -> Dic
     - message (str): Descriptive message. 
     - data (Dict[str, Any] | None): Information about the edited CustomerSource if success is True.
     """
+
+    #first we will see if the user have the permission that need 
+    has_perm, message = Plus.this_user_have_this_permission(user, 'update_customer_source', user_admin, password_admin)
+
+    if not has_perm:
+        return {"success": False, "message": message}
+    
     try:
         # Retrieve only the sources belonging to the user's company
         source = CustomerSource.objects.get(id=source_id, company_id=user.id_company)
@@ -173,7 +194,7 @@ def update_source(user, source_id: int, name: str, description: str = "") -> Dic
 
     return result
 
-def delete_a_source_with_his_id(user, source_id: int) -> Dict[str, Any]:
+def delete_a_source_with_his_id(user, source_id: int, user_admin:str=None, password_admin:str=None) -> Dict[str, Any]:
     """
     Deletes a CustomerSource only if it belongs to the user's company.
 
@@ -186,13 +207,20 @@ def delete_a_source_with_his_id(user, source_id: int) -> Dict[str, Any]:
         - success (bool): True if deleted successfully, False otherwise.
         - message (str): Descriptive message.
     """
+
+    #first we will see if the user have the permission that need 
+    has_perm, message = Plus.this_user_have_this_permission(user, 'delete_customer_source', user_admin, password_admin)
+
+    if not has_perm:
+        return {"success": False, "message": message}
+    
     try:
         # Get the source only if it belongs to the user's company
         source = CustomerSource.objects.get(id=source_id, company_id=user.id_company)
         source.delete()
         result = {
             "success": True,
-            "message": "CustomerSource deleted successfully"
+            "error": "CustomerSource deleted successfully"
         }
     except CustomerSource.DoesNotExist:
         result = {
