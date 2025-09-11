@@ -1238,6 +1238,18 @@ class PlusSelect extends HTMLElement {
           // contenedor horizontal (texto + acciones)
           const contentContainer = document.createElement('div');
           contentContainer.classList.add('plus-select-content');
+          
+          //square of color
+          let redSquare;
+          if(data.color){
+            redSquare = document.createElement('span');
+            redSquare.style.display = 'inline-block';
+            redSquare.style.width = '12px';
+            redSquare.style.height = '12px';
+            redSquare.style.backgroundColor = data.color;
+            redSquare.style.marginRight = '8px'; // space between square and text
+            redSquare.style.verticalAlign = 'middle';
+          }
 
           // Texto
           const textSpan = document.createElement('span');
@@ -1279,6 +1291,9 @@ class PlusSelect extends HTMLElement {
           }
 
           // Ensamblar la opción
+          if(data.color){
+            contentContainer.appendChild(redSquare);
+          }
           contentContainer.appendChild(textSpan);
           if (edit_data || delete_data) {
             contentContainer.appendChild(actionsContainer);
