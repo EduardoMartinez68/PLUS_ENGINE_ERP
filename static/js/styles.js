@@ -1193,13 +1193,23 @@ class PlusSelect extends HTMLElement {
     });
 
     async function filterOptions(term) {
-      //first we will see if this select have a link for get the answer of the server
+      //Standardize the search term: lowercase letters and no accents
+      const normalizedTerm = term
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""); // remove accents and diacritical marks
+
       if (thisSlectSendDataToTheServer) {
         await update_option_for_the_server(term);
       } else {
-        //if the proggramer not would like get information from the server, filter the option that the proggramer added in the frontend 
         options.forEach(opt => {
-          opt.style.display = opt.textContent.toLowerCase().includes(term) ? 'block' : 'none';
+          // Standardize the text of the option
+          const normalizedText = opt.textContent
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+
+          opt.style.display = normalizedText.includes(normalizedTerm) ? 'block' : 'none';
         });
       }
     }
@@ -1404,9 +1414,9 @@ class PlusCountry extends HTMLElement {
     //List of countries with ISO code and name
     const countries = [
       // América del Norte
-      { code: "US", name: "United States" },
+      { code: "US", name: "United States"},
       { code: "CA", name: "Canada" },
-      { code: "MX", name: "Mexico" },
+      { code: "MX", name: "México" },
 
       // América Latina
       { code: "AR", name: "Argentina" },
@@ -1432,6 +1442,14 @@ class PlusCountry extends HTMLElement {
       { code: "PL", name: "Poland" }
     ];
 
+    const flagEmojiMap = {
+      US: '🇺🇸', CA: '🇨🇦', MX: '🇲🇽',
+      AR: '🇦🇷', BO: '🇧🇴', CL: '🇨🇱', CO: '🇨🇴', CR: '🇨🇷', CU: '🇨🇺',
+      DO: '🇩🇴', EC: '🇪🇨', SV: '🇸🇻', GT: '🇬🇹', HN: '🇭🇳', NI: '🇳🇮',
+      PA: '🇵🇦', PY: '🇵🇾', PE: '🇵🇪', UY: '🇺🇾', VE: '🇻🇪',
+      ES: '🇪🇸', PL: '🇵🇱'
+    };
+
     // create the plus-select
     const plusSelect = document.createElement('plus-select');
 
@@ -1447,7 +1465,8 @@ class PlusCountry extends HTMLElement {
       const option = document.createElement('option');
       option.value = country.code;
       option.setAttribute('t', country.name);
-      option.textContent = country.name;
+
+      option.textContent = `${flagEmojiMap[country.code] || ''} ${country.name}`;
       plusSelect.appendChild(option);
     });
 
