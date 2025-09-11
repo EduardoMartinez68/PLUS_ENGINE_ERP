@@ -2,7 +2,7 @@
     <div class="container-pop">
         <div class="row">
             <div class="col-8">
-                <input type="text" id="serach-source">
+                 <input t-placeholder="search-source" id="serach-source"></input>
             </div>
             <div class="col-2">
                 <button class="btn btn-add" onclick="open_pop_create_source()">+</button>
@@ -11,10 +11,10 @@
         <table>
             <thead>
                 <tr>
-                    <th t="table-name-source" style="width: 30%;">Name</th>
-                    <th t="table-description-source" style="width: 50%;">Description</th>
-                    <th style="width: 10%;"></th>
-                    <th style="width: 10%;"></th>
+                    <th t="table-name-source" style="width: 20%;">Name</th>
+                    <th t="table-description-source" style="width: 60%;">Description</th>
+                    <th style="width: 5%;"></th>
+                    <th style="width: 5%;"></th>
                 </tr>
             </thead>
             <tbody id="container-table-source">
@@ -35,8 +35,6 @@
     <button t="btn.save" class="btn btn-add btn-success" onclick="create_a_new_source()">Search</button>
 </message-pop>
 
-
-
 <message-pop title="title-pop-create-a-new-source" name="pop-edit-source">
     <input type="hidden" id="id-source">
     <div class="section">
@@ -54,12 +52,11 @@
 (() => {
     //here is for update the table of source 
     const divHtml=`
-        <th>{ name }</th>
-        <th>{ description } </th>
-        <th><button onclick='open_pop_edit_source( { id } )'><i class="fi fi-sr-user-pen"></i></button><th>
-        <th><button onclick='delete_button_source( { id } )'><i class="fi fi-sr-trash"></i></button><th>
+        <td> { name } </td>
+        <td> { description } </td>
+        <td> <button onclick='open_pop_edit_source( { id } )' class='btn btn-transparent'><i class="fi fi-sr-user-pen"></i></button></td>
+        <td><button onclick='delete_button_source( { id } )' class='btn btn-transparent'><i class="fi fi-sr-trash"></i></button></td>
     `
-    window.update_container_with_seeker('serach-source', 'container-table-source', divHtml, '/customers/get_customers_with_seeker', 'GET');
 
     function clear_the_form_source(type){
         document.getElementById(`title-source-${type}`).value='';
@@ -146,11 +143,17 @@
         }
     }
 
+    async function open_pop_table_source(){
+        window.show_pop('pop-data-source')
+        window.update_container_with_seeker('serach-source', 'container-table-source', divHtml, '/customers/get_customers_with_seeker', 'GET');
+    }
+
     window.open_pop_create_source=open_pop_create_source;
     window.open_pop_edit_source=open_pop_edit_source;
     window.create_a_new_source=create_a_new_source;
     window.edit_source=edit_source;
     window.delete_button_source=delete_button_source;
     window.update_table_source=update_table_source;
+    window.open_pop_table_source=open_pop_table_source;
 })();
 </script>

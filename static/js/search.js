@@ -156,16 +156,21 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
         translate_dynamic_content(field); //translate the dynamic content of the field
     }
 
+
     //Listener for the main input (search)
-    input.addEventListener('input', triggerSearch);
+    if (!input.dataset.initialized) {
+        input.addEventListener('input', triggerSearch);
+        input.dataset.initialized = "true"; //here we activate the input for that not have other event
+    }
 
     //Add listeners to other filters (selects, dates, etc.)
     if (Array.isArray(inputsId) && inputsId.length > 1) {
         for (let i = 1; i < inputsId.length; i++) {
             const filterInput = document.getElementById(inputsId[i]);
-            if (filterInput) {
+            if (filterInput && !filterInput.dataset.initialized) {
                 // Detect changes in selects and dates
                 filterInput.addEventListener('change', send_information_to_the_server);
+                filterInput.dataset.initialized = "true"; //here we activate the input for that not have other event
             }
         }
     }
