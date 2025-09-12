@@ -73,6 +73,7 @@ class Customer(models.Model):
 
     #--information of the customer in the company
     company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="customer_customer", null=True, blank=True)
+    branch = models.ForeignKey("core.Branch", on_delete=models.CASCADE, related_name="customer_customer", null=True, blank=True)
     points = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     credit = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     tags = models.JSONField(blank=True, null=True)

@@ -23,12 +23,12 @@ def get_customer_source(user, query: str = "", quantity: int = 20) -> list:
     # Filter by user's company and query, limit the number of results
     if query:
         sources = CustomerSource.objects.filter(
-            company_id=user.id_company.id,
+            company_id=user.company.id,
             name__icontains=query
         )[:quantity]
     else:
         sources = CustomerSource.objects.filter(
-            company_id=user.id_company.id
+            company_id=user.company.id
         )[:quantity]
 
     # Format results
@@ -63,12 +63,12 @@ def get_customer_source_select(user, query: str = "", quantity: int = 20) -> lis
     # Filter by user's company and query, limit the number of results
     if query:
         sources = CustomerSource.objects.filter(
-            company_id=user.id_company.id,
+            company_id=user.company.id,
             name__icontains=query
         )[:quantity]
     else:
         sources = CustomerSource.objects.filter(
-            company_id=user.id_company.id
+            company_id=user.company.id
         )[:quantity]
 
     # Format results
@@ -103,7 +103,7 @@ def get_source_by_id(user, source_id: int, user_admin:str=None, password_admin:s
         return {"success": False, "message": message}
     
     try:
-        source = CustomerSource.objects.get(id=source_id, company_id=user.id_company.id)
+        source = CustomerSource.objects.get(id=source_id, company_id=user.company.id)
         result = {
             "success": True,
             "message": "CustomerSource retrieved successfully",
@@ -154,7 +154,7 @@ def add_a_new_source(user, name: str, description: str = "", user_admin:str=None
         source = CustomerSource.objects.create(
             name=name.strip(),
             description=description.strip() if description else "",
-            company_id=user.id_company.id 
+            company_id=user.company.id 
         )
         result = {
             "success": True,
@@ -198,7 +198,7 @@ def update_source(user, source_id: int, name: str, description: str = "", user_a
     
     try:
         # Retrieve only the sources belonging to the user's company
-        source = CustomerSource.objects.get(id=source_id, company_id=user.id_company)
+        source = CustomerSource.objects.get(id=source_id, company_id=user.company)
 
         # update all the field of the database
         source.name = name.strip()
@@ -251,7 +251,7 @@ def delete_a_source_with_his_id(user, source_id: int, user_admin:str=None, passw
     
     try:
         # Get the source only if it belongs to the user's company
-        source = CustomerSource.objects.get(id=source_id, company_id=user.id_company)
+        source = CustomerSource.objects.get(id=source_id, company_id=user.company)
         source.delete()
         result = {
             "success": True,

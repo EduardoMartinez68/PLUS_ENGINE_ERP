@@ -131,8 +131,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=600)
 
     # Relationship with company and branch
-    id_company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='id_company')
-    id_branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, db_column='id_branch')
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='id_company')
+    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, db_column='id_branch')
 
     # Additional employee information
     address = models.TextField(blank=True, null=True)

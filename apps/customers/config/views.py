@@ -2,6 +2,7 @@
 from django.contrib.auth.decorators import login_required
 from ..services.customer_source import get_customer_source, add_a_new_source, update_source, delete_a_source_with_his_id, get_source_by_id, get_customer_source_select
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service
+from ..services.customers import save_customer
 from ..models import Customer, CustomerType
 from django.http import HttpResponse
 import json

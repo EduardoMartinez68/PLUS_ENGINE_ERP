@@ -24,7 +24,7 @@ def add_type_customer_service(user, data):
         }, 400
 
     # Check if another CustomerType with the same name already exists in the company
-    if CustomerType.objects.filter(company=user.id_company, name=title).exists():
+    if CustomerType.objects.filter(company=user.company, name=title).exists():
         return {
             "success": False,
             "message": "message.this-name-exist-in-your-company",
@@ -34,7 +34,7 @@ def add_type_customer_service(user, data):
     try:
         # Create the new CustomerType
         customer_type = CustomerType.objects.create(
-            company=user.id_company,
+            company=user.company,
             name=title,
             description=description,
             color=color,
@@ -81,14 +81,14 @@ def edit_type_customer_service(user, data):
     try:
         customer_type = CustomerType.objects.get(
             id=customer_type_id,
-            company=user.id_company
+            company=user.company
         )
     except CustomerType.DoesNotExist:
         return {"success": False, "message": "message.not-exist-this-type-customer-in-your-company"}, 404
 
     # Validar duplicados
     if CustomerType.objects.filter(
-        company=user.id_company,
+        company=user.company,
         name=title
     ).exclude(id=customer_type_id).exists():
         return {"success": False, "message": "message.this-name-exist-in-your-company"}, 400
@@ -115,7 +115,7 @@ def edit_type_customer_service(user, data):
 def delete_type_customer_service(user, customer_type_id):
     try:
         customer_type = CustomerType.objects.filter(
-            company_id=user.id_company.id,
+            company_id=user.company.id,
             id=int(customer_type_id)
         ).first()
     except Exception as e:
@@ -140,7 +140,7 @@ def search_type_customer_service(user, query, quantity=20):
 
     try:
         # Filter by company
-        types = CustomerType.objects.filter(company_id=user.id_company.id)
+        types = CustomerType.objects.filter(company_id=user.company.id)
 
         # Apply query filter if provided
         if query:
@@ -179,7 +179,7 @@ def search_type_customer_for_id_service(user, customer_type_id):
     try:
         # Query the CustomerType by company and id
         customer_type = CustomerType.objects.filter(
-            company_id=user.id_company.id,
+            company_id=user.company.id,
             id=int(customer_type_id)
         ).first()
     except Exception as e:

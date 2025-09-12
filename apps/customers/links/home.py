@@ -17,6 +17,9 @@ def customers_home(request):
     customers=[]
     return render(request, 'customers.html', {'customers': customers})
 
+#-------------------------customer-------------------------
+from ..services.customers import save_customer
+
 @csrf_exempt
 def add_customer(request):
     if request.method == 'POST':
@@ -129,7 +132,7 @@ def get_information_of_the_customer(request):
 
     
 
-#-------------------------type user-------------------------
+#-------------------------type customer-------------------------
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service
 
 @csrf_exempt
