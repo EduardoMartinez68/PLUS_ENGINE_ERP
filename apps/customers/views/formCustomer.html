@@ -1,52 +1,27 @@
 {% load static %}
-<br>
-
 {% include 'partialsCustomers/navbarHome.html' %}
 
 
-<div class="container-section">
-    <plus-tabs>
-        <plus-tab text="info-general">
-            {% include 'partialsCustomers/customerForm1.html' %}
-        </plus-tab>
-        <plus-tab text="info-empresa">
-            {% include 'partialsCustomers/customerForm2.html' %}
-        </plus-tab>
-        <button class="btn btn-add btn-success" style="width: 100%;" t="save">Save</button>
-    </plus-tabs>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!---this is for get the pop of the type customer and the source--->
-{% include 'partialsCustomers/typeCustomer.html' %}
-{% include 'partialsCustomers/source.html' %}
+{% include 'partialsCustomers/fromCustomer.html' %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <script>
-(() => {
-    create_form_for_send_the_server('form-create-a-new-customer', `/customers/add_customer`);
-
-    const id_customer = document.getElementById('id-customer').value;
-    create_form_for_send_the_server('form-edit-customer', `/customers/edit_customer/${id_customer}/`);
-})();
+    (() => {
+        
+    })();
 </script>

@@ -123,7 +123,7 @@
             if(server.success){
                 await update_table_source();
                 close_my_pop('pop-edit-source')
-                show_alert('success', 'message.the-source-can-added-with-success-title', 'message.the-source-can-added-with-success-description')
+                show_alert('success', 'message.the-source-can-edited-with-success-title', 'message.the-source-can-edited-with-success-description')
             }else{
                 //if nor can save this type customer we will to show a message of error
                 show_alert('error', 'message.no-can-add-this-source', server.message, server.error)

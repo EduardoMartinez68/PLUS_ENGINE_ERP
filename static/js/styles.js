@@ -806,9 +806,6 @@ async function show_message_question(title, message) {
   return result;
 }
 
-
-
-
 class AppMenu extends HTMLElement {
   constructor() {
     super();
@@ -2265,21 +2262,41 @@ class PlusActions extends HTMLElement {
     button.addEventListener('click', () => this.toggle());
   }
 
-  toggle(forceState = null) {
-    const menu = this.querySelector('.plus-action-menu');
-    const icon = this.querySelector('.plus-action-button i');
+toggle(forceState = null) {
+  const menu = this.querySelector('.plus-action-menu');
+  const icon = this.querySelector('.plus-action-button i');
 
-    this.open = forceState !== null ? forceState : !this.open;
+  this.open = forceState !== null ? forceState : !this.open;
 
-    if (this.open) {
-      menu.style.display = 'block';
-      icon.style.transform = 'rotate(90deg)';
+  if (this.open) {
+    menu.style.display = 'block';
+
+    // --- NUEVO: lógica para ajustar posición ---
+    const rect = this.getBoundingClientRect(); // posición del contenedor
+    const menuWidth = menu.offsetWidth;
+    const spaceRight = window.innerWidth - rect.right;
+    const spaceLeft = rect.left;
+
+    if (spaceRight >= menuWidth) {
+      // cabe a la derecha
+      menu.style.left = '100%';
+      menu.style.right = 'auto';
+    } else if (spaceLeft >= menuWidth) {
+      // cabe a la izquierda
+      menu.style.left = 'auto';
+      menu.style.right = '100%';
     } else {
-      menu.style.display = 'none';
-      icon.style.transform = 'rotate(0deg)';
+      // fallback: siempre a la derecha
+      menu.style.left = '100%';
+      menu.style.right = 'auto';
     }
-  }
 
+    icon.style.transform = 'rotate(90deg)';
+  } else {
+    menu.style.display = 'none';
+    icon.style.transform = 'rotate(0deg)';
+  }
+}
   handlePin(pinIcon, action, onclick, icon, textTranslate) {
     const quickActions = this.querySelector('.plus-quick-actions');
     const alreadyPinned = pinIcon.classList.contains('fi-ss-thumbtack');
@@ -3898,7 +3915,7 @@ class ShowMore extends HTMLElement {
   }
 }
 
-class ImageUploader extends HTMLElement {
+class ImageUploader2 extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -4086,6 +4103,196 @@ class ImageUploader extends HTMLElement {
     this.shadowRoot.append(style, container, input);
   }
 }
+
+class ImageUploader extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
+
+  connectedCallback() {
+    const maxImages = parseInt(this.getAttribute("max")) || 1;
+    const styleType = this.getAttribute("style") || "square";
+    const fieldName = this.getAttribute("name") || "image";
+
+    const style = document.createElement("style");
+    style.textContent = `
+      .uploader-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 20px;
+        border-radius: 16px;
+        justify-content: flex-start;
+        align-items: center;
+      }
+
+      .image-box {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transition: all 0.3s ease-in-out;
+      }
+
+      .image-box:hover {
+        border-color: ${colors.color_company};
+        cursor:pointer;
+      }
+
+      .image-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .image-square img {
+        border-radius: 0;
+      }
+      .image-rounded img {
+        border-radius: 12px;
+      }
+      .image-circle img {
+        border-radius: 50%;
+      }
+
+      .delete-btn {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out, background 0.2s;
+      }
+
+      .image-box:hover .delete-btn {
+        opacity: 1;
+      }
+
+      .delete-btn:hover {
+        background: rgba(220,38,38,0.9); /* rojo elegante */
+      }
+
+      .add-button {
+        width: 120px;
+        height: 120px;
+        border: 2px dashed #9ca3af;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: #f3f4f6;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .add-button:hover {
+        background: #e5e7eb;
+        border-color: ${colors.color_company};
+      }
+
+      .add-button:hover span {
+        color: ${colors.color_company};
+      }
+
+      .add-button span {
+        font-size: 2rem;
+        color: #6b7280;
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+    `;
+
+
+    const container = document.createElement("div");
+    container.classList.add("uploader-container");
+
+    const inputFile = document.createElement("input");
+    inputFile.type = "file";
+    inputFile.accept = "image/*";
+    inputFile.multiple = maxImages > 1;
+
+    const addButton = document.createElement("div");
+    addButton.classList.add("add-button");
+    addButton.innerHTML = `<span>＋</span>`;
+
+    const images = [];
+
+    const addImage = (file) => {
+      if (images.length >= maxImages) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const box = document.createElement("div");
+        box.classList.add("image-box", `image-${styleType}`);
+
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.alt = "Uploaded Image";
+
+        // 🔹 Crear input oculto en el DOM principal (fuera del shadowRoot)
+        const form = this.closest('form');
+        let hiddenInput = null;
+        if (form) {
+          hiddenInput = document.createElement("input");
+          hiddenInput.type = "hidden";
+          hiddenInput.name = maxImages === 1 ? fieldName : `${fieldName}_${images.length + 1}`;
+          hiddenInput.value = e.target.result; // base64 de la imagen
+          form.appendChild(hiddenInput);
+        }
+
+        const deleteBtn = document.createElement("div");
+        deleteBtn.classList.add("delete-btn");
+        deleteBtn.textContent = "✖";
+
+        deleteBtn.addEventListener("click", () => {
+          container.removeChild(box);
+          images.splice(images.indexOf(file), 1);
+          if (hiddenInput) hiddenInput.remove();
+          if (images.length < maxImages) addButton.style.display = "flex";
+        });
+
+        box.appendChild(img);
+        box.appendChild(deleteBtn);
+        container.insertBefore(box, addButton);
+        images.push(file);
+
+        if (images.length >= maxImages) addButton.style.display = "none";
+      };
+
+      reader.readAsDataURL(file);
+    };
+
+    addButton.addEventListener("click", () => inputFile.click());
+    inputFile.addEventListener("change", (e) => {
+      if (e.target.files.length > 0) addImage(e.target.files[0]);
+    });
+
+    container.appendChild(addButton);
+    this.shadowRoot.append(style, container, inputFile);
+  }
+}
+
+
 
 class PlusPriority extends HTMLElement {
   constructor() {
@@ -4434,7 +4641,6 @@ function show_alert(type, title, description, readmoreText = '') {
   overlay.style.display = 'flex';
 }
 
-
 function show_notification(type = 'info', message = '', duration = 4000) {
   const container = document.getElementById('notifications-container');
 
@@ -4461,7 +4667,6 @@ function show_notification(type = 'info', message = '', duration = 4000) {
     setTimeout(() => alert.remove(), 400);
   }, duration);
 }
-
 
 function hideAlert() {
   const overlay = document.getElementById('alert-overlay');

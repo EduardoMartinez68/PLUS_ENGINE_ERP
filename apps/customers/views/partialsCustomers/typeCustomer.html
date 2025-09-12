@@ -153,7 +153,7 @@
                     await update_table_type_customer();
                     clear_form_type_customer('edit') //here clear the form 
                     close_my_pop('pop-edit-type-customer')
-                    show_alert('success', 'message.the-type-customer-can-edited-with-success-title', 'message.the-type-customer-can-edited-with-success-description')
+                    show_alert('success', 'type-customer-edit', 'message.type-customer-edit-description')
                 }else{
                     //if nor can save this type customer we will to show a message of error
                     show_alert('error', 'message.no-can-edit-this-type-of-customer', server.message, server.error)

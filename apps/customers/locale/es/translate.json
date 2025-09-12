@@ -93,6 +93,7 @@
   "form1-placeholder-phone": "Teléfono",
   "form1-label-cellphone": "Celular",
   "form1-placeholder-cellphone": "Celular",
+  "form1-number_of_price_of_sale":"Numero de precio",
 
   "label-address":"Dirección",
   "placeholder-address": "Ej. Av. Reforma 123, Col. Centro",
@@ -152,15 +153,15 @@
   "label-type-customer":"Nombre de la categoria del Cliente",
   "color-type-customer":"Color",
   "description-type-customer":"Descripción",
-  "search-type-customer":"Buscar categoria de usuarios...",
+  "search-type-customer":"Buscar categoria de clientes...",
 
   "message.no-can-add-this-type-of-customer":"No se pudo agregar este tipo de categoria",
   "message.the-type-customer-can-added-with-success-title":"Categoria agregada",
   "message.the-type-customer-can-added-with-success-description":"La categoria del Cliente fue agregado con éxito",
 
   "message.no-can-edit-this-type-of-customer":"No se pudo editar la categoria del cliente",
-  "message.the-type-customer-can-edited-with-success-title":"Categoria de Cliente editado",
-  "message.the-type-customer-can-edited-with-success-description":"La categoria del Cliente fue editado con éxito",
+  "message.type-customer-edit":"Categoria de Cliente editado",
+  "message.type-customer-edit-description":"La categoria del Cliente fue editado con éxito",
 
   "message.need-all-the-field":"Necesitas llenar todos los campos obligatorios",
   "message.need-the-name-of-the-type-event":"Necesitas agregar el nombre de la categoria del cliente",
