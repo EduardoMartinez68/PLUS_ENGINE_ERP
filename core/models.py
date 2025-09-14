@@ -165,7 +165,7 @@ class Company(models.Model):
 
 
 class Branch(models.Model):
-    id_company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='id_company')
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='id_company')
 
     #information of the branch
     logo = models.ImageField(upload_to=logo_path, blank=True, null=True)

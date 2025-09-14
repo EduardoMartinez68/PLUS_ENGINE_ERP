@@ -8,6 +8,13 @@
   <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
 <body>
+  {% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
   <form method="post" novalidate>
     {% csrf_token %}
     <h2>Crear cuenta</h2>

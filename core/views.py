@@ -34,22 +34,22 @@ def register(request):
         if form.is_valid():
             try:
                 user = form.save(commit=False)  # We haven't saved anything to add yet. company/branch
-
+                user.email = form.cleaned_data['email']
                 # 1️⃣ create a company
                 company = Company.objects.create(company_name=f'Company of {user.email}')
 
                 # 2️⃣ create a branch
-                branch = Branch.objects.create(company=company, branch_name=f'Branch of {user.email}')
+                branch = Branch.objects.create(company=company, name_branch=f'Branch of {user.email}')
 
                 # 3️⃣ save the ids in user
                 user.company = company
                 user.branch = branch
 
 
-                messages.success(request, f"{ml.get_message('success')}")
                 user.set_password(form.cleaned_data['password1'])  # hash the password
                 user.save()
 
+                messages.success(request, f"{ml.get_message('success')}")
                 return redirect('/login')  # or wherever you want to redirect after registration
             except Exception as e:
                 messages.error(request, f"{ml.get_message('email_taken')} {str(e)}")
@@ -59,3 +59,25 @@ def register(request):
         form = SignUpForm()
 
     return render(request, 'singup.html', {'form': form})
+
+
+from django.contrib.auth import authenticate, login
+from core.forms import LoginForm
+
+def login_view(request):
+    form = LoginForm()
+
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        
+        # Django llamará automáticamente a EmailHashBackend
+        user = authenticate(request, username=email, password=password)
+        
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, f"{ml.get_message('wrong_email_or_password')}")
+
+    return render(request, 'login.html', {'form': form})

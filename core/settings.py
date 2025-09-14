@@ -108,6 +108,7 @@ Q_CLUSTER = {
 }
 '''
 
+
 # Base de datos PostgreSQL
 if(TYPE_VERSION=='CLOUD'):
     #This allows you to connect to your cloud database, such as PostgreSQL, MySQL, etc.
@@ -167,6 +168,10 @@ STATICFILES_DIRS = [
 AUTH_USER_MODEL = 'core.CustomUser' #this is the model that need the login of the user
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
+
+AUTHENTICATION_BACKENDS = [
+'core.backends.EmailHashBackend'
+]
 
 #----------------------------files upload for the user (for example PDFs, images, etc)-------------------------------------
 #first we will see if the user have the version of desktop or the version cloud 

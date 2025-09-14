@@ -9,7 +9,15 @@
   <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
 
 </head>
+
 <div class="login-container">
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <form method="post">
         <h2 t="login">Login</h2>
         {% csrf_token %}
