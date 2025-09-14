@@ -83,6 +83,8 @@ class Permit(models.Model):
     description = models.TextField(null=True)
     creation_date = models.DateTimeField(auto_now_add=True)
     activated = models.BooleanField(default=True)
+
+    #here exist all the permits in the apps
     view_permits = models.BooleanField(default=True)
     edit_permits = models.BooleanField(default=True)
     delete_permits = models.BooleanField(default=True)

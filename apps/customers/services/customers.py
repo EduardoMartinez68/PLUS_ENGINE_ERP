@@ -75,6 +75,6 @@ def save_customer(user, form, user_admin=None, password_admin=None):
         # save the customer
         customer.save()
 
-        return {"success": True, "customer_id": customer.id}
+        return True
     except Exception as e:
-        return {"success": False, "error": str(e)}
+        return e

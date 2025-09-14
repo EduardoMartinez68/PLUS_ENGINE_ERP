@@ -10,7 +10,7 @@ from ..models import Customer, CustomerType
 
 
 def customers_home(request):
-    id_company = request.user.id_company
+    company = request.user.company
 
     # get the first 20 answers from the branch ordered by ID and that his status is True
     #customers = Customer.objects.filter(id_company=id_company.id, activated=True).order_by('id')[:20]
@@ -25,12 +25,15 @@ def add_customer(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)  # El body lo mandas en JSON con fetch
-            print(data)
-
+            success=save_customer(request.user,data)
+            if success==True:
+                return JsonResponse({'success': True}, status=200)
+            else: 
+                return JsonResponse({'success': True, 'error': f'Error to save the customer: {str(e)}'}, status=300)
         except Exception as e:
             print('--------------------- ERROR al guardar cliente ---------------------')
             print(e)
-            return JsonResponse({'success': False, 'error': f'Error al guardar cliente: {str(e)}'}, status=500)
+            return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)
 
 
 
@@ -38,99 +41,149 @@ def add_customer(request):
 
 @csrf_exempt
 def customers_search(request):
-    if request.method == 'GET':
-        #name, email, phone in the input of search
-        #Tags (input)
-        #type customer (select)
-        #source (select)
-        #Prioridad (select)
-        #activated (select only true or not)
+    if request.method == "GET":
+        try:
+            # --- 1. Obtener filtros desde request.GET ---
+            search = request.GET.get("search", "").strip()  # texto libre
+            customer_type = request.GET.get("customer_type")  # id o None
+            source = request.GET.get("source")  # id o None
+            priority = request.GET.get("priority")  # 0–3 o None
+            activated = request.GET.get("activated")  # "true"/"false" o None
 
-        customers = [
-            {
-                "id": 1,
-                "name": "Luis Miguel",
-                "email": "luis.miguel@example.com",
-                "phone": "+52 444 123 4567",
-                "tag": "VIP",
-                "points": 1200,
-                "credit": 500.0,
-                "priority": "Alta",
-                "avatar": "https://example.com/avatars/luis.jpg",
-                "status": "active"
-            },
-            {
-                "id": 2,
-                "name": "Ana Torres",
-                "email": "ana.torres@example.com",
-                "phone": "+52 444 765 4321",
-                "tag": "Frecuente",
-                "points": 300,
-                "credit": 150.0,
-                "priority": "Media",
-                "avatar": "https://example.com/avatars/ana.jpg",
-                "status": "inactive"
-            }
-        ]
+            # --- 2. Construir el queryset ---
+            qs = Customer.objects.all()
 
-        return JsonResponse(
-            {
-                "success": True,
-                "message": "Consulta exitosa",
-                "answer": customers
-            },
-            status=200
-        )
+            # Filtro texto (name, email, phone, tags JSON como string)
+            if search:
+                qs = qs.filter(
+                    Q(name__icontains=search)
+                    | Q(email__icontains=search)
+                    | Q(phone__icontains=search)
+                    | Q(cellphone__icontains=search)
+                    | Q(tags__icontains=search)  # JSONField permite búsquedas así
+                )
+
+            # Filtro por tipo de cliente
+            if customer_type:
+                qs = qs.filter(customer_type_id=customer_type)
+
+            # Filtro por source
+            if source:
+                qs = qs.filter(source_id=source)
+
+            # Filtro por prioridad
+            if priority is not None and priority != "":
+                qs = qs.filter(priority=priority)
+
+            # Filtro por activado
+            if activated is not None and activated != "":
+                if activated.lower() in ["true", "1", "yes", "on"]:
+                    qs = qs.filter(activated=True)
+                elif activated.lower() in ["false", "0", "no", "off"]:
+                    qs = qs.filter(activated=False)
+
+            # --- 3. Limitar a 20 resultados ---
+            qs = qs.order_by("-creation_date")[:20]
+
+            # --- 4. Formato de respuesta ---
+            customers = []
+            for c in qs:
+                customers.append({
+                    "id": c.id,
+                    "name": c.name,
+                    "email": c.email,
+                    "phone": c.phone or c.cellphone,
+                    "tag": ", ".join(c.tags) if c.tags else "",
+                    "points": float(c.points) if c.points else 0,
+                    "credit": float(c.credit) if c.credit else 0,
+                    "priority": c.priority,
+                    "avatar": c.avatar.url if c.avatar else None,
+                    "status": "active" if c.activated else "inactive",
+                })
+
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": "Consulta exitosa",
+                    "answer": customers,
+                },
+                status=200,
+            )
+
+        except Exception as e:
+            print("⚠️ Error en customers_search:", e)
+            return JsonResponse(
+                {"success": False, "error": str(e)}, status=500
+            )
+
+from django.shortcuts import get_object_or_404
 
 @csrf_exempt
 def get_information_of_the_customer(request):
     if request.method == "GET":
-        id_customer = request.GET.get("id_customer")
+        try:
+            id_customer = request.GET.get("id_customer")
+            if not id_customer:
+                return JsonResponse(
+                    {"success": False, "message": "id_customer es requerido"},
+                    status=400,
+                )
 
-        data = {
-            "id": id_customer,
-            "name": "Juan Pérez",
-            "email": "juan.perez@example.com",
-            "phone": "444-123-4567",
-            "cellphone": "444-987-6543",
-            "country": "MX",
-            "address": "Av. Universidad #123",
-            "city": "San Luis Potosí",
-            "state": "SLP",
-            "postal_code": "78000",
-            "num_ext": "15",
-            "num_int": "2B",
-            "reference": "Frente a la farmacia Guadalajara",
-            "this_customer_is_a_company": False,
-            "company_name": None,
-            "contact_name": None,
-            "website": None,
-            "points": "150.00",
-            "credit": "2000.00",
-            "tags": ["VIP", "Frecuente"],
-            "priority": 2,
-            "customer_type": {
-                "id": 1,
-                "name": "Paciente",
-                "color": "#3498db",
-                "description": "Clientes que reciben atención médica"
-            },
-            "source": {
-                "id": 1,
-                "name": "Facebook Ads",
-                "description": "Campaña publicitaria en Facebook"
-            },
-            "avatar": "/media/customers/default.png",
-            "creation_date": "2025-09-09T12:30:00",
-            "activated": True
-        }
+            # Obtiene el cliente o devuelve 404 si no existe
+            customer = get_object_or_404(Customer, id=id_customer)
 
-        return JsonResponse({"success": True, "message": "Customer found", "answer": data}, status=200)
+            # Construir respuesta con todos los campos
+            data = {
+                "id": customer.id,
+                "name": customer.name,
+                "email": customer.email,
+                "phone": customer.phone,
+                "cellphone": customer.cellphone,
+                "country": customer.country,
+                "address": customer.address,
+                "city": customer.city,
+                "state": customer.state,
+                "postal_code": customer.postal_code,
+                "num_ext": customer.num_ext,
+                "num_int": customer.num_int,
+                "reference": customer.reference,
+                "this_customer_is_a_company": customer.this_customer_is_a_company,
+                "company_name": customer.company_name,
+                "contact_name": customer.contact_name,
+                "website": customer.website,
+                "points": float(customer.points) if customer.points else 0,
+                "credit": float(customer.credit) if customer.credit else 0,
+                "tags": customer.tags if customer.tags else [],
+                "priority": customer.priority,
+                "customer_type": {
+                    "id": customer.customer_type.id if customer.customer_type else None,
+                    "name": customer.customer_type.name if customer.customer_type else None,
+                    "color": customer.customer_type.color if customer.customer_type else None,
+                    "description": customer.customer_type.description if customer.customer_type else None,
+                } if customer.customer_type else None,
+                "source": {
+                    "id": customer.source.id if customer.source else None,
+                    "name": customer.source.name if customer.source else None,
+                    "description": customer.source.description if customer.source else None,
+                } if customer.source else None,
+                "avatar": customer.avatar.url if customer.avatar else None,
+                "creation_date": customer.creation_date.isoformat() if customer.creation_date else None,
+                "activated": customer.activated,
+            }
 
-    return JsonResponse({"success": False, "message": "Invalid request"}, status=400)
+            return JsonResponse(
+                {"success": True, "message": "Customer found", "answer": data},
+                status=200,
+            )
 
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "message": f"Error: {str(e)}"}, status=500
+            )
 
-    
+    return JsonResponse(
+        {"success": False, "message": "Invalid request method"}, status=400
+    ) 
 
 #-------------------------type customer-------------------------
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service

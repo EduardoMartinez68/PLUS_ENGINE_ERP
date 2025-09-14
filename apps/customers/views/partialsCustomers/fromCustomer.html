@@ -1,4 +1,5 @@
-<form id="form_create_customer">
+<form id="form_create_customer" method="post">
+    {% csrf_token %}
     <div class="container-section">
         <plus-tabs>
             <plus-tab text="info-general">
@@ -229,7 +230,13 @@
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault(); // Evita que se recargue la página
-        await send_form_to_the_server('form_create_customer','/customers/add_customer/')
+        const server=await send_form_to_the_server('form_create_customer','/customers/add_customer/');
+        if(server.success){
+            form.reset();
+            show_alert('success', 'customers.message.succes-save-customer', 'customers.message.success-description-save', server.error || '');
+        }else{
+            show_alert('error', 'customers.message.error-save-customer', server.message || 'customers.message.error-description-customer', server.error || 'Error in the server');
+        }
     });
 })();
 </script>

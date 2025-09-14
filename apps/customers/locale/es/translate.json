@@ -205,5 +205,10 @@
 
   "message.this-source-not-exist": "Este canal de adquisición no existe en la base de datos.",
   "message.do-you-like-delete-this-source": "Eliminar Canal de Adquisición",
-  "message.description-delete-source": "Si eliminas este canal, ya no estará disponible como opción para asignar a futuros clientes."
+  "message.description-delete-source": "Si eliminas este canal, ya no estará disponible como opción para asignar a futuros clientes.",
+
+  "customers.message.error-save-customer":"Error al guardar el cliente",
+  "customers.message.error-description-customer":"Sucedio un error en el servidor al momento de intentar guardar al nuevo cliente.",
+  "customers.message.success-save-customer":"Cliente guardado",
+  "customers.message.success-description-save":"El cliente se guardó con éxito en la base de datos."
   }

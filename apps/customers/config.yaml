@@ -4,3 +4,6 @@ icon: "/customers/static/icon.webp"
 path: "/customers"
 dbInit: true
 permissionsFile: 'permissions.json'
+
+
+

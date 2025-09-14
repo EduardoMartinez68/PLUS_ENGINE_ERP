@@ -1,0 +1,13 @@
+{
+    "permissions": [
+    {
+        "model": "producto", "actions": 
+        [
+            "add", 
+            "view", 
+            "change", 
+            "delete"
+        ]
+    }
+]
+}
