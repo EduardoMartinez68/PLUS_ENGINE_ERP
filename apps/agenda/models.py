@@ -11,7 +11,7 @@ class TypeAppoint(models.Model):
 
     class Meta:
         # here we will see the type of database
-        db_table = 'agenda.type_appoint'
+        db_table = 'agenda_type_appoint'
 
     def __str__(self):
         return self.name
@@ -43,7 +43,7 @@ class Appointment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'agenda.appointments'
+        db_table = 'agenda_appointments'
 
     def __str__(self):
         return self.title
@@ -55,7 +55,7 @@ class Settings(models.Model):
     default_type_appoint = models.ForeignKey(TypeAppoint, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
-        db_table = 'agenda.settings'
+        db_table = 'agenda_settings'
 
     def __str__(self):
         return self.email_alert

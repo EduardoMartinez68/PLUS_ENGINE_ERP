@@ -23,7 +23,7 @@ class CustomerSource(models.Model):
     description = models.TextField(blank=True, null=True)
 
     class Meta:
-        db_table = "customer.customer_source"
+        db_table = "customers_customer_source"
         verbose_name = "Customer Source"
         verbose_name_plural = "Customer Sources"
         unique_together = ("company", "name") #this is for that not exist type repeat in the company 
@@ -43,7 +43,7 @@ class CustomerType(models.Model):
     description = models.TextField(blank=True, null=True)
 
     class Meta:
-        db_table = "customer.customer_type"
+        db_table = "customers_customer_type"
         verbose_name = "Customer Type"
         verbose_name_plural = "Customer Types"
         unique_together = ("company", "name") #this is for that not exist type repeat in the company 
@@ -67,6 +67,7 @@ class Customer(models.Model):
     _email = models.BinaryField(db_column="email", blank=True, null=True)
     _phone = models.BinaryField(db_column="phone", blank=True, null=True)
     _cellphone = models.BinaryField(db_column="cellphone", blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True)
     
     #------information of address------
     country = models.CharField(max_length=2, blank=True, null=True)  # ISO code (ej: MX, US)
@@ -208,7 +209,7 @@ class Customer(models.Model):
 
 
     class Meta:
-        db_table = "customer.customer"
+        db_table = "customers_customer"
         indexes = [
             models.Index(fields=["company"], name="idx_customer_company"),
             models.Index(fields=["activated"], name="idx_customer_activated"),

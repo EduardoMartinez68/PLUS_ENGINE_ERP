@@ -118,10 +118,7 @@ if(TYPE_VERSION=='CLOUD'):
             'USER': os.getenv('DB_USER', 'default_user'),
             'PASSWORD': os.getenv('DB_PASS', 'default_password'),
             'HOST': os.getenv('DB_HOST', 'localhost'),
-            'PORT': os.getenv('DB_PORT', '5432'),
-            'OPTIONS': {
-                'options': '-c search_path=customer,public',
-            },
+            'PORT': os.getenv('DB_PORT', '5432')
         }
     }
 else:
