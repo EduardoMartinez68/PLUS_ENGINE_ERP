@@ -12,7 +12,6 @@ import os
 key = os.getenv("DATA_ENCRYPTION_KEY")
 cipher = Fernet(key.encode())
 
-
 class CustomerSource(models.Model):
     """
     Customer source (how they contacted us or who referred them).
@@ -111,6 +110,7 @@ class Customer(models.Model):
     #------------Getters and setters para cifrar/desifrar campos sensibles------------
     def _get_field(self, field):
         val = getattr(self, f"_{field}")
+
         if val:
             return cipher.decrypt(val).decode()
         return None
@@ -210,15 +210,9 @@ class Customer(models.Model):
     class Meta:
         db_table = "customer.customer"
         indexes = [
-            models.Index(fields=["name"], name="idx_customer_name"),
-            models.Index(fields=["email"], name="idx_customer_email"),
-            models.Index(fields=["cellphone"], name="idx_customer_cellphone"),
             models.Index(fields=["company"], name="idx_customer_company"),
             models.Index(fields=["activated"], name="idx_customer_activated"),
-            models.Index(fields=["company_name"], name="idx_customer_company_name"),
-            models.Index(fields=["email", "company"], name="idx_customer_email_branch"),
         ]
-
 
     def save(self, *args, **kwargs):
         MAX_SIZE_MB = 5

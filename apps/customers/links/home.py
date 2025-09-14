@@ -19,20 +19,20 @@ def customers_home(request):
 
 #-------------------------customer-------------------------
 from ..services.customers import save_customer
-
 @csrf_exempt
 def add_customer(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)  # El body lo mandas en JSON con fetch
-            success=save_customer(request.user,data)
-            if success==True:
-                return JsonResponse({'success': True}, status=200)
+            answer=save_customer(request.user,data)
+            if answer["success"]:
+                return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
             else: 
-                return JsonResponse({'success': True, 'error': f'Error to save the customer: {str(e)}'}, status=300)
+                return JsonResponse({'success': False, 'error': f'Error to save the customer: {str(answer["error"])}'}, status=300)
         except Exception as e:
             print('--------------------- ERROR al guardar cliente ---------------------')
             print(e)
+            
             return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)
 
 

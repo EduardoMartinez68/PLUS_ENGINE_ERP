@@ -13,6 +13,8 @@ def save_customer(user, form, user_admin=None, password_admin=None):
     Creates a client associated with the user's company.
     `form` must be a dictionary containing the form fields.
     """
+    print('hi word')
+    print(user.company)
     try:
         # get the company and the branch of the user that would like add a customer
         company = user.company
@@ -97,9 +99,11 @@ def save_customer(user, form, user_admin=None, password_admin=None):
             except Exception as e:
                 print("Error al procesar avatar:", e)
 
-        # save the customer
-        customer.save()
 
-        return True
+        customer.save()
+        return {"success": True, "answer": "Customer save with success", "customer_id": customer.id}
     except Exception as e:
-        return e
+        print("Error saving customer:", e)
+        import traceback
+        traceback.print_exc() 
+        return {"success": False, "error": str(e)}
