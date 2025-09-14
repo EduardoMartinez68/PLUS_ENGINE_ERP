@@ -18,6 +18,10 @@ def customers_home(request):
     return render(request, 'customers.html', {'customers': customers})
 
 #-------------------------customer-------------------------
+from django.views.decorators.csrf import csrf_exempt
+import base64
+import datetime
+import decimal
 from ..services.customers import save_customer
 @csrf_exempt
 def add_customer(request):
@@ -123,9 +127,10 @@ def get_information_of_the_customer(request):
     if request.method == "GET":
         try:
             id_customer = request.GET.get("id_customer")
+            
             if not id_customer:
                 return JsonResponse(
-                    {"success": False, "message": "id_customer es requerido"},
+                    {"success": False, "message": "id_customer is requerid"},
                     status=400,
                 )
 
@@ -177,8 +182,9 @@ def get_information_of_the_customer(request):
             )
 
         except Exception as e:
+            print(e)
             return JsonResponse(
-                {"success": False, "message": f"Error: {str(e)}"}, status=500
+                {"success": False, "error": f"Error: {str(e)}"}, status=500
             )
 
     return JsonResponse(

@@ -10,18 +10,11 @@ from ..plus_wrapper import Plus
 from django.core.exceptions import ValidationError
 
 
- 
 def save_customer(user, form, user_admin=None, password_admin=None):
     """
     Creates a client associated with the user's company.
     `form` must be a dictionary containing the form fields.
     """
-    if not user.company:
-        return {"success": False, "error": "User has no company assigned"}
-    if not user.branch:
-        return {"success": False, "error": "User has no branch assigned"}
-    
-
     try:
         customer = Customer()
         customer.company = user.company
@@ -57,6 +50,7 @@ def save_customer(user, form, user_admin=None, password_admin=None):
         customer.credit = form.get("credit") or 0
         customer.tags = form.get("tags") or None
         customer.number_of_price_of_sale = form.get("number_of_price_of_sale") or 1 #forever the price be 1 for default
+
 
         # do a relation with CustomerType and CustomerSource
         type_id = form.get("customer_type")
@@ -111,7 +105,6 @@ def save_customer(user, form, user_admin=None, password_admin=None):
         return {"success": False, "error": str(
             e
         )}
-
 
 def update_customer(user, customer_id, form):
     """

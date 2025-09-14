@@ -17,6 +17,7 @@ print("""
 """"")
 
 #character of the ERP
+FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY').encode()
 TYPE_VERSION = os.getenv('TYPE_VERSION', 'DESKTOP')
 
 #------------------------------------------------------run server---------------------------------------------

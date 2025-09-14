@@ -4,6 +4,10 @@ from ..services.customer_source import get_customer_source, add_a_new_source, up
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service
 from django.shortcuts import get_object_or_404
 from ..services.customers import save_customer
+import decimal
+import datetime
+import base64
+from django.views.decorators.csrf import csrf_exempt
 from ..models import Customer, CustomerType
 from django.http import HttpResponse
 import json
@@ -228,9 +232,10 @@ def get_information_of_the_customer(request):
         if request.method == "GET":
             try:
                 id_customer = request.GET.get("id_customer")
+                
                 if not id_customer:
                     return JsonResponse(
-                        {"success": False, "message": "id_customer es requerido"},
+                        {"success": False, "message": "id_customer is requerid"},
                         status=400,
                     )
     
@@ -282,8 +287,9 @@ def get_information_of_the_customer(request):
                 )
     
             except Exception as e:
+                print(e)
                 return JsonResponse(
-                    {"success": False, "message": f"Error: {str(e)}"}, status=500
+                    {"success": False, "error": f"Error: {str(e)}"}, status=500
                 )
     
         return JsonResponse(
@@ -293,9 +299,10 @@ def get_information_of_the_customer(request):
         if request.method == "GET":
             try:
                 id_customer = request.GET.get("id_customer")
+                
                 if not id_customer:
                     return JsonResponse(
-                        {"success": False, "message": "id_customer es requerido"},
+                        {"success": False, "message": "id_customer is requerid"},
                         status=400,
                     )
     
@@ -347,8 +354,9 @@ def get_information_of_the_customer(request):
                 )
     
             except Exception as e:
+                print(e)
                 return JsonResponse(
-                    {"success": False, "message": f"Error: {str(e)}"}, status=500
+                    {"success": False, "error": f"Error: {str(e)}"}, status=500
                 )
     
         return JsonResponse(
