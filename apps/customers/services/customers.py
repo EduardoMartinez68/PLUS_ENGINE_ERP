@@ -1,6 +1,12 @@
 import base64
 from django.core.files.base import ContentFile
+from PIL import Image
+from io import BytesIO
+import base64
+import uuid
+from cryptography.fernet import Fernet
 from ..models import Customer, CustomerType, CustomerSource
+
 
 def save_customer(user, form, user_admin=None, password_admin=None):
     """
@@ -65,12 +71,31 @@ def save_customer(user, form, user_admin=None, password_admin=None):
 
         #here we will see if exist a image in base64
         avatar_data = form.get("avatar")
-        if avatar_data:
-            # fromat "data:image/png;base64,XXXX"
-            if "," in avatar_data:
+        if avatar_data and "," in avatar_data:
+            try:
                 fmt, imgstr = avatar_data.split(",", 1)
-                ext = fmt.split("/")[1].split(";")[0]  # png, jpeg...
-                customer.avatar.save(f"{customer.name}_avatar.{ext}", ContentFile(base64.b64decode(imgstr)), save=False)
+                # decodificar imagen
+                img_data = base64.b64decode(imgstr)
+                img = Image.open(BytesIO(img_data))
+
+                # Convertir a RGB si tiene alpha (webp soporta alpha, pero RGB suele ser más compatible)
+                if img.mode in ("RGBA", "P"):
+                    img = img.convert("RGB")
+
+                # Redimensionar a tamaño máximo recomendable para avatar
+                max_size = (400, 400)
+                img.thumbnail(max_size, Image.LANCZOS)
+
+                # Guardar en memoria en formato WebP (liviano)
+                buffer = BytesIO()
+                img.save(buffer, format="WEBP", quality=85, method=6)
+                buffer.seek(0)
+
+                # Nombre único para la imagen
+                unique_filename = f"{uuid.uuid4().hex}_avatar.webp"
+                customer.avatar.save(unique_filename, ContentFile(buffer.read()), save=False)
+            except Exception as e:
+                print("Error al procesar avatar:", e)
 
         # save the customer
         customer.save()
