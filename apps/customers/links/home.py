@@ -30,7 +30,7 @@ def add_customer(request):
             else: 
                 return JsonResponse({'success': False, 'error': f'Error to save the customer: {str(answer["error"])}'}, status=300)
         except Exception as e:
-            print('--------------------- ERROR al guardar cliente ---------------------')
+            print('--------------------- ERROR to save the customer ---------------------')
             print(e)
             
             return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)

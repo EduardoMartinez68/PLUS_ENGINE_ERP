@@ -52,7 +52,8 @@ class Plus:
         return module.format_date_to_text(date, type, language)
     
 
-
+    def to_bool(value):
+        return str(value).lower() in ("true", "on", "1")
     
 
     @staticmethod

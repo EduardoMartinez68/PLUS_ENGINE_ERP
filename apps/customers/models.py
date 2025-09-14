@@ -54,10 +54,8 @@ class CustomerType(models.Model):
 
 # upload_to dinamic
 def customer_avatar_path(instance, filename):
-    # instance.company.id, instance.branch.id
     ext = filename.split('.')[-1]
-    return f"customers/company_{instance.company.id}/branch_{instance.branch.id}/{uuid.uuid4().hex}_avatar.{ext}"
-
+    return f"customers/{uuid.uuid4().hex}_avatar.{ext}"
 
 class Customer(models.Model):
     #------personal information------
@@ -68,7 +66,7 @@ class Customer(models.Model):
     _phone = models.BinaryField(db_column="phone", blank=True, null=True)
     _cellphone = models.BinaryField(db_column="cellphone", blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
-    
+
     #------information of address------
     country = models.CharField(max_length=2, blank=True, null=True)  # ISO code (ej: MX, US)
     _address = models.BinaryField(db_column="address", blank=True, null=True)
@@ -90,8 +88,8 @@ class Customer(models.Model):
     note = models.TextField(blank=True, null=True)
 
     #--information of the customer in the company------
-    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="customer_customer", null=True, blank=True)
-    branch = models.ForeignKey("core.Branch", on_delete=models.CASCADE, related_name="customer_customer", null=True, blank=True)
+    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="customers", null=True, blank=True)
+    branch = models.ForeignKey("core.Branch", on_delete=models.CASCADE, related_name="customers", null=True, blank=True)
     points = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     credit = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     tags = models.JSONField(blank=True, null=True)
@@ -111,9 +109,11 @@ class Customer(models.Model):
     #------------Getters and setters para cifrar/desifrar campos sensibles------------
     def _get_field(self, field):
         val = getattr(self, f"_{field}")
-
         if val:
-            return cipher.decrypt(val).decode()
+            if isinstance(val, bytes):
+                return cipher.decrypt(val).decode()
+            else:
+                return val  # fallback
         return None
 
     def _set_field(self, field, value):
@@ -244,4 +244,9 @@ class Customer(models.Model):
 
 
     def __str__(self):
-        return f"{self.name} ({'Company' if self.this_customer_is_a_company else 'Null'})"
+        try:
+            name = self.name or "Null"
+        except Exception:
+            name = "Null"
+        company = "Company" if self.this_customer_is_a_company else "Null"
+        return f"{name} ({company})"
