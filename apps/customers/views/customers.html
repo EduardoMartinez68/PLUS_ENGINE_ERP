@@ -224,22 +224,21 @@
 <message-pop title="title-filter" name="pop-filter-customer">
     <div class="row">
         <div class="col">
-            <plus-select label="select-type-customer">
+            <plus-select label="select-type-customer" link="/customers/search_type_customer" id="filter-type-customer">
             </plus-select>
         </div>
         <div class="col">
-            <plus-select label="select-priority">
+            <plus-select label="select-priority" id="filter-priority-customer">
                 <option value="" t="select-priority-0"></option>
-                <option value="" t="select-priority-1"></option>
-                <option value="" t="select-priority-2"></option>
-                <option value="" t="select-priority-3"></option>
-                <option value="" t="select-priority-all"></option>
+                <option value="1" t="select-priority-1"></option>
+                <option value="2" t="select-priority-2"></option>
+                <option value="3" t="select-priority-3"></option>
             </plus-select>
         </div>
         <div class="col">
-            <plus-select label="select-type-customer">
-                <option value="" t="option-status-activated">Activate</option>
-                <option value="" t="option-status-deleted">Delete</option>
+            <plus-select label="select-type-customer" id="status-customer">
+                <option value="true" t="option-status-activated">Activate</option>
+                <option value="false" t="option-status-deleted">Delete</option>
                 <option value="" t="option-status-all">All</option>
             </plus-select>
         </div>
@@ -278,7 +277,17 @@
   }
 
   async function filter_the_customer(){
-      hide_pop('pop-filter-customer')
+    //first we will to send the message to the server for filter to the customer
+    const query=document.getElementById('search-customer').value;
+    const priority=document.getElementById('filter-priority-customer').value;
+    const customer_type=document.getElementById('filter-type-customer').value;
+    const status=document.getElementById('status-customer').value;
+
+    const server=await send_message_to_the_server('/customer/customers_search', {query, priority, customer_type, status}, true, 'GET');
+    if(server.success){
+
+    }
+    hide_pop('pop-filter-customer');
   }
 
   function render_stars(priority) {

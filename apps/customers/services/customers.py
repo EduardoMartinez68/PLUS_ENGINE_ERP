@@ -248,10 +248,9 @@ def toggle_customer_activation(customer_id, activate=True):
         traceback.print_exc()
         return {"success": False, "error": str(e)}
 
-
 def search_customer_for_filter(user, search, customer_type, source, priority, activated):
     try:
-        # --- 1. limitar primero a la empresa del usuario ---
+        # --- 1. limit first to the user's company ---
         qs = Customer.objects.filter(company=user.company)
 
         
@@ -274,7 +273,7 @@ def search_customer_for_filter(user, search, customer_type, source, priority, ac
             elif activated.lower() in ["false", "0", "no", "off"]:
                 qs = qs.filter(activated=False)
 
-        # --- 2. aplicar búsqueda en memoria (desencriptando campos) ---
+        # --- 2. apply memory search (decrypting fields) ---
         if search:
             search = search.lower()
             qs = [c for c in qs if (
@@ -284,10 +283,10 @@ def search_customer_for_filter(user, search, customer_type, source, priority, ac
                 (c.cellphone and search in c.cellphone.lower())
             )]
   
-        # --- 3. limitar a 20 resultados ---
+        # --- 3. limit 20 answer ---
         qs = qs[:20]
 
-        # --- 4. dar formato a la respuesta ---
+        # --- 4. format the response ---
         customers = []
         for c in qs:
             customers.append({
@@ -302,8 +301,64 @@ def search_customer_for_filter(user, search, customer_type, source, priority, ac
                 "avatar": c.avatar.url if c.avatar else None,
                 "status": "active" if c.activated else "inactive",
             })
-            
+
         return {"success": True, "answer": customers, "error": "the serach of the customer was success"}
     
     except Exception as e:
         return {"success": False, "answer": [], "error": str(e)}
+    
+def get_information_of_a_customer_for_id(user, customer_id):
+    try:
+        if not customer_id:
+            return {"success": False, "message": 'customer.message.error.this-id-customer-not-exist', "error": "Not exist this id of the customer in the database", "answer":""}
+        
+        #get the customer that exist in the dtabase
+        customer = Customer.objects.get(id=customer_id, company=user.company)
+
+        if not customer:
+            return {"success": False, "message": "customer.message.error.this-id-customer-not-exist", "error": "Customer not found", "answer":""}
+        
+        #create the answer that send to the frontend or to other script that need this iformation
+        data = {
+            "id": customer.id,
+            "name": customer.name or '',
+            "email": customer.email or '',
+            "phone": customer.phone or '',
+            "cellphone": customer.cellphone,
+            "country": customer.country or '',
+            "address": customer.address or '',
+            "city": customer.city or '',
+            "state": customer.state or '',
+            "postal_code": customer.postal_code or '',
+            "num_ext": customer.num_ext or '',
+            "num_int": customer.num_int or '',
+            "reference": customer.reference or '',
+            "this_customer_is_a_company": customer.this_customer_is_a_company,
+            "company_name": customer.company_name or '',
+            "contact_name": customer.contact_name or '',
+            "website": customer.website or '',
+            "points": float(customer.points) if customer.points else 0,
+            "credit": float(customer.credit) if customer.credit else 0,
+            "tags": customer.tags if customer.tags else [],
+            "priority": customer.priority,
+            "customer_type": {
+                "id": customer.customer_type.id if customer.customer_type else None,
+                "name": customer.customer_type.name if customer.customer_type else None,
+                "color": customer.customer_type.color if customer.customer_type else None,
+                "description": customer.customer_type.description if customer.customer_type else None,
+            } if customer.customer_type else None,
+            "source": {
+                "id": customer.source.id if customer.source else None,
+                "name": customer.source.name if customer.source else None,
+                "description": customer.source.description if customer.source else None,
+            } if customer.source else None,
+            "avatar": customer.avatar.url if customer.avatar else None,
+            "creation_date": customer.creation_date.isoformat() if customer.creation_date else None,
+            "activated": customer.activated,
+        }
+
+
+        return {"success": True, "answer": data, "error": "The customer was found with success", 'message':'The customer was found'}
+
+    except Exception as e:
+        return {"success": False, "message": 'customer.message.error.exist-a-error-in-the-server', "error": f"Error: {str(e)}", "answer":""}

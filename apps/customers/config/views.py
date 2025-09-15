@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from ..services.customer_source import get_customer_source, add_a_new_source, update_source, delete_a_source_with_his_id, get_source_by_id, get_customer_source_select
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service
 from django.shortcuts import get_object_or_404
-from ..services.customers import save_customer, search_customer_for_filter
+from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id
 import decimal
 import datetime
 import base64
@@ -111,135 +111,25 @@ def customers_search(request):
 def get_information_of_the_customer(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == "GET":
-            try:
-                id_customer = request.GET.get("id_customer")
-                
-                if not id_customer:
-                    return JsonResponse(
-                        {"success": False, "message": "id_customer is requerid"},
-                        status=400,
-                    )
-    
-                # Obtiene el cliente o devuelve 404 si no existe
-                customer = get_object_or_404(Customer, id=id_customer)
-    
-                # Construir respuesta con todos los campos
-                data = {
-                    "id": customer.id,
-                    "name": customer.name or '',
-                    "email": customer.email or '',
-                    "phone": customer.phone or '',
-                    "cellphone": customer.cellphone,
-                    "country": customer.country or '',
-                    "address": customer.address or '',
-                    "city": customer.city or '',
-                    "state": customer.state or '',
-                    "postal_code": customer.postal_code or '',
-                    "num_ext": customer.num_ext or '',
-                    "num_int": customer.num_int or '',
-                    "reference": customer.reference or '',
-                    "this_customer_is_a_company": customer.this_customer_is_a_company,
-                    "company_name": customer.company_name or '',
-                    "contact_name": customer.contact_name or '',
-                    "website": customer.website or '',
-                    "points": float(customer.points) if customer.points else 0,
-                    "credit": float(customer.credit) if customer.credit else 0,
-                    "tags": customer.tags if customer.tags else [],
-                    "priority": customer.priority,
-                    "customer_type": {
-                        "id": customer.customer_type.id if customer.customer_type else None,
-                        "name": customer.customer_type.name if customer.customer_type else None,
-                        "color": customer.customer_type.color if customer.customer_type else None,
-                        "description": customer.customer_type.description if customer.customer_type else None,
-                    } if customer.customer_type else None,
-                    "source": {
-                        "id": customer.source.id if customer.source else None,
-                        "name": customer.source.name if customer.source else None,
-                        "description": customer.source.description if customer.source else None,
-                    } if customer.source else None,
-                    "avatar": customer.avatar.url if customer.avatar else None,
-                    "creation_date": customer.creation_date.isoformat() if customer.creation_date else None,
-                    "activated": customer.activated,
-                }
-    
-                return JsonResponse(
-                    {"success": True, "message": "Customer found", "answer": data},
-                    status=200,
-                )
-    
-            except Exception as e:
-                print(e)
-                return JsonResponse(
-                    {"success": False, "error": f"Error: {str(e)}"}, status=500
-                )
-    
+            customer_id = request.GET.get("id_customer")
+            answer=get_information_of_a_customer_for_id(request.user, customer_id)
+            print(answer)
+            return JsonResponse(
+                {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=200
+            ) 
+            
         return JsonResponse(
             {"success": False, "message": "Invalid request method"}, status=400
         ) 
     else:
         if request.method == "GET":
-            try:
-                id_customer = request.GET.get("id_customer")
-                
-                if not id_customer:
-                    return JsonResponse(
-                        {"success": False, "message": "id_customer is requerid"},
-                        status=400,
-                    )
-    
-                # Obtiene el cliente o devuelve 404 si no existe
-                customer = get_object_or_404(Customer, id=id_customer)
-    
-                # Construir respuesta con todos los campos
-                data = {
-                    "id": customer.id,
-                    "name": customer.name or '',
-                    "email": customer.email or '',
-                    "phone": customer.phone or '',
-                    "cellphone": customer.cellphone,
-                    "country": customer.country or '',
-                    "address": customer.address or '',
-                    "city": customer.city or '',
-                    "state": customer.state or '',
-                    "postal_code": customer.postal_code or '',
-                    "num_ext": customer.num_ext or '',
-                    "num_int": customer.num_int or '',
-                    "reference": customer.reference or '',
-                    "this_customer_is_a_company": customer.this_customer_is_a_company,
-                    "company_name": customer.company_name or '',
-                    "contact_name": customer.contact_name or '',
-                    "website": customer.website or '',
-                    "points": float(customer.points) if customer.points else 0,
-                    "credit": float(customer.credit) if customer.credit else 0,
-                    "tags": customer.tags if customer.tags else [],
-                    "priority": customer.priority,
-                    "customer_type": {
-                        "id": customer.customer_type.id if customer.customer_type else None,
-                        "name": customer.customer_type.name if customer.customer_type else None,
-                        "color": customer.customer_type.color if customer.customer_type else None,
-                        "description": customer.customer_type.description if customer.customer_type else None,
-                    } if customer.customer_type else None,
-                    "source": {
-                        "id": customer.source.id if customer.source else None,
-                        "name": customer.source.name if customer.source else None,
-                        "description": customer.source.description if customer.source else None,
-                    } if customer.source else None,
-                    "avatar": customer.avatar.url if customer.avatar else None,
-                    "creation_date": customer.creation_date.isoformat() if customer.creation_date else None,
-                    "activated": customer.activated,
-                }
-    
-                return JsonResponse(
-                    {"success": True, "message": "Customer found", "answer": data},
-                    status=200,
-                )
-    
-            except Exception as e:
-                print(e)
-                return JsonResponse(
-                    {"success": False, "error": f"Error: {str(e)}"}, status=500
-                )
-    
+            customer_id = request.GET.get("id_customer")
+            answer=get_information_of_a_customer_for_id(request.user, customer_id)
+            print(answer)
+            return JsonResponse(
+                {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=200
+            ) 
+            
         return JsonResponse(
             {"success": False, "message": "Invalid request method"}, status=400
         ) 

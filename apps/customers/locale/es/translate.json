@@ -210,5 +210,8 @@
   "customers.message.error-save-customer":"Error al guardar el cliente",
   "customers.message.error-description-customer":"Sucedio un error en el servidor al momento de intentar guardar al nuevo cliente.",
   "customers.message.success-save-customer":"Cliente guardado",
-  "customers.message.success-description-save":"El cliente se guardó con éxito en la base de datos."
+  "customers.message.success-description-save":"El cliente se guardó con éxito en la base de datos.",
+
+  "customer.message.error.this-id-customer-not-exist":"Este cliente no existe en la base de datos.",
+  "customer.message.error.exist-a-error-in-the-server":"Existe un error en el servidor."
   }
