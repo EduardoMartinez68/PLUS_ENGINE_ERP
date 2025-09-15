@@ -100,7 +100,7 @@
 
 
 
-
+    <!--this is for save the information advanced or the information of the address of the customer --->
     <message-pop title="title-pop-info-address" name="pop-data-address">
         <div class="container-pop">
             <div class="row section">
@@ -217,12 +217,12 @@
         <button class="btn btn-edit btn-success" t="message.success" onclick="hide_pop('pop-advanced-information')"
             type="button"></button>
     </message-pop>
-
 </form>
+
+
 <!---add the partial of the type customers and source for that the user can edit-->
 {% include 'partialsCustomers/typeCustomer.html' %}
 {% include 'partialsCustomers/source.html' %}
-
 
 <script>
 (() => {
@@ -232,7 +232,7 @@
         e.preventDefault(); // Evita que se recargue la página
         const server=await send_form_to_the_server('form_create_customer','/customers/add_customer/');
         if(server.success){
-            form.reset();
+            window.restart_form('form_create_customer');
             show_alert('success', 'customers.message.succes-save-customer', 'customers.message.success-description-save', server.error || '');
         }else{
             show_alert('error', 'customers.message.error-save-customer', server.message || 'customers.message.error-description-customer', server.error || 'Error in the server');

@@ -3915,195 +3915,6 @@ class ShowMore extends HTMLElement {
   }
 }
 
-class ImageUploader2 extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-  }
-
-  connectedCallback() {
-    // Atributos configurables
-    const maxImages = parseInt(this.getAttribute("max")) || 1;
-    const styleType = this.getAttribute("style") || "square"; // square | rounded | circle
-
-    // Crear estilos aislados para Shadow DOM
-    const style = document.createElement("style");
-    style.textContent = `
-      .uploader-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        padding: 20px;
-        border-radius: 16px;
-        justify-content: flex-start;
-        align-items: center;
-      }
-
-      .image-box {
-        position: relative;
-        width: 120px;
-        height: 120px;
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        transition: all 0.3s ease-in-out;
-      }
-
-      .image-box:hover {
-        border-color: ${colors.color_company};
-        cursor:pointer;
-      }
-
-      .image-box img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .image-square img {
-        border-radius: 0;
-      }
-      .image-rounded img {
-        border-radius: 12px;
-      }
-      .image-circle img {
-        border-radius: 50%;
-      }
-
-      .delete-btn {
-        position: absolute;
-        top: 6px;
-        right: 6px;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background: rgba(0,0,0,0.6);
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        opacity: 0;
-        transition: opacity 0.2s ease-in-out, background 0.2s;
-      }
-
-      .image-box:hover .delete-btn {
-        opacity: 1;
-      }
-
-      .delete-btn:hover {
-        background: rgba(220,38,38,0.9); /* rojo elegante */
-      }
-
-      .add-button {
-        width: 120px;
-        height: 120px;
-        border: 2px dashed #9ca3af;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        background: #f3f4f6;
-        transition: all 0.3s ease-in-out;
-      }
-
-      .add-button:hover {
-        background: #e5e7eb;
-        border-color: ${colors.color_company};
-      }
-
-      .add-button:hover span {
-        color: ${colors.color_company};
-      }
-
-      .add-button span {
-        font-size: 2rem;
-        color: #6b7280;
-      }
-
-      input[type="file"] {
-        display: none;
-      }
-    `;
-
-    // Contenedor principal
-    const container = document.createElement("div");
-    container.classList.add("uploader-container");
-
-    // Input file oculto
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.multiple = false;
-
-    // Botón de añadir
-    const addButton = document.createElement("div");
-    addButton.classList.add("add-button");
-    addButton.innerHTML = `<span>＋</span>`;
-
-    // Eventos
-    const images = [];
-
-    const addImage = (file) => {
-      if (images.length >= maxImages) return;
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const box = document.createElement("div");
-        box.classList.add("image-box", `image-${styleType}`);
-
-        const img = document.createElement("img");
-        img.src = e.target.result;
-        img.alt = "Uploaded Image";
-
-        // Botón eliminar
-        const deleteBtn = document.createElement("div");
-        deleteBtn.classList.add("delete-btn");
-        deleteBtn.textContent = "✖";
-
-        deleteBtn.addEventListener("click", () => {
-          container.removeChild(box);
-          images.splice(images.indexOf(file), 1);
-
-          // Mostrar el botón de añadir si ya no se ha alcanzado el límite
-          if (images.length < maxImages) {
-            addButton.style.display = "flex";
-          }
-        });
-
-        box.appendChild(img);
-        box.appendChild(deleteBtn);
-        container.insertBefore(box, addButton);
-        images.push(file);
-
-        // Si ya alcanzamos el límite, ocultamos el botón
-        if (images.length >= maxImages) {
-          addButton.style.display = "none";
-        }
-      };
-      reader.readAsDataURL(file);
-    };
-
-    addButton.addEventListener("click", () => input.click());
-    input.addEventListener("change", (e) => {
-      if (e.target.files.length > 0) {
-        addImage(e.target.files[0]);
-      }
-    });
-
-    container.appendChild(addButton);
-    this.shadowRoot.append(style, container, input);
-  }
-}
-
 class ImageUploader extends HTMLElement {
   constructor() {
     super();
@@ -4872,7 +4683,6 @@ function add_the_button_for_create_a_new_item_in_the_select_search(dropdownEl, c
   dropdownEl.appendChild(createBtn);
 }
 
-
 //this function is for load all the search select in the web.
 function create_all_the_select() {
 
@@ -5034,7 +4844,8 @@ function load_script(src) {
   });
 }
 
-
+//this function is for know if the value of a variable is true or false use all the information 
+//1, true , True, 'true' etc
 function is_true(value){
   if (value === true) return true;
 

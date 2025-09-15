@@ -141,6 +141,12 @@
     "ia-not-can-listen":"Reconocimiento de voz no disponible",
 
     "permission.not-have-this-permission":"No dispone de los permisos necesarios para realizar esta acción.",
-    "permission.invalid-credentials":"Las credenciales que intentó utilizar no tienen los permisos necesarios para realizar esta acción."
+    "permission.invalid-credentials":"Las credenciales que intentó utilizar no tienen los permisos necesarios para realizar esta acción.",
+
+
+
+    "info.info-send-with-success":"información enviada con exitó",
+    "info.not-was-can-send-the-information":"No fue posible enviar esta información al servidor",
+    "info.error.this-form-not-exit":"El formulario que intentas enviar no existe."
 }
 

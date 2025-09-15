@@ -84,10 +84,82 @@ function formToJSON(form) {
     return data;
 }
 
+//this function is for restart the information of the form when for that the proggramer can restart his form most speed
+//this function can be run after of that the form was send to the server with a message of success
+function restart_form(formId) {
+  //get the form with his id
+  const form = document.getElementById(formId);
+  if (!form) return;
+  form.reset(); //restart all the input of the form
+
+  // get all the labels PlusPriority that exist in the form 
+  const plusPriorityElements = form.querySelectorAll("plus-priority");
+
+  plusPriorityElements.forEach(el => {
+    if (typeof el.setValue === "function") {
+      el.setValue(0); // restart all the start
+    }
+  });
+
+  //restart all the select. Here need restart the select that have options #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  const plusSelectElements = form.querySelectorAll("plus-select");
+  plusSelectElements.forEach(el => {
+    const hiddenInput = el.querySelector('input[type="hidden"]');
+    if (hiddenInput) {
+      // We restart the select using its existing id and function
+      set_value_plus_select(hiddenInput.id, "", ""); // empty value and empty text
+    }
+  });
+
+  const plusSwitchElements = form.querySelectorAll("plus-switch");
+  plusSwitchElements.forEach(el => {
+    const defaultChecked = el.getAttribute('checked');
+    const isChecked = defaultChecked === "True" || defaultChecked === "true" || defaultChecked === "1";
+    const checkbox = el.querySelector('input[type="checkbox"]');
+    if (checkbox && typeof el.setChecked === 'function') {
+      el.setChecked(isChecked);
+    }
+  });
+
+  // ===== restart all the PlusDate =====
+  form.querySelectorAll("plus-date").forEach(el => {
+    const defaultValue = el.getAttribute('value'); // default value
+    const newDate = defaultValue ? new Date(defaultValue) : null;
+    change_plus_date(el.id, newDate ? newDate.toISOString().split('T')[0] : '');
+  });
+
+  // ===== restart all the PlusTime =====
+  form.querySelectorAll("plus-time").forEach(el => {
+    const defaultValue = el.getAttribute('value') || "12:00"; // default time
+    change_plus_time(el.id, defaultValue);
+  });
+
+  // restart elementos <input-color>
+  form.querySelectorAll('input-color').forEach(el => {
+    const initialValue = el.getAttribute('value') || '#3b82f6';
+    el.updateColor?.(initialValue); //use updateColor method if it exists
+  });
+
+  //  PlusTag #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  form.querySelectorAll('plus-tag').forEach(el => {
+    const initialTags = el.getAttribute('value'); //or use initial data
+    if (initialTags) {
+      try {
+        el.setTags(JSON.parse(initialTags));
+      } catch {
+        el.setTags([]);
+      }
+    } else {
+      el.setTags([]);
+    }
+  });
+
+}
+
 async function send_form_to_the_server(formId, url) {
     const form = document.getElementById(formId);
     if (!form) {
-        console.error('This form not exist:', formId);
+        show_alert('alert', 'Error',  'info.error.this-form-not-exit','This form not exist in the Doom: '+formId)
         return;
     }
 
@@ -106,10 +178,10 @@ async function create_form_for_send_the_server(id_form, url) {
 
         //we will see if we can add the new customer
         if (result.success) {
-            show_notification('success', result.message || 'Información guardada correctamente');
-            //this.reset();
+            show_notification('success', result.message || 'info.info-send-with-success');
+            restart_form(id_form);
         } else {
-            show_alert('alert', 'Error', result.message || 'No se pudo agregar al servidor.', (result.error || 'No se pudo guardar'))
+            show_alert('alert', 'Error', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'))
         }
     });
 }
