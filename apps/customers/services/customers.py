@@ -365,7 +365,7 @@ def get_information_of_a_customer_for_id(user, customer_id):
         return {"success": False, "message": 'customer.message.error.exist-a-error-in-the-server', "error": f"Error: {str(e)}", "answer":""}
     
 
-def desactivate_customer(user, customer_id):
+def change_status_of_the_customer(user, customer_id, status=False):
     try:
         if not customer_id:
             return {
@@ -387,7 +387,7 @@ def desactivate_customer(user, customer_id):
             }
 
         # Desactivar al cliente
-        customer.activated = False
+        customer.activated = status
         customer.save()
 
         return {

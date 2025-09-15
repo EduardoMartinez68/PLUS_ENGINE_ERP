@@ -2,7 +2,7 @@
 from django.contrib.auth.decorators import login_required
 from ..services.customer_source import get_customer_source, add_a_new_source, update_source, delete_a_source_with_his_id, get_source_by_id, get_customer_source_select
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service
-from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, desactivate_customer
+from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, change_status_of_the_customer
 from ..models import Customer, CustomerType
 from django.http import HttpResponse
 import json
@@ -73,12 +73,15 @@ def customers_search(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
     
         if request.method == "GET":
+            all_filters=request.GET.get("allFilters")
+            values = all_filters.split(",")
+    
             # --- 1.get the filter from the frontend ---
-            search = request.GET.get("query", "").strip()  # text free
+            search = values[0]  # text free
             customer_type = request.GET.get("customer_type")  # id o None
             source = request.GET.get("source")  # id o None
-            priority = request.GET.get("priority")  # 0–3 o None
-            activated = 'true' #request.GET.get("activated")  # "true"/"false" o None for default is true
+            priority = values[1]  # 0–3 o None
+            activated = values[2] #request.GET.get("activated")  # "true"/"false" o None for default is true
             answer=search_customer_for_filter(request.user,search,customer_type,source,priority, activated)
             
             if answer["success"]:
@@ -90,12 +93,15 @@ def customers_search(request):
     else:
     
         if request.method == "GET":
+            all_filters=request.GET.get("allFilters")
+            values = all_filters.split(",")
+    
             # --- 1.get the filter from the frontend ---
-            search = request.GET.get("query", "").strip()  # text free
+            search = values[0]  # text free
             customer_type = request.GET.get("customer_type")  # id o None
             source = request.GET.get("source")  # id o None
-            priority = request.GET.get("priority")  # 0–3 o None
-            activated = 'true' #request.GET.get("activated")  # "true"/"false" o None for default is true
+            priority = values[1]  # 0–3 o None
+            activated = values[2] #request.GET.get("activated")  # "true"/"false" o None for default is true
             answer=search_customer_for_filter(request.user,search,customer_type,source,priority, activated)
             
             if answer["success"]:
@@ -131,16 +137,30 @@ def get_information_of_the_customer(request):
         ) 
 
 @login_required(login_url='login')
-def delete_customer(request):
+def change_status_customer(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == "POST":
             data = json.loads(request.body)
             customer_id = data.get("customer_id")
-            answer=desactivate_customer(request.user,customer_id) 
+            status = data.get("status", False)
+            answer=change_status_of_the_customer(request.user,customer_id, status) 
     
-            return JsonResponse(
-                {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=200
-            ) 
+            #we will see if can edit the status of the customer, else send a message of error to the frontend
+            if answer['success']:
+                #we will see if the customer be recover of the trash
+                if status:
+                    return JsonResponse(
+                        {"success": answer['success'], "message": 'customers.message.the-customer-was-recover', "answer": answer['answer'], 'error':answer['error']}, status=200
+                    ) 
+                else:
+                    #we will see if need desactivate the customer 
+                    return JsonResponse(
+                        {"success": answer['success'], "message": 'customer.message.success.customer-desactivated', "answer": answer['answer'], 'error':answer['error']}, status=200
+                    ) 
+            else:
+                return JsonResponse(
+                    {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=300
+                )          
         
         return JsonResponse(
             {"success": False, "message": "Invalid request method"}, status=400
@@ -149,11 +169,25 @@ def delete_customer(request):
         if request.method == "POST":
             data = json.loads(request.body)
             customer_id = data.get("customer_id")
-            answer=desactivate_customer(request.user,customer_id) 
+            status = data.get("status", False)
+            answer=change_status_of_the_customer(request.user,customer_id, status) 
     
-            return JsonResponse(
-                {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=200
-            ) 
+            #we will see if can edit the status of the customer, else send a message of error to the frontend
+            if answer['success']:
+                #we will see if the customer be recover of the trash
+                if status:
+                    return JsonResponse(
+                        {"success": answer['success'], "message": 'customers.message.the-customer-was-recover', "answer": answer['answer'], 'error':answer['error']}, status=200
+                    ) 
+                else:
+                    #we will see if need desactivate the customer 
+                    return JsonResponse(
+                        {"success": answer['success'], "message": 'customer.message.success.customer-desactivated', "answer": answer['answer'], 'error':answer['error']}, status=200
+                    ) 
+            else:
+                return JsonResponse(
+                    {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=300
+                )          
         
         return JsonResponse(
             {"success": False, "message": "Invalid request method"}, status=400

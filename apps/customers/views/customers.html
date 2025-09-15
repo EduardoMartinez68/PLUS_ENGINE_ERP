@@ -209,8 +209,9 @@
 </style>
 
 
-<div class="input-actions-wrapper">
+<div class="input-actions-wrapper section">
   <input type="text" t-placeholder="placeholder-search-home" id="search-customer">
+  <button class="btn btn-add" onclick="nextWeb('customers/add_customer')">+</button>
   <button class="btn btn-transparent filter-btn" onclick="open_my_pop('pop-filter-customer')">
     <i class="fi fi-rr-settings-sliders"></i>
   </button>
@@ -223,28 +224,32 @@
 <!---this is the pop for filter the customer that the user would like search---->
 <message-pop title="title-filter" name="pop-filter-customer">
     <div class="row">
+      <!--
         <div class="col">
             <plus-select label="select-type-customer" link="/customers/search_type_customer" id="filter-type-customer">
             </plus-select>
         </div>
+        --->
         <div class="col">
-            <plus-select label="select-priority" id="filter-priority-customer">
+            <label t="select-priority"></label>
+            <select label="select-priority" id="filter-priority-customer">
                 <option value="" t="select-priority-0"></option>
                 <option value="1" t="select-priority-1"></option>
                 <option value="2" t="select-priority-2"></option>
                 <option value="3" t="select-priority-3"></option>
-            </plus-select>
+            </select>
         </div>
         <div class="col">
-            <plus-select label="select-type-customer" id="status-customer">
+            <label t="select-type-customer"></label>
+            <select label="select-type-customer" id="status-customer">
                 <option value="true" t="option-status-activated">Activate</option>
                 <option value="false" t="option-status-deleted">Delete</option>
                 <option value="" t="option-status-all">All</option>
-            </plus-select>
+            </select>
         </div>
     </div>
 
-    <button t="message.success" class="btn btn-edit btn-success" onclick="filter_the_customer()">Search</button>
+    <button t="message.success" class="btn btn-edit btn-success" onclick="hide_pop('pop-filter-customer')">Search</button>
 </message-pop>
 
 <plus-switch-column id="customers-switch">
@@ -269,19 +274,43 @@
 
 
 <script>
-  async function filter_the_customer(){
-    //first we will to send the message to the server for filter to the customer
-    const query=document.getElementById('search-customer').value;
-    const priority=document.getElementById('filter-priority-customer').value;
-    const customer_type=document.getElementById('filter-type-customer').value;
-    const status=document.getElementById('status-customer').value;
+  async function clear_div_data_customer(){
+    // Render of the template
+    const container = document.getElementById('info-customer');
+    container.innerHTML = ""; //clear the container
+    container.innerHTML = `
+      <center>
+        <img src="{% static 'img/customer_home.webp' %}" alt="Customer Home">
+        <h3 t="dashboard-no-customer-selected">No customer selected</h3>
+      </center>
+    `;
+    
+    //update the table of the customers
+    const divHtml = `
+      <plus-customers 
+        id-customer="{ id }" 
+        name="{ name }" 
+        email="{ email }" 
+        phone="{ phone }"
+        tag="{ tag }" 
+        points="{ points }" 
+        credit="{ credit }" 
+        priority="{ priority }"
+        image="{ avatar }"
+        status="{ activated }"
+        onclick="window.update_information_div_customer('{ id }')">
+      </plus-customers>
+    `;
 
-    const server=await send_message_to_the_server('/customer/customers_search', {query, priority, customer_type, status}, true, 'GET');
-    if(server.success){
-
-    }
-    hide_pop('pop-filter-customer');
+    update_container_from_the_server(
+      ['search-customer', 'filter-priority-customer', 'status-customer'],
+      'customer-list',
+      divHtml,
+      '/customers/customers_search',
+      'GET'
+    )
   }
+
 
   function render_stars(priority) {
         let stars = '';
@@ -301,8 +330,9 @@
     if (await show_message_question('customer.question.title.do-you-delete-this-customer', 'customer.question.description.do-you-delete-this-customer')) {
 
       //send the information to the server for know if can desactivate the customer
-      const answer = await send_message_to_the_server('/customers/delete_customer/', {customer_id: customer_id}, true);
+      const answer = await send_message_to_the_server('/customers/change_status_customer/', {customer_id: customer_id, status:false}, true);
       if (answer.success) {
+        await clear_div_data_customer();
         show_alert('success', 'customer.message.title.delte-customer', 'customer.message.description.delte-customer')
       } else {
         show_alert('alert', window.t('error.general'), answer.message, answer.error);
@@ -310,6 +340,21 @@
     }
   }
   
+  async function open_pop_recover_customer(customer_id){
+    //here we will do a question to the user, if the would like desactivate the customer
+    if (await show_message_question('customer.button.recover-customer', 'customer.message.description.recover-customer')) {
+
+      //send the information to the server for know if can desactivate the customer
+      const answer = await send_message_to_the_server('/customers/change_status_customer/', {customer_id: customer_id, status:true}, true);
+      if (answer.success) {
+        await clear_div_data_customer();
+        show_alert('success', 'customers.message.title.the-customer-was-recover', 'customers.message.description.the-customer-was-recover')
+      } else {
+        show_alert('alert', window.t('error.general'), answer.message, answer.error);
+      }
+    }
+  }
+
   async function update_information_div_customer(id_customer){
     //this function is for update the div information use the information that the user selected 
     const answer=await send_message_to_the_server('/customers/get_information_of_the_customer/', {id_customer}, true, 'GET');
@@ -317,10 +362,11 @@
         //if get a answer of the server, we will get his data and update the div <info-customer> with all the information of the server
         const data=answer.answer;
 
-        // Render dinámico con template literal
+        // Render of the template
         const container = document.getElementById('info-customer');
         container.innerHTML = ""; //clear the container
-
+        
+        //here we will get a image beta if the customer not have a photo
         let image="{% static '/img/profile.webp' %}";
         if(data.avatar){
           image = data.avatar;
@@ -329,6 +375,27 @@
           }    
         }
 
+        //here we will see if this customer is activated in the database. 
+        //when the user is activate we will show two button, the button for edit and the button for delete
+        let buttonEdit=`
+          <div class="col-8 d-flex justify-content-start">
+              <button class="btn btn-edit btn-success" t='btn.edit' onclick=nextWeb('/')>${window.translate_text('btn.edit')}</button>
+          </div>
+          <div class="col-4 d-flex justify-content-end">
+              <button class="btn btn-delete btn-success" onclick="window.open_pop_delete_customer('${id_customer}')"><i class="fi fi-sr-trash"></i></button>
+          </div>
+        `
+
+        //when the customer not is activate we will to show only a button for recover the customer
+        if(!window.is_true(data.activated)){
+          buttonEdit=`
+          <div class="col d-flex justify-content-start">
+              <button class="btn btn-edit btn-success" t='customer.button.recover-customer' onclick="window.open_pop_recover_customer('${id_customer}')"><i class="fi fi-sr-trash-restore-alt"></i> ${window.translate_text('customer.button.recover-customer')}</button>
+          </div>
+          `
+        }
+
+        //now we will show all the information of the customer for that the user know the information that need
         container.innerHTML = `
         <div class="info-customer-card">
             <div class="customer-header section">
@@ -359,9 +426,6 @@
                     <span class="detail-label">Teléfono</span>
                     <span class="detail-value">${data.phone}</span>
                 </div>
-
-
-                
             </div>
             <br>
             <show-more text='Numero de precio' description='${data.number_of_price_of_sale}'></show-more>
@@ -369,19 +433,14 @@
             <show-more text='Domicilio' description='(${data.state} ${data.city}. ${data.country})'></show-more>
             <br>
             <div class="row">
-                <div class="col-8 d-flex justify-content-start">
-                    <button class="btn btn-edit btn-success" t='btn.edit' onclick=nextWeb('/')>${window.translate_text('btn.edit')}</button>
-                </div>
-                <div class="col-4 d-flex justify-content-end">
-                    <button class="btn btn-delete btn-success" onclick="window.open_pop_delete_customer('${id_customer}')"><i class="fi fi-sr-trash"></i></button>
-                </div>
+              ${buttonEdit}
             </div>
         </div>
         `;
     }else{
         //if not can get the information of the customer, we will show a pop error and clear the div <info-customer>
       document.getElementById('info-customer').innerHTML = `
-        <div class="error-message">
+        <div>
           <img src="{% static 'img/customer_home.webp' %}" alt="Customer Home">
           <h3 t="dashboard-no-customer-selected">No customer selected</h3>
         </div>
@@ -396,6 +455,7 @@
   //save the function in the global windows
   window.open_pop_delete_customer=open_pop_delete_customer;
   window.update_information_div_customer=update_information_div_customer;
+  window.open_pop_recover_customer=open_pop_recover_customer;
 
   class PlusCustomers extends HTMLElement {
       constructor() {
@@ -595,13 +655,13 @@
     credit="{ credit }" 
     priority="{ priority }"
     image="{ avatar }"
-    status="{ status }"
+    status="{ activated }"
     onclick="window.update_information_div_customer('{ id }')">
     </plus-customers>
   `;
 
   update_container_with_seeker(
-    'search-customer',
+    ['search-customer', 'filter-priority-customer', 'status-customer'],
     'customer-list',
     divHtml,
     '/customers/customers_search',

@@ -5035,6 +5035,20 @@ function load_script(src) {
 }
 
 
+function is_true(value){
+  if (value === true) return true;
+
+  if (typeof value === "string") {
+    const val = value.trim().toLowerCase();
+    return val === "true" || val === "1" || val === "yes" || val === "on" || val==='True';
+  }
+
+  if (typeof value === "number") {
+    return value === 1;                          
+  }
+
+  return false;
+}
 
 /**----------------------------------show message label----------------------**/
 function transform_my_labels_erp() {

@@ -219,5 +219,10 @@
   "customer.question.title.do-you-delete-this-customer":"Eliminar Cliente",
   "customer.question.description.do-you-delete-this-customer":"¿Te gustaría eliminar a esta cliente?",
   "customer.message.title.delte-customer":"Cliente Eliminado",
-  "customer.message.description.delte-customer":"El cliente fue eliminado con exito"
+  "customer.message.description.delte-customer":"El cliente fue eliminado con exito",
+
+  "customer.button.recover-customer":"Restaurar Cliente",
+  "customer.message.description.recover-customer":"¿Quieres restaurar a este cliente junto con toda su información?",
+  "customers.message.title.the-customer-was-recover": "Cliente recuperado con éxito",
+  "customers.message.description.the-customer-was-recover": "La información del cliente ha sido restaurada correctamente."
   }
