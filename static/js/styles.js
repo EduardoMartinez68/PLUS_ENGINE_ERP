@@ -4770,7 +4770,6 @@ function addItemWithSelec(dropdownEl, createUrl, lastQuery) {
   dropdownEl.style.display = 'none'; //hidden the answer
 }
 
-
 function create_option_of_the_select(element, dropdownEl, newDataSelect, lastQuery, createUrl) {
   //clear the dropdown of the select for that not show nothing
   dropdownEl.innerHTML = '';

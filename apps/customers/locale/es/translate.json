@@ -213,5 +213,11 @@
   "customers.message.success-description-save":"El cliente se guardó con éxito en la base de datos.",
 
   "customer.message.error.this-id-customer-not-exist":"Este cliente no existe en la base de datos.",
-  "customer.message.error.exist-a-error-in-the-server":"Existe un error en el servidor."
+  "customer.message.error.exist-a-error-in-the-server":"Existe un error en el servidor.",
+
+
+  "customer.question.title.do-you-delete-this-customer":"Eliminar Cliente",
+  "customer.question.description.do-you-delete-this-customer":"¿Te gustaría eliminar a esta cliente?",
+  "customer.message.title.delte-customer":"Cliente Eliminado",
+  "customer.message.description.delte-customer":"El cliente fue eliminado con exito"
   }

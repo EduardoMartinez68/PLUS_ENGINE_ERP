@@ -99,7 +99,7 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
     }
 
     const send_information_to_the_server=async ()=>{
-        const query = input.value.trim();
+        const query = input.value.trim() || '';
 
         //after that we send the information to the server, we will see if the user send more inputs for filter
         const allFilters = [query]; //we will save the first input that is the search input
@@ -147,9 +147,8 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
                 field.innerHTML = `<tr><td colspan="6" style="text-align:center;">${answer}</td></tr>`;
             }
         } else {
-            console.error('Error en la búsqueda:', data.message);
             const answer=t("info.no_results");
-            show_alert('alert', 'Error', `${answer}`, data.message);
+            show_alert('alert', 'Error', `${answer}`, data.message, `Error in the search: ${data.message}`);
             field.innerHTML = `<tr><td colspan="6" style="text-align:center;">${answer}</td></tr>`;
         }
 

@@ -269,13 +269,6 @@
 
 
 <script>
-  function checkImage(url, callback) {
-    const img = new Image();
-    img.onload = () => callback(true);  
-    img.onerror = () => callback(false);
-    img.src = url;
-  }
-
   async function filter_the_customer(){
     //first we will to send the message to the server for filter to the customer
     const query=document.getElementById('search-customer').value;
@@ -302,7 +295,21 @@
         }
         return stars;
     }
+  
+  async function open_pop_delete_customer(customer_id){
+    //here we will do a question to the user, if the would like desactivate the customer
+    if (await show_message_question('customer.question.title.do-you-delete-this-customer', 'customer.question.description.do-you-delete-this-customer')) {
 
+      //send the information to the server for know if can desactivate the customer
+      const answer = await send_message_to_the_server('/customers/delete_customer/', {customer_id: customer_id}, true);
+      if (answer.success) {
+        show_alert('success', 'customer.message.title.delte-customer', 'customer.message.description.delte-customer')
+      } else {
+        show_alert('alert', window.t('error.general'), answer.message, answer.error);
+      }
+    }
+  }
+  
   async function update_information_div_customer(id_customer){
     //this function is for update the div information use the information that the user selected 
     const answer=await send_message_to_the_server('/customers/get_information_of_the_customer/', {id_customer}, true, 'GET');
@@ -366,7 +373,7 @@
                     <button class="btn btn-edit btn-success" t='btn.edit' onclick=nextWeb('/')>${window.translate_text('btn.edit')}</button>
                 </div>
                 <div class="col-4 d-flex justify-content-end">
-                    <button class="btn btn-delete btn-success"><i class="fi fi-sr-trash"></i></button>
+                    <button class="btn btn-delete btn-success" onclick="window.open_pop_delete_customer('${id_customer}')"><i class="fi fi-sr-trash"></i></button>
                 </div>
             </div>
         </div>
@@ -385,6 +392,11 @@
     window.toggle_switch_column('customers-switch'); //show the div that is hidden if the user is in cellphone
   }
   
+
+  //save the function in the global windows
+  window.open_pop_delete_customer=open_pop_delete_customer;
+  window.update_information_div_customer=update_information_div_customer;
+
   class PlusCustomers extends HTMLElement {
       constructor() {
           super();
@@ -452,7 +464,7 @@
     .customer-img {
       width: 64px;
       height: 64px;
-      border-radius: 50%;
+      border-radius: 10%;
       object-fit: cover;
       border: 2px solid #e5e7eb;
     }
@@ -567,6 +579,9 @@
   }
 
 </script>
+
+
+
 <script>
 (() => {
   const divHtml = `
@@ -595,9 +610,6 @@
 
 
 })();
-</script>
-<script>
-
 </script>
 
 

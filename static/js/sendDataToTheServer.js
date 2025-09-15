@@ -46,7 +46,7 @@ async function send_message_to_the_server(url, data = {}, with_load = true, meth
         return answer;
 
     } catch (error) {
-        console.log(url)
+        console.error(url)
         console.error('Error to load the data:', error);
         return { success: false, error: error };
     } finally {

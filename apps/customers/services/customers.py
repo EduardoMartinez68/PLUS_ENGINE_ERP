@@ -249,6 +249,7 @@ def toggle_customer_activation(customer_id, activate=True):
         return {"success": False, "error": str(e)}
 
 def search_customer_for_filter(user, search, customer_type, source, priority, activated):
+
     try:
         # --- 1. limit first to the user's company ---
         qs = Customer.objects.filter(company=user.company)
@@ -299,7 +300,7 @@ def search_customer_for_filter(user, search, customer_type, source, priority, ac
                 "credit": float(c.credit) if c.credit else 0,
                 "priority": c.priority,
                 "avatar": c.avatar.url if c.avatar else None,
-                "status": "active" if c.activated else "inactive",
+                "activated": "active" if c.activated else "inactive",
             })
 
         return {"success": True, "answer": customers, "error": "the serach of the customer was success"}
@@ -362,3 +363,48 @@ def get_information_of_a_customer_for_id(user, customer_id):
 
     except Exception as e:
         return {"success": False, "message": 'customer.message.error.exist-a-error-in-the-server', "error": f"Error: {str(e)}", "answer":""}
+    
+
+def desactivate_customer(user, customer_id):
+    try:
+        if not customer_id:
+            return {
+                "success": False,
+                "message": "customer.message.error.this-id-customer-not-exist",
+                "answer":"",
+                "error": "Missing customer_id",
+            }
+
+        # Busca el cliente dentro de la empresa del usuario
+        customer = Customer.objects.filter(id=customer_id, company=user.company).first()
+
+        if not customer:
+            return {
+                "success": False,
+                "message": "customer.message.error.this-id-customer-not-exist",
+                "answer":"",
+                "error": "Customer not found or does not belong to this company",
+            }
+
+        # Desactivar al cliente
+        customer.activated = False
+        customer.save()
+
+        return {
+            "success": True,
+            "message": "customer.message.success.customer-desactivated",
+            "error": "",
+            "answer": {
+                "id": customer.id,
+                "name": customer.name,
+                "activated": customer.activated,
+            },
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "customer.message.error.exist-a-error-in-the-server",
+            "answer":"",
+            "error": f"Error: {str(e)}",
+        }

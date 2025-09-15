@@ -2,16 +2,12 @@
 from django.contrib.auth.decorators import login_required
 from ..services.customer_source import get_customer_source, add_a_new_source, update_source, delete_a_source_with_his_id, get_source_by_id, get_customer_source_select
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service
-from django.shortcuts import get_object_or_404
-from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id
-import decimal
-import datetime
-import base64
-from django.views.decorators.csrf import csrf_exempt
+from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, desactivate_customer
 from ..models import Customer, CustomerType
 from django.http import HttpResponse
 import json
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from django.contrib import messages
@@ -75,35 +71,37 @@ def add_customer(request):
 @login_required(login_url='login')
 def customers_search(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+    
         if request.method == "GET":
-            # --- 1. Obtener filtros desde request.GET ---
+            # --- 1.get the filter from the frontend ---
             search = request.GET.get("query", "").strip()  # text free
             customer_type = request.GET.get("customer_type")  # id o None
             source = request.GET.get("source")  # id o None
             priority = request.GET.get("priority")  # 0–3 o None
-            activated = request.GET.get("activated")  # "true"/"false" o None
-    
+            activated = 'true' #request.GET.get("activated")  # "true"/"false" o None for default is true
             answer=search_customer_for_filter(request.user,search,customer_type,source,priority, activated)
+            
             if answer["success"]:
                 return JsonResponse({'success': True, 'answer': answer["answer"], 'error':answer["error"]}, status=200)
             else: 
-                return JsonResponse({'success': False, 'error': f'Error to search the customer: {str(answer["error"])}'}, status=300)
+                return JsonResponse({'success': False, 'answer': [], 'error': f'Error to search the customer: {str(answer["error"])}'}, status=300)
         else:
             return JsonResponse({'success': False, 'error': f'Method not permitted'}, status=300)
     else:
+    
         if request.method == "GET":
-            # --- 1. Obtener filtros desde request.GET ---
+            # --- 1.get the filter from the frontend ---
             search = request.GET.get("query", "").strip()  # text free
             customer_type = request.GET.get("customer_type")  # id o None
             source = request.GET.get("source")  # id o None
             priority = request.GET.get("priority")  # 0–3 o None
-            activated = request.GET.get("activated")  # "true"/"false" o None
-    
+            activated = 'true' #request.GET.get("activated")  # "true"/"false" o None for default is true
             answer=search_customer_for_filter(request.user,search,customer_type,source,priority, activated)
+            
             if answer["success"]:
                 return JsonResponse({'success': True, 'answer': answer["answer"], 'error':answer["error"]}, status=200)
             else: 
-                return JsonResponse({'success': False, 'error': f'Error to search the customer: {str(answer["error"])}'}, status=300)
+                return JsonResponse({'success': False, 'answer': [], 'error': f'Error to search the customer: {str(answer["error"])}'}, status=300)
         else:
             return JsonResponse({'success': False, 'error': f'Method not permitted'}, status=300)
 
@@ -113,7 +111,6 @@ def get_information_of_the_customer(request):
         if request.method == "GET":
             customer_id = request.GET.get("id_customer")
             answer=get_information_of_a_customer_for_id(request.user, customer_id)
-            print(answer)
             return JsonResponse(
                 {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=200
             ) 
@@ -125,11 +122,39 @@ def get_information_of_the_customer(request):
         if request.method == "GET":
             customer_id = request.GET.get("id_customer")
             answer=get_information_of_a_customer_for_id(request.user, customer_id)
-            print(answer)
             return JsonResponse(
                 {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=200
             ) 
             
+        return JsonResponse(
+            {"success": False, "message": "Invalid request method"}, status=400
+        ) 
+
+@login_required(login_url='login')
+def delete_customer(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == "POST":
+            data = json.loads(request.body)
+            customer_id = data.get("customer_id")
+            answer=desactivate_customer(request.user,customer_id) 
+    
+            return JsonResponse(
+                {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=200
+            ) 
+        
+        return JsonResponse(
+            {"success": False, "message": "Invalid request method"}, status=400
+        ) 
+    else:
+        if request.method == "POST":
+            data = json.loads(request.body)
+            customer_id = data.get("customer_id")
+            answer=desactivate_customer(request.user,customer_id) 
+    
+            return JsonResponse(
+                {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=200
+            ) 
+        
         return JsonResponse(
             {"success": False, "message": "Invalid request method"}, status=400
         ) 
