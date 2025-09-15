@@ -69,6 +69,17 @@ def add_customer(request):
         return render(request, 'formCustomer.html')
 
 @login_required(login_url='login')
+def edit_customer(request, customer_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        customer=get_information_of_a_customer_for_id(request.user, customer_id)
+        print(customer)
+        return render(request, "formCustomer.html", {"customer": customer['answer']})
+    else:
+        customer=get_information_of_a_customer_for_id(request.user, customer_id)
+        print(customer)
+        return render(request, "formCustomer.html", {"customer": customer['answer']})
+
+@login_required(login_url='login')
 def customers_search(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
     

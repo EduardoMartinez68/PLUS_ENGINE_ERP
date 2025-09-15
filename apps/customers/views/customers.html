@@ -389,7 +389,7 @@
         //when the user is activate we will show two button, the button for edit and the button for delete
         let buttonEdit=`
           <div class="col-8 d-flex justify-content-start">
-              <button class="btn btn-edit btn-success" t='btn.edit' onclick=nextWeb('/')>${window.translate_text('btn.edit')}</button>
+              <button class="btn btn-edit btn-success" t='btn.edit' onclick=nextWeb('/customers/edit_customer/${id_customer}')>${window.translate_text('btn.edit')}</button>
           </div>
           <div class="col-4 d-flex justify-content-end">
               <button class="btn btn-delete btn-success" onclick="window.open_pop_delete_customer('${id_customer}')"><i class="fi fi-sr-trash"></i></button>

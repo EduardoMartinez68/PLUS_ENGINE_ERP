@@ -39,6 +39,11 @@ def add_customer(request):
 
     return render(request, 'formCustomer.html')
 
+def edit_customer(request, customer_id):
+    customer=get_information_of_a_customer_for_id(request.user, customer_id)
+    print(customer)
+    return render(request, "formCustomer.html", {"customer": customer['answer']})
+
 @csrf_exempt
 def customers_search(request):
 

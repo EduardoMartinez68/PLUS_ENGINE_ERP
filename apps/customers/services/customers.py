@@ -362,6 +362,9 @@ def get_information_of_a_customer_for_id(user, customer_id):
             "this_customer_is_a_company": customer.this_customer_is_a_company,
             "company_name": customer.company_name or '',
             "contact_name": customer.contact_name or '',
+            "contact_email": customer.contact_email or '',
+            "contact_phone": customer.contact_phone or '',
+            "contact_cellphone": customer.contact_cellphone or '',
             "website": customer.website or '',
             "points": float(customer.points) if customer.points else 0,
             "credit": float(customer.credit) if customer.credit else 0,
@@ -378,7 +381,7 @@ def get_information_of_a_customer_for_id(user, customer_id):
                 "name": customer.source.name if customer.source else None,
                 "description": customer.source.description if customer.source else None,
             } if customer.source else None,
-            "avatar": customer.avatar.url if customer.avatar else None,
+            "avatar": customer.avatar.url if customer.avatar else '',
             "creation_date": customer.creation_date.isoformat() if customer.creation_date else None,
             "activated": customer.activated,
             "number_of_price_of_sale":customer.number_of_price_of_sale or 1

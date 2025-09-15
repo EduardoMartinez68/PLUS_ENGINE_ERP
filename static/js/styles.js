@@ -13,6 +13,24 @@ function generate_unique_dom_id(prefix = "plus-") {
   return id;
 }
 
+//this function is for know if the value of a variable is true or false use all the information 
+//1, true , True, 'true' etc
+function is_true(value){
+  if (value === true) return true;
+
+  if (typeof value === "string") {
+    const val = value.trim().toLowerCase();
+    return val === "true" || val === "1" || val === "yes" || val === "on" || val==='True';
+  }
+
+  if (typeof value === "number") {
+    return value === 1;                          
+  }
+
+  return false;
+}
+
+
 /*---------------------------------------------class labels---------------------------------------------*/
 class InfoLabel extends HTMLElement {
   constructor() {
@@ -1359,6 +1377,13 @@ class PlusSelect extends HTMLElement {
     //this.replaceWith(wrapper);
     this.appendChild(wrapper);
     */
+
+    //if the select have a value for dafault
+    const defaultValue = this.getAttribute('value');
+    if (defaultValue) {
+      this.setValue(defaultValue);
+    }
+
     //show structure of the label
     wrapper.appendChild(label);
     wrapper.appendChild(select);
@@ -1449,7 +1474,7 @@ class PlusCountry extends HTMLElement {
 
     // create the plus-select
     const plusSelect = document.createElement('plus-select');
-
+    const value=this.getAttribute('value') || 'MX';
     // Pass attributes from the plus-country tag to the plus-select tag
     plusSelect.setAttribute('label','info.select-a-country')
     if (this.hasAttribute('t')) plusSelect.setAttribute('t', this.getAttribute('t') || 'info.select-a-country');
@@ -1469,7 +1494,7 @@ class PlusCountry extends HTMLElement {
 
      this.replaceWith(plusSelect);
       setTimeout(() => {
-        plusSelect.setValue('MX');
+        plusSelect.setValue(value);
       }, 0);
   }
 }
@@ -1533,8 +1558,8 @@ class PlusSwitch extends HTMLElement {
     const name = this.getAttribute('name') || ''; //get the name for if the switch is in a form 
 
     //we will see if the proggramer would like that the switch is selected 
-    const valueCheck = this.getAttribute('checked');
-    const isChecked = (valueCheck == 'True' || valueCheck == 'true' || valueCheck || valueCheck == '1' || valueCheck == 1);
+    const valueCheck = this.getAttribute('checked') || false;
+    const isChecked = is_true(valueCheck);
 
     // Create parent container
     const container = document.createElement('div');
@@ -3915,7 +3940,7 @@ class ShowMore extends HTMLElement {
   }
 }
 
-class ImageUploader extends HTMLElement {
+class ImageUploader2 extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -4093,6 +4118,12 @@ class ImageUploader extends HTMLElement {
       reader.readAsDataURL(file);
     };
 
+
+    const addImageFromUrl = (url, index) => {
+      if (images.length >= maxImages) return;
+      createImageBox(url, null, index);
+    };
+
     addButton.addEventListener("click", () => inputFile.click());
     inputFile.addEventListener("change", (e) => {
       if (e.target.files.length > 0) addImage(e.target.files[0]);
@@ -4100,6 +4131,263 @@ class ImageUploader extends HTMLElement {
 
     container.appendChild(addButton);
     this.shadowRoot.append(style, container, inputFile);
+  }
+}
+
+class ImageUploader extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
+
+  connectedCallback() {
+    const maxImages = parseInt(this.getAttribute("max")) || 1;
+    const styleType = this.getAttribute("style") || "square";
+    const fieldName = this.getAttribute("name") || "image";
+
+    const style = document.createElement("style");
+    style.textContent = `
+      .uploader-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 20px;
+        border-radius: 16px;
+        justify-content: flex-start;
+        align-items: center;
+      }
+
+      .image-box {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transition: all 0.3s ease-in-out;
+      }
+
+      .image-box:hover {
+        border-color: ${colors.color_company};
+        cursor:pointer;
+      }
+
+      .image-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .image-square img {
+        border-radius: 0;
+      }
+      .image-rounded img {
+        border-radius: 12px;
+      }
+      .image-circle img {
+        border-radius: 50%;
+      }
+
+      .delete-btn {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out, background 0.2s;
+      }
+
+      .image-box:hover .delete-btn {
+        opacity: 1;
+      }
+
+      .delete-btn:hover {
+        background: rgba(220,38,38,0.9); /* rojo elegante */
+      }
+
+      .add-button {
+        width: 120px;
+        height: 120px;
+        border: 2px dashed #9ca3af;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: #f3f4f6;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .add-button:hover {
+        background: #e5e7eb;
+        border-color: ${colors.color_company};
+      }
+
+      .add-button:hover span {
+        color: ${colors.color_company};
+      }
+
+      .add-button span {
+        font-size: 2rem;
+        color: #6b7280;
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+    `;
+
+
+    const container = document.createElement("div");
+    container.classList.add("uploader-container");
+
+    const inputFile = document.createElement("input");
+    inputFile.type = "file";
+    inputFile.accept = "image/*";
+    inputFile.multiple = maxImages > 1;
+
+    const addButton = document.createElement("div");
+    addButton.classList.add("add-button");
+    addButton.innerHTML = `<span>＋</span>`;
+
+    const images = [];
+
+    // 📌 función para agregar imágenes nuevas desde FileReader
+
+    const addImage = (file) => {
+      if (images.length >= maxImages) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const box = document.createElement("div");
+        box.classList.add("image-box", `image-${styleType}`);
+
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.alt = "Uploaded Image";
+
+        // 🔹 Crear input oculto en el DOM principal (fuera del shadowRoot)
+        const form = this.closest('form');
+        let hiddenInput = null;
+        if (form) {
+          hiddenInput = document.createElement("input");
+          hiddenInput.type = "hidden";
+          hiddenInput.name = maxImages === 1 ? fieldName : `${fieldName}_${images.length + 1}`;
+          hiddenInput.value = e.target.result; // base64 de la imagen
+          form.appendChild(hiddenInput);
+        }
+
+        const deleteBtn = document.createElement("div");
+        deleteBtn.classList.add("delete-btn");
+        deleteBtn.textContent = "✖";
+
+        deleteBtn.addEventListener("click", () => {
+          container.removeChild(box);
+          images.splice(images.indexOf(file), 1);
+          if (hiddenInput) hiddenInput.remove();
+          if (images.length < maxImages) addButton.style.display = "flex";
+        });
+
+        box.appendChild(img);
+        box.appendChild(deleteBtn);
+        container.insertBefore(box, addButton);
+        images.push(file);
+
+        if (images.length >= maxImages) addButton.style.display = "none";
+      };
+
+      reader.readAsDataURL(file);
+    };
+
+    // 📌 función para agregar imágenes desde URL (preexistentes)
+    const addImageFromUrl = (url, index) => {
+      if (images.length >= maxImages) return;
+
+      const img = new Image();
+      img.onload = () => {
+        // La imagen existe y cargó correctamente
+        createImageBox(url, img, index);
+      };
+
+      img.src = url;
+      
+      img.onerror = () => {
+        // La imagen no existe → crea solo el marco vacío
+        createImageBox(null, null, index);
+      };
+
+      
+    };
+
+    // 📌 función general para crear el box
+    const createImageBox = (src, file, index) => {
+      const box = document.createElement("div");
+      box.classList.add("image-box", `image-${styleType}`);
+
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = "Uploaded Image";
+
+      // 🔹 input oculto en el form
+      const form = this.closest("form");
+      let hiddenInput = null;
+      if (form) {
+        hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = maxImages === 1 ? fieldName : `${fieldName}_${index}`;
+        hiddenInput.value = src;
+        form.appendChild(hiddenInput);
+      }
+
+      const deleteBtn = document.createElement("div");
+      deleteBtn.classList.add("delete-btn");
+      deleteBtn.textContent = "✖";
+
+      deleteBtn.addEventListener("click", () => {
+        container.removeChild(box);
+        if (hiddenInput) hiddenInput.remove();
+        images.splice(images.indexOf(file), 1);
+        if (images.length < maxImages) addButton.style.display = "flex";
+      });
+
+      box.appendChild(img);
+      box.appendChild(deleteBtn);
+      container.insertBefore(box, addButton);
+      images.push(file || src);
+
+      if (images.length >= maxImages) addButton.style.display = "none";
+    };
+
+    addButton.addEventListener("click", () => inputFile.click());
+    inputFile.addEventListener("change", (e) => {
+      if (e.target.files.length > 0) addImage(e.target.files[0]);
+    });
+
+    container.appendChild(addButton);
+    this.shadowRoot.append(style, container, inputFile);
+
+    // 📌 cargar imágenes iniciales desde atributos value-1, value-2...
+    for (let i = 1; i <= maxImages; i++) {
+      const url = this.getAttribute(`value-${i}`);
+      if (url) {
+        addImageFromUrl(url, i);
+      }
+    }
   }
 }
 
@@ -4842,23 +5130,6 @@ function load_script(src) {
     script.onerror = () => reject(`The script could not be loaded ${src}`);
     document.head.appendChild(script);
   });
-}
-
-//this function is for know if the value of a variable is true or false use all the information 
-//1, true , True, 'true' etc
-function is_true(value){
-  if (value === true) return true;
-
-  if (typeof value === "string") {
-    const val = value.trim().toLowerCase();
-    return val === "true" || val === "1" || val === "yes" || val === "on" || val==='True';
-  }
-
-  if (typeof value === "number") {
-    return value === 1;                          
-  }
-
-  return false;
 }
 
 /**----------------------------------show message label----------------------**/

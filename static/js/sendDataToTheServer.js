@@ -154,6 +154,35 @@ function restart_form(formId) {
     }
   });
 
+  // ===== restart all the ImageUploader =====
+  form.querySelectorAll("image-uploader").forEach(el => {
+    // clear the container of the images
+    const shadow = el.shadowRoot;
+    if (!shadow) return;
+    const container = shadow.querySelector(".uploader-container");
+    const addButton = shadow.querySelector(".add-button");
+
+    if (container && addButton) {
+      // delete all the .image-box except the button 
+      container.querySelectorAll(".image-box").forEach(box => box.remove());
+      addButton.style.display = "flex"; // show the button for add a image
+    }
+
+    //delete the inputs hidden in the form
+    form.querySelectorAll(`input[name^='${el.getAttribute("name") || "image"}']`).forEach(input => input.remove());
+
+    // reload initial images from attributes value-1, value-2...
+    const maxImages = parseInt(el.getAttribute("max")) || 1;
+    for (let i = 1; i <= maxImages; i++) {
+      const url = el.getAttribute(`value-${i}`);
+      if (url && url !== "None" && url.trim() !== "") {
+        // We reuse the internal function of each image-uploader
+        if (typeof el.addImageFromUrl === "function") {
+          el.addImageFromUrl(url, i);
+        }
+      }
+    }
+  });
 }
 
 async function send_form_to_the_server(formId, url) {
