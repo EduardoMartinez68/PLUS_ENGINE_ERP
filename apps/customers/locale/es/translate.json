@@ -1,4 +1,12 @@
 {
+  "customers.info.customer":"Cliente",
+  "customers.info.without-name":"Sin nombre",
+  "customers.info.without-email":"Sin email",
+  "customers.info.without-phone":"Sin telefono",
+  "customers.info.without-cellphone":"Sin celular",
+  "customer.info.without-tag":"General",
+
+
   "dashboard-total-customer":"Total de Clientes",
   "dashboard-customer-activate":"Activos",
   "dashboard-total-inactive":"Inactivos",
@@ -45,7 +53,7 @@
   "table-home-points": "Puntos",
   "table-home-credit": "Crédito",
   "table-home-tags": "Etiquetas",
-  "table-home-customer_type": "Tipo Cliente",
+  "table-home-customer_type": "Ctegoria Cliente",
   "table-home-source": "Fuente",
   "table-home-priority": "Prioridad",
   "table-home-creation_date": "Fecha de Creación",
@@ -221,6 +229,7 @@
   "customer.message.title.delte-customer":"Cliente Eliminado",
   "customer.message.description.delte-customer":"El cliente fue eliminado con exito",
 
+  "customers.options.status-customer":"Estado del cliente",
   "customer.button.recover-customer":"Restaurar Cliente",
   "customer.message.description.recover-customer":"¿Quieres restaurar a este cliente junto con toda su información?",
   "customers.message.title.the-customer-was-recover": "Cliente recuperado con éxito",

@@ -35,6 +35,7 @@ def save_customer(user, form, user_admin=None, password_admin=None):
         customer.num_int = form.get("num_int") or None
         customer.reference = form.get("reference") or None
         customer.activated = Plus.to_bool(form.get("activated"))
+        customer.priority= form.get("priority") or 0
 
         # information of the company of the customer
         customer.this_customer_is_a_company = Plus.to_bool(form.get("this_customer_is_a_company"))
@@ -292,13 +293,37 @@ def search_customer_for_filter(user, search, customer_type, source, priority, ac
         for c in qs:
             customers.append({
                 "id": c.id,
-                "name": c.name,
-                "email": c.email,
-                "phone": c.phone or c.cellphone,
+                "name": c.name or '',
+                "email": c.email or '',
+                "phone": c.phone or '',
+                "cellphone": c.cellphone or '',
+                "country": c.country or '',
+                "address": c.address or '',
+                "city": c.city or '',
+                "state": c.state or '',
+                "postal_code": c.postal_code or '',
+                "num_ext": c.num_ext or '',
+                "num_int": c.num_int or '',
+                "reference": c.reference or '',
+                "this_customer_is_a_company": c.this_customer_is_a_company,
+
                 "tag": ", ".join(c.tags) if c.tags else "",
                 "points": float(c.points) if c.points else 0,
                 "credit": float(c.credit) if c.credit else 0,
                 "priority": c.priority,
+                "customer_type": {
+                    "id": c.customer_type.id if c.customer_type else None,
+                    "name": c.customer_type.name if c.customer_type else None,
+                    "color": c.customer_type.color if c.customer_type else None,
+                    "description": c.customer_type.description if c.customer_type else None,
+                } if c.customer_type else None,
+                "source": {
+                    "id": c.source.id if c.source else None,
+                    "name": c.source.name if c.source else None,
+                    "description": c.source.description if c.source else None,
+                } if c.source else None,
+
+
                 "avatar": c.avatar.url if c.avatar else None,
                 "activated": "active" if c.activated else "inactive",
             })
@@ -325,7 +350,7 @@ def get_information_of_a_customer_for_id(user, customer_id):
             "name": customer.name or '',
             "email": customer.email or '',
             "phone": customer.phone or '',
-            "cellphone": customer.cellphone,
+            "cellphone": customer.cellphone or '',
             "country": customer.country or '',
             "address": customer.address or '',
             "city": customer.city or '',
@@ -356,6 +381,7 @@ def get_information_of_a_customer_for_id(user, customer_id):
             "avatar": customer.avatar.url if customer.avatar else None,
             "creation_date": customer.creation_date.isoformat() if customer.creation_date else None,
             "activated": customer.activated,
+            "number_of_price_of_sale":customer.number_of_price_of_sale or 1
         }
 
 

@@ -240,8 +240,8 @@
             </select>
         </div>
         <div class="col">
-            <label t="select-type-customer"></label>
-            <select label="select-type-customer" id="status-customer">
+            <label t="customers.options.status-customer"></label>
+            <select label="customers.options.status-customer" id="status-customer">
                 <option value="true" t="option-status-activated">Activate</option>
                 <option value="false" t="option-status-deleted">Delete</option>
                 <option value="" t="option-status-all">All</option>
@@ -287,7 +287,7 @@
     
     //update the table of the customers
     const divHtml = `
-      <plus-customers 
+    <plus-customers 
         id-customer="{ id }" 
         name="{ name }" 
         email="{ email }" 
@@ -298,8 +298,19 @@
         priority="{ priority }"
         image="{ avatar }"
         status="{ activated }"
+        customer_type="{ customer_type }"
+        country="{ country }"
+        address="{ address }"
+        city="{ city }"
+        state="{ state }"
+        postal_code="{ postal_code }"
+        num_ext="{ num_ext }"
+        num_int="{ num_int }"
+        reference="{ reference }"
+        this_customer_is_a_company="{ this_customer_is_a_company }"
+        source=" { source } "
         onclick="window.update_information_div_customer('{ id }')">
-      </plus-customers>
+    </plus-customers>
     `;
 
     update_container_from_the_server(
@@ -396,6 +407,19 @@
         }
 
         //now we will show all the information of the customer for that the user know the information that need
+        const textEmail=data.email || window.translate_text('customers.info.without-email');
+        const textCellphone=data.cellphone || window.translate_text('customers.info.without-cellphone');
+        const textPhone=data.phone || window.translate_text('customers.info.without-phone');
+        const textDataTypeCustomer = data.customer_type?.customer ?? window.translate_text('customers.info.customer');
+        const dataTypeCustomerColor = data.customer_type?.color ?? '#3B82F6';
+        const textSource = data.source?.name ?? '';
+
+        //here we will see if this customer is a company or is a person with help of a icon
+        let iconCompany=`<i class="fi fi-rr-building"></i>`;
+        if(window.is_true(data.this_customer_is_a_company)){
+          iconCompany=`<i class="fi fi-ss-building"></i>`;
+        }
+
         container.innerHTML = `
         <div class="info-customer-card">
             <div class="customer-header section">
@@ -408,25 +432,36 @@
                     <div class="status-points">
                         <span class="points">${data.points} pts</span>
                         <span class="credit">$${data.credit}</span>
+                        ${iconCompany}
                     </div>
                 </div>
             </div>
 
             <div class="section">
-                <span class="detail-label">Email</span>
-                <span class="detail-value">${data.email}</span>
+                <span class="detail-label">${window.translate_text('table-home-email')}</span>
+                <span class="detail-value">${textEmail}</span>
             </div>
 
             <div class="customer-details">
                 <div class="detail-box">
-                    <span class="detail-label">Celular</span>
-                    <span class="detail-value">${data.cellphone}</span>
+                    <span class="detail-label">${window.translate_text('table-home-cellphone')}</span>
+                    <span class="detail-value">${textCellphone}</span>
                 </div>
                 <div class="detail-box">
-                    <span class="detail-label">Teléfono</span>
-                    <span class="detail-value">${data.phone}</span>
+                    <span class="detail-label">${window.translate_text('table-home-phone')}</span>
+                    <span class="detail-value">${textPhone}</span>
                 </div>
             </div>
+
+            <div class="customer-details">
+                <div class="detail-box">
+                    <span class="detail-value">${textDataTypeCustomer}</span>
+                </div>
+                <div class="detail-box">
+                    <span class="detail-value">${textSource}</span>
+                </div>
+            </div>
+
             <br>
             <show-more text='Numero de precio' description='${data.number_of_price_of_sale}'></show-more>
             <br>
@@ -469,10 +504,15 @@
 
           // atributos recibidos
           const customerId = this.getAttribute("customer-id") || "";
-          const name = this.getAttribute("name") || "Sin nombre";
-          const email = this.getAttribute("email") || "Sin email";
-          const phone = this.getAttribute("phone") || "Sin celular";
-          const tag = this.getAttribute("tag") || "General";
+          const name = this.getAttribute("name") || window.translate_text('customers.info.without-name');
+          const email = this.getAttribute("email") || window.translate_text('customers.info.without-email');
+          const cellphone = this.getAttribute("cellphone") || window.translate_text('customers.info.without-cellphone');
+          const phone = this.getAttribute("phone") || window.translate_text('customers.info.without-phone');
+
+          const tag = this.getAttribute("tag") || "";
+          const customer_type=this.getAttribute('customer_type');
+          const customerTypeName=this.getAttribute('customer_type').name || window.translate_text('customers.info.customer');
+          const colorTypeCustomer = customer_type.color || '#3B82F6';
           const points = this.getAttribute("points") || "0";
           const credit = this.getAttribute("credit") || "0";
 
@@ -488,7 +528,7 @@
 
           const status = this.getAttribute("status") || "active"; // active | inactive
           const priority = parseInt(this.getAttribute("priority")) || 0; // 0-3
-
+          
           // estilos
           const style = document.createElement("style");
           style.textContent = `
@@ -609,7 +649,7 @@
         <div class="customer-info">${phone}</div>
       </div>
     </div>
-    <span class="customer-tag">${tag}</span>
+    <span class="customer-tag" style="background-color: ${colorTypeCustomer};">${customerTypeName}</span>
     <div class="priority">${renderStars()}</div>
     <div class="customer-stats">
       <div class="customer-stat" t='card-points'>${window.translate_text('card-points')}: ${points}</div>
@@ -645,19 +685,30 @@
 <script>
 (() => {
   const divHtml = `
-    <plus-customers 
-    id-customer="{ id }" 
-    name="{ name }" 
-    email="{ email }" 
-    phone="{ phone }"
-    tag="{ tag }" 
-    points="{ points }" 
-    credit="{ credit }" 
-    priority="{ priority }"
-    image="{ avatar }"
-    status="{ activated }"
-    onclick="window.update_information_div_customer('{ id }')">
-    </plus-customers>
+  <plus-customers 
+      id-customer="{ id }" 
+      name="{ name }" 
+      email="{ email }" 
+      phone="{ phone }"
+      tag="{ tag }" 
+      points="{ points }" 
+      credit="{ credit }" 
+      priority="{ priority }"
+      image="{ avatar }"
+      status="{ activated }"
+      customer_type="{ customer_type }"
+      country="{ country }"
+      address="{ address }"
+      city="{ city }"
+      state="{ state }"
+      postal_code="{ postal_code }"
+      num_ext="{ num_ext }"
+      num_int="{ num_int }"
+      reference="{ reference }"
+      this_customer_is_a_company="{ this_customer_is_a_company }"
+      source=" { source } "
+      onclick="window.update_information_div_customer('{ id }')">
+  </plus-customers>
   `;
 
   update_container_with_seeker(
