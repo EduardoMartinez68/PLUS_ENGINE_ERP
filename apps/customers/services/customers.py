@@ -8,6 +8,7 @@ from cryptography.fernet import Fernet
 from ..models import Customer, CustomerType, CustomerSource
 from ..plus_wrapper import Plus
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 
 def save_customer(user, form, user_admin=None, password_admin=None):
@@ -246,3 +247,63 @@ def toggle_customer_activation(customer_id, activate=True):
         import traceback
         traceback.print_exc()
         return {"success": False, "error": str(e)}
+
+
+def search_customer_for_filter(user, search, customer_type, source, priority, activated):
+    try:
+        # --- 1. limitar primero a la empresa del usuario ---
+        qs = Customer.objects.filter(company=user.company)
+
+        
+        # Filter by customer type
+        if customer_type:
+            qs = qs.filter(customer_type_id=customer_type)
+
+        # Filter by source
+        if source:
+            qs = qs.filter(source_id=source)
+
+        # Filter by priority
+        if priority not in [None, ""]:
+            qs = qs.filter(priority=priority)
+
+        # Filter by activated
+        if activated not in [None, ""]:
+            if activated.lower() in ["true", "1", "yes", "on"]:
+                qs = qs.filter(activated=True)
+            elif activated.lower() in ["false", "0", "no", "off"]:
+                qs = qs.filter(activated=False)
+
+        # --- 2. aplicar búsqueda en memoria (desencriptando campos) ---
+        if search:
+            search = search.lower()
+            qs = [c for c in qs if (
+                (c.name and search in c.name.lower()) or
+                (c.email and search in c.email.lower()) or
+                (c.phone and search in c.phone.lower()) or
+                (c.cellphone and search in c.cellphone.lower())
+            )]
+  
+        # --- 3. limitar a 20 resultados ---
+        qs = qs[:20]
+
+        # --- 4. dar formato a la respuesta ---
+        customers = []
+        for c in qs:
+            customers.append({
+                "id": c.id,
+                "name": c.name,
+                "email": c.email,
+                "phone": c.phone or c.cellphone,
+                "tag": ", ".join(c.tags) if c.tags else "",
+                "points": float(c.points) if c.points else 0,
+                "credit": float(c.credit) if c.credit else 0,
+                "priority": c.priority,
+                "avatar": c.avatar.url if c.avatar else None,
+                "status": "active" if c.activated else "inactive",
+            })
+            
+        return {"success": True, "answer": customers, "error": "the serach of the customer was success"}
+    
+    except Exception as e:
+        return {"success": False, "answer": [], "error": str(e)}

@@ -4589,8 +4589,8 @@ function show_alert(type, title, description, readmoreText = '') {
   else iconEl.innerHTML = '';
 
   //update the text that show the alert pop
-  titleEl.textContent = title;
-  descEl.textContent = description;
+  titleEl.textContent = window.translate_text(title);
+  descEl.textContent = window.translate_text(description);
   buttonsEl.innerHTML = '';
 
   //get the text of the buttons with the language that have the web. This is for update the text of all the button 

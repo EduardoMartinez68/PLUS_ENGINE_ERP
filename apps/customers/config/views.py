@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from ..services.customer_source import get_customer_source, add_a_new_source, update_source, delete_a_source_with_his_id, get_source_by_id, get_customer_source_select
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service
 from django.shortcuts import get_object_or_404
-from ..services.customers import save_customer
+from ..services.customers import save_customer, search_customer_for_filter
 import decimal
 import datetime
 import base64
@@ -13,7 +13,6 @@ from django.http import HttpResponse
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q
 from datetime import datetime
 from django.contrib import messages
 from django.shortcuts import render, redirect
@@ -77,154 +76,36 @@ def add_customer(request):
 def customers_search(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == "GET":
-            try:
-                # --- 1. Obtener filtros desde request.GET ---
-                search = request.GET.get("search", "").strip()  # texto libre
-                customer_type = request.GET.get("customer_type")  # id o None
-                source = request.GET.get("source")  # id o None
-                priority = request.GET.get("priority")  # 0–3 o None
-                activated = request.GET.get("activated")  # "true"/"false" o None
+            # --- 1. Obtener filtros desde request.GET ---
+            search = request.GET.get("query", "").strip()  # text free
+            customer_type = request.GET.get("customer_type")  # id o None
+            source = request.GET.get("source")  # id o None
+            priority = request.GET.get("priority")  # 0–3 o None
+            activated = request.GET.get("activated")  # "true"/"false" o None
     
-                # --- 2. Construir el queryset ---
-                qs = Customer.objects.all()
-    
-                # Filtro texto (name, email, phone, tags JSON como string)
-                if search:
-                    qs = qs.filter(
-                        Q(name__icontains=search)
-                        | Q(email__icontains=search)
-                        | Q(phone__icontains=search)
-                        | Q(cellphone__icontains=search)
-                        | Q(tags__icontains=search)  # JSONField permite búsquedas así
-                    )
-    
-                # Filtro por tipo de cliente
-                if customer_type:
-                    qs = qs.filter(customer_type_id=customer_type)
-    
-                # Filtro por source
-                if source:
-                    qs = qs.filter(source_id=source)
-    
-                # Filtro por prioridad
-                if priority is not None and priority != "":
-                    qs = qs.filter(priority=priority)
-    
-                # Filtro por activado
-                if activated is not None and activated != "":
-                    if activated.lower() in ["true", "1", "yes", "on"]:
-                        qs = qs.filter(activated=True)
-                    elif activated.lower() in ["false", "0", "no", "off"]:
-                        qs = qs.filter(activated=False)
-    
-                # --- 3. Limitar a 20 resultados ---
-                qs = qs.order_by("-creation_date")[:20]
-    
-                # --- 4. Formato de respuesta ---
-                customers = []
-                for c in qs:
-                    customers.append({
-                        "id": c.id,
-                        "name": c.name,
-                        "email": c.email,
-                        "phone": c.phone or c.cellphone,
-                        "tag": ", ".join(c.tags) if c.tags else "",
-                        "points": float(c.points) if c.points else 0,
-                        "credit": float(c.credit) if c.credit else 0,
-                        "priority": c.priority,
-                        "avatar": c.avatar.url if c.avatar else None,
-                        "status": "active" if c.activated else "inactive",
-                    })
-    
-                return JsonResponse(
-                    {
-                        "success": True,
-                        "message": "Consulta exitosa",
-                        "answer": customers,
-                    },
-                    status=200,
-                )
-    
-            except Exception as e:
-                print("⚠️ Error en customers_search:", e)
-                return JsonResponse(
-                    {"success": False, "error": str(e)}, status=500
-                )
+            answer=search_customer_for_filter(request.user,search,customer_type,source,priority, activated)
+            if answer["success"]:
+                return JsonResponse({'success': True, 'answer': answer["answer"], 'error':answer["error"]}, status=200)
+            else: 
+                return JsonResponse({'success': False, 'error': f'Error to search the customer: {str(answer["error"])}'}, status=300)
+        else:
+            return JsonResponse({'success': False, 'error': f'Method not permitted'}, status=300)
     else:
         if request.method == "GET":
-            try:
-                # --- 1. Obtener filtros desde request.GET ---
-                search = request.GET.get("search", "").strip()  # texto libre
-                customer_type = request.GET.get("customer_type")  # id o None
-                source = request.GET.get("source")  # id o None
-                priority = request.GET.get("priority")  # 0–3 o None
-                activated = request.GET.get("activated")  # "true"/"false" o None
+            # --- 1. Obtener filtros desde request.GET ---
+            search = request.GET.get("query", "").strip()  # text free
+            customer_type = request.GET.get("customer_type")  # id o None
+            source = request.GET.get("source")  # id o None
+            priority = request.GET.get("priority")  # 0–3 o None
+            activated = request.GET.get("activated")  # "true"/"false" o None
     
-                # --- 2. Construir el queryset ---
-                qs = Customer.objects.all()
-    
-                # Filtro texto (name, email, phone, tags JSON como string)
-                if search:
-                    qs = qs.filter(
-                        Q(name__icontains=search)
-                        | Q(email__icontains=search)
-                        | Q(phone__icontains=search)
-                        | Q(cellphone__icontains=search)
-                        | Q(tags__icontains=search)  # JSONField permite búsquedas así
-                    )
-    
-                # Filtro por tipo de cliente
-                if customer_type:
-                    qs = qs.filter(customer_type_id=customer_type)
-    
-                # Filtro por source
-                if source:
-                    qs = qs.filter(source_id=source)
-    
-                # Filtro por prioridad
-                if priority is not None and priority != "":
-                    qs = qs.filter(priority=priority)
-    
-                # Filtro por activado
-                if activated is not None and activated != "":
-                    if activated.lower() in ["true", "1", "yes", "on"]:
-                        qs = qs.filter(activated=True)
-                    elif activated.lower() in ["false", "0", "no", "off"]:
-                        qs = qs.filter(activated=False)
-    
-                # --- 3. Limitar a 20 resultados ---
-                qs = qs.order_by("-creation_date")[:20]
-    
-                # --- 4. Formato de respuesta ---
-                customers = []
-                for c in qs:
-                    customers.append({
-                        "id": c.id,
-                        "name": c.name,
-                        "email": c.email,
-                        "phone": c.phone or c.cellphone,
-                        "tag": ", ".join(c.tags) if c.tags else "",
-                        "points": float(c.points) if c.points else 0,
-                        "credit": float(c.credit) if c.credit else 0,
-                        "priority": c.priority,
-                        "avatar": c.avatar.url if c.avatar else None,
-                        "status": "active" if c.activated else "inactive",
-                    })
-    
-                return JsonResponse(
-                    {
-                        "success": True,
-                        "message": "Consulta exitosa",
-                        "answer": customers,
-                    },
-                    status=200,
-                )
-    
-            except Exception as e:
-                print("⚠️ Error en customers_search:", e)
-                return JsonResponse(
-                    {"success": False, "error": str(e)}, status=500
-                )
+            answer=search_customer_for_filter(request.user,search,customer_type,source,priority, activated)
+            if answer["success"]:
+                return JsonResponse({'success': True, 'answer': answer["answer"], 'error':answer["error"]}, status=200)
+            else: 
+                return JsonResponse({'success': False, 'error': f'Error to search the customer: {str(answer["error"])}'}, status=300)
+        else:
+            return JsonResponse({'success': False, 'error': f'Method not permitted'}, status=300)
 
 @login_required(login_url='login')
 def get_information_of_the_customer(request):
@@ -245,22 +126,22 @@ def get_information_of_the_customer(request):
                 # Construir respuesta con todos los campos
                 data = {
                     "id": customer.id,
-                    "name": customer.name,
-                    "email": customer.email,
-                    "phone": customer.phone,
+                    "name": customer.name or '',
+                    "email": customer.email or '',
+                    "phone": customer.phone or '',
                     "cellphone": customer.cellphone,
-                    "country": customer.country,
-                    "address": customer.address,
-                    "city": customer.city,
-                    "state": customer.state,
-                    "postal_code": customer.postal_code,
-                    "num_ext": customer.num_ext,
-                    "num_int": customer.num_int,
-                    "reference": customer.reference,
+                    "country": customer.country or '',
+                    "address": customer.address or '',
+                    "city": customer.city or '',
+                    "state": customer.state or '',
+                    "postal_code": customer.postal_code or '',
+                    "num_ext": customer.num_ext or '',
+                    "num_int": customer.num_int or '',
+                    "reference": customer.reference or '',
                     "this_customer_is_a_company": customer.this_customer_is_a_company,
-                    "company_name": customer.company_name,
-                    "contact_name": customer.contact_name,
-                    "website": customer.website,
+                    "company_name": customer.company_name or '',
+                    "contact_name": customer.contact_name or '',
+                    "website": customer.website or '',
                     "points": float(customer.points) if customer.points else 0,
                     "credit": float(customer.credit) if customer.credit else 0,
                     "tags": customer.tags if customer.tags else [],
@@ -312,22 +193,22 @@ def get_information_of_the_customer(request):
                 # Construir respuesta con todos los campos
                 data = {
                     "id": customer.id,
-                    "name": customer.name,
-                    "email": customer.email,
-                    "phone": customer.phone,
+                    "name": customer.name or '',
+                    "email": customer.email or '',
+                    "phone": customer.phone or '',
                     "cellphone": customer.cellphone,
-                    "country": customer.country,
-                    "address": customer.address,
-                    "city": customer.city,
-                    "state": customer.state,
-                    "postal_code": customer.postal_code,
-                    "num_ext": customer.num_ext,
-                    "num_int": customer.num_int,
-                    "reference": customer.reference,
+                    "country": customer.country or '',
+                    "address": customer.address or '',
+                    "city": customer.city or '',
+                    "state": customer.state or '',
+                    "postal_code": customer.postal_code or '',
+                    "num_ext": customer.num_ext or '',
+                    "num_int": customer.num_int or '',
+                    "reference": customer.reference or '',
                     "this_customer_is_a_company": customer.this_customer_is_a_company,
-                    "company_name": customer.company_name,
-                    "contact_name": customer.contact_name,
-                    "website": customer.website,
+                    "company_name": customer.company_name or '',
+                    "contact_name": customer.contact_name or '',
+                    "website": customer.website or '',
                     "points": float(customer.points) if customer.points else 0,
                     "credit": float(customer.credit) if customer.credit else 0,
                     "tags": customer.tags if customer.tags else [],

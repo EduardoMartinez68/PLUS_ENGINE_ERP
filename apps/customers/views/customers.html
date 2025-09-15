@@ -270,6 +270,13 @@
 
 
 <script>
+  function checkImage(url, callback) {
+    const img = new Image();
+    img.onload = () => callback(true);  
+    img.onerror = () => callback(false);
+    img.src = url;
+  }
+
   async function filter_the_customer(){
       hide_pop('pop-filter-customer')
   }
@@ -297,10 +304,19 @@
         // Render dinámico con template literal
         const container = document.getElementById('info-customer');
         container.innerHTML = ""; //clear the container
+
+        let image="{% static '/img/profile.webp' %}";
+        if(data.avatar){
+          image = data.avatar;
+          if(image=='None' || image==null || image=='null'){
+            image="{% static '/img/profile.webp' %}";
+          }    
+        }
+
         container.innerHTML = `
         <div class="info-customer-card">
             <div class="customer-header section">
-                <img src="${data.avatar}" alt="Foto de ${data.name}" class="customer-avatar">
+                <img src="${image}" alt="Photo of ${data.name}" class="customer-avatar">
                 <div>
                     <h2>${data.name}</h2>
                     <br>
@@ -332,13 +348,13 @@
                 
             </div>
             <br>
-            <show-more text='Numero de precio' description='1'></show-more>
+            <show-more text='Numero de precio' description='${data.number_of_price_of_sale}'></show-more>
             <br>
-            <show-more text='Domicilio' description='(San Luis Potosi. Mexico.)'></show-more>
+            <show-more text='Domicilio' description='(${data.state} ${data.city}. ${data.country})'></show-more>
             <br>
             <div class="row">
                 <div class="col-8 d-flex justify-content-start">
-                    <button class="btn btn-edit btn-success">Editar</button>
+                    <button class="btn btn-edit btn-success" t='btn.edit' onclick=nextWeb('/')>${window.translate_text('btn.edit')}</button>
                 </div>
                 <div class="col-4 d-flex justify-content-end">
                     <button class="btn btn-delete btn-success"><i class="fi fi-sr-trash"></i></button>
@@ -378,7 +394,17 @@
           const tag = this.getAttribute("tag") || "General";
           const points = this.getAttribute("points") || "0";
           const credit = this.getAttribute("credit") || "0";
-          const image = this.getAttribute("image") || "https://via.placeholder.com/80";
+
+          let image = this.getAttribute("image");
+          if(this.hasAttribute("image")){
+            image = this.getAttribute("image");
+            if(image=='None' || image==null || image=='null'){
+              image="{% static '/img/profile.webp' %}";
+            }    
+          }
+
+         
+
           const status = this.getAttribute("status") || "active"; // active | inactive
           const priority = parseInt(this.getAttribute("priority")) || 0; // 0-3
 
@@ -557,6 +583,8 @@
     '/customers/customers_search',
     'GET'
   );
+
+
 })();
 </script>
 <script>
