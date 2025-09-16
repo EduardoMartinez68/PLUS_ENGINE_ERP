@@ -186,7 +186,7 @@ async function send_form_to_the_server(formId, url) {
 
 //this function is for create a form that send the information to the server
 //it will add an event listener to the form with the id 'id_form' for that the proggramer only add the if of the form and his id for get infrmation 
-async function create_form_for_send_the_server(id_form, url) {
+async function create_form_for_send_the_server(id_form, url, restart=true) {
     document.getElementById(id_form).addEventListener('submit', async function (e) {
         e.preventDefault(); //this is for that the form not load the web
 
@@ -196,7 +196,10 @@ async function create_form_for_send_the_server(id_form, url) {
         //we will see if we can add the new customer
         if (result.success) {
             show_notification('success', result.message || 'info.info-send-with-success');
-            restart_form(id_form);
+
+            if(restart){
+              restart_form(id_form);
+            }
         } else {
             show_alert('alert', 'Error', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'))
         }

@@ -215,6 +215,7 @@
   "message.do-you-like-delete-this-source": "Eliminar Canal de Adquisición",
   "message.description-delete-source": "Si eliminas este canal, ya no estará disponible como opción para asignar a futuros clientes.",
 
+  "customers.message.succes-save-customer":"Cliente Guardado",
   "customers.message.error-save-customer":"Error al guardar el cliente",
   "customers.message.error-description-customer":"Sucedio un error en el servidor al momento de intentar guardar al nuevo cliente.",
   "customers.message.success-save-customer":"Cliente guardado",
@@ -233,5 +234,10 @@
   "customer.button.recover-customer":"Restaurar Cliente",
   "customer.message.description.recover-customer":"¿Quieres restaurar a este cliente junto con toda su información?",
   "customers.message.title.the-customer-was-recover": "Cliente recuperado con éxito",
-  "customers.message.description.the-customer-was-recover": "La información del cliente ha sido restaurada correctamente."
+  "customers.message.description.the-customer-was-recover": "La información del cliente ha sido restaurada correctamente.",
+
+  "customers.message.update.title.customer-update-with-success":"Cleinte Actualizado",
+  "customers.message.update.description.customer-update-with-success":"El cliente fue actualizado correctamente en la base de datos de tu empresa.",
+  "customers.message.update.error-to-update-the-customer":"Cliente no actualizado",
+  "customers.message.update.error-to-update-the-customer-description":"Sucedio un error en el servidor al momento de intentar actualizar al cliente."
   }

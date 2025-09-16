@@ -1387,7 +1387,7 @@ class PlusSelect extends HTMLElement {
 
     // mover el popup al body para que no rompa el layout
     document.body.appendChild(popup);
-    
+
     //if the select have a value for dafault
     const defaultValue = this.getAttribute('value');
     if (defaultValue) {
@@ -3804,6 +3804,32 @@ class PlusTag extends HTMLElement {
         this.input.value = '';
       }
     });
+
+    this._value=this.getAttribute('value') || []
+
+
+    // Obtener los tags iniciales desde el atributo `value`
+    const valueAttr = this.getAttribute('value');
+    let initialTags = [];
+
+    if (valueAttr) {
+      try {
+        //Trying to parse as JSON
+        const parsed = JSON.parse(valueAttr);
+
+        //Verify that it is an array of strings
+        if (Array.isArray(parsed)) {
+          initialTags = parsed;
+        } else {
+          console.warn('PlusTag: el atributo value debe ser un array JSON válido');
+        }
+      } catch (e) {
+        console.warn('PlusTag: el atributo value debe ser un JSON válido', e);
+      }
+    }
+
+    // Render the initial tags
+    this.setTags(initialTags);
   }
 
   /** RENDER OF TAGS */

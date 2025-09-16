@@ -47,7 +47,6 @@
             </plus-tab>
             <plus-tab text="info-empresa">
                 <plus-switch text="form2-label-is_company" name="this_customer_is_a_company" id="this_customer_is_a_company" checked="{{customer.this_customer_is_a_company}}"></plus-switch>
-
                 <div class="row section">
                     <div class="col">
                         <input-field type="text" label="form2-label-company_name"
@@ -90,7 +89,13 @@
                     </div>
                 </div>
             </plus-tab>
-            <button class="btn btn-add btn-success" style="width: 100%;" t="save">Save</button>
+            {% if customer.id %}
+                <!--here is for when the user would like edit a customer--->
+                <input type="hidden" id="customer_id" name="customer_id" value="{{customer.id}}">
+                <button class="btn btn-edit btn-success" style="width: 100%;" t="btn.update">Update</button>
+            {% else %}
+                <button class="btn btn-add btn-success" style="width: 100%;" t="save">Save</button>
+            {% endif %}
         </plus-tabs>
     </div>
 
@@ -154,7 +159,7 @@
 
     <message-pop title="advanced-information" name="pop-advanced-information">
         <div class="container-pop">
-            <plus-switch text="form1-label-status" checked="True" name="activated" id="=activated"></plus-switch>
+            <plus-switch text="form1-label-status" checked="True" name="activated" id="=activated" checked="{{customer.activated}}"></plus-switch>
 
             <div class="row section">
                 <div class="col">
@@ -190,14 +195,14 @@
                 <div class="col">
                     <info-label label="tags" message="email-message-show"></info-label>
                     <plus-tags id="tags" name="tags" label="emails-guests" message="email-message-show"
-                        placeholder="input.add-most-email"></plus-tags>
+                        placeholder="input.add-most-email" value="{{customer.tags}}"></plus-tags>
                 </div>
             </div>
 
             <div class="row section">
                 <div class="col">
                     <plus-select label="form1-number_of_price_of_sale" name="number_of_price_of_sale" id="number_of_price_of_sale" value="1">
-                        <option value="1" t="1"></option>
+                        <option value="1" t="1" selected></option>
                         <option value="1" t="2"></option>
                         <option value="1" t="3"></option>
                         <option value="1" t="4"></option>
@@ -209,7 +214,7 @@
 
             <div class="row section">
                 <label for="" t="note"></label>
-                <textarea t-placeholder="note-placeholder" name="note" id="note"></textarea>
+                <textarea t-placeholder="note-placeholder" name="note" id="note">{{customer.note}}</textarea>
             </div>
 
         </div>
@@ -229,7 +234,18 @@
     const form = document.getElementById('form_create_customer');
 
     form.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Evita que se recargue la página
+        e.preventDefault(); //this is for that the server not send the information to the backend
+
+        //first we will see if be in a form for add a new customer o for edit a customer that exist
+        const customer_id=document.getElementById('customer_id');
+        if(customer_id){
+            await update_a_customer(customer_id.value)
+        }else{
+            await add_a_new_customer();
+        }
+    });
+
+    async function add_a_new_customer(){
         const server=await send_form_to_the_server('form_create_customer','/customers/add_customer/');
         if(server.success){
             window.restart_form('form_create_customer');
@@ -237,7 +253,16 @@
         }else{
             show_alert('error', 'customers.message.error-save-customer', server.message || 'customers.message.error-description-customer', server.error || 'Error in the server');
         }
-    });
+    }
+
+    async function update_a_customer(customer_id){
+        const server=await send_form_to_the_server('form_create_customer',`/customers/edit_customer/${customer_id}/`, false);
+        if(server.success){
+            show_alert('success', 'customers.message.update.title.customer-update-with-success', 'customers.message.update.description.customer-update-with-success', server.error || '');
+        }else{
+            show_alert('error', 'customers.message.update.error-to-update-the-customer', server.message || 'customers.message.update.error-to-update-the-customer-description', server.error || 'Error in the server');
+        }
+    }
 })();
 </script>
 

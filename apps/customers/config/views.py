@@ -2,7 +2,7 @@
 from django.contrib.auth.decorators import login_required
 from ..services.customer_source import get_customer_source, add_a_new_source, update_source, delete_a_source_with_his_id, get_source_by_id, get_customer_source_select
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service
-from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, change_status_of_the_customer
+from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, change_status_of_the_customer, update_customer
 from ..models import Customer, CustomerType
 from django.http import HttpResponse
 import json
@@ -43,9 +43,6 @@ def add_customer(request):
                 else: 
                     return JsonResponse({'success': False, 'error': f'Error to save the customer: {str(answer["error"])}'}, status=300)
             except Exception as e:
-                print('--------------------- ERROR to save the customer ---------------------')
-                print(e)
-                
                 return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)
     
     
@@ -63,9 +60,6 @@ def add_customer(request):
                 else: 
                     return JsonResponse({'success': False, 'error': f'Error to save the customer: {str(answer["error"])}'}, status=300)
             except Exception as e:
-                print('--------------------- ERROR to save the customer ---------------------')
-                print(e)
-                
                 return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)
     
     
@@ -75,9 +69,39 @@ def add_customer(request):
 @login_required(login_url='login')
 def edit_customer(request, customer_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == 'POST':
+            try:
+                data = json.loads(request.body)  #get the new information of the customer
+                answer=update_customer(request.user,customer_id, data)
+    
+                #here we will see if can update the information
+                if answer["success"]:
+                    return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
+                else: 
+                    return JsonResponse({'success': False, 'error': f'Error to update the customer: {str(answer["error"])}'}, status=300)
+            except Exception as e:
+                return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)
+    
+    
+    
         customer=get_information_of_a_customer_for_id(request.user, customer_id)
         return render(request, "formCustomer.html", {"customer": customer['answer']})
     else:
+        if request.method == 'POST':
+            try:
+                data = json.loads(request.body)  #get the new information of the customer
+                answer=update_customer(request.user,customer_id, data)
+    
+                #here we will see if can update the information
+                if answer["success"]:
+                    return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
+                else: 
+                    return JsonResponse({'success': False, 'error': f'Error to update the customer: {str(answer["error"])}'}, status=300)
+            except Exception as e:
+                return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)
+    
+    
+    
         customer=get_information_of_a_customer_for_id(request.user, customer_id)
         return render(request, "formCustomer.html", {"customer": customer['answer']})
 

@@ -18,7 +18,7 @@ def customers_home(request):
     return render(request, 'customers.html', {'customers': customers})
 
 #-------------------------customer-------------------------
-from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, change_status_of_the_customer
+from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, change_status_of_the_customer, update_customer
 @csrf_exempt
 def add_customer(request):
     if request.method == 'POST':
@@ -32,9 +32,6 @@ def add_customer(request):
             else: 
                 return JsonResponse({'success': False, 'error': f'Error to save the customer: {str(answer["error"])}'}, status=300)
         except Exception as e:
-            print('--------------------- ERROR to save the customer ---------------------')
-            print(e)
-            
             return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)
 
 
@@ -42,8 +39,24 @@ def add_customer(request):
     return render(request, 'formCustomer.html')
 
 def edit_customer(request, customer_id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)  #get the new information of the customer
+            answer=update_customer(request.user,customer_id, data)
+
+            #here we will see if can update the information
+            if answer["success"]:
+                return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
+            else: 
+                return JsonResponse({'success': False, 'error': f'Error to update the customer: {str(answer["error"])}'}, status=300)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)
+
+
+
     customer=get_information_of_a_customer_for_id(request.user, customer_id)
     return render(request, "formCustomer.html", {"customer": customer['answer']})
+
 
 @csrf_exempt
 def customers_search(request):

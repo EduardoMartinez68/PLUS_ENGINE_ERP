@@ -108,86 +108,67 @@ def save_customer(user, form, user_admin=None, password_admin=None):
             e
         )}
 
+
 def update_customer(user, customer_id, form):
     """
-    Updates an existing customer and their avatar if provided.
+    Updates an existing customer that belongs to the user's company.
     `form` must be a dictionary containing the fields to update.
     """
     try:
-        # Obtener el cliente existente
-        customer = Customer.objects.get(id=customer_id)
+        # Obtener el cliente solo si pertenece a la empresa del usuario
+        customer = Customer.objects.get(id=customer_id, company=user.company)
 
         #----- Personal information -----
-        if "name" in form:
-            customer.name = form.get("name")
-        if "email" in form:
-            customer.email = form.get("email") or None
-        if "phone" in form:
-            customer.phone = form.get("phone") or None
-        if "cellphone" in form:
-            customer.cellphone = form.get("cellphone") or None
-        if "country" in form:
-            customer.country = form.get("country", "MX")
-        if "address" in form:
-            customer.address = form.get("address") or None
-        if "city" in form:
-            customer.city = form.get("city") or None
-        if "state" in form:
-            customer.state = form.get("state") or None
-        if "postal_code" in form:
-            customer.postal_code = form.get("postal_code") or None
-        if "num_ext" in form:
-            customer.num_ext = form.get("num_ext") or None
-        if "num_int" in form:
-            customer.num_int = form.get("num_int") or None
-        if "reference" in form:
-            customer.reference = form.get("reference") or None
-        if "activated" in form:
-            customer.activated = Plus.to_bool(form.get("activated"))
+        customer.name = form.get("name") or ''
+        customer.email = form.get("email") or ''
+        customer.phone = form.get("phone") or ''
+        customer.cellphone = form.get("cellphone") or ''
+        customer.country = form.get("country") or 'MX'
+        customer.address = form.get("address") or ''
+        customer.city = form.get("city") or ''
+        customer.state = form.get("state") or ''
+        customer.postal_code = form.get("postal_code") or ''
+        customer.num_ext = form.get("num_ext") or ''
+        customer.num_int = form.get("num_int") or ''
+        customer.reference = form.get("reference") or ''
+
+        customer.activated = Plus.to_bool(form.get("activated"))
+
+        customer.priority = form.get("priority") or 0
 
         #----- Company info -----
-        if "this_customer_is_a_company" in form:
-            customer.this_customer_is_a_company = Plus.to_bool(form.get("this_customer_is_a_company"))
-        if "company_name" in form:
-            customer.company_name = form.get("company_name") or None
-        if "contact_name" in form:
-            customer.contact_name = form.get("contact_name") or None
-        if "contact_email" in form:
-            customer.contact_email = form.get("contact_email") or None
-        if "contact_phone" in form:
-            customer.contact_phone = form.get("contact_phone") or None
-        if "contact_cellphone" in form:
-            customer.contact_cellphone = form.get("contact_cellphone") or None
-        if "website" in form:
-            customer.website = form.get("website") or None
-        if "note" in form:
-            customer.note = form.get("note") or None
+        customer.this_customer_is_a_company = Plus.to_bool(form.get("this_customer_is_a_company"))
+
+        customer.company_name = form.get("company_name") or ''
+        customer.contact_name = form.get("contact_name") or ''
+        customer.contact_email = form.get("contact_email") or ''
+        customer.contact_phone = form.get("contact_phone") or ''
+        customer.contact_cellphone = form.get("contact_cellphone") or ''
+        customer.website = form.get("website") or ''
+        customer.note = form.get("note") or ''
 
         #----- Customer company relations -----
-        if "points" in form:
-            customer.points = form.get("points") or 0
-        if "credit" in form:
-            customer.credit = form.get("credit") or 0
-        if "tags" in form:
-            customer.tags = form.get("tags") or None
-        if "number_of_price_of_sale" in form:
-            customer.number_of_price_of_sale = form.get("number_of_price_of_sale") or 1
+        customer.points = form.get("points", customer.points or 0)
+        customer.credit = form.get("credit", customer.credit or 0)
+        customer.tags = form.get("tags") or []
 
-        if "customer_type" in form:
-            type_id = form.get("customer_type")
-            if type_id:
-                try:
-                    customer.customer_type = CustomerType.objects.get(id=type_id)
-                except CustomerType.DoesNotExist:
-                    customer.customer_type = None
+        customer.number_of_price_of_sale = form.get("number_of_price_of_sale", customer.number_of_price_of_sale or 1)
 
-        if "source" in form:
-            source_id = form.get("source")
-            if source_id:
-                try:
-                    customer.source = CustomerSource.objects.get(id=source_id)
-                except CustomerSource.DoesNotExist:
-                    customer.source = None
+        # Relación con CustomerType
+        type_id = form.get("customer_type")
+        if type_id:
+            try:
+                customer.customer_type = CustomerType.objects.get(id=type_id)
+            except CustomerType.DoesNotExist:
+                customer.customer_type = None
+
+        # Relación con CustomerSource
+        source_id = form.get("source")
+        if source_id:
+            try:
+                customer.source = CustomerSource.objects.get(id=source_id)
+            except CustomerSource.DoesNotExist:
+                customer.source = None
 
         #----- Avatar -----
         avatar_data = form.get("avatar")
@@ -217,13 +198,13 @@ def update_customer(user, customer_id, form):
         return {"success": True, "answer": "Customer updated successfully", "customer_id": customer.id}
 
     except Customer.DoesNotExist:
-        return {"success": False, "error": "Customer not found"}
+        return {"success": False, "error": "Customer not found or does not belong to your company"}
     except Exception as e:
         print("Error updating customer:", e)
         import traceback
         traceback.print_exc()
         return {"success": False, "error": str(e)}
-
+    
 def toggle_customer_activation(customer_id, activate=True):
     """
     Activa o desactiva un cliente.
@@ -369,6 +350,7 @@ def get_information_of_a_customer_for_id(user, customer_id):
             "points": float(customer.points) if customer.points else 0,
             "credit": float(customer.credit) if customer.credit else 0,
             "tags": customer.tags if customer.tags else [],
+            "note": customer.note,
             "priority": customer.priority,
             "customer_type": {
                 "id": customer.customer_type.id if customer.customer_type else None,
