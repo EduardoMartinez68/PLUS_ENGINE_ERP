@@ -22,9 +22,11 @@ from ..services.customers import save_customer, search_customer_for_filter, get_
 @csrf_exempt
 def add_customer(request):
     if request.method == 'POST':
+        print(request.body)
         try:
             data = json.loads(request.body)  # El body lo mandas en JSON con fetch
             answer=save_customer(request.user,data)
+
             if answer["success"]:
                 return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
             else: 
@@ -41,7 +43,6 @@ def add_customer(request):
 
 def edit_customer(request, customer_id):
     customer=get_information_of_a_customer_for_id(request.user, customer_id)
-    print(customer)
     return render(request, "formCustomer.html", {"customer": customer['answer']})
 
 @csrf_exempt

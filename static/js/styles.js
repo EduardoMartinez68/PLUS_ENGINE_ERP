@@ -1378,11 +1378,6 @@ class PlusSelect extends HTMLElement {
     this.appendChild(wrapper);
     */
 
-    //if the select have a value for dafault
-    const defaultValue = this.getAttribute('value');
-    if (defaultValue) {
-      this.setValue(defaultValue);
-    }
 
     //show structure of the label
     wrapper.appendChild(label);
@@ -1392,6 +1387,12 @@ class PlusSelect extends HTMLElement {
 
     // mover el popup al body para que no rompa el layout
     document.body.appendChild(popup);
+    
+    //if the select have a value for dafault
+    const defaultValue = this.getAttribute('value');
+    if (defaultValue) {
+      this.setValue(defaultValue);
+    }
   }
 
   setValue(value, text = null) {
@@ -1424,6 +1425,17 @@ class PlusSelect extends HTMLElement {
   //this return the value of the hidden input
   getValue() {
     return this._hiddenInput ? this._hiddenInput.value : null;
+  }
+
+  //this is for restart the form when a form be send
+  reset() {
+    if (this._hiddenInput) {
+      this._hiddenInput.value = "";
+    }
+    if (this._selectText) {
+      const defaultLabel = this.getAttribute("t") || this.getAttribute("label") || "";
+      this._selectText.textContent = window.translate_text(defaultLabel);
+    }
   }
 }
 
@@ -2703,7 +2715,6 @@ function format_date_to_text(date) {
   return `${day}/${month}/${year}`;
 }
 
-
 class PlusDate extends HTMLElement {
   constructor() {
     super();
@@ -3862,6 +3873,11 @@ class PlusTag extends HTMLElement {
   getTags() {
     return this.emails;
   }
+
+  resetTags() {
+    this.emails = [];
+    this.renderTags();
+  }
 }
 
 class ShowMore extends HTMLElement {
@@ -4408,10 +4424,10 @@ class PlusPriority extends HTMLElement {
     this._value = parseInt(this.getAttribute("value")) || 0;
     this._allowNone = this.hasAttribute("allow-none");
     const isEditable = !this.hasAttribute("notIsEditable");
-    const name = this.getAttribute("name") || "";
-    const id = this.getAttribute("id") || "";
+    const name = this.getAttribute("name") || "priority";
+    const id = this.getAttribute("id") || window.generate_unique_dom_id();
 
-    // estilos
+    // ===== styles =====
     const style = document.createElement("style");
     style.textContent = `
       .stars {
@@ -4422,11 +4438,11 @@ class PlusPriority extends HTMLElement {
       }
       .star {
         font-size: 28px;
-        color: #d1d5db; /* gris elegante */
+        color: #d1d5db;
         transition: transform 0.2s ease, color 0.3s ease;
       }
       .star.filled {
-        color: #fbbf24; /* dorado elegante */
+        color: #fbbf24;
         text-shadow: 0px 2px 6px rgba(0,0,0,0.15);
       }
       .star:hover {
@@ -4434,16 +4450,19 @@ class PlusPriority extends HTMLElement {
       }
     `;
 
-    // contenedor de estrellas
+    // ===== hidden input only once in the light DOM =====
+    if (!this._hiddenInput) {
+      this._hiddenInput = document.createElement("input");
+      this._hiddenInput.type = "hidden";
+      if (name) this._hiddenInput.name = name;
+      if (id) this._hiddenInput.id = id;
+      this._hiddenInput.value = this._value;
+      this.appendChild(this._hiddenInput); // light DOM (para enviar en formularios)
+    }
+
+    // ===== render stars =====
     const wrapper = document.createElement("div");
     wrapper.classList.add("stars");
-
-    // input oculto para formularios
-    this._hiddenInput = document.createElement("input");
-    this._hiddenInput.type = "hidden";
-    if (name) this._hiddenInput.name = name;
-    if (id) this._hiddenInput.id = id;
-    this._hiddenInput.value = this._value;
 
     const renderStars = () => {
       wrapper.innerHTML = "";
@@ -4455,22 +4474,20 @@ class PlusPriority extends HTMLElement {
           star.classList.add("filled");
         }
 
-        //this is only if the input is editable
         if (isEditable) {
           star.addEventListener("click", () => {
             if (this._allowNone && i === this._value) {
-              this._value = 0; // deseleccionar todas
+              this._value = 0;
             } else {
               this._value = i;
             }
             this._hiddenInput.value = this._value;
             this.setAttribute("value", this._value);
             this.dispatchEvent(new CustomEvent("change", { detail: { value: this._value } }));
-            renderStars();
+            renderStars(); // refresh the starts
           });
-        }
-        else {
-          star.style.cursor = "default"; // only for see
+        } else {
+          star.style.cursor = "default";
         }
 
         wrapper.appendChild(star);
@@ -4479,10 +4496,10 @@ class PlusPriority extends HTMLElement {
 
     renderStars();
 
-    this.shadowRoot.append(style, wrapper, this._hiddenInput);
+    // ===== clear shadow before re-rendering=====
+    this.shadowRoot.innerHTML = "";
+    this.shadowRoot.append(style, wrapper);
   }
-
-  // ===== Métodos públicos =====
 
   setValue(val) {
     const newValue = parseInt(val);

@@ -33,9 +33,11 @@ def customers_home(request):
 def add_customer(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == 'POST':
+            print(request.body)
             try:
                 data = json.loads(request.body)  # El body lo mandas en JSON con fetch
                 answer=save_customer(request.user,data)
+    
                 if answer["success"]:
                     return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
                 else: 
@@ -51,9 +53,11 @@ def add_customer(request):
         return render(request, 'formCustomer.html')
     else:
         if request.method == 'POST':
+            print(request.body)
             try:
                 data = json.loads(request.body)  # El body lo mandas en JSON con fetch
                 answer=save_customer(request.user,data)
+    
                 if answer["success"]:
                     return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
                 else: 
@@ -72,11 +76,9 @@ def add_customer(request):
 def edit_customer(request, customer_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         customer=get_information_of_a_customer_for_id(request.user, customer_id)
-        print(customer)
         return render(request, "formCustomer.html", {"customer": customer['answer']})
     else:
         customer=get_information_of_a_customer_for_id(request.user, customer_id)
-        print(customer)
         return render(request, "formCustomer.html", {"customer": customer['answer']})
 
 @login_required(login_url='login')

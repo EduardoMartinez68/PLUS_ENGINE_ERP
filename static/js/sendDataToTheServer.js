@@ -86,6 +86,7 @@ function formToJSON(form) {
 
 //this function is for restart the information of the form when for that the proggramer can restart his form most speed
 //this function can be run after of that the form was send to the server with a message of success
+// Reinicia todos los plus-select dentro de un formulario
 function restart_form(formId) {
   //get the form with his id
   const form = document.getElementById(formId);
@@ -102,12 +103,10 @@ function restart_form(formId) {
   });
 
   //restart all the select. Here need restart the select that have options #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-  const plusSelectElements = form.querySelectorAll("plus-select");
-  plusSelectElements.forEach(el => {
-    const hiddenInput = el.querySelector('input[type="hidden"]');
-    if (hiddenInput) {
-      // We restart the select using its existing id and function
-      set_value_plus_select(hiddenInput.id, "", ""); // empty value and empty text
+  const plusSelects = form.querySelectorAll("plus-select");
+  plusSelects.forEach(el => {
+    if (typeof el.reset === "function") {
+      el.reset();
     }
   });
 
@@ -140,19 +139,8 @@ function restart_form(formId) {
     el.updateColor?.(initialValue); //use updateColor method if it exists
   });
 
-  //  PlusTag #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-  form.querySelectorAll('plus-tag').forEach(el => {
-    const initialTags = el.getAttribute('value'); //or use initial data
-    if (initialTags) {
-      try {
-        el.setTags(JSON.parse(initialTags));
-      } catch {
-        el.setTags([]);
-      }
-    } else {
-      el.setTags([]);
-    }
-  });
+  //  PlusTag 
+  form.querySelector("plus-tags").resetTags();
 
   // ===== restart all the ImageUploader =====
   form.querySelectorAll("image-uploader").forEach(el => {
