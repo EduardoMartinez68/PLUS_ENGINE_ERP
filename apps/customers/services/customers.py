@@ -115,7 +115,7 @@ def update_customer(user, customer_id, form):
     `form` must be a dictionary containing the fields to update.
     """
     try:
-        # Obtener el cliente solo si pertenece a la empresa del usuario
+        # Get the client only if it belongs to the user's company
         customer = Customer.objects.get(id=customer_id, company=user.company)
 
         #----- Personal information -----
@@ -170,10 +170,22 @@ def update_customer(user, customer_id, form):
             except CustomerSource.DoesNotExist:
                 customer.source = None
 
-        #----- Avatar -----
+
         avatar_data = form.get("avatar")
-        if avatar_data and "," in avatar_data:
+
+        # ----- Avatar Management -----
+        if avatar_data == "None":
+            if customer.avatar:
+                customer.avatar.delete(save=False)  # delete the photo in folder 
+                customer.avatar = None              # clear the path in the database
+
+        elif avatar_data is not customer.avatar:
+            # If there is a previous one → delete it before saving the new one
+            if customer.avatar:
+                customer.avatar.delete(save=False)
+
             try:
+                #if exist other new image, now we will to create a new image and save his new path in the database
                 fmt, imgstr = avatar_data.split(",", 1)
                 img_data = base64.b64decode(imgstr)
                 img = Image.open(BytesIO(img_data))
@@ -193,8 +205,11 @@ def update_customer(user, customer_id, form):
             except Exception as e:
                 print("Error al procesar avatar:", e)
 
-        # Guardar los cambios
+        # save the change
         customer.save()
+
+
+
         return {"success": True, "answer": "Customer updated successfully", "customer_id": customer.id}
 
     except Customer.DoesNotExist:
