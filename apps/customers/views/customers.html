@@ -102,6 +102,7 @@
   line-height: 1.4;
 }
 
+
 /* === Mensaje de error elegante === */
 .error-message {
   background: #fff2f2;
@@ -436,15 +437,19 @@
             </div>
 
             <div class="customer-details">
+                <a href="https://wa.me/${textCellphone}" target="_blank" style="cursor: pointer; text-decoration: none; color: inherit;">
                 <div class="detail-box">
                     <span class="detail-label">${window.translate_text('table-home-cellphone')}</span>
-                    <span class="detail-value">${textCellphone}</span>
+                    <span class="detail-value fi-whatsapp">
+                        <i class="fi-whatsapp fi-brands-whatsapp"></i>   
+                        ${textCellphone}
+                    </span>
                 </div>
+                </a>
                 <div class="detail-box">
                     <span class="detail-label">${window.translate_text('table-home-phone')}</span>
                     <span class="detail-value">
-                      <i class="fi-whatsapp fi-brands-whatsapp"></i>   
-                      <a href="https://wa.me/${textPhone}" target="_blank"></a>
+                      ${textPhone}
                     </span>
                 </div>
             </div>

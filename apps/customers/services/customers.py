@@ -9,7 +9,7 @@ from ..models import Customer, CustomerType, CustomerSource
 from ..plus_wrapper import Plus
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-
+import os 
 
 def save_customer(user, form, user_admin=None, password_admin=None):
     """
@@ -90,6 +90,7 @@ def save_customer(user, form, user_admin=None, password_admin=None):
                 # Guardar en memoria en formato WebP (liviano)
                 buffer = BytesIO()
                 img.save(buffer, format="WEBP", quality=85, method=6)
+                img.close()
                 buffer.seek(0)
 
                 # Nombre único para la imagen
@@ -174,37 +175,53 @@ def update_customer(user, customer_id, form):
         avatar_data = form.get("avatar")
 
         # ----- Avatar Management -----
-        if avatar_data == "None":
-            if customer.avatar:
-                customer.avatar.delete(save=False)  # delete the photo in folder 
-                customer.avatar = None              # clear the path in the database
+        avatar_data = form.get("avatar")
+        old_avatar_path = customer.avatar.path if customer.avatar else None
 
-        elif avatar_data is not customer.avatar:
-            # If there is a previous one → delete it before saving the new one
+        #close the file before of can use
+        if customer.avatar:
+            customer.avatar.close()
+
+        #here we will see if the user delete the photo that the user had
+        if avatar_data in ["None", None]:
             if customer.avatar:
+                customer.avatar.close()
                 customer.avatar.delete(save=False)
+                customer.avatar = None
+
+        elif avatar_data:
+            customer.avatar.close()
 
             try:
-                #if exist other new image, now we will to create a new image and save his new path in the database
                 fmt, imgstr = avatar_data.split(",", 1)
                 img_data = base64.b64decode(imgstr)
-                img = Image.open(BytesIO(img_data))
 
-                if img.mode in ("RGBA", "P"):
-                    img = img.convert("RGB")
+                # We save in memory first
+                with Image.open(BytesIO(img_data)) as img:
+                    if img.mode in ("RGBA", "P"):
+                        img = img.convert("RGB")
+                    img.thumbnail((400, 400), Image.LANCZOS)
 
-                max_size = (400, 400)
-                img.thumbnail(max_size, Image.LANCZOS)
+                    buffer = BytesIO()
+                    img.save(buffer, format="WEBP", quality=85, method=6)
+                    buffer.seek(0)
 
-                buffer = BytesIO()
-                img.save(buffer, format="WEBP", quality=85, method=6)
-                buffer.seek(0)
-
+                # We created a new name
                 unique_filename = f"{uuid.uuid4().hex}_avatar.webp"
                 customer.avatar.save(unique_filename, ContentFile(buffer.read()), save=False)
-            except Exception as e:
-                print("Error al procesar avatar:", e)
+                customer.avatar.close()
 
+                # Now we delete the previous one if it existed and it is not the same.
+                if old_avatar_path and os.path.exists(old_avatar_path) and old_avatar_path != customer.avatar.path:
+                    try:
+                        os.remove(old_avatar_path)
+                    except PermissionError as e:
+                        #Windows may block it, we ignore it
+                        #print(f"Cannot delete old avatar '{old_avatar_path}'. Reason: {type(e).__name__}: {e}")
+                        pass
+
+            except Exception as e:
+                pass 
         # save the change
         customer.save()
 

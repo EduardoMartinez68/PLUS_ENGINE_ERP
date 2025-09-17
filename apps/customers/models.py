@@ -134,21 +134,16 @@ class Customer(models.Model):
             raise ValidationError(f"Avatar cannot exceed {MAX_SIZE_MB} MB")
 
         if self.avatar:
-            #open the image use Pillow
-            img = Image.open(self.avatar)
-            
-            #change the resolution max
-            max_width = 800
-            max_height = 800
+            with Image.open(self.avatar) as img:
+                max_width = 800
+                max_height = 800
 
-            #Resize if it is too large
-            if img.width > max_width or img.height > max_height:
-                img.thumbnail((max_width, max_height), Image.ANTIALIAS)
-                
-                # save the new image in the memory
-                buffer = BytesIO()
-                img.save(buffer, format=img.format)
-                self.avatar.save(self.avatar.name, ContentFile(buffer.getvalue()), save=False)
+                if img.width > max_width or img.height > max_height:
+                    img.thumbnail((max_width, max_height), Image.ANTIALIAS)
+                    
+                    buffer = BytesIO()
+                    img.save(buffer, format=img.format)
+                    self.avatar.save(self.avatar.name, ContentFile(buffer.getvalue()), save=False)
 
         super().save(*args, **kwargs)
 
