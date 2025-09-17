@@ -68,6 +68,19 @@ class Customer(models.Model):
     cellphone = EncryptedCharField(db_column="cellphone", blank=True, null=True, max_length=20)
     date_of_birth = models.DateField(blank=True, null=True)
 
+    GENDER_CHOICES = [
+        ("M", "Men"),
+        ("F", "Woman"),
+        ("O", "Other"),
+    ]
+    gender = models.CharField(
+        max_length=1,
+        choices=GENDER_CHOICES,
+        blank=True,
+        null=True,
+        db_column="gender"
+    )
+
     #------information of address------
     country = models.CharField(max_length=2, blank=True, null=True)  # ISO code (ej: MX, US)
     address=EncryptedCharField(db_column="address", blank=True, null=True, max_length=800)

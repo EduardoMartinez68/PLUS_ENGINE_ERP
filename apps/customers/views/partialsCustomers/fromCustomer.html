@@ -26,13 +26,21 @@
 
                 <div class="row section">
                     <div class="col">
-                        <input-field type="text" label="form1-label-phone" name="phone" placeholder="444 444 444"
+                        <input-field type="text" label="form1-label-phone" name="phone" placeholder="123 456 789"
                             maxlength="15" value="{{customer.phone}}"></input-field>
                     </div>
                     <div class="col">
                         <input-field type="text" label="form1-label-cellphone" name="cellphone"
                             placeholder="+52 444 444 444" value="{{customer.cellphone}}" maxlength="15"></input-field>
                     </div>
+                </div>
+                
+                <div class="row section">
+                    <plus-select name="gender" value="{{customer.gender}}" label="gener.label" id="gender">
+                        <option value="M" t="gender.men"></option>
+                        <option value="F" t="gender.woman"></option>
+                        <option value="O" t="gender.other"></option>
+                    </plus-select>
                 </div>
 
                 <show-more text="add-info-address-customer" onclick="show_pop('pop-data-address')" description='({{customer.state}} {{customer.city}}.{{customer.country}})'></show-more>
@@ -89,6 +97,8 @@
                     </div>
                 </div>
             </plus-tab>
+
+
             {% if customer.id %}
                 <!--here is for when the user would like edit a customer--->
                 <input type="hidden" id="customer_id" name="customer_id" value="{{customer.id}}">

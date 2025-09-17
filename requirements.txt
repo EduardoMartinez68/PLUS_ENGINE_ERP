@@ -3,3 +3,4 @@ pip install Pillow
 pip install cryptography
 pip install python-dotenv
 pip install django-encrypted-fields
+pip install python-decouple

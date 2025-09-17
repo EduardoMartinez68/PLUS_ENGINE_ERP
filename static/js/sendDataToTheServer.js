@@ -36,9 +36,10 @@ async function send_message_to_the_server(url, data = {}, with_load = true, meth
         //first we will see if the response is ok
         if (!response.ok) {
             console.log(url)
-
+            console.log(response)
             //now we will to show the error that send of server and show the information of error that answer the server
-            show_alert('alert', response.status, response.message, 'Error in ' + url + '\n' + (response.error))
+            show_alert('alert', response.status, 'Error to load visit the link '+url, (response.error || response))
+            return  { success: false, error: 'Error to load visit the link \n'+(response.error || '') +' \n status: '+ (response.status || '')};
         }
 
         //get the information that send the server and the return 

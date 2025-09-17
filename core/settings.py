@@ -174,6 +174,10 @@ AUTHENTICATION_BACKENDS = [
 'core.backends.EmailHashBackend'
 ]
 
+#this is for added the variable of the path 
+from decouple import config
+ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS", default="127.0.0.1,localhost").split(",")
+
 #----------------------------files upload for the user (for example PDFs, images, etc)-------------------------------------
 #first we will see if the user have the version of desktop or the version cloud 
 if(TYPE_VERSION=='CLOUD'):

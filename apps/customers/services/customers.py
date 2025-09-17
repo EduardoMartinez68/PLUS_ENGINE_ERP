@@ -36,6 +36,7 @@ def save_customer(user, form, user_admin=None, password_admin=None):
         customer.reference = form.get("reference") or None
         customer.activated = Plus.to_bool(form.get("activated"))
         customer.priority= form.get("priority") or 0
+        customer.gender = form.get("gender") or ''
 
         # information of the company of the customer
         customer.this_customer_is_a_company = Plus.to_bool(form.get("this_customer_is_a_company"))
@@ -108,7 +109,6 @@ def save_customer(user, form, user_admin=None, password_admin=None):
             e
         )}
 
-
 def update_customer(user, customer_id, form):
     """
     Updates an existing customer that belongs to the user's company.
@@ -131,9 +131,9 @@ def update_customer(user, customer_id, form):
         customer.num_ext = form.get("num_ext") or ''
         customer.num_int = form.get("num_int") or ''
         customer.reference = form.get("reference") or ''
+        customer.gender = form.get("gender") or ''
 
         customer.activated = Plus.to_bool(form.get("activated"))
-
         customer.priority = form.get("priority") or 0
 
         #----- Company info -----
@@ -271,6 +271,8 @@ def search_customer_for_filter(user, search, customer_type, source, priority, ac
             elif activated.lower() in ["false", "0", "no", "off"]:
                 qs = qs.filter(activated=False)
 
+        qs = qs.order_by('-creation_date')
+
         # --- 2. apply memory search (decrypting fields) ---
         if search:
             search = search.lower()
@@ -347,6 +349,7 @@ def get_information_of_a_customer_for_id(user, customer_id):
             "email": customer.email or '',
             "phone": customer.phone or '',
             "cellphone": customer.cellphone or '',
+            "gender": customer.gender or '',
             "country": customer.country or '',
             "address": customer.address or '',
             "city": customer.city or '',

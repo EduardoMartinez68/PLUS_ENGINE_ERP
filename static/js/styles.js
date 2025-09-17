@@ -117,19 +117,7 @@ class MessagePop extends HTMLElement {
     const content = this.innerHTML.trim();
 
     //If only exist text, save this in a label <p>
-    let wrappedContent = content.startsWith('<') ? content : `<p>${content}</p>`;
-
-    //here we will see if the proggramer would like render a view from a partial
-    if(this.hasAttribute('link')){
-
-      //send a message to the server for get his form
-      fetch(this.getAttribute('link'))
-          .then(response => response.text())
-          .then(html => {
-              wrappedContent.innerHTML=html;
-          });
-    }
-
+    const wrappedContent = content.startsWith('<') ? content : `<p>${content}</p>`;
 
     //here create the internal HTML
     this.innerHTML = `

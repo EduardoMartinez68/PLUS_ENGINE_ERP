@@ -22,7 +22,6 @@ from ..services.customers import save_customer, search_customer_for_filter, get_
 @csrf_exempt
 def add_customer(request):
     if request.method == 'POST':
-        print(request.body)
         try:
             data = json.loads(request.body)  # El body lo mandas en JSON con fetch
             answer=save_customer(request.user,data)
@@ -50,7 +49,7 @@ def edit_customer(request, customer_id):
             else: 
                 return JsonResponse({'success': False, 'error': f'Error to update the customer: {str(answer["error"])}'}, status=300)
         except Exception as e:
-            return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)
+            return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=300)
 
 
 
@@ -60,25 +59,35 @@ def edit_customer(request, customer_id):
 
 @csrf_exempt
 def customers_search(request):
-
     if request.method == "GET":
-        all_filters=request.GET.get("allFilters")
+        all_filters = request.GET.get("allFilters", "")
         values = all_filters.split(",")
 
-        # --- 1.get the filter from the frontend ---
-        search = values[0]  # text free
-        customer_type = request.GET.get("customer_type")  # id o None
-        source = request.GET.get("source")  # id o None
-        priority = values[1]  # 0–3 o None
-        activated = values[2] #request.GET.get("activated")  # "true"/"false" o None for default is true
-        answer=search_customer_for_filter(request.user,search,customer_type,source,priority, activated)
-        
+        search = values[0] if len(values) > 0 else ""
+        customer_type = request.GET.get("customer_type")
+        source = request.GET.get("source")
+        priority = values[1] if len(values) > 1 else None
+        activated = values[2] if len(values) > 2 else None
+
+        answer = search_customer_for_filter(
+            request.user, search, customer_type, source, priority, activated
+        )
+
         if answer["success"]:
-            return JsonResponse({'success': True, 'answer': answer["answer"], 'error':answer["error"]}, status=200)
-        else: 
-            return JsonResponse({'success': False, 'answer': [], 'error': f'Error to search the customer: {str(answer["error"])}'}, status=300)
+            return JsonResponse(
+                {"success": True, "answer": answer["answer"], "error": answer["error"]},
+                status=200
+            )
+        else:
+            return JsonResponse(
+                {"success": False, "answer": [], "error": str(answer["error"])},
+                status=400
+            )
     else:
-        return JsonResponse({'success': False, 'error': f'Method not permitted'}, status=300)
+        return JsonResponse(
+            {"success": False, "error": "Method not permitted"},
+            status=405
+        )
 
 
 @csrf_exempt
@@ -115,7 +124,7 @@ def change_status_customer(request):
                 ) 
         else:
             return JsonResponse(
-                {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=300
+                {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=500
             )          
     
     return JsonResponse(

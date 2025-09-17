@@ -22,6 +22,7 @@
     "message.cancel": "Cancelar",
     "message.search": "Buscar...",
     "message.add": "Agregar",
+    "message.error.server": "Ocurrió un error en el servidor",
 
     "success.saved": "Guardado con éxito",
     "success.updated": "Actualizado correctamente",
@@ -147,6 +148,11 @@
 
     "info.info-send-with-success":"información enviada con exitó",
     "info.not-was-can-send-the-information":"No fue posible enviar esta información al servidor",
-    "info.error.this-form-not-exit":"El formulario que intentas enviar no existe."
+    "info.error.this-form-not-exit":"El formulario que intentas enviar no existe.",
+
+    "gener.label":"Sexo",
+    "gender.men":"Hombre",
+    "gender.woman":"Mujer",
+    "gender.other":"Otros"
 }
 

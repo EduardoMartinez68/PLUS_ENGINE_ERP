@@ -133,7 +133,6 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
 
             //we will see if exist container for print in screen
             if (data.answer && data.answer.length > 0) {
-
                 //if exist container, we will show in the field
                 data.answer.forEach(dataItem => {
                     //here we will get the card or table that need add to the field or table
@@ -144,12 +143,21 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
             } else {
                 //if exist an answer, we will show a message to the user
                 const answer=t("info.no_results");
-                field.innerHTML = `<tr><td colspan="6" style="text-align:center;">${answer}</td></tr>`;
+
+                field.innerHTML = `
+                <div style="text-align:center;">
+                    ${answer}
+                </div>`;
             }
         } else {
-            const answer=t("info.no_results");
-            show_alert('alert', 'Error', `${answer}`, data.message, `Error in the search: ${data.message}`);
-            field.innerHTML = `<tr><td colspan="6" style="text-align:center;">${answer}</td></tr>`;
+            //here is when the server answer with a error and not can get nothing information
+            const answer=t("message.error.server");
+            show_alert('alert', 'Error', `${answer}`, `Error in the search ${searchUrl}: ${data.error}`);
+
+            field.innerHTML = `
+            <div style="text-align:center; color:#e74c3c;">
+                ${answer}
+            </div>`;
         }
 
         translate_dynamic_content(field); //translate the dynamic content of the field
@@ -259,7 +267,6 @@ function update_container_from_the_server(inputsId, fieldId, divHtml, searchUrl,
                 field.innerHTML = `<tr><td colspan="6" style="text-align:center;">${answer}</td></tr>`;
             }
         } else {
-            console.error('Error en la búsqueda:', data.message);
             const answer = t("info.no_results");
             show_alert('alert', 'Error', answer, data.message);
             field.innerHTML = `<tr><td colspan="6" style="text-align:center;">${answer}</td></tr>`;
