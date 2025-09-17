@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Formulario de Consulta Médica</title>
+  <style>
+    :root{
+      --bg:#f7f8fb; --card:#fff; --muted:#6b7280; --accent:#2563eb;
+      --danger:#dc2626; --success:#16a34a; --radius:10px; --gap:12px;
+      font-family: Inter, Roboto, system-ui, -apple-system, "Segoe UI", Arial;
+    }
+    body{background:var(--bg); padding:24px; color:#111; font-size:14px; line-height:1.35}
+    .container{max-width:1100px;margin:0 auto}
+    .card{background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:0 6px 20px rgba(15,23,42,0.06); margin-bottom:16px}
+    h1,h2,h3{margin:0 0 12px 0}
+    .row{display:flex;gap:var(--gap);flex-wrap:wrap}
+    .col{flex:1; min-width:200px}
+    .col-2{flex:2; min-width:320px}
+    label{display:block;font-weight:600;margin-bottom:6px;color:#0f172a}
+    input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="time"], select, textarea{
+      width:100%; padding:8px 10px;border:1px solid #e6e9ef;border-radius:8px;background:#fff;
+      box-sizing:border-box; font-size:13px;
+    }
+    textarea{min-height:100px; resize:vertical}
+    .small{font-size:12px;color:var(--muted)}
+    .inline{display:inline-flex;gap:8px;align-items:center}
+    .btn{display:inline-block;padding:8px 12px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+    .btn.secondary{background:#6b7280}
+    .btn.danger{background:var(--danger)}
+    .muted{color:var(--muted)}
+    .section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .kv{display:flex;gap:8px;align-items:center}
+    .chip{background:#f1f5f9;padding:6px 8px;border-radius:999px;font-size:12px;color:#0f172a}
+    .list{margin:6px 0 0 0;padding:0; list-style:none}
+    .list li{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-radius:6px;background:#fbfdff;border:1px solid #edf2ff;margin-bottom:6px}
+    .field-inline{display:flex; gap:8px; align-items:center;}
+    .file-preview{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
+    .file-preview img{max-width:120px;max-height:100px;border-radius:6px;object-fit:cover; border:1px solid #e6eefc}
+    .signature{border:1px dashed #cbd5e1; height:160px; border-radius:8px; background:#fff}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .row-grid{display:grid; grid-template-columns: repeat(3, 1fr); gap:10px}
+    @media (max-width:900px){ .row-grid{grid-template-columns:repeat(1,1fr)} .col-2{flex-basis:100%} }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Consulta Médica — Ficha Clínica</h1>
+
+    <!-- IDENTIFICACIÓN -->
+    <div class="card" id="card-identificacion">
+      <div class="section-title"><h2>1. Identificación y contacto</h2><span class="small">Datos básicos del paciente</span></div>
+      <form id="consulta-form" enctype="multipart/form-data" method="post">
+        <!-- Puedes usar CSRF token en Django aquí -->
+        <!-- {% csrf_token %} -->
+
+        <div class="row">
+          <div class="col">
+            <label>Nombre completo <span class="small">(nombre)</span></label>
+            <input name="patient_name" id="patient_name" type="text" placeholder="Ej. Juan Pérez" />
+          </div>
+          <div class="col">
+            <label>Documento / ID</label>
+            <input name="patient_id_doc" id="patient_id_doc" type="text" placeholder="CURP / DNI / NÚMERO" />
+          </div>
+          <div class="col">
+            <label>Fecha de nacimiento</label>
+            <input name="birth_date" id="birth_date" type="date" />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:12px">
+          <div class="col">
+            <label>Teléfono</label>
+            <input name="phone" id="phone" type="tel" placeholder="+52 1 ..." />
+          </div>
+          <div class="col">
+            <label>Email</label>
+            <input name="email" id="email" type="email" placeholder="correo@ejemplo.com" />
+          </div>
+          <div class="col">
+            <label>Dirección</label>
+            <input name="address" id="address" type="text" placeholder="Calle, colonia, ciudad" />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:12px">
+          <div class="col">
+            <label>Sexo</label>
+            <select name="gender" id="gender">
+              <option value="">Seleccione</option>
+              <option value="male">Masculino</option>
+              <option value="female">Femenino</option>
+              <option value="other">Otro</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Grupo sanguíneo</label>
+            <select name="blood_group" id="blood_group">
+              <option value="">--</option>
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Contacto de emergencia</label>
+            <input name="emergency_contact" id="emergency_contact" type="text" placeholder="Nombre y teléfono" />
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- SIGNOS VITALES -->
+    <div class="card" id="card-vitals">
+      <div class="section-title"><h2>2. Signos Vitales</h2><span class="small">Registra indicadores actuales</span></div>
+      <div class="row">
+        <div class="col">
+          <label>Fecha y hora</label>
+          <input form="consulta-form" name="visit_datetime" id="visit_datetime" type="datetime-local" />
+        </div>
+        <div class="col">
+          <label>Temperatura (°C)</label>
+          <input form="consulta-form" name="temperature" id="temperature" type="text" placeholder="36.6" />
+        </div>
+        <div class="col">
+          <label>Frecuencia cardíaca (lpm)</label>
+          <input form="consulta-form" name="pulse" id="pulse" type="text" placeholder="72" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <div class="col">
+          <label>Tensión arterial</label>
+          <div class="field-inline">
+            <input form="consulta-form" name="bp_systolic" id="bp_systolic" type="text" placeholder="120" style="width:110px" />
+            <span class="small">/</span>
+            <input form="consulta-form" name="bp_diastolic" id="bp_diastolic" type="text" placeholder="80" style="width:110px" />
+            <span class="small">mmHg</span>
+          </div>
+        </div>
+        <div class="col">
+          <label>Frecuencia respiratoria (rpm)</label>
+          <input form="consulta-form" name="rr" id="rr" type="text" />
+        </div>
+        <div class="col">
+          <label>Peso (kg)</label>
+          <input form="consulta-form" name="weight" id="weight" type="text" placeholder="70" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <div class="col">
+          <label>Talla (cm)</label>
+          <input form="consulta-form" name="height" id="height" type="text" placeholder="170" />
+        </div>
+        <div class="col">
+          <label>IMC (kg/m²)</label>
+          <input form="consulta-form" name="bmi" id="bmi" type="text" readonly placeholder="Se calcula automáticamente" />
+        </div>
+        <div class="col">
+          <label>Oximetría (%)</label>
+          <input form="consulta-form" name="spo2" id="spo2" type="text" placeholder="98" />
+        </div>
+      </div>
+
+      <div class="small muted" style="margin-top:8px">Tip: Ingresa peso y talla para calcular IMC automáticamente.</div>
+    </div>
+
+    <!-- ANTECEDENTES -->
+    <div class="card" id="card-history">
+      <div class="section-title"><h2>3. Antecedentes y alergias</h2><span class="small">Historia médica</span></div>
+
+      <label>Antecedentes personales</label>
+      <textarea form="consulta-form" name="past_medical_history" id="past_medical_history" placeholder="Ej. Diabetes tipo 2, hipertensión, cirugías ..."></textarea>
+
+      <label style="margin-top:8px">Alergias / Reacciones</label>
+      <div class="row" style="align-items:flex-end">
+        <div class="col" style="min-width:200px">
+          <input id="allergy_input" type="text" placeholder="Escribe alergia y pulsa Agregar" />
+        </div>
+        <div style="align-self:center">
+          <button type="button" class="btn secondary" id="add-allergy">Agregar</button>
+        </div>
+      </div>
+
+      <ul id="allergies_list" class="list"></ul>
+
+      <label style="margin-top:8px">Medicamentos actuales</label>
+      <div class="row" style="align-items:flex-end">
+        <div class="col"><input id="med_input" type="text" placeholder="Nombre - dosis - frecuencia" /></div>
+        <div><button type="button" class="btn secondary" id="add-med">Agregar</button></div>
+      </div>
+      <ul id="meds_list" class="list"></ul>
+    </div>
+
+    <!-- EXAMEN -->
+    <div class="card" id="card-exam">
+      <div class="section-title"><h2>4. Examen físico / Exploración</h2><span class="small">Encuentra aquí los hallazgos</span></div>
+
+      <label>Rasgos generales / Observaciones</label>
+      <textarea form="consulta-form" name="exam_general" id="exam_general" placeholder="Estado general, postura, hidratación..."></textarea>
+
+      <div style="margin-top:12px">
+        <label>Sistema / Región</label>
+        <div class="row-grid" style="margin-top:8px">
+          <div>
+            <label>Cabeza / cuello</label>
+            <textarea form="consulta-form" name="exam_head_neck" id="exam_head_neck" placeholder="Descripción..."></textarea>
+          </div>
+          <div>
+            <label>Tórax / Pulmones</label>
+            <textarea form="consulta-form" name="exam_thorax" id="exam_thorax" placeholder="Descripción..."></textarea>
+          </div>
+          <div>
+            <label>Cardio / Abdomen</label>
+            <textarea form="consulta-form" name="exam_cardio_abd" id="exam_cardio_abd" placeholder="Descripción..."></textarea>
+          </div>
+
+          <div>
+            <label>Extremidades</label>
+            <textarea form="consulta-form" name="exam_extremities" id="exam_extremities" placeholder="Descripción..."></textarea>
+          </div>
+          <div>
+            <label>Neurológico</label>
+            <textarea form="consulta-form" name="exam_neuro" id="exam_neuro" placeholder="Descripción..."></textarea>
+          </div>
+          <div>
+            <label>Odontológico / Oral</label>
+            <textarea form="consulta-form" name="exam_dental" id="exam_dental" placeholder="Lesiones, caries, encías..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAGNOSTICO Y PLAN -->
+    <div class="card" id="card-plan">
+      <div class="section-title"><h2>5. Diagnóstico y Plan</h2><span class="small">Diagnóstico(s), plan y alternativas</span></div>
+
+      <label>Diagnóstico principal</label>
+      <input form="consulta-form" name="diagnosis_primary" id="diagnosis_primary" type="text" placeholder="Ej. Caries radicular" />
+
+      <label style="margin-top:8px">Diagnósticos secundarios / Lista</label>
+      <div class="row" style="align-items:flex-end">
+        <div class="col"><input id="diag_input" type="text" placeholder="Diagnóstico..." /></div>
+        <div><button type="button" class="btn secondary" id="add-diag">Agregar</button></div>
+      </div>
+      <ul id="diag_list" class="list"></ul>
+
+      <label style="margin-top:8px">Plan de tratamiento / Indicaciones</label>
+      <textarea form="consulta-form" name="treatment_plan" id="treatment_plan" placeholder="Anotar pasos, medicamentos, citas, referidos..."></textarea>
+    </div>
+
+    <!-- RECETA -->
+    <div class="card" id="card-prescription">
+      <div class="section-title"><h2>6. Prescripción / Órdenes</h2><span class="small">Receta y pruebas</span></div>
+
+      <div class="row" style="align-items:flex-end">
+        <div class="col"><input id="rx_input" type="text" placeholder="Medicamento - dosis - vía - duración" /></div>
+        <div><button type="button" class="btn" id="add-rx">Agregar</button></div>
+      </div>
+      <ul id="rx_list" class="list"></ul>
+
+      <label style="margin-top:8px">Solicitar pruebas / imagenología</label>
+      <textarea form="consulta-form" name="orders" id="orders" placeholder="RX dental, panorámica, laboratorios..." ></textarea>
+    </div>
+
+    <!-- ADJUNTOS -->
+    <div class="card" id="card-files">
+      <div class="section-title"><h2>7. Archivos / Imágenes</h2><span class="small">Adjunta radiografías, fotos clínicas, etc.</span></div>
+
+      <label>Subir archivos (imágenes/pdf)</label>
+      <input form="consulta-form" type="file" id="files" name="files" accept="image/*,application/pdf" multiple />
+      <div id="file_preview" class="file-preview"></div>
+    </div>
+
+    <!-- SEGUIMIENTO Y CONSENTIMIENTO -->
+    <div class="card" id="card-follow">
+      <div class="section-title"><h2>8. Seguimiento y consentimiento</h2><span class="small">Próxima cita, consentimiento y firma</span></div>
+
+      <div class="row">
+        <div class="col">
+          <label>Próxima cita</label>
+          <input form="consulta-form" name="next_visit" id="next_visit" type="datetime-local" />
+        </div>
+        <div class="col">
+          <label>Recordatorio (días antes)</label>
+          <input form="consulta-form" name="reminder_days" id="reminder_days" type="number" min="0" placeholder="1" />
+        </div>
+        <div class="col">
+          <label>Consentimiento informado</label>
+          <select form="consulta-form" name="consent" id="consent">
+            <option value="">--</option>
+            <option value="given">Dado</option>
+            <option value="refused">Rehusado</option>
+            <option value="not_required">No requerido</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <label>Firma digital (paciente / encargado)</label>
+        <div class="signature" id="signature_pad_container">
+          <canvas id="signature_pad" width="800" height="200" style="width:100%;height:160px"></canvas>
+        </div>
+        <div class="controls">
+          <button type="button" class="btn secondary" id="clear_sig">Borrar firma</button>
+          <button type="button" class="btn" id="save_sig">Guardar firma</button>
+        </div>
+        <input form="consulta-form" type="hidden" name="signature_image" id="signature_image" />
+      </div>
+    </div>
+
+    <!-- NOTAS Y ACCIONES -->
+    <div class="card" id="card-actions">
+      <div class="section-title"><h2>9. Notas y acciones</h2><span class="small">Acciones finales</span></div>
+      <label>Notas adicionales</label>
+      <textarea form="consulta-form" name="notes" id="notes" placeholder="Observaciones administrativas, cobros, comentarios..."></textarea>
+
+      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap">
+        <button type="button" class="btn" id="saveBtn">Guardar</button>
+        <button type="button" class="btn secondary" id="printBtn">Imprimir</button>
+        <button type="reset" class="btn danger" id="resetBtn">Limpiar</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // --- Funcionalidades JS: dinámicas pequeñas (IMC, añadir lista, previews, firma) ---
+    (function(){
+      // IMC = kg / (m*m) where height in meters
+      const weightEl = document.getElementById('weight');
+      const heightEl = document.getElementById('height');
+      const bmiEl = document.getElementById('bmi');
+
+      function calcBMI(){
+        const w = parseFloat(weightEl.value.replace(',', '.'));
+        const hcm = parseFloat(heightEl.value.replace(',', '.'));
+        if(!isNaN(w) && !isNaN(hcm) && hcm>0){
+          const m = hcm/100;
+          const bmi = w / (m*m);
+          bmiEl.value = bmi.toFixed(1);
+        } else bmiEl.value = '';
+      }
+      weightEl.addEventListener('input', calcBMI);
+      heightEl.addEventListener('input', calcBMI);
+
+      // Función para crear item de lista
+      function createListItem(text, hiddenName){
+        const li = document.createElement('li');
+        const span = document.createElement('span'); span.textContent = text;
+        const btn = document.createElement('button'); btn.type='button'; btn.textContent='Eliminar'; btn.className='btn secondary';
+        btn.addEventListener('click', ()=> li.remove());
+        li.appendChild(span);
+        // hidden input to submit in form (name must be array-like for backend)
+        if(hiddenName){
+          const hidden = document.createElement('input');
+          hidden.type='hidden';
+          hidden.name = hiddenName;
+          hidden.value = text;
+          li.appendChild(hidden);
+        }
+        li.appendChild(btn);
+        return li;
+      }
+
+      // Allergies
+      const allergyInput = document.getElementById('allergy_input');
+      const allergiesList = document.getElementById('allergies_list');
+      document.getElementById('add-allergy').addEventListener('click', ()=>{
+        const val = allergyInput.value.trim();
+        if(val){ allergiesList.appendChild(createListItem(val, 'allergies')); allergyInput.value=''; }
+      });
+
+      // Meds
+      const medInput = document.getElementById('med_input');
+      const medsList = document.getElementById('meds_list');
+      document.getElementById('add-med').addEventListener('click', ()=>{
+        const val = medInput.value.trim();
+        if(val){ medsList.appendChild(createListItem(val, 'medications')); medInput.value=''; }
+      });
+
+      // Diags
+      const diagInput = document.getElementById('diag_input');
+      const diagList = document.getElementById('diag_list');
+      document.getElementById('add-diag').addEventListener('click', ()=>{
+        const val = diagInput.value.trim();
+        if(val){ diagList.appendChild(createListItem(val, 'diagnoses')); diagInput.value=''; }
+      });
+
+      // Rx
+      const rxInput = document.getElementById('rx_input');
+      const rxList = document.getElementById('rx_list');
+      document.getElementById('add-rx').addEventListener('click', ()=>{
+        const val = rxInput.value.trim();
+        if(val){ rxList.appendChild(createListItem(val, 'prescriptions')); rxInput.value=''; }
+      });
+
+      // File preview
+      const filesEl = document.getElementById('files');
+      const previewEl = document.getElementById('file_preview');
+      filesEl.addEventListener('change', (e)=>{
+        previewEl.innerHTML='';
+        Array.from(e.target.files).forEach(file=>{
+          if(file.type.startsWith('image/')){
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.onload = ()=> URL.revokeObjectURL(img.src);
+            previewEl.appendChild(img);
+          } else {
+            const p = document.createElement('div');
+            p.textContent = file.name;
+            p.className='chip';
+            previewEl.appendChild(p);
+          }
+        });
+      });
+
+      // Signature pad (simple)
+      const canvas = document.getElementById('signature_pad');
+      const ctx = canvas.getContext('2d');
+      ctx.strokeStyle = '#111'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+      let drawing=false, lastX=0, lastY=0;
+      function draw(e){
+        if(!drawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+        const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+        ctx.beginPath();
+        ctx.moveTo(lastX,lastY);
+        ctx.lineTo(x,y);
+        ctx.stroke();
+        lastX=x; lastY=y;
+      }
+      canvas.addEventListener('mousedown',(e)=>{drawing=true; lastX=e.offsetX; lastY=e.offsetY});
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', ()=> drawing=false);
+      canvas.addEventListener('mouseout', ()=> drawing=false);
+      // touch
+      canvas.addEventListener('touchstart',(e)=>{ drawing=true; const t=e.touches[0]; const r=canvas.getBoundingClientRect(); lastX=t.clientX - r.left; lastY=t.clientY - r.top;});
+      canvas.addEventListener('touchmove', draw);
+      canvas.addEventListener('touchend', ()=>drawing=false);
+
+      document.getElementById('clear_sig').addEventListener('click', ()=>{
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        document.getElementById('signature_image').value='';
+      });
+      document.getElementById('save_sig').addEventListener('click', ()=>{
+        const dataUrl = canvas.toDataURL('image/png');
+        document.getElementById('signature_image').value = dataUrl;
+        alert('Firma guardada en el formulario (campo oculto).');
+      });
+
+      // Save: enviar con Fetch (ejemplo)
+      document.getElementById('saveBtn').addEventListener('click', async ()=>{
+        const form = document.getElementById('consulta-form');
+        const fd = new FormData(form);
+
+        // las listas dinámicas ya tienen inputs hidden dentro de LI con name=...
+        // agregar archivos (input[name=files] ya incluido por FormData)
+        // ejemplo: enviar via fetch a tu endpoint
+        try{
+          const res = await fetch('/api/consultations/save/',{
+            method:'POST',
+            body: fd,
+            credentials:'same-origin'
+          });
+          const data = await res.json();
+          if(data.success) alert('Consulta guardada.');
+          else alert('Error: '+(data.error || 'No se pudo guardar'));
+        }catch(err){ console.error(err); alert('Error de red'); }
+      });
+
+      // Print
+      document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+      // Reset confirm
+      document.getElementById('resetBtn').addEventListener('click', (e)=>{
+        if(!confirm('¿Limpiar todos los campos?')) e.preventDefault();
+      });
+
+      // Inicializar fecha/hora con now
+      const dt = document.getElementById('visit_datetime');
+      if(dt && !dt.value){
+        const now = new Date();
+        const local = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+        dt.value = local;
+      }
+    })();
+  </script>
+</body>
+</html>
