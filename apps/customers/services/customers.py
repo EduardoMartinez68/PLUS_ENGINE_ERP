@@ -193,28 +193,30 @@ def update_customer(user, customer_id, form):
             customer.avatar.close()
 
             try:
-                fmt, imgstr = avatar_data.split(",", 1)
-                img_data = base64.b64decode(imgstr)
 
-                # We save in memory first
-                with Image.open(BytesIO(img_data)) as img:
-                    if img.mode in ("RGBA", "P"):
-                        img = img.convert("RGB")
-                    img.thumbnail((400, 400), Image.LANCZOS)
-
-                    buffer = BytesIO()
-                    img.save(buffer, format="WEBP", quality=85, method=6)
-                    buffer.seek(0)
-
-                # We created a new name
-                unique_filename = f"{uuid.uuid4().hex}_avatar.webp"
-                customer.avatar.save(unique_filename, ContentFile(buffer.read()), save=False)
-                customer.avatar.close()
 
                 # Now we delete the previous one if it existed and it is not the same.
                 if old_avatar_path and os.path.exists(old_avatar_path) and old_avatar_path != customer.avatar.path:
                     try:
-                        os.remove(old_avatar_path)
+                        fmt, imgstr = avatar_data.split(",", 1)
+                        img_data = base64.b64decode(imgstr)
+
+                        # We save in memory first
+                        with Image.open(BytesIO(img_data)) as img:
+                            if img.mode in ("RGBA", "P"):
+                                img = img.convert("RGB")
+                            img.thumbnail((400, 400), Image.LANCZOS)
+
+                            buffer = BytesIO()
+                            img.save(buffer, format="WEBP", quality=85, method=6)
+                            buffer.seek(0)
+
+                        # We created a new name
+                        unique_filename = f"{uuid.uuid4().hex}_avatar.webp"
+                        customer.avatar.save(unique_filename, ContentFile(buffer.read()), save=False)
+                        customer.avatar.close()
+
+                        os.remove(old_avatar_path) #delete the old image
                     except PermissionError as e:
                         #Windows may block it, we ignore it
                         #print(f"Cannot delete old avatar '{old_avatar_path}'. Reason: {type(e).__name__}: {e}")
@@ -410,7 +412,6 @@ def get_information_of_a_customer_for_id(user, customer_id):
     except Exception as e:
         return {"success": False, "message": 'customer.message.error.exist-a-error-in-the-server', "error": f"Error: {str(e)}", "answer":""}
     
-
 def change_status_of_the_customer(user, customer_id, status=False):
     try:
         if not customer_id:

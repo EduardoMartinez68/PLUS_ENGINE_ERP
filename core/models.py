@@ -162,8 +162,6 @@ class Company(models.Model):
 
         super().save(*args, **kwargs)
 
-
-
 class Branch(models.Model):
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='company')
 
