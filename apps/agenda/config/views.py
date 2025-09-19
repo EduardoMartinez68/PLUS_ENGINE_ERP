@@ -6,6 +6,7 @@ from django.shortcuts import redirect
 import json
 from django.db.models import F
 from django.http import JsonResponse
+from ..services.google import get_credential_google_calendar, delete_event_in_google_calendar, update_event_in_google_calendar, crear_evento_google
 from django.utils.timezone import  make_aware, is_naive, get_default_timezone
 from dateutil.relativedelta import relativedelta
 from django.utils.timezone import localtime
@@ -25,14 +26,14 @@ import os
 def agenda_home(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         try:
-            token_obj = GoogleToken.objects.get(user=request.user)
+            toeken_google = GoogleToken.objects.get(user=request.user)
             # Imprimir los datos importantes en consola para depuración
-            print("Token:", token_obj.token)
-            print("Refresh Token:", token_obj.refresh_token)
-            print("Token URI:", token_obj.token_uri)
-            print("Client ID:", token_obj.client_id)
-            print("Client Secret:", token_obj.client_secret)
-            print("Scopes:", token_obj.scopes)
+            print("Token:", toeken_google.token)
+            print("Refresh Token:", toeken_google.refresh_token)
+            print("Token URI:", toeken_google.token_uri)
+            print("Client ID:", toeken_google.client_id)
+            print("Client Secret:", toeken_google.client_secret)
+            print("Scopes:", toeken_google.scopes)
             token_status = "Token encontrado y listo para usar."
         except GoogleToken.DoesNotExist:
             print("No hay token guardado para este usuario.")
@@ -41,14 +42,14 @@ def agenda_home(request):
         return render(request, 'home_agenda.html')
     else:
         try:
-            token_obj = GoogleToken.objects.get(user=request.user)
+            toeken_google = GoogleToken.objects.get(user=request.user)
             # Imprimir los datos importantes en consola para depuración
-            print("Token:", token_obj.token)
-            print("Refresh Token:", token_obj.refresh_token)
-            print("Token URI:", token_obj.token_uri)
-            print("Client ID:", token_obj.client_id)
-            print("Client Secret:", token_obj.client_secret)
-            print("Scopes:", token_obj.scopes)
+            print("Token:", toeken_google.token)
+            print("Refresh Token:", toeken_google.refresh_token)
+            print("Token URI:", toeken_google.token_uri)
+            print("Client ID:", toeken_google.client_id)
+            print("Client Secret:", toeken_google.client_secret)
+            print("Scopes:", toeken_google.scopes)
             token_status = "Token encontrado y listo para usar."
         except GoogleToken.DoesNotExist:
             print("No hay token guardado para este usuario.")
@@ -147,6 +148,9 @@ def create_event(request):
             if not validate_date_range(date_start, date_finish):
                 return JsonResponse({'success': False, 'message': 'message.error.invalid-date-range'}, status=200)
             
+            #now we will save this event in google calendar if exist a token by the user 
+            id_event_in_google_calendar=crear_evento_google(user, titleEvent, description, date_start, date_finish, time_alert, repeat_this_event, time_repeat, emails_guests)
+    
             #now we will to create a appointment
             try:
                 appointment = Appointment.objects.create(
@@ -166,8 +170,10 @@ def create_event(request):
                     send_notification=send_notification,
                     i_am_free=i_am_free,
                     id_type_appoint_id=id_type_appoint, 
+                    id_event_in_google_calendar=id_event_in_google_calendar,
                     user=user
                 )
+    
     
                 #return the new event with his id for that in the frontend can use it
                 return JsonResponse({'success': True, 'message': 'message.success.add-new-event', 'event_id': appointment.id}, status=200)
@@ -267,6 +273,9 @@ def create_event(request):
             if not validate_date_range(date_start, date_finish):
                 return JsonResponse({'success': False, 'message': 'message.error.invalid-date-range'}, status=200)
             
+            #now we will save this event in google calendar if exist a token by the user 
+            id_event_in_google_calendar=crear_evento_google(user, titleEvent, description, date_start, date_finish, time_alert, repeat_this_event, time_repeat, emails_guests)
+    
             #now we will to create a appointment
             try:
                 appointment = Appointment.objects.create(
@@ -286,8 +295,10 @@ def create_event(request):
                     send_notification=send_notification,
                     i_am_free=i_am_free,
                     id_type_appoint_id=id_type_appoint, 
+                    id_event_in_google_calendar=id_event_in_google_calendar,
                     user=user
                 )
+    
     
                 #return the new event with his id for that in the frontend can use it
                 return JsonResponse({'success': True, 'message': 'message.success.add-new-event', 'event_id': appointment.id}, status=200)
@@ -1116,8 +1127,11 @@ def edit_event(request):
                 appointment.send_notification = send_notification
                 appointment.i_am_free = i_am_free
                 appointment.id_type_appoint_id = id_type_appoint
-    
                 appointment.save()
+    
+                #now get the id of the event in google only if exist for update in google calendar
+                id_event_in_google_calendar=appointment.id_event_in_google_calendar
+                update_event_in_google_calendar(user, id_event_in_google_calendar,titleEvent,description,date_start,date_finish,appointment.time_alert,repeat_this_event,time_repeat,emails_guests)
     
                 return JsonResponse({
                     'success': True,
@@ -1249,8 +1263,11 @@ def edit_event(request):
                 appointment.send_notification = send_notification
                 appointment.i_am_free = i_am_free
                 appointment.id_type_appoint_id = id_type_appoint
-    
                 appointment.save()
+    
+                #now get the id of the event in google only if exist for update in google calendar
+                id_event_in_google_calendar=appointment.id_event_in_google_calendar
+                update_event_in_google_calendar(user, id_event_in_google_calendar,titleEvent,description,date_start,date_finish,appointment.time_alert,repeat_this_event,time_repeat,emails_guests)
     
                 return JsonResponse({
                     'success': True,
@@ -1292,19 +1309,13 @@ def delete_event(request):
     
         if not event_id:
             return JsonResponse({'success': False, 'message': 'message.error.no-event-id-provided'}, status=400)
+        
+    
     
         try:
-            # Buscar el evento que pertenezca al usuario
             appointment = Appointment.objects.get(id=event_id, user=user)
-    
+            id_event_in_google_calendar=appointment.id_event_in_google_calendar
             appointment.delete()
-    
-            return JsonResponse({
-                'success': True,
-                'message': 'message.success.event-deleted',
-                'event_id': event_id
-            }, status=200)
-    
         except Appointment.DoesNotExist:
             return JsonResponse({
                 'success': False,
@@ -1319,6 +1330,14 @@ def delete_event(request):
                 'message': 'message.error.cannot-delete-event',
                 'error': str(e)
             }, status=500)
+        
+        
+        delete_event_in_google_calendar(user, id_event_in_google_calendar) #delete the event if exist in google calendar
+        return JsonResponse({
+            'success': True,
+            'message': 'message.success.event-deleted',
+            'event_id': event_id
+        }, status=200)
     else:
         """
         Delete an event by its ID and the user.
@@ -1336,19 +1355,13 @@ def delete_event(request):
     
         if not event_id:
             return JsonResponse({'success': False, 'message': 'message.error.no-event-id-provided'}, status=400)
+        
+    
     
         try:
-            # Buscar el evento que pertenezca al usuario
             appointment = Appointment.objects.get(id=event_id, user=user)
-    
+            id_event_in_google_calendar=appointment.id_event_in_google_calendar
             appointment.delete()
-    
-            return JsonResponse({
-                'success': True,
-                'message': 'message.success.event-deleted',
-                'event_id': event_id
-            }, status=200)
-    
         except Appointment.DoesNotExist:
             return JsonResponse({
                 'success': False,
@@ -1363,6 +1376,14 @@ def delete_event(request):
                 'message': 'message.error.cannot-delete-event',
                 'error': str(e)
             }, status=500)
+        
+        
+        delete_event_in_google_calendar(user, id_event_in_google_calendar) #delete the event if exist in google calendar
+        return JsonResponse({
+            'success': True,
+            'message': 'message.success.event-deleted',
+            'event_id': event_id
+        }, status=200)
 
 @login_required(login_url='login')
 def get_the_first_type_events(request):

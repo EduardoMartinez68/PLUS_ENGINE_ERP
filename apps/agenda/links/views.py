@@ -17,7 +17,7 @@ from django.utils.timezone import localtime
 from dateutil.relativedelta import relativedelta
 
 from django.utils.timezone import  make_aware, is_naive, get_default_timezone
-
+from ..services.google import get_credential_google_calendar, delete_event_in_google_calendar, update_event_in_google_calendar, crear_evento_google
 
 def agenda_home(request):
     try:
@@ -127,11 +127,11 @@ def create_event(request):
         if not validate_date_range(date_start, date_finish):
             return JsonResponse({'success': False, 'message': 'message.error.invalid-date-range'}, status=200)
         
+        #now we will save this event in google calendar if exist a token by the user 
+        id_event_in_google_calendar=crear_evento_google(user, titleEvent, description, date_start, date_finish, time_alert, repeat_this_event, time_repeat, emails_guests)
+
         #now we will to create a appointment
         try:
-            #now we will save this event in google calendar if exist a token by the user 
-            id_event_in_google_calendar=crear_evento_google(user, title, description, date_start, date_finish, time_alert, repeat_this_event, time_repeat, emails_guests)
-
             appointment = Appointment.objects.create(
                 title=titleEvent,
                 description=description,
@@ -669,21 +669,13 @@ def delete_event(request):
 
     if not event_id:
         return JsonResponse({'success': False, 'message': 'message.error.no-event-id-provided'}, status=400)
+    
+
 
     try:
-        # Buscar el evento que pertenezca al usuario
         appointment = Appointment.objects.get(id=event_id, user=user)
         id_event_in_google_calendar=appointment.id_event_in_google_calendar
-        delete_event_in_google_calendar(user, id_event_in_google_calendar) #delete the event if exist in google calendar
-
         appointment.delete()
-
-        return JsonResponse({
-            'success': True,
-            'message': 'message.success.event-deleted',
-            'event_id': event_id
-        }, status=200)
-
     except Appointment.DoesNotExist:
         return JsonResponse({
             'success': False,
@@ -698,7 +690,14 @@ def delete_event(request):
             'message': 'message.error.cannot-delete-event',
             'error': str(e)
         }, status=500)
-
+    
+    
+    delete_event_in_google_calendar(user, id_event_in_google_calendar) #delete the event if exist in google calendar
+    return JsonResponse({
+        'success': True,
+        'message': 'message.success.event-deleted',
+        'event_id': event_id
+    }, status=200)
 #-----------------------------TYPE EVENTS-------------------------------------
 from django.http import JsonResponse
 from django.db.models import F
@@ -856,10 +855,7 @@ def setting(request):
 
 from django.shortcuts import redirect
 from google_auth_oauthlib.flow import Flow
-from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
 from ..models import GoogleToken
-
 
 
 def google_sync(request):
@@ -908,146 +904,4 @@ def oauth2callback(request):
 
     return render(request, 'success_sync.html')
 
-def get_credential_google_calendar(user):
-    try:
-        # Recuperar el token guardado en DB
-        token_obj = GoogleToken.objects.get(user=user)
-        
-        creds = Credentials(
-            token=token_obj.token,
-            refresh_token=token_obj.refresh_token,
-            token_uri=token_obj.token_uri,
-            client_id=token_obj.client_id,
-            client_secret=token_obj.client_secret,
-            scopes=token_obj.scopes.split(",")
-        ) 
 
-        return creds
-    except GoogleToken.DoesNotExist:
-        return None
-    
-def crear_evento_google(user, title, description, date_start, date_finish, time_alert, repeat_this_event, time_repeat, emails_guests):
-    repeat_this_event=repeat_this_event,
-    time_repeat=int(time_repeat) if time_repeat else 0
-    try:
-        # Recuperar el token guardado en DB
-        creds = get_credential_google_calendar(user)
-        service = build('calendar', 'v3', credentials=creds)
-
-        # Definir el evento
-        evento = {
-            'summary': title,          # título del evento
-            'description': description,  # descripción
-            'start': {
-                'dateTime': date_start,      # formato ISO: "2025-09-20T10:00:00-06:00"
-                'timeZone': user.timezone,
-            },
-            'end': {
-                'dateTime': date_finish,         # formato ISO: "2025-09-20T11:00:00-06:00"
-                'timeZone': user.timezone,
-            },
-            'reminders': {
-                'useDefault': False,  # si pones True usa los recordatorios por defecto de Google Calendar
-                'overrides': [
-                    {'method': 'popup', 'minutes': time_alert},  # notificación 15 minutos antes
-                    {'method': 'email', 'minutes': 30}
-                ],
-            }
-        }
-
-        #here we will do a event that can repat 
-        if repeat_this_event:
-            if time_repeat > 0:
-                # Ejemplo: repetir cada X días
-                evento['recurrence'] = [f'RRULE:FREQ=DAILY;INTERVAL={time_repeat}']
-            else:
-                # Si no se especifica intervalo, por default semanal
-                evento['recurrence'] = ['RRULE:FREQ=WEEKLY;BYDAY=MO']
-
-        #add the event of the email for send notification for email
-        if emails_guests:
-            lista_emails = [email.strip() for email in emails_guests.split(',')]
-            evento['attendees'] = [{'email': email} for email in lista_emails]
-
-        # Insertar el evento en Google Calendar
-        creado = service.events().insert(calendarId='primary', body=evento).execute()
-        event_id = creado.get("id")
-        return event_id
-
-    except GoogleToken.DoesNotExist:
-        return None
-    
-def update_event_in_google_calendar(user,event_id,new_title=None,new_description=None,new_date_start=None,new_date_finish=None,new_time_alert=None,repeat_this_event=None,time_repeat=None,emails_guests=None):
-    if not event_id:
-        return None
-    
-    try:
-        # Recuperar el token guardado en DB        
-        creds = get_credential_google_calendar(user)
-        service = build('calendar', 'v3', credentials=creds)
-
-        # Obtener el evento actual
-        evento_existente = service.events().get(calendarId='primary', eventId=event_id).execute()
-
-        # Actualizar campos si se pasaron nuevos valores
-        if new_title:
-            evento_existente['summary'] = new_title
-        if new_description:
-            evento_existente['description'] = new_description
-        if new_date_start and new_date_finish:
-            evento_existente['start'] = {
-                'dateTime': new_date_start,
-                'timeZone': user.timezone,
-            }
-            evento_existente['end'] = {
-                'dateTime': new_date_finish,
-                'timeZone': user.timezone,
-            }
-        if new_time_alert is not None:
-            evento_existente['reminders'] = {
-                'useDefault': False,
-                'overrides': [
-                    {'method': 'popup', 'minutes': new_time_alert},
-                    {'method': 'email', 'minutes': 30}
-                ],
-            }
-
-        # Repetición
-        if repeat_this_event is not None:
-            if time_repeat and int(time_repeat) > 0:
-                evento_existente['recurrence'] = [f'RRULE:FREQ=DAILY;INTERVAL={int(time_repeat)}']
-            else:
-                evento_existente['recurrence'] = ['RRULE:FREQ=WEEKLY;BYDAY=MO']
-        elif repeat_this_event is False:
-            # Si se pasa False, eliminamos la repetición
-            evento_existente.pop('recurrence', None)
-
-        # Invitados
-        if emails_guests:
-            lista_emails = [email.strip() for email in emails_guests.split(',')]
-            evento_existente['attendees'] = [{'email': email} for email in lista_emails]
-
-        # Guardar cambios en Google Calendar
-        actualizado = service.events().update(
-            calendarId='primary',
-            eventId=event_id,
-            body=evento_existente
-        ).execute()
-
-        return actualizado
-
-    except GoogleToken.DoesNotExist:
-        return None
-    
-
-def delete_event_in_google_calendar(user, event_id):
-    if not event_id:
-        return None
-    
-    try:
-        # Recuperar el token guardado en DB        
-        creds = get_credential_google_calendar(user)
-        service = build('calendar', 'v3', credentials=creds)
-        service.events().delete(calendarId='primary', eventId=event_id).execute()
-    except GoogleToken.DoesNotExist:
-        return None
