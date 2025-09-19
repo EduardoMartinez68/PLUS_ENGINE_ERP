@@ -82,6 +82,11 @@ def crear_evento_google(user, title, description, date_start, date_finish, time_
     except GoogleToken.DoesNotExist:
         return None
     
+import re
+def is_valid_email(email):
+    # Simple regex para validar email
+    return re.match(r"[^@]+@[^@]+\.[^@]+", email)
+
 def update_event_in_google_calendar(user,event_id,new_title=None,new_description=None,new_date_start=None,new_date_finish=None,new_time_alert=None,repeat_this_event=None,time_repeat=None,emails_guests=None):
     if not event_id:
         return None
@@ -133,7 +138,10 @@ def update_event_in_google_calendar(user,event_id,new_title=None,new_description
         # Invitados
         if emails_guests:
             lista_emails = [email.strip() for email in emails_guests.split(',')]
-            evento_existente['attendees'] = [{'email': email} for email in lista_emails]
+            # filtra solo los válidos
+            lista_emails_validos = [email for email in lista_emails if is_valid_email(email)]
+            if lista_emails_validos:
+                evento['attendees'] = [{'email': email} for email in lista_emails_validos]
 
         # Guardar cambios en Google Calendar
         actualizado = service.events().update(
