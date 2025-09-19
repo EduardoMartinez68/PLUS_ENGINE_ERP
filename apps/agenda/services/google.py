@@ -3,6 +3,9 @@ from google_auth_oauthlib.flow import Flow
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from ..models import GoogleToken
+from django.utils import timezone
+from datetime import datetime, timedelta, time
+
 
 def get_credential_google_calendar(user):
     try:
@@ -26,6 +29,50 @@ def get_credential_google_calendar(user):
         print(f"Error obteniendo credenciales de Google Calendar: {e}")
         return None
     
+def obtener_eventos_google(user, start_date, end_date):
+    creds = get_credential_google_calendar(user)
+    if not creds:
+        return []
+
+    service = build('calendar', 'v3', credentials=creds)
+
+    events_result = service.events().list(
+        calendarId='primary',
+        timeMin=start_date.isoformat(),
+        timeMax=end_date.isoformat(),
+        singleEvents=True,
+        orderBy='startTime'
+    ).execute()
+
+    events = events_result.get('items', [])
+
+    google_events = []
+    for e in events:
+        try:
+            start = e['start'].get('dateTime') or e['start'].get('date')
+            end = e['end'].get('dateTime') or e['end'].get('date')
+
+            # parsear a datetime con tzinfo
+            start_dt = datetime.fromisoformat(start)
+            end_dt = datetime.fromisoformat(end)
+
+            google_events.append({
+                'id': e['id'],
+                'title': e.get('summary', ''),
+                'description': e.get('description', ''),
+                'date_start': start_dt.isoformat(),
+                'date_finish': end_dt.isoformat(),
+                'location': e.get('location', ''),
+                'emails_guests': ','.join([a['email'] for a in e.get('attendees', [])]) if e.get('attendees') else '',
+                'source': 'google'
+            })
+        except Exception as ex:
+            print(f"Error parsing Google event: {ex}")
+            continue
+
+    return google_events
+
+
 def crear_evento_google(user, title, description, date_start, date_finish, time_alert, repeat_this_event, time_repeat, emails_guests):
     creds = get_credential_google_calendar(user)
 

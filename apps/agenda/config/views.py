@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 import json
 from django.db.models import F
 from django.http import JsonResponse
-from ..services.google import get_credential_google_calendar, delete_event_in_google_calendar, update_event_in_google_calendar, crear_evento_google
+from ..services.google import get_credential_google_calendar, delete_event_in_google_calendar, update_event_in_google_calendar, crear_evento_google, obtener_eventos_google
 from django.utils.timezone import  make_aware, is_naive, get_default_timezone
 from dateutil.relativedelta import relativedelta
 from django.utils.timezone import localtime
@@ -27,33 +27,15 @@ def agenda_home(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         try:
             toeken_google = GoogleToken.objects.get(user=request.user)
-            # Imprimir los datos importantes en consola para depuración
-            print("Token:", toeken_google.token)
-            print("Refresh Token:", toeken_google.refresh_token)
-            print("Token URI:", toeken_google.token_uri)
-            print("Client ID:", toeken_google.client_id)
-            print("Client Secret:", toeken_google.client_secret)
-            print("Scopes:", toeken_google.scopes)
-            token_status = "Token encontrado y listo para usar."
         except GoogleToken.DoesNotExist:
-            print("No hay token guardado para este usuario.")
-            token_status = "No hay token guardado."
+            pass
     
         return render(request, 'home_agenda.html')
     else:
         try:
             toeken_google = GoogleToken.objects.get(user=request.user)
-            # Imprimir los datos importantes en consola para depuración
-            print("Token:", toeken_google.token)
-            print("Refresh Token:", toeken_google.refresh_token)
-            print("Token URI:", toeken_google.token_uri)
-            print("Client ID:", toeken_google.client_id)
-            print("Client Secret:", toeken_google.client_secret)
-            print("Scopes:", toeken_google.scopes)
-            token_status = "Token encontrado y listo para usar."
         except GoogleToken.DoesNotExist:
-            print("No hay token guardado para este usuario.")
-            token_status = "No hay token guardado."
+            pass
     
         return render(request, 'home_agenda.html')
 
@@ -494,6 +476,8 @@ def get_events_by_date_range(request):
     
             #first get the event that the user would like repeat 
             events_data=get_the_events_repeat_of_the_user(user, start_date, end_date)
+            list_google = obtener_eventos_google(user, start_date, end_date)
+            events_data += list_google
     
             #here we will to serialize the date
             for e in events:
@@ -722,6 +706,8 @@ def get_events_by_date_range(request):
     
             #first get the event that the user would like repeat 
             events_data=get_the_events_repeat_of_the_user(user, start_date, end_date)
+            list_google = obtener_eventos_google(user, start_date, end_date)
+            events_data += list_google
     
             #here we will to serialize the date
             for e in events:
