@@ -1,1 +1,5 @@
 .env
+media/*
+
+
+apps/agenda/config/credentials.json

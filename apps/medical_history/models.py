@@ -1,14 +1,16 @@
 from django.db import models
 from django.conf import settings
-from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField, EncryptedJSONField
+from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField
 from django.utils import timezone
+from ..customers.models import Customer
+from ..services.models import Consultation, ProfessionalData, Specialty
 
-#-----------------------------------------------------------------APP    DOCTOR--------------------------------------------------
+#-----------------------------------------------------------------APP DOCTOR--------------------------------------------------
 #this table is for the information medical of the patient
 class MedicalInformation(models.Model):
-    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="specialty", null=True, blank=True)
-    branch = models.ForeignKey("core.Branch", on_delete=models.CASCADE, related_name="specialty", null=True, blank=True)
-    customer = models.ForeignKey("core.Customer", on_delete=models.CASCADE, related_name="medical_information")
+    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="medical_informations", null=True, blank=True)
+    branch = models.ForeignKey("core.Branch", on_delete=models.CASCADE, related_name="medical_informations", null=True, blank=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="medical_information")
     skull = models.CharField(max_length=100, blank=False, null=False) #this is a Identifier
 
     #Detailed medical information
@@ -35,9 +37,9 @@ class MedicalInformation(models.Model):
 
     chronic_conditions = EncryptedTextField(blank=True, null=True)
     allergies = EncryptedTextField(blank=True, null=True)
-    medications = EncryptedJSONField(blank=True, null=True)  # Current medications
+    medications = EncryptedTextField(blank=True, null=True)  # Current medications
     surgeries = EncryptedTextField(blank=True, null=True)
-    immunizations = EncryptedJSONField(blank=True, null=True)  # vaccines
+    immunizations = EncryptedTextField(blank=True, null=True)  # vaccines
     family_history = EncryptedTextField(blank=True, null=True)  # hereditary diseases
 
     lifestyle = EncryptedTextField(blank=True, null=True)  # Ej: Smoker, alcohol, exercise, diet
@@ -52,7 +54,7 @@ class MedicalInformation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    info_other_doctor = EncryptedJSONField(blank=True, null=True) #this is the information of other doctors that the patient can need
+    info_other_doctor = EncryptedTextField(blank=True, null=True) #this is the information of other doctors that the patient can need
 
     class Meta:
         constraints = [
@@ -64,19 +66,19 @@ class MedicalInformation(models.Model):
     
 class Prescription(models.Model):
     #data of the compnay and branch
-    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="specialty", null=True, blank=True)
-    branch = models.ForeignKey("core.Branch", on_delete=models.CASCADE, related_name="specialty", null=True, blank=True)
+    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="prescriptions", null=True, blank=True)
+    branch = models.ForeignKey("core.Branch", on_delete=models.CASCADE, related_name="prescriptions", null=True, blank=True)
     doctor = models.ForeignKey(
-        "ProfessionalData",
+        ProfessionalData,
         on_delete=models.CASCADE
     )
     customer = models.ForeignKey(
-        "Customer",
+        Customer,
         on_delete=models.CASCADE,
         null=True
     )
     consultation = models.ForeignKey(
-        "Consultation",
+        Consultation,
         on_delete=models.CASCADE,
         related_name="prescriptions"
     )
@@ -136,7 +138,7 @@ class PrescriptionItem(models.Model):
     prescription = models.ForeignKey(
         Prescription,
         on_delete=models.CASCADE,
-        related_name="items"
+        related_name="prescriptions_item"
     )
     medicine_name = models.CharField(max_length=200)
     dosage = models.CharField(max_length=100)  # example. 500mg
@@ -149,7 +151,7 @@ class PrescriptionItem(models.Model):
     
 class LabResult(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="lab_results")
-    doctor = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True)
+    professional = models.ForeignKey(ProfessionalData, on_delete=models.SET_NULL, null=True, blank=True)
     consultation = models.ForeignKey(Consultation, on_delete=models.SET_NULL, null=True, blank=True)
     test_name = models.CharField(max_length=200)
     result = models.TextField()
@@ -161,4 +163,3 @@ class LabResult(models.Model):
 
     def __str__(self):
         return f"{self.test_name} - {self.customer}"
-    

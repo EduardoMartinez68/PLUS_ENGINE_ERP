@@ -1,5 +1,8 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
+from google_auth_oauthlib.flow import Flow
+from django.shortcuts import redirect
+import os
 import json
 from django.db.models import F
 from django.http import JsonResponse
@@ -1623,4 +1626,42 @@ def delete_type_event(request):
                 return JsonResponse({'success': False, 'message': 'Error al eliminar el tipo de evento.', 'error': str(e)}, status=500)
     
         return JsonResponse({'success': False, 'message': 'Método no permitido.'}, status=405)
+
+@login_required(login_url='login')
+def setting(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'setting.html')
+    else:
+        return render(request, 'setting.html')
+
+@login_required(login_url='login')
+def google_sync(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        flow = Flow.from_client_secrets_file(
+            os.path.join(os.path.dirname(__file__), 'credentials.json'),
+            scopes=["https://www.googleapis.com/auth/calendar"],
+            redirect_uri="http://localhost:8000/oauth2callback"
+        )
+    
+        authorization_url, state = flow.authorization_url(
+            access_type='offline',
+            include_granted_scopes='true'
+        )
+        
+        request.session['oauth_state'] = state
+        return redirect(authorization_url)
+    else:
+        flow = Flow.from_client_secrets_file(
+            os.path.join(os.path.dirname(__file__), 'credentials.json'),
+            scopes=["https://www.googleapis.com/auth/calendar"],
+            redirect_uri="http://localhost:8000/oauth2callback"
+        )
+    
+        authorization_url, state = flow.authorization_url(
+            access_type='offline',
+            include_granted_scopes='true'
+        )
+        
+        request.session['oauth_state'] = state
+        return redirect(authorization_url)
 

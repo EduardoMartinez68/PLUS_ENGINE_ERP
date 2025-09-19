@@ -819,3 +819,28 @@ def delete_type_event(request):
             return JsonResponse({'success': False, 'message': 'Error al eliminar el tipo de evento.', 'error': str(e)}, status=500)
 
     return JsonResponse({'success': False, 'message': 'Método no permitido.'}, status=405)
+
+
+#-----------------------------SETTING-------------------------------------
+def setting(request):
+    return render(request, 'setting.html')
+
+#-----------------------------GOOGLE-------------------------------------
+import os
+from django.shortcuts import redirect
+from google_auth_oauthlib.flow import Flow
+
+def google_sync(request):
+    flow = Flow.from_client_secrets_file(
+        os.path.join(os.path.dirname(__file__), 'credentials.json'),
+        scopes=["https://www.googleapis.com/auth/calendar"],
+        redirect_uri="http://localhost:8000/oauth2callback"
+    )
+
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true'
+    )
+    
+    request.session['oauth_state'] = state
+    return redirect(authorization_url)

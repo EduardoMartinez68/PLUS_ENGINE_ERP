@@ -1,7 +1,10 @@
 from django.db import models
 from django.conf import settings
-from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField, EncryptedJSONField
+from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField
 from django.utils import timezone
+
+from ..customers.models import Customer
+from ..agenda.models import Appointment
 #-----------------------------------------------SERVICES------------------------------------------------------------------
 class Specialty(models.Model):
     company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="specialty", null=True, blank=True)
@@ -17,11 +20,11 @@ class ProfessionalData(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="professional_profile"
+        related_name="professional_data"
     )
 
     #information of the professional
-    specialties = models.ManyToManyField("Specialty", related_name="professionals")
+    specialties = models.ManyToManyField(Specialty, related_name="professional_data")
     license_number = models.CharField(max_length=50, unique=True)
 
     #information of contact of job
@@ -50,57 +53,65 @@ class ProfessionalData(models.Model):
 class Consultation(models.Model):
     #information of the consultation 
     skull = models.CharField(max_length=100, blank=False, null=False) #this is a Identifier
-    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="specialty", null=True, blank=True)
-    branch = models.ForeignKey("core.Branch", on_delete=models.CASCADE, related_name="specialty", null=True, blank=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) #the user that do this consultation 
+    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="consultation", null=True, blank=True)
+    branch = models.ForeignKey("core.Branch", on_delete=models.CASCADE, related_name="consultation", null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="consultations_created") #the user that do this consultation 
     customer = models.ForeignKey(
-        "Customer",
+        Customer,
         on_delete=models.SET_NULL,  # If the client is deleted, the consultation remains null
         null=True, #the patient can be null if the doctor do consultation to the public
         blank=True,
-        related_name="consultations"
+        related_name="consultation"
     )
     professional  = models.ForeignKey(
-        "ProfessionalData",
+        ProfessionalData,
         on_delete=models.SET_NULL,  #If the doctor is deleted, the consultation remains null
         null=True,
         blank=True,
-        related_name="consultations"
+        related_name="consultation"
     )
     appoint = models.ForeignKey(
-        "Appointment",
+        Appointment,
         on_delete=models.SET_NULL,  # If the client is deleted, the consultation remains null
         null=True, #the patient can be null if the doctor do consultation to the public
         blank=True,
-        related_name="consultations"
+        related_name="consultation"
     )
 
     #information basic of the consultation 
     priority = models.SmallIntegerField(default=0)
     topic = EncryptedTextField(blank=True, null=True)  # Tema de la reunión o consulta
-    discussion_points = EncryptedJSONField(blank=True, null=True)  # Puntos tratados
+    discussion_points = EncryptedTextField(blank=True, null=True)  # Puntos tratados
     conclusions = EncryptedTextField(blank=True, null=True)  # Conclusiones o decisiones
-    action_items = EncryptedJSONField(blank=True, null=True)  # Acciones a seguir
+    action_items = EncryptedTextField(blank=True, null=True)  # Acciones a seguir
     notes = EncryptedTextField(blank=True, null=True)  # Notas generales
-    attachments = EncryptedJSONField(blank=True, null=True)  # Archivos relacionados son solo links
+    attachments = EncryptedTextField(blank=True, null=True)  # Archivos relacionados son solo links
 
 
 
 
     #information of the character of the consultation
     STATUS_CHOICES = [
-        ("scheduled"),
-        ("completed"),
-        ("canceled"),
+        ("scheduled", "scheduled"),
+        ("completed", "completed"),
+        ("canceled", "Canceled"),
     ]
+
     status = models.CharField( #here is for save the status of the consultation 
         max_length=10,
         choices=STATUS_CHOICES,
         default="scheduled"
     )
+
+    CONSULTATION_TYPE_CHOICES = [
+        ("in_person", "In Person"),
+        ("online", "Online"),
+        ("home", "Home"),
+        ("remote", "Remote"),
+    ]
     consultation_type = models.CharField(
         max_length=20,
-        choices=[("in_person"), ("online"), ("home"), ("remote")],
+        choices=CONSULTATION_TYPE_CHOICES,
         default="in_person"
     )
 
@@ -120,14 +131,12 @@ class Consultation(models.Model):
 
 
     # Metadata
-    created_at = models.DateTimeField(auto_now_add=True, default=timezone.now) #when be do this consultation 
+    created_at = models.DateTimeField(auto_now_add=True) #when be do this consultation 
 
     #if the consultation was update , save this information 
     updated_at = models.DateTimeField(auto_now=True) 
-    updated_by = models.ForeignKey(
-        "CustomUser", on_delete=models.SET_NULL, null=True, blank=True
-    )
-    history_information = EncryptedJSONField(blank=True, null=True)
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="consultations_updated")
+    history_information = EncryptedTextField(blank=True, null=True)
 
     class Meta:
         constraints = [
@@ -140,7 +149,7 @@ class Consultation(models.Model):
 
 
 
-
+'''
 #------------------------------------------------FILES-----------------------------------------------------------------------
 class Document(models.Model):
     """
@@ -148,8 +157,8 @@ class Document(models.Model):
     Se puede usar para PDFs, Excel, imágenes, etc.
     """
     uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, help_text="Usuario que subió el documento")
-    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="specialty", null=True, blank=True)
-    branch = models.ForeignKey("core.Branch", on_delete=models.CASCADE, related_name="specialty", null=True, blank=True)
+    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="document", null=True, blank=True)
+    branch = models.ForeignKey("core.Branch", on_delete=models.CASCADE, related_name="document", null=True, blank=True)
 
     title = EncryptedCharField(max_length=200, blank=False, null=False, help_text="Nombre o título del documento")
     description = EncryptedTextField(blank=True, null=True, help_text="Descripción del documento")
@@ -168,8 +177,8 @@ class Task(models.Model):
     """
     Modelo para representar tareas que pueden estar asociadas a expedientes.
     """
-    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="specialty", null=True, blank=True)
-    branch = models.ForeignKey("core.Branch", on_delete=models.CASCADE, related_name="specialty", null=True, blank=True)
+    company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="task", null=True, blank=True)
+    branch = models.ForeignKey("core.Branch", on_delete=models.CASCADE, related_name="task", null=True, blank=True)
 
     title = EncryptedCharField(max_length=200, blank=False, null=False, help_text="Título de la tarea")
     description = EncryptedTextField(blank=True, null=True, help_text="Descripción detallada de la tarea")
@@ -205,8 +214,8 @@ class Record(models.Model):
     skull = models.CharField(max_length=100, blank=False, null=False, help_text="Identificador único por empresa")
     company = models.ForeignKey("core.Company", on_delete=models.CASCADE, related_name="records", null=True, blank=True)
     branch = models.ForeignKey("core.Branch", on_delete=models.CASCADE, related_name="records", null=True, blank=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) #the user that be do this record
-    customer = models.ForeignKey("core.Customer", on_delete=models.SET_NULL, null=True, blank=True, related_name="records")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="consultations_created") #the user that be do this record
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True, related_name="records")
     
 
     # Información principal del expediente
@@ -226,12 +235,12 @@ class Record(models.Model):
     priority = models.SmallIntegerField(default=0, help_text="Prioridad del expediente")
 
     # Información detallada y flexible
-    invoices = EncryptedJSONField(blank=True, null=True, help_text="Facturas o cobros asociados al expediente")
+    invoices = EncryptedTextField(blank=True, null=True, help_text="Facturas o cobros asociados al expediente")
     notes = EncryptedTextField(blank=True, null=True, help_text="Notas generales")
     
     # Historial de cambios del expediente
-    history = EncryptedJSONField(blank=True, null=True, help_text="Registro de cambios y versiones del expediente")
-    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, help_text="Último usuario que actualizó el expediente")
+    history = EncryptedTextField(blank=True, null=True, help_text="Registro de cambios y versiones del expediente")
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, help_text="Último usuario que actualizó el expediente", related_name="consultations_updated")
 
     # Metadatos
     created_at = models.DateTimeField(auto_now_add=True, default=timezone.now)
@@ -246,8 +255,6 @@ class Record(models.Model):
     def __str__(self):
         return f"{self.title or self.skull} ({self.customer})"
     
-
-
 
 #this is for save all the consultation that be in the record for example in a case for a lawyer or a consultation for a doctor
 class HistoryConsultation(models.Model):
@@ -266,7 +273,7 @@ class HistoryConsultation(models.Model):
         help_text="Profesional que realizó la consulta o reunión"
     )
     customers = models.ForeignKey(
-        "core.Customer", 
+        Customer, 
         on_delete=models.SET_NULL, 
         null=True, 
         blank=True,
@@ -316,4 +323,4 @@ class RecordTask(models.Model):
 
     def __str__(self):
         return f"Tarea '{self.task}' en expediente '{self.record}'"
-    
+'''

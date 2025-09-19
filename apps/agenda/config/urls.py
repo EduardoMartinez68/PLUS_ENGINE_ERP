@@ -14,4 +14,6 @@ urlpatterns = [
     path('create_type_event/', views.create_type_event, name='create_type_event'),
     path('update_type_event/', views.update_type_event, name='update_type_event'),
     path('delete_type_event/', views.delete_type_event, name='delete_type_event'),
+    path('setting/', views.setting, name='setting'),
+    path('google_sync/', views.google_sync, name='google_sync'),
 ]
