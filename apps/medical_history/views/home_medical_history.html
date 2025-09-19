@@ -1,38 +1,128 @@
+<style>
+  .teeth-chart {
+    display: grid;
+    grid-template-columns: repeat(16, 1fr);
+    gap: 12px;
+    margin-bottom: 30px;
+    justify-items: center;
+  }
+  .tooth {
+    cursor: pointer;
+    width: 45px;
+    height: 65px;
+    transition: fill 0.2s ease;
+  }
+  .tooth path {
+    fill: #ffffff;
+    stroke: #B0B7C3;
+    stroke-width: 2px;
+    transition: fill 0.2s ease;
+  }
+  .tooth:hover path {
+    fill: #E2E6EB;
+  }
+  .label {
+    font-size: 0.7rem;
+    text-align: center;
+    margin-top: 4px;
+    color: #2C3E50;
+  }
 
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Welcome to medical_history</title>
-        <style>
-            body {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background: #f0f4f8;
-                color: #333;
-                text-align: center;
-                padding: 50px;
-            }
-            h1 {
-                color: #007ACC;
-                margin-bottom: 20px;
-            }
-            p {
-                font-size: 18px;
-                line-height: 1.6;
-                max-width: 600px;
-                margin: 0 auto;
-                color: #555;
-            }
-            .highlight {
-                color: #ff6600;
-                font-weight: bold;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Welcome to your app <span class="highlight">medical_history</span> in PLUS</h1>
-        <p>Thank you for choosing our platform. This app is designed to help you manage your <strong>medical_history</strong> efficiently and effortlessly.</p>
-        <p>Explore the features and enjoy a seamless experience!</p>
-    </body>
-    </html>
-    
+  /* Estados */
+  .state-caries path { fill: #ff6b6b; }      /* rojo */
+  .state-obturacion path { fill: #f1c40f; }  /* amarillo */
+  .state-endodoncia path { fill: #3498db; }  /* azul */
+  .state-corona path { fill: #bdc3c7; }      /* gris metálico */
+  .state-implante path { fill: #95a5a6; }    /* gris oscuro */
+  .state-fractura path { fill: #ffffff; stroke: #e67e22; stroke-width: 3px; }
+  .state-ausente path { fill: none; stroke: #B0B7C3; stroke-dasharray: 4; }
+</style>
+
+<div class="container">
+  <div class="teeth-chart" id="teethChart"></div>
+</div>
+
+<script>
+(() => {
+  const teethChart = document.getElementById("teethChart");
+
+  // Ejemplo de datos en JSON
+  const teethData = {
+    1: "caries",
+    2: "corona",
+    3: "extraccion",
+    4: "implante",
+    5: "fractura",
+    6: "obturacion",
+    7: "endodoncia",
+    8: "ausente"
+    // ... puedes seguir llenando los demás
+  };
+
+  function createTooth(number, state) {
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.flexDirection = "column";
+    wrapper.style.alignItems = "center";
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", `tooth ${state ? "state-" + state : ""}`);
+    svg.setAttribute("viewBox", "0 0 100 120");
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute(
+      "d",
+      "M50 10 C30 10, 20 30, 20 50 C20 75, 35 95, 42 115 Q50 125, 58 115 C65 95, 80 75, 80 50 C80 30, 70 10, 50 10Z"
+    );
+    svg.appendChild(path);
+
+    // Estado especial: fractura -> dibujar línea de fractura
+    if (state === "fractura") {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", "30");
+      line.setAttribute("y1", "30");
+      line.setAttribute("x2", "70");
+      line.setAttribute("y2", "90");
+      line.setAttribute("stroke", "#e67e22");
+      line.setAttribute("stroke-width", "4");
+      svg.appendChild(line);
+    }
+
+    // Estado especial: extracción -> dibujar X encima
+    if (state === "extraccion") {
+      const line1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line1.setAttribute("x1", "30");
+      line1.setAttribute("y1", "30");
+      line1.setAttribute("x2", "70");
+      line1.setAttribute("y2", "90");
+      line1.setAttribute("stroke", "#c0392b");
+      line1.setAttribute("stroke-width", "4");
+      svg.appendChild(line1);
+
+      const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line2.setAttribute("x1", "70");
+      line2.setAttribute("y1", "30");
+      line2.setAttribute("x2", "30");
+      line2.setAttribute("y2", "90");
+      line2.setAttribute("stroke", "#c0392b");
+      line2.setAttribute("stroke-width", "4");
+      svg.appendChild(line2);
+    }
+
+    const label = document.createElement("div");
+    label.classList.add("label");
+    label.textContent = number;
+
+    wrapper.appendChild(svg);
+    wrapper.appendChild(label);
+
+    return wrapper;
+  }
+
+  // Crear 32 dientes
+  for (let i = 1; i <= 32; i++) {
+    const state = teethData[i] || null;
+    teethChart.appendChild(createTooth(i, state));
+  }
+})();
+</script>
