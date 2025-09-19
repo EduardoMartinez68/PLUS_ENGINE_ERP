@@ -32,7 +32,8 @@ class Appointment(models.Model):
     emails_guests = models.JSONField(null=True, blank=True)
     location = models.TextField(null=True, blank=True)
     link = models.TextField(null=True, blank=True)
-
+    id_event_in_google_calendar=models.IntegerField()
+    
     repeat_this_event = models.BooleanField(default=False)
     time_repeat = models.SmallIntegerField(default=0) #this is for that the ERP knows how often to repeat this event in days
     finish_repeat_date = models.DateTimeField(null=True, blank=True, help_text="This is for that the ERP knows when to stop repeating this event")
