@@ -1,5 +1,7 @@
 from django.db import models
 from django.db import migrations, connection
+from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField
+
 #from django.contrib.auth.models import User
 from django.conf import settings
 
@@ -60,3 +62,11 @@ class Settings(models.Model):
     def __str__(self):
         return self.email_alert
     
+class GoogleToken(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    token = EncryptedTextField()
+    refresh_token = EncryptedTextField()
+    token_uri = EncryptedTextField()
+    client_id = EncryptedTextField()
+    client_secret = EncryptedTextField()
+    scopes = EncryptedTextField()

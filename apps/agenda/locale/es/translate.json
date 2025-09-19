@@ -7,7 +7,7 @@
 
     "title-pop-create-event":"Crear un nuevo evento en la Agenda",
     "title-pop-edit-event":"Editar evento en la Agenda",
-
+    "title-sync-google-btn":"Sincronizar con Google",
     "label-input-title":"Escribe el Nombre del Evento",
     "placeholder-input-title":"Nombre del Evento",
     
@@ -153,5 +153,8 @@
 
     "message.delte-event-title":"Evento eliminado",
     "message.delte-event-description":"El evento fue eliminado de la agenda con éxito",
-    "message.delete-event-fail":"El evento no fue eliminado"
+    "message.delete-event-fail":"El evento no fue eliminado",
+
+    "agenda.message.sync-google-success":"¡Sincronización Exitosa!",
+    "agenda.message.sync-google-description":"¡Sincronización Exitosa!"
 }

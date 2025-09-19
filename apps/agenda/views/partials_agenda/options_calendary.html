@@ -4,6 +4,7 @@
     <plus-action text="create-a-new-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
     <plus-action text="title-show-all-the-type-event" onclick="open_pop_show_all_type_event"></plus-action>
     <plus-action text="title.show-all-my-appoints" onclick="open_pop_show_all_my_appoints"></plus-action>
+    <plus-action text="title-sync-google-btn" onclick="sync_google"></plus-action>
 </plus-actions>
 
 <message-pop title="title-pop-create-event" name="pop-data-event">
@@ -33,7 +34,9 @@
   }
 
 
-
+  function sync_google(){
+    window.location.href = "{% url 'google_sync' %}";
+  }
 
 
 

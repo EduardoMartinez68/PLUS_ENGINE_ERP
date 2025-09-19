@@ -1,5 +1,6 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
+from ..models import GoogleToken
 from google_auth_oauthlib.flow import Flow
 from django.shortcuts import redirect
 import os
@@ -1640,28 +1641,79 @@ def google_sync(request):
         flow = Flow.from_client_secrets_file(
             os.path.join(os.path.dirname(__file__), 'credentials.json'),
             scopes=["https://www.googleapis.com/auth/calendar"],
-            redirect_uri="http://localhost:8000/oauth2callback"
+            redirect_uri="http://127.0.0.1:8000"  # Cambiado a callback
         )
-    
         authorization_url, state = flow.authorization_url(
             access_type='offline',
             include_granted_scopes='true'
         )
-        
+    
         request.session['oauth_state'] = state
         return redirect(authorization_url)
     else:
         flow = Flow.from_client_secrets_file(
             os.path.join(os.path.dirname(__file__), 'credentials.json'),
             scopes=["https://www.googleapis.com/auth/calendar"],
-            redirect_uri="http://localhost:8000/oauth2callback"
+            redirect_uri="http://127.0.0.1:8000"  # Cambiado a callback
         )
-    
         authorization_url, state = flow.authorization_url(
             access_type='offline',
             include_granted_scopes='true'
         )
-        
+    
         request.session['oauth_state'] = state
         return redirect(authorization_url)
+
+@login_required(login_url='login')
+def oauth2callback(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        flow = Flow.from_client_secrets_file(
+            os.path.join(os.path.dirname(__file__), 'credentials.json'),
+            scopes=["https://www.googleapis.com/auth/calendar"],
+            redirect_uri="http://127.0.0.1:8000"
+        )
+    
+        # Esta URL contiene el código que Google envía tras autorizar al usuario
+        flow.fetch_token(authorization_response=request.build_absolute_uri())
+        credentials = flow.credentials
+    
+        # Guardar en DB para el usuario actual
+        GoogleToken.objects.update_or_create(
+            user=request.user,
+            defaults={
+                'token': credentials.token,
+                'refresh_token': credentials.refresh_token,
+                'token_uri': credentials.token_uri,
+                'client_id': credentials.client_id,
+                'client_secret': credentials.client_secret,
+                'scopes': ",".join(credentials.scopes),
+            }
+        )
+    
+        return render(request, 'success_sync.html')
+    else:
+        flow = Flow.from_client_secrets_file(
+            os.path.join(os.path.dirname(__file__), 'credentials.json'),
+            scopes=["https://www.googleapis.com/auth/calendar"],
+            redirect_uri="http://127.0.0.1:8000"
+        )
+    
+        # Esta URL contiene el código que Google envía tras autorizar al usuario
+        flow.fetch_token(authorization_response=request.build_absolute_uri())
+        credentials = flow.credentials
+    
+        # Guardar en DB para el usuario actual
+        GoogleToken.objects.update_or_create(
+            user=request.user,
+            defaults={
+                'token': credentials.token,
+                'refresh_token': credentials.refresh_token,
+                'token_uri': credentials.token_uri,
+                'client_id': credentials.client_id,
+                'client_secret': credentials.client_secret,
+                'scopes': ",".join(credentials.scopes),
+            }
+        )
+    
+        return render(request, 'success_sync.html')
 

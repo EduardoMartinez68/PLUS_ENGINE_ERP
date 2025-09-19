@@ -16,4 +16,5 @@ urlpatterns = [
     path('delete_type_event/', views.delete_type_event, name='delete_type_event'),
     path('setting/', views.setting, name='setting'),
     path('google_sync/', views.google_sync, name='google_sync'),
+    path('oauth2callback/', views.oauth2callback, name='oauth2callback'),
 ]
