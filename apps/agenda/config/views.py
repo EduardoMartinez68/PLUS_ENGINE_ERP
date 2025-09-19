@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from ..models import GoogleToken
 from google_auth_oauthlib.flow import Flow
 from django.shortcuts import redirect
-import os
 import json
 from django.db.models import F
 from django.http import JsonResponse
@@ -13,7 +12,6 @@ from django.utils.timezone import localtime
 from dateutil import parser as ps
 from django.utils import timezone
 from ..plus_wrapper import Plus
-import os
 import sys
 from datetime import datetime, timedelta, time
 from django.db.models import F, Q
@@ -22,11 +20,40 @@ from django.http import JsonResponse
 import json
 from django.shortcuts import render
 from email import parser
+import os
 @login_required(login_url='login')
 def agenda_home(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        try:
+            token_obj = GoogleToken.objects.get(user=request.user)
+            # Imprimir los datos importantes en consola para depuración
+            print("Token:", token_obj.token)
+            print("Refresh Token:", token_obj.refresh_token)
+            print("Token URI:", token_obj.token_uri)
+            print("Client ID:", token_obj.client_id)
+            print("Client Secret:", token_obj.client_secret)
+            print("Scopes:", token_obj.scopes)
+            token_status = "Token encontrado y listo para usar."
+        except GoogleToken.DoesNotExist:
+            print("No hay token guardado para este usuario.")
+            token_status = "No hay token guardado."
+    
         return render(request, 'home_agenda.html')
     else:
+        try:
+            token_obj = GoogleToken.objects.get(user=request.user)
+            # Imprimir los datos importantes en consola para depuración
+            print("Token:", token_obj.token)
+            print("Refresh Token:", token_obj.refresh_token)
+            print("Token URI:", token_obj.token_uri)
+            print("Client ID:", token_obj.client_id)
+            print("Client Secret:", token_obj.client_secret)
+            print("Scopes:", token_obj.scopes)
+            token_status = "Token encontrado y listo para usar."
+        except GoogleToken.DoesNotExist:
+            print("No hay token guardado para este usuario.")
+            token_status = "No hay token guardado."
+    
         return render(request, 'home_agenda.html')
 
 @login_required(login_url='login')
@@ -1641,7 +1668,7 @@ def google_sync(request):
         flow = Flow.from_client_secrets_file(
             os.path.join(os.path.dirname(__file__), 'credentials.json'),
             scopes=["https://www.googleapis.com/auth/calendar"],
-            redirect_uri="http://127.0.0.1:8000"  # Cambiado a callback
+            redirect_uri="http://127.0.0.1:8000/agenda/oauth2callback"  # Cambiado a callback
         )
         authorization_url, state = flow.authorization_url(
             access_type='offline',
@@ -1654,7 +1681,7 @@ def google_sync(request):
         flow = Flow.from_client_secrets_file(
             os.path.join(os.path.dirname(__file__), 'credentials.json'),
             scopes=["https://www.googleapis.com/auth/calendar"],
-            redirect_uri="http://127.0.0.1:8000"  # Cambiado a callback
+            redirect_uri="http://127.0.0.1:8000/agenda/oauth2callback"  # Cambiado a callback
         )
         authorization_url, state = flow.authorization_url(
             access_type='offline',
@@ -1667,10 +1694,11 @@ def google_sync(request):
 @login_required(login_url='login')
 def oauth2callback(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1' #QUITAR EN PRODUCCION
         flow = Flow.from_client_secrets_file(
             os.path.join(os.path.dirname(__file__), 'credentials.json'),
             scopes=["https://www.googleapis.com/auth/calendar"],
-            redirect_uri="http://127.0.0.1:8000"
+            redirect_uri="http://127.0.0.1:8000/agenda/oauth2callback"
         )
     
         # Esta URL contiene el código que Google envía tras autorizar al usuario
@@ -1678,24 +1706,30 @@ def oauth2callback(request):
         credentials = flow.credentials
     
         # Guardar en DB para el usuario actual
+        defaults = {
+            'token': credentials.token,
+            'token_uri': credentials.token_uri,
+            'client_id': credentials.client_id,
+            'client_secret': credentials.client_secret,
+            'scopes': ",".join(credentials.scopes),
+        }
+    
+        # Solo agregar refresh_token si existe
+        if credentials.refresh_token:
+            defaults['refresh_token'] = credentials.refresh_token
+    
         GoogleToken.objects.update_or_create(
             user=request.user,
-            defaults={
-                'token': credentials.token,
-                'refresh_token': credentials.refresh_token,
-                'token_uri': credentials.token_uri,
-                'client_id': credentials.client_id,
-                'client_secret': credentials.client_secret,
-                'scopes': ",".join(credentials.scopes),
-            }
+            defaults=defaults
         )
     
         return render(request, 'success_sync.html')
     else:
+        os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1' #QUITAR EN PRODUCCION
         flow = Flow.from_client_secrets_file(
             os.path.join(os.path.dirname(__file__), 'credentials.json'),
             scopes=["https://www.googleapis.com/auth/calendar"],
-            redirect_uri="http://127.0.0.1:8000"
+            redirect_uri="http://127.0.0.1:8000/agenda/oauth2callback"
         )
     
         # Esta URL contiene el código que Google envía tras autorizar al usuario
@@ -1703,16 +1737,21 @@ def oauth2callback(request):
         credentials = flow.credentials
     
         # Guardar en DB para el usuario actual
+        defaults = {
+            'token': credentials.token,
+            'token_uri': credentials.token_uri,
+            'client_id': credentials.client_id,
+            'client_secret': credentials.client_secret,
+            'scopes': ",".join(credentials.scopes),
+        }
+    
+        # Solo agregar refresh_token si existe
+        if credentials.refresh_token:
+            defaults['refresh_token'] = credentials.refresh_token
+    
         GoogleToken.objects.update_or_create(
             user=request.user,
-            defaults={
-                'token': credentials.token,
-                'refresh_token': credentials.refresh_token,
-                'token_uri': credentials.token_uri,
-                'client_id': credentials.client_id,
-                'client_secret': credentials.client_secret,
-                'scopes': ",".join(credentials.scopes),
-            }
+            defaults=defaults
         )
     
         return render(request, 'success_sync.html')

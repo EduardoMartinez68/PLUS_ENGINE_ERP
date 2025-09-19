@@ -1,3 +1,7 @@
+import os
+#Allow temporary HTTP on localhost
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1' #QUITAR EN PRODUCCION
+
 from email import parser
 from django.shortcuts import render
 import json
@@ -6,7 +10,6 @@ from ..models import TypeAppoint, Appointment
 from django.db.models import F, Q
 from datetime import datetime, timedelta, time
 import sys
-import os
 from ..plus_wrapper import Plus
 from django.utils import timezone
 from dateutil import parser as ps
@@ -17,6 +20,20 @@ from django.utils.timezone import  make_aware, is_naive, get_default_timezone
 
 
 def agenda_home(request):
+    try:
+        token_obj = GoogleToken.objects.get(user=request.user)
+        # Imprimir los datos importantes en consola para depuración
+        print("Token:", token_obj.token)
+        print("Refresh Token:", token_obj.refresh_token)
+        print("Token URI:", token_obj.token_uri)
+        print("Client ID:", token_obj.client_id)
+        print("Client Secret:", token_obj.client_secret)
+        print("Scopes:", token_obj.scopes)
+        token_status = "Token encontrado y listo para usar."
+    except GoogleToken.DoesNotExist:
+        print("No hay token guardado para este usuario.")
+        token_status = "No hay token guardado."
+
     return render(request, 'home_agenda.html')
 
 
@@ -826,16 +843,18 @@ def setting(request):
     return render(request, 'setting.html')
 
 #-----------------------------GOOGLE-------------------------------------
-import os
+
 from django.shortcuts import redirect
 from google_auth_oauthlib.flow import Flow
 from ..models import GoogleToken
+
+
 
 def google_sync(request):
     flow = Flow.from_client_secrets_file(
         os.path.join(os.path.dirname(__file__), 'credentials.json'),
         scopes=["https://www.googleapis.com/auth/calendar"],
-        redirect_uri="http://127.0.0.1:8000"  # Cambiado a callback
+        redirect_uri="http://127.0.0.1:8000/agenda/oauth2callback"  # Cambiado a callback
     )
     authorization_url, state = flow.authorization_url(
         access_type='offline',
@@ -846,6 +865,7 @@ def google_sync(request):
     return redirect(authorization_url)
 
 def oauth2callback(request):
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1' #QUITAR EN PRODUCCION
     flow = Flow.from_client_secrets_file(
         os.path.join(os.path.dirname(__file__), 'credentials.json'),
         scopes=["https://www.googleapis.com/auth/calendar"],
@@ -857,16 +877,21 @@ def oauth2callback(request):
     credentials = flow.credentials
 
     # Guardar en DB para el usuario actual
+    defaults = {
+        'token': credentials.token,
+        'token_uri': credentials.token_uri,
+        'client_id': credentials.client_id,
+        'client_secret': credentials.client_secret,
+        'scopes': ",".join(credentials.scopes),
+    }
+
+    # Solo agregar refresh_token si existe
+    if credentials.refresh_token:
+        defaults['refresh_token'] = credentials.refresh_token
+
     GoogleToken.objects.update_or_create(
         user=request.user,
-        defaults={
-            'token': credentials.token,
-            'refresh_token': credentials.refresh_token,
-            'token_uri': credentials.token_uri,
-            'client_id': credentials.client_id,
-            'client_secret': credentials.client_secret,
-            'scopes': ",".join(credentials.scopes),
-        }
+        defaults=defaults
     )
 
     return render(request, 'success_sync.html')
