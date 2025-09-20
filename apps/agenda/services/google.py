@@ -73,6 +73,56 @@ def obtener_eventos_google(user, start_date, end_date):
     return google_events
 
 
+def get_appoint_from_google_with_id(user, event_id):
+    """
+    Obtiene un evento de Google Calendar por su ID y lo transforma
+    a un formato compatible con el modelo Appointment.
+    """
+    creds = get_credential_google_calendar(user)
+    if not creds:
+        return None
+
+    service = build('calendar', 'v3', credentials=creds)
+
+    try:
+        event = service.events().get(calendarId='primary', eventId=event_id).execute()
+        
+        start = event['start'].get('dateTime') or event['start'].get('date')
+        end = event['end'].get('dateTime') or event['end'].get('date')
+
+        # parsear a datetime con tzinfo
+        start_dt = datetime.fromisoformat(start)
+        end_dt = datetime.fromisoformat(end)
+
+        # Mapeo a formato compatible con Appointment
+        appoint_data = {
+            "name_event": event.get("summary", ""),
+            "description": event.get("description", ""),
+            "start_date": start_dt.strftime("%Y-%m-%d"),
+            "start_time": start_dt.strftime("%H:%M"),
+            "end_date": end_dt.strftime("%Y-%m-%d"),
+            "end_time": end_dt.strftime("%H:%M"),
+            "emails_guests": [a['email'] for a in event.get('attendees', [])] if event.get('attendees') else [],
+            "location": event.get("location", ""),
+            "link": "",  # opcional, no viene de Google
+            "alert_time": 0,  # puedes definir default o extraer de evento si tienes notificaciones
+            "priority": 0,  # default
+            "activate_event_all_the_day": False,
+            "repeat_this_event": False,
+            "time_repeat": 0,
+            "time_end_repeat": None,
+            "send_notification": True,
+            "i_am_free": True,
+            "type_event": None,  # opcional, puedes mapear a un tipo
+            "id_event_in_google_calendar": event["id"]
+        }
+
+        return appoint_data
+
+    except Exception as ex:
+        print(f"Error obteniendo evento de Google: {ex}")
+        return None
+
 def crear_evento_google(user, title, description, date_start, date_finish, time_alert, repeat_this_event, time_repeat, emails_guests):
     creds = get_credential_google_calendar(user)
 

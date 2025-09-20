@@ -17,7 +17,8 @@ from django.utils.timezone import localtime
 from dateutil.relativedelta import relativedelta
 
 from django.utils.timezone import  make_aware, is_naive, get_default_timezone
-from ..services.google import get_credential_google_calendar, delete_event_in_google_calendar, update_event_in_google_calendar, crear_evento_google, obtener_eventos_google
+from ..services.google import get_credential_google_calendar, delete_event_in_google_calendar, update_event_in_google_calendar, crear_evento_google, obtener_eventos_google, get_appoint_from_google_with_id
+from ..services.calendary import create_new_appointment
 
 def agenda_home(request):
     try:
@@ -392,6 +393,24 @@ def get_appointment_by_id(request):
         if not event_id:
             return JsonResponse({'success': False, 'message': 'message.error.event-id-required'}, status=400)
 
+        #if exist a id from the frontend , now we will see if be a id of the agenda of google
+        try:
+            event_id=int(event_id) #if we can do the the id be a number, this means that the id is of our database 
+        except:
+            #if the id not can be tranform is because the id is of google calendar
+            user=request.user
+
+            #we will to create this event from google to our database and get his id
+            event_data=get_appoint_from_google_with_id(user, event_id) 
+            answer=create_new_appointment(event_data, user) 
+
+            if answer["success"]: #if we can create the new event in our database, now we will to save his id 
+                event_id = answer["event_id"]   
+            else:
+                return JsonResponse({'success': False, 'message': 'message.error.event-not-found'}, status=404)      
+
+
+        #here we will get the data of the event and return the information to the frontend
         try:
             # select_related antes de get
             e = Appointment.objects.select_related('id_type_appoint').get(id=event_id, user=request.user)
