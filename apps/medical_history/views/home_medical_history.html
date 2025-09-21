@@ -5,40 +5,6 @@
     object-fit: cover;    /* recorta para que no se deforme */
   }
 
-.report-header {
-  margin-bottom: 20px;
-  background-color: transparent;
-}
-
-.hospital-logo {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  margin-right: 20px;
-}
-
-.hospital-info {
-  flex: 1;
-}
-
-.hospital-name {
-  margin: 0;
-  font-size: 24px;
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-.hospital-sub {
-  margin: 0;
-  font-size: 16px;
-  color: #555;
-}
-
-.divider {
-  border-top: 2px solid var(primary);
-  margin: 20px 0;
-}
-
 .section-title{
   background-color: var(--primary);
   color: white;
@@ -56,94 +22,156 @@
 </style>
 <div class="container-section">
 
-<header class="report-header d-flex align-items-center">
-  <img src="https://www.gob.mx/cms/uploads/press/main_image/156266/post_logo.jpg" 
-        alt="Logo Hospital" class="hospital-logo">
-  <div class="hospital-info">
-    <h1 class="hospital-name">Hospital General de la Salud</h1>
-    <p class="hospital-sub">Reporte Médico del Paciente</p>
-  </div>
-</header>
 
-<div class="row section g-4">
-  <input-field label="Identificador (Skull)" id="skull" name="skull" required></input-field>
+<div class="row section">
+  <div class="col-5">
+    <input-field label="Identificador (Skull)" id="skull" name="skull" required></input-field>
+  </div>
 </div>
 
 <div class="row section">
   <div class="col-3">
     <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bXVqZXIlMjBmZWxpenxlbnwwfHwwfHx8MA%3D%3D" alt="" class="photo-patient">
+    <label for="">IMC: 30</label>
   </div>
   <div class="col-8" style="padding: 10px 15px;">
     <plus-title label="Nombre del paciente" placeholder="title-type-customer" required id="title-customer-edit" value="Julieta Martinez Lopez"></plus-title>
 
     <div class="col">
+      <div class="row">
+        <div class="col">
+          <input-field label="edad" type="number" id="old" name="old" readonly value="34"></input-field>
+        </div>
+        <div class="col">
+          <plus-select label="Sexo" name="blood_type" id="blood_type"  required value="woman">
+            <option value="men">Hombre</option>
+            <option value="woman">Mujer</option>
+            <option value="other">Otro</option>
+          </plus-select>
+        </div>
+      </div>
 
-      <!--here exist the information of the teeth-->
-      <div class="teeth-chart" id="teethChart"></div>
-
-
+      <div class="row">
+        <div class="col">
+          <input-field label="Altura (cm)" type="number" id="height_cm" name="height_cm" step="0.01" value="1.55"></input-field>
+        </div>
+        <div class="col">
+          <plus-select label="Tipo de sangre" name="blood_type" id="blood_type"  required value="A+">
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </plus-select>
+        </div>
+      </div>
+      <div class="row">
+          <div class="col">
+            <input-field label="Peso (kg)" type="number" id="weight_kg" name="weight_kg" step="0.01" value="55"></input-field>
+          </div>
+          <div class="col">
+            
+          </div>
+      </div>
 
       <div class="information-date">
+        <button class="btn btn-edit" onclick="window.show_pop('pop-teeth-chart')"><i class="fi fi-sr-tooth"></i></button>
         <label for="">Última visita 30/09/2025</label><br>
       </div>
     </div>
   </div>
 </div>
 
-<p class="section-title">Información</p>
+<div class="container-pop">
+
+
+
+<p class="section-title">Información Medica</p>
+<div class="section">
+  <div class="row">
+    <div class="col">
+      <info-label label="Condiciones crónicas" message=""></info-label>
+      <plus-tags id="tags" name="tags" label="emails-guests" message="email-message-show"
+          placeholder="input.add-most-email" value="{{customer.tags}}"></plus-tags>
+    </div>
+
+    <div class="col">
+      <info-label label="Alergias"></info-label>
+      <plus-tags id="tags" name="tags" label="emails-guests" message="email-message-show"
+          placeholder="input.add-most-email" value="{{customer.tags}}"></plus-tags>
+    </div>
+  </div>
+
+  <div class="row">
+    <label for="">Medicamentos</label>
+    <textarea></textarea>
+  </div>
+</div>
+
+<p class="section-title">Contacto de Emergencia</p>
+<div class="section">
+  <div class="row">
+    <div class="col">
+      <input-field label="Nombre" type="text" id="emergency_contact_name" name="emergency_contact_name"></input-field>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <input-field label="Teléfono" type="text" id="emergency_contact_phone" name="emergency_contact_phone"></input-field>
+    </div>
+    <div class="col">
+      <input-field label="Relación" type="text" id="emergency_contact_relation" name="emergency_contact_relation"></input-field>
+    </div>
+  </div>
+  
+</div>
+
+
+
 <div class="row section">
-    <div class="col">
-      <input-field label="Altura (cm)" type="number" id="height_cm" name="height_cm" step="0.01"></input-field>
-    </div>
-    <div class="col">
-      <input-field label="Peso (kg)" type="number" id="weight_kg" name="weight_kg" step="0.01"></input-field>
-    </div>
-    <div class="col">
-      <input-field label="IMC" type="number" id="bmi" name="bmi" readonly></input-field>
-    </div>
+  <div class="col">
+    <label for="">Historial familiar</label>
+    <textarea rows="5"></textarea>
+  </div>
 </div>
 
 <div class="row section">
   <div class="col">
-    <plus-select label="Tipo de sangre" name="blood_type" id="blood_type"  required>
-      <option value="A+">A+</option>
-      <option value="A-">A-</option>
-      <option value="B+">B+</option>
-      <option value="B-">B-</option>
-      <option value="AB+">AB+</option>
-      <option value="AB-">AB-</option>
-      <option value="O+">O+</option>
-      <option value="O-">O-</option>
-    </plus-select>
-  </div>
-  <div class="col">
-    <label></label>
-    <label for="">Última visita</label>
-    <plus-date name="last_visit" label="Última visita"></plus-date>
+    <label class="form-label">Notas</label>
+    <textarea class="form-control" name="notes" rows="3"></textarea>
   </div>
 </div>
+
+
+
 </div>
+
+
+<button type="submit" class="btn btn-edit btn-success" t="message.save">Save</button>
+
+</div>
+
+
+<message-pop title="advanced-information" name="pop-teeth-chart">
+<!--here exist the information of the teeth-->
+<div class="container-pop">
+  <div class="section">
+    <div class="teeth-chart" id="teethChart"></div>
+  </div>
+</div>
+
+<button class="btn btn-edit btn-success" t="message.success" onclick="window.close_my_pop('pop-teeth-chart')">Success</button>
+</message-pop>
 
 <div class="container py-4">
 
 
   <form method="POST">
     {% csrf_token %}
-    <!-- Campos de texto grandes -->
-    <div class="mb-3">
-      <label class="form-label">Condiciones crónicas</label>
-      <textarea class="form-control" name="chronic_conditions" rows="2"></textarea>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Alergias</label>
-      <textarea class="form-control" name="allergies" rows="2"></textarea>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Medicamentos</label>
-      <textarea class="form-control" name="medications" rows="2"></textarea>
-    </div>
 
     <div class="mb-3">
       <label class="form-label">Cirugías</label>
@@ -155,49 +183,12 @@
       <textarea class="form-control" name="immunizations" rows="2"></textarea>
     </div>
 
-    <div class="row section">
-      <label class="form-label">Historial familiar</label>
-      <textarea class="form-control" name="family_history" rows="2"></textarea>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Estilo de vida</label>
-      <textarea class="form-control" name="lifestyle" rows="2"></textarea>
-    </div>
-
-    <!-- Contacto de emergencia -->
-    <h4 class="mt-4">Contacto de Emergencia</h4>
-
-    <div class="mb-3">
-      <label class="form-label">Nombre</label>
-      <input type="text" class="form-control" name="emergency_contact_name">
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Teléfono</label>
-      <input type="text" class="form-control" name="emergency_contact_phone">
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Relación</label>
-      <input type="text" class="form-control" name="emergency_contact_relation">
-    </div>
-
-
-
-    <!-- Notas -->
-    <div class="mb-3">
-      <label class="form-label">Notas</label>
-      <textarea class="form-control" name="notes" rows="3"></textarea>
-    </div>
-
     <!-- Info de otros doctores -->
     <div class="mb-3">
       <label class="form-label">Información de otros doctores</label>
       <textarea class="form-control" name="info_other_doctor" rows="3"></textarea>
     </div>
 
-    <button type="submit" class="btn btn-primary">Guardar</button>
   </form>
 </div>
 
