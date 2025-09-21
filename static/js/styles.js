@@ -1050,8 +1050,11 @@ class PlusSelect extends HTMLElement {
     //Create select visible container
     const select = document.createElement('div');
     select.classList.add('plus-select-select');
+
+    const valueShow= this.getAttribute('value') || textLabel; //this is for know what value we will show in the select when the user not selected nothing
+
     select.innerHTML = `
-      <span class="plus-select-selected-text" t='${textLabel}'>${textLabelTranslate}</span>
+      <span class="plus-select-selected-text" t='${valueShow}'>${textLabelTranslate}</span>
       <i class="fi fi-rr-angle-small-right plus-select-icon"></i>
     `;
     this._selectText = select.querySelector('.plus-select-selected-text'); //save the span of the text that was selected
@@ -1112,13 +1115,11 @@ class PlusSelect extends HTMLElement {
     //--this is when in the frontend the proggramer added options
     slotOptions.forEach(opt => {
       //get the text of the iformation
-      const optionText = opt.getAttribute('t') || null;
-      let textTranlate = opt.textContent;
+      const optionText = opt.getAttribute('t') || opt.textContent || '';
 
       //we will see if the proggramer need translate this option
-      if (optionText) {
-        textTranlate = window.translate_text(optionText); //translate the text that exist 
-      }
+      let textTranlate = window.translate_text(optionText); //translate the text that exist 
+      
 
 
       //her we will create the container of the div of the options
@@ -1382,17 +1383,18 @@ class PlusSelect extends HTMLElement {
 
     //if the select have a value for dafault
     const defaultValue = this.getAttribute('value');
+    
     this.setValue(defaultValue);
   }
 
   setValue(value, text = null) {
+    
     if (!this._selectElement) return;
     
     //her we will see if exist the information of the select
     const option = Array.from(this._selectElement.querySelectorAll('option'))
       .find(opt => opt.getAttribute('value') === value + '');
 
-    
     //her we will verifiy if exist this option in the select
     if (option) {
       //if the option exist in the select, we will get his information and set it in the hidden input and the select text
@@ -1402,6 +1404,7 @@ class PlusSelect extends HTMLElement {
 
       if (this._selectText) {
         const text = option.getAttribute('t') || option.getAttribute('data-text') || option.textContent;
+        this._selectText.setAttribute('t', text);
         this._selectText.textContent = window.translate_text(text);
       }
     } else {

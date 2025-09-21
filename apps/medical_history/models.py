@@ -44,6 +44,7 @@ class MedicalInformation(models.Model):
 
     lifestyle = EncryptedTextField(blank=True, null=True)  # Ej: Smoker, alcohol, exercise, diet
 
+    #--emergency contact information
     emergency_contact_name = EncryptedCharField(max_length=100, blank=True, null=True)
     emergency_contact_phone = EncryptedCharField(max_length=20, blank=True, null=True)
     emergency_contact_relation = EncryptedCharField(max_length=50, blank=True, null=True)

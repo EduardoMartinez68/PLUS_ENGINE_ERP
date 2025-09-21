@@ -25,52 +25,52 @@
 
 <div class="row section">
   <div class="col-5">
-    <input-field label="Identificador (Skull)" id="skull" name="skull" required></input-field>
+    <input-field label="medical-history.form.skull" placeholder="medical-history.form.placeholder.skull"  id="skull" name="skull" required value="{{patient.skull}}"></input-field>
   </div>
 </div>
 
 <div class="row section">
   <div class="col-3">
-    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bXVqZXIlMjBmZWxpenxlbnwwfHwwfHx8MA%3D%3D" alt="" class="photo-patient">
+    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bXVqZXIlMjBmZWxpenxlbnwwfHwwfHx8MA%3D%3D" alt="" class="photo-patient" loading="lazy">
     <label for="">IMC: 30</label>
   </div>
   <div class="col-8" style="padding: 10px 15px;">
-    <plus-title label="Nombre del paciente" placeholder="title-type-customer" required id="title-customer-edit" value="Julieta Martinez Lopez"></plus-title>
+    <plus-title label="medical-history.form.label.patient-name" placeholder="medical-history.form.placeholder.patient-name" required id="title-customer-edit" value="{{patient.name}}"></plus-title>
 
     <div class="col">
       <div class="row">
         <div class="col">
-          <input-field label="edad" type="number" id="old" name="old" readonly value="34"></input-field>
+          <input-field label="medical-history.form.label.age" placeholder="medical-history.form.placeholder.age" type="number" id="old" name="old" readonly value="{{patient.age}}"></input-field>
         </div>
         <div class="col">
-          <plus-select label="Sexo" name="blood_type" id="blood_type"  required value="woman">
-            <option value="men">Hombre</option>
-            <option value="woman">Mujer</option>
-            <option value="other">Otro</option>
+          <plus-select label="medical-history.form.select.sex" name="blood_type" id="blood_type"  required value="woman">
+            <option value="men" t="medical-history.form.select.option.male">Hombre</option>
+            <option value="woman" t="medical-history.form.select.option.female">Mujer</option>
+            <option value="other" t="medical-history.form.select.option.other">Otro</option>
           </plus-select>
         </div>
       </div>
 
       <div class="row">
         <div class="col">
-          <input-field label="Altura (cm)" type="number" id="height_cm" name="height_cm" step="0.01" value="1.55"></input-field>
+          <input-field label="medical-history.form.label.height" placeholder="medical-history.form.placeholder.height" type="number" id="height_cm" name="height_cm" step="0.01" value="{{patient.height_cm}}"></input-field>
         </div>
         <div class="col">
-          <plus-select label="Tipo de sangre" name="blood_type" id="blood_type"  required value="A+">
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
+          <plus-select label="medical-history.form.label.blood-type" name="blood_type" id="blood_type"  required value="{{patient.blood_type}}">
+            <option value="A+" t="A+">A+</option>
+            <option value="A-" t="A-">A-</option>
+            <option value="B+" t="B+">B+</option>
+            <option value="B-" t="B-">B-</option>
+            <option value="AB+" t="AB+">AB+</option>
+            <option value="AB-" t="AB-">AB-</option>
+            <option value="O+" t="O+">O+</option>
+            <option value="O-" t="O-">O-</option>
           </plus-select>
         </div>
       </div>
       <div class="row">
           <div class="col">
-            <input-field label="Peso (kg)" type="number" id="weight_kg" name="weight_kg" step="0.01" value="55"></input-field>
+            <input-field label="medical-history.form.label.weight" type="number" id="weight_kg" name="weight_kg" step="0.01" value="{{patient.weight_kg}}"></input-field>
           </div>
           <div class="col">
             
@@ -79,76 +79,60 @@
 
       <div class="information-date">
         <button class="btn btn-edit" onclick="window.show_pop('pop-teeth-chart')"><i class="fi fi-sr-tooth"></i></button>
-        <label for="">Última visita 30/09/2025</label><br>
+        <label for="" t="medical-history.form.label.last-physical-exam-date">The last visit</label> <label for="">30/09/2025</label><br>
       </div>
     </div>
   </div>
 </div>
 
-<div class="container-pop">
 
 
-
-<p class="section-title">Información Medica</p>
+<p class="section-title" t="medical-history.title.medical-info">Information Medical</p>
 <div class="section">
   <div class="row">
     <div class="col">
-      <info-label label="Condiciones crónicas" message=""></info-label>
+      <label label="medical-history.form.label.chronic-conditions"></label>
       <plus-tags id="tags" name="tags" label="emails-guests" message="email-message-show"
-          placeholder="input.add-most-email" value="{{customer.tags}}"></plus-tags>
+          placeholder="input.add-most-email" value="{{patient.chronic_conditions}}"></plus-tags>
     </div>
 
     <div class="col">
-      <info-label label="Alergias"></info-label>
+      <info-label label="medical-history.form.label.allergies"></info-label>
       <plus-tags id="tags" name="tags" label="emails-guests" message="email-message-show"
-          placeholder="input.add-most-email" value="{{customer.tags}}"></plus-tags>
+          placeholder="input.add-most-email" value="{{patient.allergies}}"></plus-tags>
     </div>
   </div>
 
-  <div class="row">
+  <div class="row p-2">
     <label for="">Medicamentos</label>
     <textarea></textarea>
   </div>
 </div>
 
-<p class="section-title">Contacto de Emergencia</p>
-<div class="section">
-  <div class="row">
-    <div class="col">
-      <input-field label="Nombre" type="text" id="emergency_contact_name" name="emergency_contact_name"></input-field>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col">
-      <input-field label="Teléfono" type="text" id="emergency_contact_phone" name="emergency_contact_phone"></input-field>
-    </div>
-    <div class="col">
-      <input-field label="Relación" type="text" id="emergency_contact_relation" name="emergency_contact_relation"></input-field>
-    </div>
-  </div>
-  
-</div>
 
 
 
-<div class="row section">
-  <div class="col">
-    <label for="">Historial familiar</label>
-    <textarea rows="5"></textarea>
-  </div>
-</div>
+<show-more text="Cirugías" onclick="show_pop('pop-info-data-emergency')"></show-more>
+
+<show-more text="Vacunas" onclick="show_pop('pop-info-data-emergency')"></show-more>
+
+<show-more text="Información de otros doctores" onclick="show_pop('pop-info-data-emergency')"></show-more>
+
+<show-more text="Historial familiar" onclick="show_pop('pop-info-data-emergency')"></show-more>
+
+
+<p class="section-title">Información Adiccional</p>
+<show-more text="Contacto de Emergencia" onclick="show_pop('pop-info-data-emergency')" description='(Madre. Alicia Agustin +52 444 444 444)'></show-more>
 
 <div class="row section">
   <div class="col">
     <label class="form-label">Notas</label>
-    <textarea class="form-control" name="notes" rows="3"></textarea>
+    <textarea class="form-control" name="notes" rows="9"></textarea>
   </div>
 </div>
 
 
 
-</div>
 
 
 <button type="submit" class="btn btn-edit btn-success" t="message.save">Save</button>
@@ -167,30 +151,36 @@
 <button class="btn btn-edit btn-success" t="message.success" onclick="window.close_my_pop('pop-teeth-chart')">Success</button>
 </message-pop>
 
-<div class="container py-4">
+
+<message-pop title="advanced-information" name="pop-info-data-emergency">
+  <div class="section">
+    <div class="row">
+      <div class="col">
+        <input-field label="Nombre" type="text" id="emergency_contact_name" name="emergency_contact_name"></input-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <input-field label="Teléfono" type="text" id="emergency_contact_phone" name="emergency_contact_phone"></input-field>
+      </div>
+      <div class="col">
+        <input-field label="Relación" type="text" id="emergency_contact_relation" name="emergency_contact_relation"></input-field>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-edit btn-success" t="message.success" onclick="window.close_my_pop('pop-info-data-emergency')">Success</button>
+</message-pop>
+
+
+
+
 
 
   <form method="POST">
     {% csrf_token %}
-
-    <div class="mb-3">
-      <label class="form-label">Cirugías</label>
-      <textarea class="form-control" name="surgeries" rows="2"></textarea>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Vacunas</label>
-      <textarea class="form-control" name="immunizations" rows="2"></textarea>
-    </div>
-
-    <!-- Info de otros doctores -->
-    <div class="mb-3">
-      <label class="form-label">Información de otros doctores</label>
-      <textarea class="form-control" name="info_other_doctor" rows="3"></textarea>
-    </div>
-
   </form>
-</div>
 
 <style>
   .teeth-chart {
@@ -232,9 +222,6 @@
   .state-ausente path { fill: none; stroke: #B0B7C3; stroke-dasharray: 4; }
 </style>
 
-<div class="container">
-  <div class="teeth-chart" id="teethChart"></div>
-</div>
 
 <script>
 (() => {
