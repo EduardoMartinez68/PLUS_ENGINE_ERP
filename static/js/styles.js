@@ -1001,6 +1001,7 @@ class PlusSelect extends HTMLElement {
     this._selectText = null;
     this._selectElement = null;
     this._thisSlectSendDataToTheServer = false;
+    this._textSelected = null;
     this._method = 'GET'
   }
 
@@ -1058,7 +1059,7 @@ class PlusSelect extends HTMLElement {
       <i class="fi fi-rr-angle-small-right plus-select-icon"></i>
     `;
     this._selectText = select.querySelector('.plus-select-selected-text'); //save the span of the text that was selected
-
+    this._textSelected = this.getAttribute('data-text') || null; //save the text that was selected
 
     //Create options popup
     const popup = document.createElement('div');
@@ -1388,9 +1389,14 @@ class PlusSelect extends HTMLElement {
   }
 
   setValue(value, text = null) {
-    
     if (!this._selectElement) return;
     
+    if(this._textSelected){
+      this._selectText.setAttribute('t', this._textSelected);
+      this._selectText.textContent= this._textSelected;
+      return; //if the user selected a text, we not will update the select
+    }
+
     //her we will see if exist the information of the select
     const option = Array.from(this._selectElement.querySelectorAll('option'))
       .find(opt => opt.getAttribute('value') === value + '');
@@ -1403,7 +1409,7 @@ class PlusSelect extends HTMLElement {
       }
 
       if (this._selectText) {
-        const text = option.getAttribute('t') || option.getAttribute('data-text') || option.textContent;
+        const text = this._textSelected || option.getAttribute('t') || option.getAttribute('data-text') || option.textContent;
         this._selectText.setAttribute('t', text);
         this._selectText.textContent = window.translate_text(text);
       }
@@ -1411,7 +1417,10 @@ class PlusSelect extends HTMLElement {
       //if not exist in the select of the options is because is a data of a tabla of search 
       if (this._thisSlectSendDataToTheServer) {
         this._hiddenInput.value = value;
-        this._selectText.textContent = text;
+        var info = text || option.getAttribute('data-text') || value; 
+        
+        this._selectText.setAttribute('t', info);
+        this._selectText.textContent = info;
       }
     }
   }

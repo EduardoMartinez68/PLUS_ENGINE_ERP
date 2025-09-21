@@ -177,14 +177,14 @@
                         link="/customers/search_type_customer/" add="open_pop_create_type_customer"
                         edit_data="open_pop_edit_type_customer" delete_data="/customers/delete_type_customer/"
                         btn_delete_title="message.do-you-like-delete-this-type-customer"
-                        btn_delete_text="message.description-delete-type-customer" method="GET" value="{{customer.customer_type.id}}">
+                        btn_delete_text="message.description-delete-type-customer" method="GET" value="{{customer.customer_type.id}}" data-text="{{customer.customer_type.name}}">
                     </plus-select>
                 </div>
                 <div class="col">
                     <plus-select label="select-source-customer" name="source" id="source" link="/customers/search_source/"
                         add="open_pop_create_source" edit_data="open_pop_edit_source"
                         delete_data="/customers/delete_source/" btn_delete_title="message.do-you-like-delete-this-source"
-                        btn_delete_text="message.description-delete-source" method="GET">
+                        btn_delete_text="message.description-delete-source" method="GET" value="{{customer.source.id}}" data-text="{{customer.source.name}}">
                     </plus-select>
                 </div>
             </div>
