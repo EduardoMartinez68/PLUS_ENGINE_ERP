@@ -7,7 +7,7 @@ import json
 from django.db.models import F
 from django.http import JsonResponse
 from ..services.calendary import create_new_appointment
-from ..services.google import get_credential_google_calendar, delete_event_in_google_calendar, update_event_in_google_calendar, crear_evento_google, obtener_eventos_google, get_appoint_from_google_with_id
+from ..services.google import get_credential_google_calendar, delete_event_in_google_calendar, update_event_in_google_calendar, crear_evento_google, obtener_eventos_google, get_appoint_from_google_with_id, get_appoints_from_google_with_title
 from django.utils.timezone import  make_aware, is_naive, get_default_timezone
 from dateutil.relativedelta import relativedelta
 from django.utils.timezone import localtime
@@ -761,6 +761,8 @@ def get_appointment_by_id(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == 'GET':
             event_id = request.GET.get('id')
+            existing_event=None
+    
             if not event_id:
                 return JsonResponse({'success': False, 'message': 'message.error.event-id-required'}, status=400)
     
@@ -771,22 +773,32 @@ def get_appointment_by_id(request):
                 #if the id not can be tranform is because the id is of google calendar
                 user=request.user
     
-                #we will to create this event from google to our database and get his id
-                event_data=get_appoint_from_google_with_id(user, event_id) 
-                answer=create_new_appointment(event_data, user) 
+                #First, let's check that there is no data with this Google ID saved in my address book of google calendar
+                existing_event = Appointment.objects.filter(
+                    id_event_in_google_calendar=event_id,
+                    user=user
+                ).first()
     
-                if answer["success"]: #if we can create the new event in our database, now we will to save his id 
-                    event_id = answer["event_id"]   
+                #if this event exist in our database, save his information for return after
+                if existing_event:
+                    e=existing_event
                 else:
-                    return JsonResponse({'success': False, 'message': 'message.error.event-not-found'}, status=404)      
+                    #we will to create this event from google to our database and get his id
+                    event_data=get_appoint_from_google_with_id(user, event_id) 
+                    answer=create_new_appointment(event_data, user) 
     
+                    if answer["success"]: #if we can create the new event in our database, now we will to save his id 
+                        event_id = answer["event_id"]   
+                    else:
+                        return JsonResponse({'success': False, 'message': 'message.error.event-not-found'}, status=404)      
     
-            #here we will get the data of the event and return the information to the frontend
-            try:
-                # select_related antes de get
-                e = Appointment.objects.select_related('id_type_appoint').get(id=event_id, user=request.user)
-            except Appointment.DoesNotExist:
-                return JsonResponse({'success': False, 'message': 'message.error.event-not-found'}, status=404)
+            if not existing_event:
+                #here we will get the data of the event and return the information to the frontend
+                try:
+                    # select_related antes de get
+                    e = Appointment.objects.select_related('id_type_appoint').get(id=event_id, user=request.user)
+                except Appointment.DoesNotExist:
+                    return JsonResponse({'success': False, 'message': 'message.error.event-not-found'}, status=404)
     
             # serializar
             date_start = Plus.convert_from_utc(e.date_start, request.user.timezone)
@@ -821,6 +833,8 @@ def get_appointment_by_id(request):
     else:
         if request.method == 'GET':
             event_id = request.GET.get('id')
+            existing_event=None
+    
             if not event_id:
                 return JsonResponse({'success': False, 'message': 'message.error.event-id-required'}, status=400)
     
@@ -831,22 +845,32 @@ def get_appointment_by_id(request):
                 #if the id not can be tranform is because the id is of google calendar
                 user=request.user
     
-                #we will to create this event from google to our database and get his id
-                event_data=get_appoint_from_google_with_id(user, event_id) 
-                answer=create_new_appointment(event_data, user) 
+                #First, let's check that there is no data with this Google ID saved in my address book of google calendar
+                existing_event = Appointment.objects.filter(
+                    id_event_in_google_calendar=event_id,
+                    user=user
+                ).first()
     
-                if answer["success"]: #if we can create the new event in our database, now we will to save his id 
-                    event_id = answer["event_id"]   
+                #if this event exist in our database, save his information for return after
+                if existing_event:
+                    e=existing_event
                 else:
-                    return JsonResponse({'success': False, 'message': 'message.error.event-not-found'}, status=404)      
+                    #we will to create this event from google to our database and get his id
+                    event_data=get_appoint_from_google_with_id(user, event_id) 
+                    answer=create_new_appointment(event_data, user) 
     
+                    if answer["success"]: #if we can create the new event in our database, now we will to save his id 
+                        event_id = answer["event_id"]   
+                    else:
+                        return JsonResponse({'success': False, 'message': 'message.error.event-not-found'}, status=404)      
     
-            #here we will get the data of the event and return the information to the frontend
-            try:
-                # select_related antes de get
-                e = Appointment.objects.select_related('id_type_appoint').get(id=event_id, user=request.user)
-            except Appointment.DoesNotExist:
-                return JsonResponse({'success': False, 'message': 'message.error.event-not-found'}, status=404)
+            if not existing_event:
+                #here we will get the data of the event and return the information to the frontend
+                try:
+                    # select_related antes de get
+                    e = Appointment.objects.select_related('id_type_appoint').get(id=event_id, user=request.user)
+                except Appointment.DoesNotExist:
+                    return JsonResponse({'success': False, 'message': 'message.error.event-not-found'}, status=404)
     
             # serializar
             date_start = Plus.convert_from_utc(e.date_start, request.user.timezone)
@@ -929,6 +953,8 @@ def search_events(request):
                 events = events.filter(id_type_appoint_id=type_event_id)
             except ValueError:
                 pass  # ignorar si no es un número válido
+        
+        
     
         # Limitar a 20 eventos
         events = events[:20]
@@ -936,8 +962,8 @@ def search_events(request):
         # Serializar
         events_data = []
         for e in events:
-            date_start_local = localtime(Plus.convert_from_utc(e.date_start, user.timezone))
-            date_finish_local = localtime(Plus.convert_from_utc(e.date_finish, user.timezone))
+            date_start_local = Plus.convert_from_utc(e.date_start, user.timezone)
+            date_finish_local = Plus.convert_from_utc(e.date_finish, user.timezone)
     
             #here is for show start in the priority and can see better
             priority='⭐'
@@ -945,7 +971,7 @@ def search_events(request):
                 priority+='⭐'
     
             events_data.append({
-                'id': e.id,
+                'id':  e.id,
                 'title': e.title,
                 'description': e.description,
                 'date_start': Plus.format_date_to_text(date_start_local.isoformat(),  user.language, 2),
@@ -958,6 +984,37 @@ def search_events(request):
                 "type_appoint_color": e.id_type_appoint.color if e.id_type_appoint else '#91BBEA'
             })
     
+        #now get the event that exist in google and save his information 
+        events_google=get_appoints_from_google_with_title(user, search)
+    
+        #here we will delete the event that be repet with the id of google here 
+        events_finish_google = []
+    
+        for g in events_google:
+            exists_in_db = any(ev.id_event_in_google_calendar == g['id_event_in_google_calendar'] for ev in events)
+            if not exists_in_db:
+                events_finish_google.append(g)
+    
+        for g in events_finish_google:
+            date_start = datetime.strptime(f"{g['start_date']} {g['start_time']}", "%Y-%m-%d %H:%M")
+            date_finish = datetime.strptime(f"{g['end_date']} {g['end_time']}", "%Y-%m-%d %H:%M")
+            date_start_local = localtime(Plus.convert_from_utc(date_start, user.timezone))
+            date_finish_local = localtime(Plus.convert_from_utc(date_finish, user.timezone))
+    
+            events_data.append({
+                'id': str(g['id_event_in_google_calendar']),
+                'title': g['name_event']+'[google]',
+                'description': g['description'],
+                'date_start': Plus.format_date_to_text(date_start_local.isoformat(),  user.language, 2),
+                'date_finish': Plus.format_date_to_text(date_finish_local.isoformat(), user.language, 2),
+                'priority': '⭐',  # default
+                'location': g['location'],
+                'link': g['link'],
+                'activate_event_all_the_day': g['activate_event_all_the_day'],
+                "type_appoint_name": None,
+                "type_appoint_color": "#91BBEA",
+                "source": "google"
+            })
         return JsonResponse({'success': True, 'answer': events_data}, status=200)
     else:
         """
@@ -1007,6 +1064,8 @@ def search_events(request):
                 events = events.filter(id_type_appoint_id=type_event_id)
             except ValueError:
                 pass  # ignorar si no es un número válido
+        
+        
     
         # Limitar a 20 eventos
         events = events[:20]
@@ -1014,8 +1073,8 @@ def search_events(request):
         # Serializar
         events_data = []
         for e in events:
-            date_start_local = localtime(Plus.convert_from_utc(e.date_start, user.timezone))
-            date_finish_local = localtime(Plus.convert_from_utc(e.date_finish, user.timezone))
+            date_start_local = Plus.convert_from_utc(e.date_start, user.timezone)
+            date_finish_local = Plus.convert_from_utc(e.date_finish, user.timezone)
     
             #here is for show start in the priority and can see better
             priority='⭐'
@@ -1023,7 +1082,7 @@ def search_events(request):
                 priority+='⭐'
     
             events_data.append({
-                'id': e.id,
+                'id':  e.id,
                 'title': e.title,
                 'description': e.description,
                 'date_start': Plus.format_date_to_text(date_start_local.isoformat(),  user.language, 2),
@@ -1036,6 +1095,37 @@ def search_events(request):
                 "type_appoint_color": e.id_type_appoint.color if e.id_type_appoint else '#91BBEA'
             })
     
+        #now get the event that exist in google and save his information 
+        events_google=get_appoints_from_google_with_title(user, search)
+    
+        #here we will delete the event that be repet with the id of google here 
+        events_finish_google = []
+    
+        for g in events_google:
+            exists_in_db = any(ev.id_event_in_google_calendar == g['id_event_in_google_calendar'] for ev in events)
+            if not exists_in_db:
+                events_finish_google.append(g)
+    
+        for g in events_finish_google:
+            date_start = datetime.strptime(f"{g['start_date']} {g['start_time']}", "%Y-%m-%d %H:%M")
+            date_finish = datetime.strptime(f"{g['end_date']} {g['end_time']}", "%Y-%m-%d %H:%M")
+            date_start_local = localtime(Plus.convert_from_utc(date_start, user.timezone))
+            date_finish_local = localtime(Plus.convert_from_utc(date_finish, user.timezone))
+    
+            events_data.append({
+                'id': str(g['id_event_in_google_calendar']),
+                'title': g['name_event']+'[google]',
+                'description': g['description'],
+                'date_start': Plus.format_date_to_text(date_start_local.isoformat(),  user.language, 2),
+                'date_finish': Plus.format_date_to_text(date_finish_local.isoformat(), user.language, 2),
+                'priority': '⭐',  # default
+                'location': g['location'],
+                'link': g['link'],
+                'activate_event_all_the_day': g['activate_event_all_the_day'],
+                "type_appoint_name": None,
+                "type_appoint_color": "#91BBEA",
+                "source": "google"
+            })
         return JsonResponse({'success': True, 'answer': events_data}, status=200)
 
 @login_required(login_url='login')
@@ -1326,15 +1416,49 @@ def delete_event(request):
             body_json = json.loads(request.body)  # Convert request body to dict
         except Exception as e:
             return JsonResponse({'success': False, 'message': 'message.error.the-form-have-a-error', 'error': str(e)}, status=400)
-    
-        event_id = body_json.get('id_event')
+        
         user = request.user
+        event_id = body_json.get('id_event')
     
         if not event_id:
             return JsonResponse({'success': False, 'message': 'message.error.no-event-id-provided'}, status=400)
         
     
     
+        #now we will see if the id that the frontned send is of google calendar or of our database
+        try:
+            event_id=int(event_id)
+        except:
+            #if not can convert the id to a number is because is a id of google calendar
+            #and if be a id of google calendar first we will see if exist in our database  
+            existing_event = Appointment.objects.filter(
+                id_event_in_google_calendar=event_id,
+                user=user
+            ).first()
+            
+            #if exist in our database now we will delete this event 
+            if existing_event:
+                try:
+                    existing_event.delete()
+                except Appointment.DoesNotExist:
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'message.error.event-not-found',
+                        "error": "The event was not found"
+                    }, status=404)
+                
+                #and also delete the event in google calendar
+                delete_event_in_google_calendar(user, event_id)
+            else:
+                #if not exist this event in our database, it is because the event is from google calendar and our delete this event
+                delete_event_in_google_calendar(user, event_id)
+    
+    
+        
+    
+        
+    
+        #in this code we will delte a event that maybe not is in google calendar simply be in our database
         try:
             appointment = Appointment.objects.get(id=event_id, user=user)
             id_event_in_google_calendar=appointment.id_event_in_google_calendar
@@ -1372,15 +1496,49 @@ def delete_event(request):
             body_json = json.loads(request.body)  # Convert request body to dict
         except Exception as e:
             return JsonResponse({'success': False, 'message': 'message.error.the-form-have-a-error', 'error': str(e)}, status=400)
-    
-        event_id = body_json.get('id_event')
+        
         user = request.user
+        event_id = body_json.get('id_event')
     
         if not event_id:
             return JsonResponse({'success': False, 'message': 'message.error.no-event-id-provided'}, status=400)
         
     
     
+        #now we will see if the id that the frontned send is of google calendar or of our database
+        try:
+            event_id=int(event_id)
+        except:
+            #if not can convert the id to a number is because is a id of google calendar
+            #and if be a id of google calendar first we will see if exist in our database  
+            existing_event = Appointment.objects.filter(
+                id_event_in_google_calendar=event_id,
+                user=user
+            ).first()
+            
+            #if exist in our database now we will delete this event 
+            if existing_event:
+                try:
+                    existing_event.delete()
+                except Appointment.DoesNotExist:
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'message.error.event-not-found',
+                        "error": "The event was not found"
+                    }, status=404)
+                
+                #and also delete the event in google calendar
+                delete_event_in_google_calendar(user, event_id)
+            else:
+                #if not exist this event in our database, it is because the event is from google calendar and our delete this event
+                delete_event_in_google_calendar(user, event_id)
+    
+    
+        
+    
+        
+    
+        #in this code we will delte a event that maybe not is in google calendar simply be in our database
         try:
             appointment = Appointment.objects.get(id=event_id, user=user)
             id_event_in_google_calendar=appointment.id_event_in_google_calendar

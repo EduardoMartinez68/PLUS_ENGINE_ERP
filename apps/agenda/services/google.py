@@ -123,6 +123,76 @@ def get_appoint_from_google_with_id(user, event_id):
         print(f"Error obteniendo evento de Google: {ex}")
         return None
 
+def get_appoints_from_google_with_title(user, title_event, start_date=None, end_date=None, limit=5):
+    """
+    Busca eventos en Google Calendar por título similar (no exacto).
+    Devuelve hasta `limit` eventos.
+    """
+    creds = get_credential_google_calendar(user)
+    if not creds:
+        return []
+
+    service = build('calendar', 'v3', credentials=creds)
+
+    # Si no se define rango de fechas, usamos hoy +/- 1 año
+    now = timezone.now()
+    if not start_date:
+        start_date = now - timedelta(days=365)
+    if not end_date:
+        end_date = now + timedelta(days=365)
+
+    try:
+        events_result = service.events().list(
+            calendarId='primary',
+            timeMin=start_date.isoformat(),
+            timeMax=end_date.isoformat(),
+            singleEvents=True,
+            orderBy='startTime',
+            q=title_event  # búsqueda por texto parcial
+        ).execute()
+
+        events = events_result.get('items', [])
+
+        # Limitar a `limit` resultados
+        events = events[:limit]
+
+        appoints = []
+        for event in events:
+            start = event['start'].get('dateTime') or event['start'].get('date')
+            end = event['end'].get('dateTime') or event['end'].get('date')
+
+            start_dt = datetime.fromisoformat(start)
+            end_dt = datetime.fromisoformat(end)
+
+            appoint_data = {
+                "name_event": event.get("summary", ""),
+                "description": event.get("description", ""),
+                "start_date": start_dt.strftime("%Y-%m-%d"),
+                "start_time": start_dt.strftime("%H:%M"),
+                "end_date": end_dt.strftime("%Y-%m-%d"),
+                "end_time": end_dt.strftime("%H:%M"),
+                "emails_guests": [a['email'] for a in event.get('attendees', [])] if event.get('attendees') else [],
+                "location": event.get("location", ""),
+                "link": "",
+                "alert_time": 0,
+                "priority": 0,
+                "activate_event_all_the_day": False,
+                "repeat_this_event": False,
+                "time_repeat": 0,
+                "time_end_repeat": None,
+                "send_notification": True,
+                "i_am_free": True,
+                "type_event": None,
+                "id_event_in_google_calendar": event["id"]
+            }
+            appoints.append(appoint_data)
+
+        return appoints
+
+    except Exception as ex:
+        print(f"Error buscando eventos por título en Google: {ex}")
+        return []
+
 def crear_evento_google(user, title, description, date_start, date_finish, time_alert, repeat_this_event, time_repeat, emails_guests):
     creds = get_credential_google_calendar(user)
 
