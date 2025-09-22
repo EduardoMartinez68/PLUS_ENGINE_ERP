@@ -5,6 +5,9 @@ import os
 import shutil
 import hashlib
 
+import json
+from django.apps import AppConfig
+from django.db.utils import OperationalError, ProgrammingError
 #---------------------------------------------------------------CREATE THE DATA OF ENCRYPT FOR SAVE THE INFORMATION------------------------------
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
@@ -57,6 +60,22 @@ for app_name in os.listdir(apps_dir):
     if os.path.isdir(app_path):
         dest_file = os.path.join(app_path, 'plus_wrapper.py')
         shutil.copy2(source_file, dest_file)  # Copy and overwrite
+
+
+        #here also we will read the file of permissions if exist for after add the new permissions to the model <Roles_And_Permissions>
+        permissions_file = os.path.join(app_path, 'permissions.json')
+        if os.path.isfile(permissions_file):
+            from core.models import Permits
+
+            try:
+                with open(permissions_file, "r", encoding="utf-8") as f:
+                    permissions = json.load(f)
+
+                for perm in permissions:
+                    Permits.objects.get_or_create(name=perm)
+            except (OperationalError, ProgrammingError):
+                # Esto evita error si la tabla aún no está creada (ej. antes de migraciones)
+                pass
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 

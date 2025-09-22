@@ -1,5 +1,5 @@
 
-function show_loader_in_the_div_container_of_plus(contenedorId) {
+function show_loader_in_the_div_container_of_plus(contenedorId, loadingImage) {
     const contenedor = document.getElementById(contenedorId);
     contenedor.innerHTML = `
     <style>
@@ -44,7 +44,7 @@ function hidden_loader_in_the_div_container_of_plus(contenedorId, contenido) {
     contenedor.innerHTML = contenido;
 }
 
-function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, method='POST', delay = 500, type='tr') {
+function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, method='POST', loadingImage=null, delay = 500, type='tr') {
     /*
       inputsId=this is a array of all the inputs of filter fot search the objects. inputsId[0] is the id of the search input
       fieldId=the field that we will update
@@ -143,11 +143,22 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
             } else {
                 //if exist an answer, we will show a message to the user
                 const answer=t("info.no_results");
-
-                field.innerHTML = `
-                <div style="text-align:center;">
-                    ${answer}
-                </div>`;
+                if(loadingImage===null){
+                    field.innerHTML = `
+                    <div style="width: 100%; height: auto;">
+                        <center>
+                            ${answer}
+                        </center>
+                    </div>`;
+                }else{
+                    field.innerHTML = `
+                    <div style="width: 100%; height: auto;">
+                        <center>
+                            <img src="${loadingImage}" alt="Loading..." style="width: 80px; height: auto;"/>
+                            ${answer}
+                        </center>
+                    </div>`;
+                }
             }
         } else {
             //here is when the server answer with a error and not can get nothing information
@@ -156,6 +167,7 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
 
             field.innerHTML = `
             <div style="text-align:center; color:#e74c3c;">
+                <img src="${loadingImage}" alt="Loading..." style="width: 100%; height: auto;"/>
                 ${answer}
             </div>`;
         }
@@ -188,7 +200,7 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
     const observer = new IntersectionObserver(async (entries, obs) => {
         for (const entry of entries) {
             if (entry.isIntersecting) {                
-                show_loader_in_the_div_container_of_plus(fieldId);
+                show_loader_in_the_div_container_of_plus(fieldId, loadingImage);
                 await send_information_to_the_server()
                 obs.unobserve(entry.target); //this is for only run once 
             }

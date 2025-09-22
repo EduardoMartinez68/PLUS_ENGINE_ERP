@@ -1,0 +1,309 @@
+<style>
+  .photo-patient {
+    width: 100%;          /* ocupa todo el ancho disponible */
+    aspect-ratio: 1 / 1;  /* fuerza un cuadrado */
+    object-fit: cover;    /* recorta para que no se deforme */
+  }
+
+.section-title{
+  background-color: var(--primary);
+  color: white;
+  font-size: 1.3rem;
+  padding: 10px 15px;
+  display: inline-block;
+}
+
+.information-date {
+  display: flex;           /* activa flexbox */
+  justify-content: flex-end; /* empuja todo al final (derecha) */
+  align-items: center;      /* centra verticalmente si hay más de un elemento */
+  gap: 10px;  
+}
+</style>
+<div class="container-section">
+
+
+<div class="row section">
+  <div class="col-5">
+    <input-field label="medical-history.form.skull" placeholder="medical-history.form.placeholder.skull"  id="skull" name="skull" required value="{{patient.skull}}"></input-field>
+  </div>
+</div>
+
+<div class="row section">
+  <div class="col-3">
+    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bXVqZXIlMjBmZWxpenxlbnwwfHwwfHx8MA%3D%3D" alt="" class="photo-patient" loading="lazy">
+    <label for="">IMC: 30</label>
+  </div>
+  <div class="col-8" style="padding: 10px 15px;">
+    <plus-title label="medical-history.form.label.patient-name" placeholder="medical-history.form.placeholder.patient-name" required id="title-customer-edit" value="{{patient.name}}"></plus-title>
+
+    <div class="col">
+      <div class="row">
+        <div class="col">
+          <input-field label="medical-history.form.label.age" placeholder="medical-history.form.placeholder.age" type="number" id="old" name="old" readonly value="{{patient.age}}"></input-field>
+        </div>
+        <div class="col">
+          <plus-select label="medical-history.form.select.sex" name="blood_type" id="blood_type"  required value="woman">
+            <option value="men" t="medical-history.form.select.option.male">Hombre</option>
+            <option value="woman" t="medical-history.form.select.option.female">Mujer</option>
+            <option value="other" t="medical-history.form.select.option.other">Otro</option>
+          </plus-select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <input-field label="medical-history.form.label.height" placeholder="medical-history.form.placeholder.height" type="number" id="height_cm" name="height_cm" step="0.01" value="{{patient.height_cm}}"></input-field>
+        </div>
+        <div class="col">
+          <plus-select label="medical-history.form.label.blood-type" name="blood_type" id="blood_type"  required value="{{patient.blood_type}}">
+            <option value="A+" t="A+">A+</option>
+            <option value="A-" t="A-">A-</option>
+            <option value="B+" t="B+">B+</option>
+            <option value="B-" t="B-">B-</option>
+            <option value="AB+" t="AB+">AB+</option>
+            <option value="AB-" t="AB-">AB-</option>
+            <option value="O+" t="O+">O+</option>
+            <option value="O-" t="O-">O-</option>
+          </plus-select>
+        </div>
+      </div>
+      <div class="row">
+          <div class="col">
+            <input-field label="medical-history.form.label.weight" type="number" id="weight_kg" name="weight_kg" step="0.01" value="{{patient.weight_kg}}"></input-field>
+          </div>
+          <div class="col">
+            
+          </div>
+      </div>
+
+      <div class="information-date">
+        <button class="btn btn-edit" onclick="window.show_pop('pop-teeth-chart')"><i class="fi fi-sr-tooth"></i></button>
+        <label for="" t="medical-history.form.label.last-physical-exam-date">The last visit</label> <label for="">30/09/2025</label><br>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<p class="section-title" t="medical-history.title.medical-info">Information Medical</p>
+<div class="section">
+  <div class="row">
+    <div class="col">
+      <label label="medical-history.form.label.chronic-conditions"></label>
+      <plus-tags id="tags" name="tags" label="emails-guests" message="email-message-show"
+          placeholder="input.add-most-email" value="{{patient.chronic_conditions}}"></plus-tags>
+    </div>
+
+    <div class="col">
+      <info-label label="medical-history.form.label.allergies"></info-label>
+      <plus-tags id="tags" name="tags" label="emails-guests" message="email-message-show"
+          placeholder="input.add-most-email" value="{{patient.allergies}}"></plus-tags>
+    </div>
+  </div>
+
+  <div class="row p-2">
+    <label for="">Medicamentos</label>
+    <textarea></textarea>
+  </div>
+</div>
+
+
+
+
+<show-more text="Cirugías" onclick="show_pop('pop-info-data-emergency')"></show-more>
+
+<show-more text="Vacunas" onclick="show_pop('pop-info-data-emergency')"></show-more>
+
+<show-more text="Información de otros doctores" onclick="show_pop('pop-info-data-emergency')"></show-more>
+
+<show-more text="Historial familiar" onclick="show_pop('pop-info-data-emergency')"></show-more>
+
+
+<p class="section-title">Información Adiccional</p>
+<show-more text="Contacto de Emergencia" onclick="show_pop('pop-info-data-emergency')" description='(Madre. Alicia Agustin +52 444 444 444)'></show-more>
+
+<div class="row section">
+  <div class="col">
+    <label class="form-label">Notas</label>
+    <textarea class="form-control" name="notes" rows="9"></textarea>
+  </div>
+</div>
+
+
+
+
+
+<button type="submit" class="btn btn-edit btn-success" t="message.save">Save</button>
+
+</div>
+
+
+<message-pop title="advanced-information" name="pop-teeth-chart">
+<!--here exist the information of the teeth-->
+<div class="container-pop">
+  <div class="section">
+    <div class="teeth-chart" id="teethChart"></div>
+  </div>
+</div>
+
+<button class="btn btn-edit btn-success" t="message.success" onclick="window.close_my_pop('pop-teeth-chart')">Success</button>
+</message-pop>
+
+
+<message-pop title="advanced-information" name="pop-info-data-emergency">
+  <div class="section">
+    <div class="row">
+      <div class="col">
+        <input-field label="Nombre" type="text" id="emergency_contact_name" name="emergency_contact_name"></input-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <input-field label="Teléfono" type="text" id="emergency_contact_phone" name="emergency_contact_phone"></input-field>
+      </div>
+      <div class="col">
+        <input-field label="Relación" type="text" id="emergency_contact_relation" name="emergency_contact_relation"></input-field>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-edit btn-success" t="message.success" onclick="window.close_my_pop('pop-info-data-emergency')">Success</button>
+</message-pop>
+
+
+
+
+
+
+  <form method="POST">
+    {% csrf_token %}
+  </form>
+
+<style>
+  .teeth-chart {
+    display: grid;
+    grid-template-columns: repeat(16, 1fr);
+    gap: 12px;
+    margin-bottom: 30px;
+    justify-items: center;
+  }
+  .tooth {
+    cursor: pointer;
+    width: 45px;
+    height: 65px;
+    transition: fill 0.2s ease;
+  }
+  .tooth path {
+    fill: #ffffff;
+    stroke: #B0B7C3;
+    stroke-width: 2px;
+    transition: fill 0.2s ease;
+  }
+  .tooth:hover path {
+    fill: #E2E6EB;
+  }
+  .label {
+    font-size: 0.7rem;
+    text-align: center;
+    margin-top: 4px;
+    color: #2C3E50;
+  }
+
+  /* Estados */
+  .state-caries path { fill: #ff6b6b; }      /* rojo */
+  .state-obturacion path { fill: #f1c40f; }  /* amarillo */
+  .state-endodoncia path { fill: #3498db; }  /* azul */
+  .state-corona path { fill: #bdc3c7; }      /* gris metálico */
+  .state-implante path { fill: #95a5a6; }    /* gris oscuro */
+  .state-fractura path { fill: #ffffff; stroke: #e67e22; stroke-width: 3px; }
+  .state-ausente path { fill: none; stroke: #B0B7C3; stroke-dasharray: 4; }
+</style>
+
+
+<script>
+(() => {
+  const teethChart = document.getElementById("teethChart");
+
+  // Ejemplo de datos en JSON
+  const teethData = {
+    1: "caries",
+    2: "corona",
+    3: "extraccion",
+    4: "implante",
+    5: "fractura",
+    6: "obturacion",
+    7: "endodoncia",
+    8: "ausente"
+    // ... puedes seguir llenando los demás
+  };
+
+  function createTooth(number, state) {
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.flexDirection = "column";
+    wrapper.style.alignItems = "center";
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", `tooth ${state ? "state-" + state : ""}`);
+    svg.setAttribute("viewBox", "0 0 100 120");
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute(
+      "d",
+      "M50 10 C30 10, 20 30, 20 50 C20 75, 35 95, 42 115 Q50 125, 58 115 C65 95, 80 75, 80 50 C80 30, 70 10, 50 10Z"
+    );
+    svg.appendChild(path);
+
+    // Estado especial: fractura -> dibujar línea de fractura
+    if (state === "fractura") {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", "30");
+      line.setAttribute("y1", "30");
+      line.setAttribute("x2", "70");
+      line.setAttribute("y2", "90");
+      line.setAttribute("stroke", "#e67e22");
+      line.setAttribute("stroke-width", "4");
+      svg.appendChild(line);
+    }
+
+    // Estado especial: extracción -> dibujar X encima
+    if (state === "extraccion") {
+      const line1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line1.setAttribute("x1", "30");
+      line1.setAttribute("y1", "30");
+      line1.setAttribute("x2", "70");
+      line1.setAttribute("y2", "90");
+      line1.setAttribute("stroke", "#c0392b");
+      line1.setAttribute("stroke-width", "4");
+      svg.appendChild(line1);
+
+      const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line2.setAttribute("x1", "70");
+      line2.setAttribute("y1", "30");
+      line2.setAttribute("x2", "30");
+      line2.setAttribute("y2", "90");
+      line2.setAttribute("stroke", "#c0392b");
+      line2.setAttribute("stroke-width", "4");
+      svg.appendChild(line2);
+    }
+
+    const label = document.createElement("div");
+    label.classList.add("label");
+    label.textContent = number;
+
+    wrapper.appendChild(svg);
+    wrapper.appendChild(label);
+
+    return wrapper;
+  }
+
+  // Crear 32 dientes
+  for (let i = 1; i <= 32; i++) {
+    const state = teethData[i] || null;
+    teethChart.appendChild(createTooth(i, state));
+  }
+})();
+</script>

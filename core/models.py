@@ -11,6 +11,8 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from PIL import Image
 from cryptography.fernet import Fernet
+from django.conf import settings
+
 
 key = os.getenv("DATA_ENCRYPTION_KEY")
 cipher = Fernet(key.encode())
@@ -33,7 +35,6 @@ def decrypt_field(value):
         return cipher.decrypt(value).decode("utf-8")
     except Exception:
         return None
-
 
 def user_avatar_path(instance, filename):
     # instance.company.id, instance.branch.id
@@ -241,24 +242,45 @@ class UserType(models.Model):
     def __str__(self):
         return self.name
     
-class Permits(models.Model):
+#----------------------------------------------------this is for create the roles and permissions of the ERP------------------------------------------------
+#here table is for save all the permissions that exist in all the apps of the ERP. This permits be load when the server is started
+class Permit(models.Model):
+    code = models.CharField(max_length=150, unique=True)  # example "add_product"
+    app = models.CharField(max_length=50)  # example "inventory"
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.app}: {self.code}"
+    
+#this model is the roles that exist in the company. Each role have a relation with the table <PermissionTable> for know all the permits that have this role
+class UserRole(models.Model):
+    #information of the rol of the user
     id_company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='id_company')
-    name = models.CharField(max_length=100)
-    description = models.TextField(null=True)
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(null=True, blank=True)
     creation_date = models.DateTimeField(auto_now_add=True)
     activated = models.BooleanField(default=True)
 
-    #here exist all the permits in the apps
-    view_permits = models.BooleanField(default=True)
-    edit_permits = models.BooleanField(default=True)
-    delete_permits = models.BooleanField(default=True)
-
     class Meta:
-        db_table = 'companies_permits'
+        unique_together = ('id_company', 'name')
+        db_table = 'companies_roles'
+
 
     def __str__(self):
         return self.name
+    
+#here is for save all the permits of the ERP in a company of the user and his status. This is table is for after assign to a rol in the company and save in the users
+class Role(models.Model):
+    role = models.ForeignKey(UserRole, on_delete=models.CASCADE)
+    permit = models.ForeignKey(Permit, on_delete=models.CASCADE)
+    active = models.BooleanField(default=True, null=False)
 
+    class Meta:
+        unique_together = ('role', 'permit')
+
+
+
+#----------------------------------------------------THIS IS FOR CREATE THE TABLE SETTINGS OF THE ERP--------------------------------------------------------
 class Setting(models.Model):
     company_color = models.CharField(max_length=7, default="#075FAF")
     secondary_color = models.CharField(max_length=7, default="#074c8dff")
@@ -302,6 +324,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     # Relationship with company and branch
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='id_company')
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, db_column='id_branch')
+    user_role = models.ForeignKey(UserRole, on_delete=models.SET_NULL, null=True, db_column='id_user_role')
+    user_type = models.ForeignKey(UserType, on_delete=models.SET_NULL, null=True, db_column='id_user_type')
 
     # Additional employee information
     _address = models.BinaryField(db_column="address", blank=True, null=True)
@@ -444,3 +468,4 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email or self.email_hash
+    

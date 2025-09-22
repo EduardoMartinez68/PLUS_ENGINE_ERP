@@ -22,7 +22,8 @@ def create_app(app_name):
         f.write(create_web_html(app_name))
 
     # Crear config.yaml
-    config_content = f"""name: "{app_name}"
+    config_content = f"""
+        name: "{app_name}"
         appName: "{app_name}"
         icon: "{app_name}/icon.webp"
         path: "/{app_name}"

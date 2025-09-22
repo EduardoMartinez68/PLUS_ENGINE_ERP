@@ -1,13 +1,6 @@
-{
-    "permissions": [
-    {
-        "model": "producto", "actions": 
-        [
-            "add", 
-            "view", 
-            "change", 
-            "delete"
-        ]
-    }
+[
+    "add_customer",
+    "view_customer",
+    "update_customer",
+    "delete_customer"
 ]
-}

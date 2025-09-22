@@ -110,15 +110,147 @@
       left: 40px;
     }
   }
+
+
+
+  /*------------------------this is for skeleton loading effect------------------------------ */
+/* Skeleton shimmer animation */
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.skeleton-loader {
+  display: grid;
+  grid-template-columns: 100px repeat(7, 1fr);
+  width: 100%;
+  height: 100vh;
+}
+
+.skeleton-cell {
+  height: 40px;
+  border: 1px solid #eee;
+  background: #f6f7f8;
+  background-image: linear-gradient(
+    to right,
+    #f6f7f8 0%,
+    #edeef1 20%,
+    #f6f7f8 40%,
+    #f6f7f8 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 800px 104px;
+  animation: shimmer 1.2s linear infinite forwards;
+}
 </style>
 
-<div id="calendary-week-calendar" class="calendary-week-calendar"></div>
+{% load static %}
+
+<div id="calendary-week-calendar" class="calendary-week-calendar" style="width: 100%; height: 100vh;">
+
+</div>
 
 <script>
-  function renderWeek(dateStr) {
-    //clear the calendar of all the old information
+  function show_calendar_loader() {
     const calendar = document.getElementById('calendary-week-calendar');
-    calendar.innerHTML = '';
+    calendar.innerHTML = ''; // clear previous content
+    calendar.classList.add("skeleton-loader");
+
+    // We simulate 24 hours x 8 columns (hour + 7 days)
+    for (let h = 0; h < 24; h++) {
+      for (let d = 0; d < 8; d++) {
+        const cell = document.createElement('div');
+        cell.className = 'skeleton-cell';
+        calendar.appendChild(cell);
+      }
+    }
+  }
+
+  function render_loader_week() {
+    show_calendar_loader(); //show the loader in the calendar while we load the information
+
+    //clear the calendar of all the old information
+    const inputDate = new Date();
+    const weekStart = new Date(inputDate);
+    weekStart.setDate(inputDate.getDate() - inputDate.getDay()); // Sunday
+
+
+    //get all the appoint of this week
+    const appointments = window.get_the_appointments_of_the_week(weekStart); //her get the appointments of the week
+
+    const today = new Date();
+    const isSameDay = (d1, d2) =>
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate();
+
+    const header = document.createElement('div');
+    header.className = 'calendary-week-header';
+
+    const hourHeader = document.createElement('div');
+    hourHeader.textContent = '';
+    header.appendChild(hourHeader);
+
+    // Here we will get the days of the week in the language that the user uses
+    const dayNames = [window.t('sunday'), window.t('monday'), window.t('tuesday'), window.t('wednesday'), window.t('thursday'), window.t('friday'), window.t('saturday')];
+
+    const todayColumnIndices = [];
+
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(weekStart);
+      day.setDate(weekStart.getDate() + i);
+
+      const dayDiv = document.createElement('div');
+      dayDiv.textContent = `${dayNames[i]} ${day.getDate()}`;
+
+      if (isSameDay(today, day)) {
+        todayColumnIndices.push(i); // save here the day that is today
+        dayDiv.style.backgroundColor = '#e0f7fa'; // also highlight in header
+      }
+
+      header.appendChild(dayDiv);
+    }
+
+    const calendar = document.getElementById('calendary-week-calendar');
+    calendar.appendChild(header);
+
+    for (let h = 0; h < 24; h++) {
+      const hour = h.toString().padStart(2, '0');
+
+      const row = document.createElement('div');
+      row.className = 'calendary-week-row';
+
+      const hourCell = document.createElement('div');
+      hourCell.className = 'calendary-week-hour-cell';
+      hourCell.textContent = `${hour}:00`;
+      row.appendChild(hourCell);
+
+      for (let d = 0; d < 7; d++) {
+        const slot = document.createElement('div');
+        slot.className = 'calendary-week-time-slot calendary-week-column-day';
+        slot.dataset.day = d;
+        slot.dataset.hour = h;
+
+        // Si esta es la columna del día actual, le añadimos la clase de fondo
+        if (todayColumnIndices.includes(d)) {
+          slot.classList.add('calendary-week-today-column');
+        }
+
+        row.appendChild(slot);
+      }
+
+      calendar.appendChild(row);
+    }
+  }
+
+  function renderWeek(dateStr) {
+    show_calendar_loader(); //show the loader in the calendar while we load the information
+
+    //clear the calendar of all the old information
     const inputDate = new Date(dateStr);
     const weekStart = new Date(inputDate);
     weekStart.setDate(inputDate.getDate() - inputDate.getDay()); // Sunday
@@ -160,6 +292,8 @@
       header.appendChild(dayDiv);
     }
 
+    const calendar = document.getElementById('calendary-week-calendar');
+    calendar.innerHTML = ''; //clear the loader of the calendar or the information that be printed
     calendar.appendChild(header);
 
     for (let h = 0; h < 24; h++) {
@@ -190,7 +324,7 @@
       calendar.appendChild(row);
     }
 
-    /////////////////////////////////////
+    ////////////////this is for add the events to the calendar/////////////////////
     appointments.forEach(event => {
       const start = new Date(event.date_start);
       const end = new Date(event.date_finish);
@@ -370,8 +504,6 @@
       calendar.appendChild(eventDiv);
     });
     
-
-
     //Red line of the current time for show the hour current of the user for that the user know that evenet next 
     const redLine = document.createElement('div');
     redLine.className = 'calendary-week-current-hour-line';
@@ -441,6 +573,8 @@
 
     renderWeek(todayStr);
   }
+
+  render_loader_week();
 
   setInterval(update_line, 60000); //update the line for minute 
   window.render_this_day = render_this_day;
