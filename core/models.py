@@ -11,7 +11,6 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from PIL import Image
 from cryptography.fernet import Fernet
-from django.conf import settings
 
 
 key = os.getenv("DATA_ENCRYPTION_KEY")
@@ -229,8 +228,8 @@ class Branch(models.Model):
 
     def __str__(self):
         return self.name_branch
-    
-class UserType(models.Model):
+
+class UserDepartment(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(null=True)
     id_company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='id_company')
@@ -325,7 +324,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='id_company')
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, db_column='id_branch')
     user_role = models.ForeignKey(UserRole, on_delete=models.SET_NULL, null=True, db_column='id_user_role')
-    user_type = models.ForeignKey(UserType, on_delete=models.SET_NULL, null=True, db_column='id_user_type')
+    user_department = models.ForeignKey(UserDepartment, on_delete=models.SET_NULL, null=True, db_column='id_user_department')
 
     # Additional employee information
     _address = models.BinaryField(db_column="address", blank=True, null=True)

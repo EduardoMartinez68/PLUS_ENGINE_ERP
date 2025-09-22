@@ -63,6 +63,8 @@ for app_name in os.listdir(apps_dir):
 
 
         #here also we will read the file of permissions if exist for after add the new permissions to the model <Roles_And_Permissions>
+        '''
+        
         permissions_file = os.path.join(app_path, 'permissions.json')
         if os.path.isfile(permissions_file):
             from core.models import Permits
@@ -76,6 +78,7 @@ for app_name in os.listdir(apps_dir):
             except (OperationalError, ProgrammingError):
                 # Esto evita error si la tabla aún no está creada (ej. antes de migraciones)
                 pass
+        '''
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 

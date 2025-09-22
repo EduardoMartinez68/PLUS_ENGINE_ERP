@@ -63,7 +63,6 @@ class Plus:
         user_admin: str = None, 
         password_admin: str = None
     ) -> Tuple[bool, str]:
-        return True, ""
         """
         Check if the user has a specific permission, or if admin credentials have it.
 
@@ -79,15 +78,18 @@ class Plus:
             - False and an error message if permission is denied
         """
 
+        from core.models import Role
         # 1️⃣ Check permission of the main user
-        if user.is_superuser or (hasattr(user, 'has_perm') and user.has_perm(permission)):
+        # related to the intermediate user-role table
+        if Role.objects.filter(role__userrole__user=user,   permit__code=permission,active=True).exists():
             return True, ""
 
         # 2️⃣ if the user not have this permission, now we will to check admin override if credentials are provided
         if user_admin and password_admin:
             admin_user = authenticate(username=user_admin, password=password_admin)
             if admin_user is not None and admin_user.is_active:
-                if hasattr(admin_user, "has_perm") and admin_user.has_perm(permission):
+                #if exist this user admin, now we will check if this user have the permission
+                if Role.objects.filter(role__userrole__user=admin_user,   permit__code=permission,active=True).exists():
                     return True, ""
             return False, "permission.invalid-credentials"
 
