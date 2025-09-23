@@ -913,9 +913,9 @@ class KeyBind extends HTMLElement {
   }
 }
 
-class PlusModules extends HTMLElement {
+class PlusModules2 extends HTMLElement {
   connectedCallback() {
-    //hwe we will read the atribute 'col' and we will calculate the propotion of the modules
+    // Leer atributo 'col' y calcular proporción
     const col = parseInt(this.getAttribute('col')) || 4;
     const colSidebar = Math.max(1, Math.min(col, 11));
     const colContent = 12 - colSidebar;
@@ -923,60 +923,102 @@ class PlusModules extends HTMLElement {
     const modules = Array.from(this.querySelectorAll('plus-module'));
     const names = modules.map(m => m.getAttribute('name'));
     const icons = modules.map(m => m.getAttribute('icon') || '');
+    const descs = modules.map(m => m.getAttribute('desc') || '');
     const contents = modules.map(m => m.innerHTML);
 
-    //clear the container for show a new layaout
+    // Limpiar contenedor
     this.innerHTML = '';
 
-    //make a sidebar
+    // Crear sidebar
     const sidebar = document.createElement('div');
     sidebar.className = 'plus-modules-sidebar';
     sidebar.style.width = `${(colSidebar / 12) * 100}%`;
 
     const ul = document.createElement('ul');
 
-    //her we will read all the moduels and we will create all his container
+    // Crear items de módulos
     names.forEach((name, i) => {
       const li = document.createElement('li');
-      li.className = i === 0 ? 'active' : ''; //we will see if this module this active
+      li.className = i === 0 ? 'active' : '';
       li.dataset.index = i;
 
-      //create the icon if exist for the proggramer
-      const iconSpan = document.createElement('span');
-      iconSpan.className = 'plus-modules-icon';
-      iconSpan.innerHTML = icons[i];
+      li.style.display = 'flex';
+      li.style.alignItems = 'center';
+      li.style.justifyContent = 'space-between';
+      li.style.padding = '10px 12px';
+      li.style.cursor = 'pointer';
+      li.style.borderBottom = '1px solid #eee';
 
-      li.appendChild(iconSpan);
+      // Contenedor izquierdo (icono + texto)
+      const leftContainer = document.createElement('div');
+      leftContainer.style.display = 'flex';
+      leftContainer.style.alignItems = 'center';
+      leftContainer.style.gap = '12px';
+      
+      // Icono principal
+      if (icons[i]) {
+        const iconSpan = document.createElement('i');
+        iconSpan.className = `fi ${icons[i]}`;
+        iconSpan.style.fontSize = '1.5em'; // aumentar tamaño
+        iconSpan.style.width = '30px';
+        iconSpan.style.textAlign = 'center';
+        leftContainer.appendChild(iconSpan);
+      }
 
-      //add the text that the user would like translate
-      const translateText = window.translate_text(name) //her we will translate the text if exist in the dictonary
-      const p = document.createElement('p');
-      p.textContent = translateText;
-      p.setAttribute('t', name); //save the index fortranslate the text after if the user recharge the web
+      // Texto + descripción
+      const textContainer = document.createElement('div');
+      textContainer.className = 'plus-modules-text';
+      const translateText = window.translate_text ? window.translate_text(name) : name;
 
-      //save the icon and the text
-      li.appendChild(p);
+      const pName = document.createElement('p');
+      pName.className = 'plus-modules-name';
+      pName.style.margin = '0';
+      pName.style.fontWeight = '500';
+      pName.textContent = translateText;
+      pName.setAttribute('t', name);
+      textContainer.appendChild(pName);
+
+      if (descs[i]) {
+        const pDesc = document.createElement('p');
+        pDesc.className = 'plus-modules-desc';
+        pDesc.style.margin = '0';
+        pDesc.style.fontSize = '0.8em';
+        pDesc.style.color = '#408ed8ff';
+        pDesc.textContent = descs[i];
+        textContainer.appendChild(pDesc);
+      }
+
+      leftContainer.appendChild(textContainer);
+      li.appendChild(leftContainer);
+
+      // Flecha derecha
+      const arrow = document.createElement('i');
+      arrow.className = 'fi fi-rr-angle-right';
+      arrow.style.fontSize = '1em';
+      li.appendChild(arrow);
+
       ul.appendChild(li);
     });
 
-    sidebar.appendChild(ul); //add the module to the list of modules
+    sidebar.appendChild(ul);
 
     // Crear contenido
     const content = document.createElement('div');
     content.className = 'plus-modules-content';
     content.style.width = `${(colContent / 12) * 100}%`;
+    content.style.padding = '20px';
 
     const panel = document.createElement('div');
     panel.className = 'plus-modules-module-panel';
     panel.innerHTML = contents[0];
     content.appendChild(panel);
 
-    // add to the DOM
+    // Agregar al DOM
     this.classList.add('plus-modules-host');
     this.appendChild(sidebar);
     this.appendChild(content);
 
-    //Click events for tabs
+    // Click events para cambiar módulo
     ul.querySelectorAll('li').forEach(li => {
       li.addEventListener('click', () => {
         ul.querySelectorAll('li').forEach(i => i.classList.remove('active'));
@@ -985,6 +1027,177 @@ class PlusModules extends HTMLElement {
         panel.innerHTML = contents[index];
       });
     });
+  }
+}
+
+class PlusModule2 extends HTMLElement {
+  connectedCallback() {
+    this.classList.add('plus-modules-module');
+  }
+}
+
+class PlusModules extends HTMLElement {
+  connectedCallback() {
+    const col = parseInt(this.getAttribute('col')) || 4;
+    const colSidebar = Math.max(1, Math.min(col, 11));
+    const colContent = 12 - colSidebar;
+
+    const modules = Array.from(this.querySelectorAll('plus-module'));
+    const names = modules.map(m => m.getAttribute('name'));
+    const icons = modules.map(m => m.getAttribute('icon') || '');
+    const descs = modules.map(m => m.getAttribute('desc') || '');
+    const contents = modules.map(m => m.innerHTML);
+
+    this.innerHTML = '';
+
+    // Sidebar
+    const sidebar = document.createElement('div');
+    sidebar.className = 'plus-modules-sidebar';
+    sidebar.style.width = `${(colSidebar / 12) * 100}%`;
+    sidebar.style.transition = 'all 0.3s ease';
+
+    const ul = document.createElement('ul');
+
+    names.forEach((name, i) => {
+      const li = document.createElement('li');
+      li.className = i === 0 ? 'active' : '';
+      li.dataset.index = i;
+
+      li.style.display = 'flex';
+      li.style.alignItems = 'center';
+      li.style.justifyContent = 'space-between';
+      li.style.padding = '10px 12px';
+      li.style.cursor = 'pointer';
+      li.style.borderBottom = '1px solid #eee';
+
+      const leftContainer = document.createElement('div');
+      leftContainer.style.display = 'flex';
+      leftContainer.style.alignItems = 'center';
+      leftContainer.style.gap = '12px';
+
+      if (icons[i]) {
+        const iconSpan = document.createElement('i');
+        iconSpan.className = `fi ${icons[i]}`;
+        iconSpan.style.fontSize = '1.5em';
+        iconSpan.style.width = '30px';
+        iconSpan.style.textAlign = 'center';
+        leftContainer.appendChild(iconSpan);
+      }
+
+      const textContainer = document.createElement('div');
+      textContainer.className = 'plus-modules-text';
+      const translateText = window.translate_text ? window.translate_text(name) : name;
+
+      const pName = document.createElement('p');
+      pName.className = 'plus-modules-name';
+      pName.style.margin = '0';
+      pName.style.fontWeight = '500';
+      pName.textContent = translateText;
+      pName.setAttribute('t', name);
+      textContainer.appendChild(pName);
+
+      if (descs[i]) {
+        const pDesc = document.createElement('p');
+        pDesc.className = 'plus-modules-desc';
+        pDesc.style.margin = '0';
+        pDesc.style.fontSize = '0.8em';
+        pDesc.style.color = '#4c9ce6ff';
+        pDesc.textContent = descs[i];
+        textContainer.appendChild(pDesc);
+      }
+
+      leftContainer.appendChild(textContainer);
+      li.appendChild(leftContainer);
+
+      const arrow = document.createElement('i');
+      arrow.className = 'fi fi-rr-angle-right';
+      arrow.style.fontSize = '1em';
+      li.appendChild(arrow);
+
+      ul.appendChild(li);
+    });
+
+    sidebar.appendChild(ul);
+
+    // Content
+    const content = document.createElement('div');
+    content.className = 'plus-modules-content';
+    content.style.width = `${(colContent / 12) * 100}%`;
+    content.style.padding = '20px';
+    content.style.position = 'relative';
+    content.style.transition = 'all 0.3s ease';
+
+    const panel = document.createElement('div');
+    panel.className = 'plus-modules-module-panel';
+    panel.innerHTML = contents[0];
+    content.appendChild(panel);
+
+    // Botón X para móvil
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = 'X';
+    closeBtn.style.position = 'absolute';
+    closeBtn.style.top = '10px';
+    closeBtn.style.right = '10px';
+    closeBtn.style.display = 'none';
+    content.appendChild(closeBtn);
+
+    this.classList.add('plus-modules-host');
+    this.appendChild(sidebar);
+    this.appendChild(content);
+
+    // Funciones móviles
+    const showContentMobile = () => {
+      if (window.innerWidth < 768) {
+        sidebar.style.width = '0';
+        sidebar.style.display = 'none';
+        content.style.width = '100%';
+        content.style.display = 'block';
+        closeBtn.style.display = 'block';
+      }
+    };
+
+    const showSidebarMobile = () => {
+      if (window.innerWidth < 768) {
+        sidebar.style.width = '100%';
+        sidebar.style.display = 'block';
+        content.style.display = 'none';
+        closeBtn.style.display = 'none';
+      }
+    };
+
+    // Click en módulo
+    ul.querySelectorAll('li').forEach(li => {
+      li.addEventListener('click', () => {
+        ul.querySelectorAll('li').forEach(i => i.classList.remove('active'));
+        li.classList.add('active');
+        const index = li.dataset.index;
+        panel.innerHTML = contents[index];
+        showContentMobile();
+      });
+    });
+
+    // Click en cerrar
+    closeBtn.addEventListener('click', () => {
+      showSidebarMobile();
+    });
+
+    // Resize
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) {
+        sidebar.style.width = `${(colSidebar / 12) * 100}%`;
+        sidebar.style.display = 'block';
+        content.style.width = `${(colContent / 12) * 100}%`;
+        content.style.display = 'block';
+        closeBtn.style.display = 'none';
+      } else {
+        showSidebarMobile();
+      }
+    });
+
+    // Inicializar estado móvil
+    if (window.innerWidth < 768) {
+      showSidebarMobile();
+    }
   }
 }
 
@@ -1006,8 +1219,8 @@ class PlusSelect extends HTMLElement {
   }
 
   async connectedCallback() {
-   const originalSelect = this.cloneNode(true);
-   this._selectElement = originalSelect;
+    const originalSelect = this.cloneNode(true);
+    this._selectElement = originalSelect;
 
     this._method = this.getAttribute('method') || 'GET'
 
@@ -1052,7 +1265,7 @@ class PlusSelect extends HTMLElement {
     const select = document.createElement('div');
     select.classList.add('plus-select-select');
 
-    const valueShow= this.getAttribute('value') || textLabel; //this is for know what value we will show in the select when the user not selected nothing
+    const valueShow = this.getAttribute('value') || textLabel; //this is for know what value we will show in the select when the user not selected nothing
 
     select.innerHTML = `
       <span class="plus-select-selected-text" t='${valueShow}'>${textLabelTranslate}</span>
@@ -1120,7 +1333,7 @@ class PlusSelect extends HTMLElement {
 
       //we will see if the proggramer need translate this option
       let textTranlate = window.translate_text(optionText); //translate the text that exist 
-      
+
 
 
       //her we will create the container of the div of the options
@@ -1139,8 +1352,8 @@ class PlusSelect extends HTMLElement {
 
     //----
     slotOptions.forEach(opt => opt.remove()); //clear the DOOM of the after options
-    
-    
+
+
 
     //Insert search before options
     popup.insertBefore(searchWrapper, popup.firstChild);
@@ -1384,16 +1597,16 @@ class PlusSelect extends HTMLElement {
 
     //if the select have a value for dafault
     const defaultValue = this.getAttribute('value');
-    
+
     this.setValue(defaultValue);
   }
 
   setValue(value, text = null) {
     if (!this._selectElement) return;
-    
-    if(this._textSelected){
+
+    if (this._textSelected) {
       this._selectText.setAttribute('t', this._textSelected);
-      this._selectText.textContent= this._textSelected;
+      this._selectText.textContent = this._textSelected;
       return; //if the user selected a text, we not will update the select
     }
 
@@ -1417,8 +1630,8 @@ class PlusSelect extends HTMLElement {
       //if not exist in the select of the options is because is a data of a tabla of search 
       if (this._thisSlectSendDataToTheServer) {
         this._hiddenInput.value = value;
-        var info = text || option.getAttribute('data-text') || value; 
-        
+        var info = text || option.getAttribute('data-text') || value;
+
         this._selectText.setAttribute('t', info);
         this._selectText.textContent = info;
       }
@@ -4655,6 +4868,94 @@ function toggle_switch_column(id, open = true) {
   }
 }
 
+/*------------------*/
+class Permits extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    const name = this.getAttribute('name') || 'Sin nombre';
+    const icon = this.getAttribute('icon') || '';
+    const permits = Array.from(this.querySelectorAll('plus-permit'));
+
+    this.render(name, icon, permits);
+  }
+
+  render(name, icon, permits) {
+    const container = document.createElement('div');
+    container.className = 'permits-container';
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .permits-container { font-family: Arial; border:1px solid #ddd; padding:10px; border-radius:6px; background:#fafafa; width:300px; }
+      .permits-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+      .permits-header-left { display:flex; align-items:center; gap:8px; }
+      .permits-header-left .icon { font-size:18px; }
+      .permits-header .count { font-size:12px; color:#666; }
+      .permit-list { display:flex; flex-direction:column; gap:6px; }
+      .permit-item { display:flex; justify-content:space-between; align-items:center; width:100%; padding:4px 0; }
+      .permit-name { flex:1; }
+      .switch { position:relative; width:50px; height:24px; border-radius:12px; background:#ccc; cursor:pointer; flex-shrink:0; }
+      .switch::after { content:''; position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:white; transition:0.3s; }
+      .switch.state1 { background: linear-gradient(to right, orange 50%, #ccc 50%); }
+      .switch.state1::after { left:15px; }
+      .switch.state2 { background: ${colors.color_company}; }
+      .switch.state2::after { left:26px; }
+    `;
+
+    // Header
+    const header = document.createElement('div'); header.className='permits-header';
+    const left = document.createElement('div'); left.className='permits-header-left';
+    if(icon){ const iconEl=document.createElement('span'); iconEl.textContent=icon; iconEl.className='icon'; left.appendChild(iconEl); }
+    const titleEl=document.createElement('span'); titleEl.textContent=name; left.appendChild(titleEl);
+    header.appendChild(left);
+
+    const countEl=document.createElement('span'); countEl.className='count';
+    const updateCount=()=>{ countEl.textContent=`${list.querySelectorAll('.switch.state2,.switch.state2').length}/${permits.length}`; };
+    header.appendChild(countEl);
+
+    const mainSwitch=document.createElement('div'); mainSwitch.className='switch'; header.appendChild(mainSwitch);
+
+    container.appendChild(header);
+
+    // Lista de subpermisos
+    const list=document.createElement('div'); list.className='permit-list';
+    permits.forEach(p=>{
+      const item=document.createElement('div'); item.className='permit-item';
+      const pname=document.createElement('span'); pname.className='permit-name'; pname.textContent=p.getAttribute('name');
+
+      const pswitch=document.createElement('div'); 
+      let state=parseInt(p.getAttribute('state'))||0;
+      if(state>0) pswitch.className=`switch state${state}`; else pswitch.className='switch';
+
+      pswitch.addEventListener('click', ()=>{
+        state = (state + 1) % 3;
+        pswitch.className = state===0?'switch':`switch state${state}`;
+        updateCount();
+      });
+
+      item.appendChild(pname); item.appendChild(pswitch); list.appendChild(item);
+    });
+    container.appendChild(list);
+
+    mainSwitch.addEventListener('click', ()=>{
+      const allActive=list.querySelectorAll('.switch.state2,.switch.state1').length===permits.length;
+      list.querySelectorAll('.switch').forEach(s=>s.className=allActive?'switch':'switch state2');
+      updateCount();
+    });
+
+    this.shadowRoot.appendChild(style);
+    this.shadowRoot.appendChild(container);
+
+    updateCount();
+  }
+}
+
+class Permit extends HTMLElement {}
+
+
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
   const tabs = document.querySelectorAll('.tab-content');
@@ -5301,6 +5602,14 @@ function transform_my_labels_erp() {
 
   if (!customElements.get("plus-switch-column")) {
     customElements.define('plus-switch-column', PlusSwitchColumn);
+  }
+
+  if (!customElements.get("plus-permits")) {
+    customElements.define('plus-permits', Permits);
+  }
+
+  if (!customElements.get("plus-permit")) {
+    customElements.define('plus-permit', Permit);
   }
 }
 

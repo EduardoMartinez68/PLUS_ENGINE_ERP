@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from core.readApps import APPS_CACHE #get the list of our apps in the ERP
-from core.models import Company, Branch
+from core.models import Company, Branch, UserRole, Role, UserDepartment
 import os
 from django.contrib import messages
 
@@ -40,11 +40,28 @@ def register(request):
 
                 # 2️⃣ create a branch
                 branch = Branch.objects.create(company=company, name_branch=f'Branch of {user.email}')
+                # 3️⃣ create a default role
+                
+                role, created = UserRole.objects.get_or_create(
+                    id_company=company,
+                    name="Admin",
+                    defaults={'description': 'Rol Admin'}
+                )
+
+                #basic permissions that a new user will have
+                basic_permits = [
+                    "view_department_employees", "add_department_employees", "update_department_employees", 
+                    "view_profile", "update_profile"]  # example
+
+                for code in basic_permits:
+                    permit = Permit.objects.get(code=code)
+                    Role.objects.get_or_create(role=role, permit=permit, defaults={'active': True})
+
 
                 # 3️⃣ save the ids in user
                 user.company = company
                 user.branch = branch
-
+                user.user_role = role
 
                 user.set_password(form.cleaned_data['password1'])  # hash the password
                 user.save()
