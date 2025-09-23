@@ -1,3 +1,50 @@
+<style>
+.permission-card {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  width: 100%;
+  margin: 10px 0;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.permission-icon {
+  flex-shrink: 0;
+  font-size: 32px;
+  color: var(--primary);
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.permission-text h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.permission-text h5 {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #666;
+  color: var(--primary);
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 6px 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  background-color: white;
+}
+
+</style>
 
 <div class="p-4">
     <div class="section">
@@ -6,11 +53,41 @@
 </div>
 
 <plus-modules>
-  <plus-module name="Roles y permisos" desc="Administra usuarios y asigna permisos" icon="fi-rs-building">
+  <plus-module name="Empresa" desc="Administra usuarios y asigna permisos" icon="fi-rs-building">
+    <div class="search-container">
+        <i class="fi fi-rs-search search-icon"></i>
+        <input type="text" placeholder="Buscar..." class="search-input">
+    </div>
+
+    <div class="section">
+        <div class="permission-card">
+            <div class="permission-icon">
+                <i class="fi fi-rs-address-book"></i>
+            </div>
+            <div class="permission-text">
+                <h4>Usuarios</h4>
+                <h5>15 permisos - 6 activos</h5>
+            </div>
+        </div>
+        <plus-switch text="Activar todos los permisos"></plus-switch>
+    </div>
+
+    <plus-switch text="Cambiar nombre de la empresa"></plus-switch>
+
+
+
+
+  </plus-module>
+
+  <plus-module name="Sucursal" desc="Ajusta el sistema" icon="i-rr-store-alt">
+
+  </plus-module>
+
+  <plus-module name="Roles y permisos" desc="Administra usuarios y asigna permisos" icon="fi-rr-shield-check">
     <plus-switch name="permiso"></plus-switch>
   </plus-module>
 
-  <plus-module name="Configuraciones" desc="Ajusta el sistema" icon="fi-rs-building"></i>">
+  <plus-module name="Punto de Venta" desc="Administra usuarios y asigna permisos" icon="fi-rr-shopping-cart">
     <plus-switch name="permiso"></plus-switch>
   </plus-module>
 </plus-modules>
@@ -19,4 +96,5 @@
 
 
 <button class="btn btn-add btn-success">Guardar</button>
+<br><br>
 
