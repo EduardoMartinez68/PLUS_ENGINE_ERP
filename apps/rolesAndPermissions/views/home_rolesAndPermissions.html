@@ -53,46 +53,9 @@
     </div>
 </div>
 
+<!---here is save all the module of the permissions--->
 <div id="permissions-container">
-<plus-modules>
-  <plus-module name="Empresa" desc="Administra usuarios y asigna permisos" icon="fi-rs-building">
-    <div class="search-container">
-        <i class="fi fi-rs-search search-icon"></i>
-        <input type="text" placeholder="Buscar..." class="search-input">
-    </div>
 
-    <div class="section">
-        <div class="permission-card">
-            <div class="permission-icon">
-                <i class="fi fi-rs-address-book"></i>
-            </div>
-            <div class="permission-text">
-                <h4>Usuarios</h4>
-                <h5>15 permisos - 6 activos</h5>
-            </div>
-        </div>
-        <plus-switch text="Activar todos los permisos"></plus-switch>
-    </div>
-
-    <plus-switch text="Cambiar nombre de la empresa"></plus-switch>
-
-
-
-
-  </plus-module>
-
-  <plus-module name="Sucursal" desc="Ajusta el sistema" icon="i-rr-store-alt">
-
-  </plus-module>
-
-  <plus-module name="Roles y permisos" desc="Administra usuarios y asigna permisos" icon="fi-rr-shield-check">
-    <plus-switch name="permiso"></plus-switch>
-  </plus-module>
-
-  <plus-module name="Punto de Venta" desc="Administra usuarios y asigna permisos" icon="fi-rr-shopping-cart">
-    <plus-switch name="permiso"></plus-switch>
-  </plus-module>
-</plus-modules>
 </div>
 
 
@@ -109,7 +72,13 @@
     
 
     let countActive = 0;
+    const globalStatus=document.getElementById('activate_all_the_permissions_0').getChecked();
     switchList.forEach(sw => {
+      if(globalStatus){
+        document.getElementById(sw).setChecked(true)
+      }
+
+
       if(document.getElementById(sw).getChecked()){
         countActive++;
       }
@@ -117,18 +86,16 @@
 
 
     //return the answer of the permissions that the module have activate, if the countActive is 0 return 0
-    if(countActive === 0) return `${switchList.length - 1 } ${textTranslatePermissions} - 0 ${textTranslateActivate}`;
     return `${switchList.length } ${textTranslatePermissions} - ${countActive} ${textTranslateActivate}`;
   }
 
-  // Función original actualizada usando la nueva
-  function update_module_permission_count() {
+
+  function update_module_permission_count(value) {
     for (let app of switchInfo) {
       const newDesc = get_module_permission_text(app.switch);
 
-      // Actualiza el atributo desc
+      //update the attribute des and update the information of the permittions that the module have activate
       app.module.setAttribute('desc', newDesc);
-
       const sidebarDesc = document.querySelector(`.plus-modules-sidebar li[data-index='${switchInfo.indexOf(app)}'] .plus-modules-desc`);
       if (sidebarDesc) sidebarDesc.textContent = newDesc;
     }
@@ -145,7 +112,7 @@
       //get all the permissions of the server and update the UI for render all the permissions
       const apps=backend.answer;
       const container = document.getElementById("permissions-container");
-      container.innerHTML = ''; // Clear existing content
+      //container.innerHTML = ''; // Clear existing content
 
       const containerPermissions = document.createElement('plus-modules');
 
@@ -154,6 +121,7 @@
       const textTranslateActivate=window.translate_text('rolesAndPermissions.subtext.permissions.activate');
 
       //print all the permissions in his module
+      let account_module=0;
       Object.entries(apps).forEach(([appKey, appData]) => {
           //if there is no data, skip
           if(!appData || !appData.permissions) return;
@@ -191,7 +159,7 @@
               </div>
 
 
-              <plus-switch text="rolesAndPermissions.subtext.permissions.activate-all" t='rolesAndPermissions.subtext.permissions.activate-all'></plus-switch>
+              <plus-switch text="rolesAndPermissions.subtext.permissions.activate-all" t='rolesAndPermissions.subtext.permissions.activate-all' id='activate_all_the_permissions_${account_module}'></plus-switch>
           `;
           
 
@@ -245,6 +213,8 @@
               });
             }
           });
+        
+          account_module++;
         });
 
 

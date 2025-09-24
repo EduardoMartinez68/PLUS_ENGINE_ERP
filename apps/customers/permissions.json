@@ -12,14 +12,13 @@
     "translate":{
         "es": {
             "app_name": "Clientes",
-            "description": "Administra Clientes en el sistema.",
+            "description": "Gestiona la información de clientes y sus registros.",
 
-            
-            "add_customer": "Agregar cliente",
-            "view_customer": "Ver cliente",
-            "update_customer": "Actualizar cliente",
-            "delete_customer": "Eliminar cliente",
-            "recover_customer": "Recuperar cliente"
+            "add_customer": "Agregar un nuevo cliente al sistema",
+            "view_customer": "Ver detalles y lista de clientes registrados",
+            "update_customer": "Actualizar información de un cliente",
+            "delete_customer": "Eliminar un cliente del sistema",
+            "recover_customer": "Restaurar clientes eliminados"
         }
     }
 }
