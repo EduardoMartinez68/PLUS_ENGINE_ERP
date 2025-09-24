@@ -24,6 +24,7 @@
   font-size: 18px;
   font-weight: 600;
   color: #333;
+  flex: 1;
 }
 
 .permission-text h5 {
@@ -52,6 +53,7 @@
     </div>
 </div>
 
+<div id="permissions-container">
 <plus-modules>
   <plus-module name="Empresa" desc="Administra usuarios y asigna permisos" icon="fi-rs-building">
     <div class="search-container">
@@ -91,10 +93,155 @@
     <plus-switch name="permiso"></plus-switch>
   </plus-module>
 </plus-modules>
-
+</div>
 
 
 
 <button class="btn btn-add btn-success">Guardar</button>
 <br><br>
 
+
+<script>
+  // Función para actualizar el conteo de permisos por módulo
+  function update_module_permission_count() {
+    const textTranslatePermissions=window.t('rolesAndPermissions.subtext.permissions');
+    const textTranslateActivate=window.t('rolesAndPermissions.subtext.permissions.activate');
+
+    for(let app of switchInfo){
+      console.log(app.label)
+      let countActive = 0;
+
+
+      for(let sw of app.switch){
+        if(sw._checkbox.checked){
+          countActive++;
+        }
+      }
+      
+      app.label.textContent = `${app.switch.length - countActive} ${textTranslatePermissions} - ${countActive} ${textTranslateActivate} 111`;
+    }
+  }
+
+  (async()=>{
+     //this is for save all the permissions of the apps with his reference of the web for after
+     //we can know how many permissions have each module
+    let switchInfo=[];
+
+    //here we will get all the permissions of the erp from the backend 
+    const backend=await send_message_to_the_server('rolesAndPermissions/get_all_the_permissions_of_the_erp/', {}, false);
+    if(backend.success){
+      //get all the permissions of the server and update the UI for render all the permissions
+      const apps=backend.answer;
+      const container = document.getElementById("permissions-container");
+      container.innerHTML = ''; // Clear existing content
+
+      const containerPermissions = document.createElement('plus-modules');
+
+      const textTranslateSearch=window.t('message.search');
+      const textTranslatePermissions=window.t('rolesAndPermissions.subtext.permissions');
+      const textTranslateActivate=window.t('rolesAndPermissions.subtext.permissions.activate');
+
+      //print all the permissions in his module
+      Object.entries(apps).forEach(([appKey, appData]) => {
+          //if there is no data, skip
+          if(!appData || !appData.permissions) return;
+
+          //if exist information now we will to create the module with his permissions
+          //create the module father
+          const plusModule = document.createElement("plus-module");
+          plusModule.setAttribute("name", appData.translate.es.app_name || appKey);
+          plusModule.setAttribute("desc", appData.translate.es.description || "");
+          plusModule.setAttribute("icon", appData.character?.icon || "fi-rr-box");
+
+          //create the weaker search
+          const searchDiv = document.createElement("div");
+          searchDiv.classList.add("search-container");
+          searchDiv.innerHTML = `
+            <i class="fi fi-rs-search search-icon"></i>
+            <input type="text" class="search-input" placeholder='${textTranslateSearch}'>
+          `;
+          
+          const searchInput = searchDiv.querySelector(".search-input");  //this is for save the reference of the search input
+          plusModule.appendChild(searchDiv);
+
+          // add title + switch for "activate all the permissions"
+          const titlePerms = document.createElement("div");
+          titlePerms.className = "section";
+          titlePerms.innerHTML = `
+              <div class="permission-card">
+                <div class="permission-icon">
+                  <i class="${appData.character?.icon || 'fi-rr-box'}"></i>
+                </div>
+                <div class="permission-text">
+                  <h4>${appData.translate?.es?.app_name || appKey}</h4>
+                  <h5 class="permission-account">${appData.permissions.length} ${textTranslatePermissions} - 0 ${textTranslateActivate}</h5>
+                </div>
+              </div>
+
+
+              <plus-switch text="rolesAndPermissions.subtext.permissions.activate-all" t='rolesAndPermissions.subtext.permissions.activate-all'></plus-switch>
+          `;
+          
+
+          const listOfPermissions=[]
+          const labelAccount=titlePerms.querySelector(".permission-account"); //this is for after update the count of permissions
+          
+
+          plusModule.appendChild(titlePerms);
+
+          //here we will print all the permissions of the module
+          const sectionDiv = document.createElement("div");
+          sectionDiv.classList.add("section");
+
+          appData.permissions.forEach(permKey => {
+            const permission = document.createElement("plus-switch");
+            permission.setAttribute("text", appData.translate.es[permKey] || permKey);
+            permission.setAttribute("name", permKey);
+            permission.setAttribute('onclick', 'update_module_permission_count');
+
+            listOfPermissions.push(permission);
+            sectionDiv.appendChild(permission);
+          });
+
+          plusModule.appendChild(sectionDiv);
+          containerPermissions.appendChild(plusModule);
+
+          //now we will to save the reference of the label for update the count of permissions
+          //when this we will to can update the infomation of the label when a switch is activated or desactivated
+          switchInfo.push({
+            label: labelAccount,
+            switch: listOfPermissions,
+          });
+
+
+          // Add event listener for search functionality
+          containerPermissions.addEventListener("input", e => {
+            if (e.target.matches(".search-input")) {
+              const term = e.target.value.toLowerCase();
+
+              //get the switch of the module and show or hide the switch
+              const sectionDiv = e.target.closest("plus-modules")
+              console.log(sectionDiv)
+              const switches = sectionDiv.querySelectorAll("plus-switch");
+
+
+              switches.forEach(sw => {
+                const text = (sw.getAttribute("text") || "").toLowerCase();
+                sw.style.display = text.includes(term) ? "" : "none";
+              });
+            }
+          });
+        });
+
+
+
+
+
+      container.appendChild(containerPermissions);
+    }
+
+    
+
+    window.switchInfo=switchInfo;
+  })();
+</script>

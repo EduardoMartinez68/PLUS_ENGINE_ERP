@@ -1,6 +1,25 @@
-[
-    "add_customer",
-    "view_customer",
-    "update_customer",
-    "delete_customer"
-]
+{
+    "character":{
+        "icon":"fi fi-rr-review"
+    },
+    "permissions": [
+        "add_customer",
+        "view_customer",
+        "update_customer",
+        "delete_customer",
+        "recover_customer"
+    ], 
+    "translate":{
+        "es": {
+            "app_name": "Cliente",
+            "description": "Administra Clientes en el sistema.",
+
+            
+            "add_customer": "Agregar cliente",
+            "view_customer": "Ver cliente",
+            "update_customer": "Actualizar cliente",
+            "delete_customer": "Eliminar cliente",
+            "recover_customer": "Recuperar cliente"
+        }
+    }
+}

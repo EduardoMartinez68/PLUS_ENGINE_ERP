@@ -1,49 +1,5 @@
 {
-    "medical-history.title": "Historial Médico",
-    "patient-info": "Información del Paciente",
-    "medical-history.form.label.skull":"Identificador (Skull)",
-    "medical-history.form.placeholder.skull":"Ingrese el identificador único",
-
-    "medical-history.form.label.patient-name":"Nombre del paciente",
-    "medical-history.form.placeholder.patient-name":"Ingrese el nombre completo del paciente",
-    "medical-history.form.label.age":"Edad",
-    "medical-history.form.placeholder.age":"Ej. 20-65",
-
-    "medical-history.form.label.height":"Ingrese la altura en centímetros (cm)",
-    "medical-history.form.placeholder.height":"1.70",
-    "medical-history.form.label.weight":"Peso (kg)",
-    "medical-history.form.label.blood-type":"Tipo de Sangre",
-    "medical-history.personal-info": "Información Personal",
-    "medical-history.title.medical-info": "Información Médica",
-    "medical-history.emergency-contact": "Contacto de Emergencia",
-    "medical-history.form.label.last-physical-exam-date":"Última visita",
-
-
-    "medical-history.form.select.sex":"Seleccione el sexo",
-    "medical-history.form.select.option.male":"Hombre",
-    "medical-history.form.select.option.female":"Mujer",
-    "medical-history.form.select.option.other":"Otro",
-
-    "medical-history.form.label.chronic-conditions": "Condiciones Crónicas",
-    "medical-history.form.label.allergies": "Alergias",
-
-    "medical-history.lifestyle": "Estilo de Vida",
-    "medical-history.form.placeholder.allergies":"Describa las alergias del paciente",
-
-    "medical-history.form.label.current-medications":"Medicamentos Actuales",
-    "medical-history.form.placeholder.current-medications":"Liste los medicamentos que el paciente está tomando actualmente",
-
-    "medical-history.form.label.past-illnesses":"Enfermedades Pasadas",
-    "medical-history.form.placeholder.past-illnesses":"Describa las enfermedades pasadas del paciente",
-    "medical-history.form.label.surgeries":"Cirugías",
-    "medical-history.form.placeholder.surgeries":"Describa las cirugías que el paciente ha tenido",
-    "medical-history.form.label.family-medical-history":"Historial Médico Familiar",
-    "medical-history.form.placeholder.family-medical-history":"Describa el historial médico familiar relevante",
-
-    "medical-history.form.label.emergency-contact-name":"Nombre del Contacto de Emergencia",
-    "medical-history.form.placeholder.emergency-contact-name":"Ingrese el nombre del contacto de emergencia",
-    "medical-history.form.label.emergency-contact-phone":"Teléfono del Contacto de Emergencia",
-    "medical-history.form.placeholder.emergency-contact-phone":"Ingrese el teléfono del contacto de emergencia",
-    "medical-history.form.label.emergency-contact-relation":"Relación con el Contacto de Emergencia",
-    "medical-history.form.placeholder.emergency-contact-relation":"Ingrese la relación con el contacto de emergencia"
+    "rolesAndPermissions.subtext.permissions.activate-all": "Activar todos los permisos",
+    "rolesAndPermissions.subtext.permissions": "Permisos",
+    "rolesAndPermissions.subtext.permissions.activate": "Activados"
 }
