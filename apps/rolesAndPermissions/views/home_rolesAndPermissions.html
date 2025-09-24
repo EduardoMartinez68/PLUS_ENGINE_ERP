@@ -102,23 +102,35 @@
 
 
 <script>
-  // Función para actualizar el conteo de permisos por módulo
-  function update_module_permission_count() {
-    const textTranslatePermissions=window.t('rolesAndPermissions.subtext.permissions');
-    const textTranslateActivate=window.t('rolesAndPermissions.subtext.permissions.activate');
+    // Function to update the permission count per module
+  function get_module_permission_text(switchList) {
+    const textTranslatePermissions = window.translate_text('rolesAndPermissions.subtext.permissions');
+    const textTranslateActivate = window.translate_text('rolesAndPermissions.subtext.permissions.activate');
+    
 
-    for(let app of switchInfo){
-      console.log(app.label)
-      let countActive = 0;
-
-
-      for(let sw of app.switch){
-        if(sw._checkbox.checked){
-          countActive++;
-        }
+    let countActive = 0;
+    switchList.forEach(sw => {
+      if(document.getElementById(sw).getChecked()){
+        countActive++;
       }
-      
-      app.label.textContent = `${app.switch.length - countActive} ${textTranslatePermissions} - ${countActive} ${textTranslateActivate} 111`;
+    });
+
+
+    //return the answer of the permissions that the module have activate, if the countActive is 0 return 0
+    if(countActive === 0) return `${switchList.length - 1 } ${textTranslatePermissions} - 0 ${textTranslateActivate}`;
+    return `${switchList.length } ${textTranslatePermissions} - ${countActive} ${textTranslateActivate}`;
+  }
+
+  // Función original actualizada usando la nueva
+  function update_module_permission_count() {
+    for (let app of switchInfo) {
+      const newDesc = get_module_permission_text(app.switch);
+
+      // Actualiza el atributo desc
+      app.module.setAttribute('desc', newDesc);
+
+      const sidebarDesc = document.querySelector(`.plus-modules-sidebar li[data-index='${switchInfo.indexOf(app)}'] .plus-modules-desc`);
+      if (sidebarDesc) sidebarDesc.textContent = newDesc;
     }
   }
 
@@ -138,8 +150,8 @@
       const containerPermissions = document.createElement('plus-modules');
 
       const textTranslateSearch=window.t('message.search');
-      const textTranslatePermissions=window.t('rolesAndPermissions.subtext.permissions');
-      const textTranslateActivate=window.t('rolesAndPermissions.subtext.permissions.activate');
+      const textTranslatePermissions=window.translate_text('rolesAndPermissions.subtext.permissions');
+      const textTranslateActivate=window.translate_text('rolesAndPermissions.subtext.permissions.activate');
 
       //print all the permissions in his module
       Object.entries(apps).forEach(([appKey, appData]) => {
@@ -150,7 +162,7 @@
           //create the module father
           const plusModule = document.createElement("plus-module");
           plusModule.setAttribute("name", appData.translate.es.app_name || appKey);
-          plusModule.setAttribute("desc", appData.translate.es.description || "");
+          plusModule.setAttribute("desc", `${appData.permissions.length} ${textTranslatePermissions} - 0 ${textTranslateActivate}`);
           plusModule.setAttribute("icon", appData.character?.icon || "fi-rr-box");
 
           //create the weaker search
@@ -174,7 +186,7 @@
                 </div>
                 <div class="permission-text">
                   <h4>${appData.translate?.es?.app_name || appKey}</h4>
-                  <h5 class="permission-account">${appData.permissions.length} ${textTranslatePermissions} - 0 ${textTranslateActivate}</h5>
+                  <h5 class="permission-account">${appData.translate.es.description}</h5>
                 </div>
               </div>
 
@@ -196,10 +208,12 @@
           appData.permissions.forEach(permKey => {
             const permission = document.createElement("plus-switch");
             permission.setAttribute("text", appData.translate.es[permKey] || permKey);
+            
             permission.setAttribute("name", permKey);
+            permission.setAttribute("id", permKey);
             permission.setAttribute('onclick', 'update_module_permission_count');
 
-            listOfPermissions.push(permission);
+            listOfPermissions.push(permKey);
             sectionDiv.appendChild(permission);
           });
 
@@ -209,7 +223,7 @@
           //now we will to save the reference of the label for update the count of permissions
           //when this we will to can update the infomation of the label when a switch is activated or desactivated
           switchInfo.push({
-            label: labelAccount,
+            module: plusModule,
             switch: listOfPermissions,
           });
 

@@ -1792,7 +1792,6 @@ function get_status_plus_switch(id) {
   const shadow = mySwitch.shadowRoot;
   if (!shadow) return;
 
-
   const input = shadow.getElementById(id);
   return input.checked ? input.checked : false;
 }
