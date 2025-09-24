@@ -914,7 +914,7 @@ class KeyBind extends HTMLElement {
   }
 }
 
-class PlusModules extends HTMLElement {
+class PlusModules extends HTMLElement { 
   connectedCallback() {
     const col = parseInt(this.getAttribute('col')) || 4;
     const colSidebar = Math.max(1, Math.min(col, 11));
@@ -1006,19 +1006,27 @@ class PlusModules extends HTMLElement {
     content.style.position = 'relative';
     content.style.transition = 'all 0.3s ease';
 
-    const panel = document.createElement('div');
-    panel.className = 'plus-modules-module-panel';
-    panel.innerHTML = contents[0];
-    content.appendChild(panel);
+    // Contenedor de todos los paneles
+    const panelContainer = document.createElement('div');
+    panelContainer.className = 'plus-modules-module-panel-container';
+    content.appendChild(panelContainer);
+
+    // Crear todos los paneles de una vez
+    const panels = contents.map((html, i) => {
+      const panel = document.createElement('div');
+      panel.className = 'plus-modules-module-panel';
+      panel.innerHTML = html;
+
+      // Solo mostrar el primero al inicio
+      panel.style.display = i === 0 ? 'block' : 'none';
+
+      panelContainer.appendChild(panel);
+      return panel;
+    });
 
     // Botón X para móvil
     const closeBtn = document.createElement('button');
     closeBtn.textContent = 'X';
-    closeBtn.style.position = 'absolute';
-    closeBtn.style.top = '10px';
-    closeBtn.style.right = '10px';
-    closeBtn.style.display = 'none';
-
     closeBtn.style.position = 'absolute';
     closeBtn.style.top = '10px';
     closeBtn.style.right = '10px';
@@ -1066,7 +1074,12 @@ class PlusModules extends HTMLElement {
         ul.querySelectorAll('li').forEach(i => i.classList.remove('active'));
         li.classList.add('active');
         const index = li.dataset.index;
-        panel.innerHTML = contents[index];
+
+        // Mostrar solo el panel correspondiente
+        panels.forEach((p, j) => {
+          p.style.display = j == index ? 'block' : 'none';
+        });
+
         showContentMobile();
       });
     });
@@ -1101,7 +1114,6 @@ class PlusModule extends HTMLElement {
     this.classList.add('plus-modules-module');
   }
 }
-
 
 
 class PlusSelect extends HTMLElement {
