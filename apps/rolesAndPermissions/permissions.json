@@ -7,18 +7,20 @@
         "view_rol",
         "update_rol",
         "delete_rol",
-        "recover_rol"
+        "recover_rol",
+        "clone_rol"
     ], 
     "translate":{
         "es": {
             "app_name": "Roles y Permisos",
             "description": "Gestiona los roles y los permisos asignables a los usuarios del sistema.",
 
-            "add_rol": "Crear un nuevo rol en el sistema",
+            "add_rol": "Crear un nuevo Rol en la empresa",
             "view_rol": "Ver la lista y detalles de los roles existentes",
             "update_rol": "Modificar permisos o información de un rol",
             "delete_rol": "Eliminar un rol del sistema",
-            "recover_rol": "Restaurar roles eliminados"
+            "recover_rol": "Restaurar roles eliminados",
+            "clone_rol": "Clonar Roles de Usuario"
         }
     }
 }

@@ -1,0 +1,58 @@
+{
+  "character": {
+    "icon": "fi-rs-treatment"
+  },
+
+
+  "permissions": [
+    "add_record",
+    "view_record",
+    "update_record",
+    "delete_record",
+    "recover_record",
+
+    "add_diagnosis",
+    "view_diagnosis",
+    "update_diagnosis",
+    "delete_diagnosis",
+
+    "add_treatment",
+    "view_treatment",
+    "update_treatment",
+    "delete_treatment",
+
+    "add_prescription",
+    "view_prescription",
+    "update_prescription",
+    "delete_prescription"
+  ],
+
+
+  "translate": {
+    "es": {
+      "app_name": "Historial Médico",
+      "description": "Gestiona pacientes, diagnósticos, tratamientos, recetas y citas médicas.",
+
+      "add_record": "Crear un nuevo historial médico",
+      "view_record": "Ver los historiales médicos existentes",
+      "update_record": "Actualizar la información de un historial médico",
+      "delete_record": "Eliminar un historial médico",
+      "recover_record": "Restaurar un historial eliminado",
+
+      "add_diagnosis": "Registrar un diagnóstico médico",
+      "view_diagnosis": "Ver diagnósticos existentes",
+      "update_diagnosis": "Actualizar un diagnóstico médico",
+      "delete_diagnosis": "Eliminar un diagnóstico",
+
+      "add_treatment": "Registrar un tratamiento",
+      "view_treatment": "Ver tratamientos de pacientes",
+      "update_treatment": "Actualizar un tratamiento",
+      "delete_treatment": "Eliminar un tratamiento",
+
+      "add_prescription": "Generar una receta médica",
+      "view_prescription": "Ver recetas médicas de pacientes",
+      "update_prescription": "Actualizar una receta",
+      "delete_prescription": "Eliminar una receta"
+    }
+  }
+}

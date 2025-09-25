@@ -1,5 +1,16 @@
 {
+    "rolesAndPermissions.navbar.add-a-new-rol":"Agregar un nuevo Rol",
+    "rolesAndPermissions.navbar.rol":"Roles",
     "rolesAndPermissions.subtext.permissions.activate-all": "Activar todos los permisos",
     "rolesAndPermissions.subtext.permissions": "Permisos",
-    "rolesAndPermissions.subtext.permissions.activate": "Activados"
+    "rolesAndPermissions.subtext.permissions.activate": "Activados",
+    "rolesAndPermissions.form.label.name-rol":"Nombre del Rol",
+    "rolesAndPermissions.form.placeholder.name-rol":"Ingrese el nombre del rol...",
+    "rolesAndPermissions.form.label.description":"Agrega una descripcion del rol",
+
+    "rolesAndPermissions.message.success.title.the-rol-can-be-save":"Rol Guardado",
+    "rolesAndPermissions.message.success.description.the-rol-can-be-save":"El nuevo rol fue guardado con exito en tu base de datos.",
+
+    "rolesAndPermissions.message.error.title":"No se pudo guardar el Rol",
+    "rolesAndPermissions.message.error.the-name-is-need":"El nombre del Rol es necesario. Llena todos los formularios requeridos."
 }

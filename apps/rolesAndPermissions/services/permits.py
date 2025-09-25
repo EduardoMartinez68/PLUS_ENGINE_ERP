@@ -1,7 +1,6 @@
 import os 
 import json
 
-
 def get_all_the_apps_of_the_erp()->list[str]:
     #get all the apps
     current_dir = os.path.dirname(os.path.abspath(__file__))
