@@ -65,40 +65,63 @@
 
 
 <script>
-    // Function to update the permission count per module
-  function get_module_permission_text(switchList) {
+  // Function to update the permission count per module
+  function activate_all_the_permissions_of_a_module(value){
+    //now we will see all the switch of "activate_all_the_permissions" that is activate in the module 
+    let indexModule=0;
+
+    //read all the modules that exist in our list
+    switchInfo.forEach(item => {
+
+      //now we will see if the switch is activate and if is activate, now we will to activate all the permissions
+      if(document.getElementById(`activate_all_the_permissions_${indexModule}`).getChecked() || !value){
+        //if the switch is activate now we will activate all the permissions that exist in the module
+        item.switch.forEach(sw => {
+          document.getElementById(sw).setChecked(value)
+        });
+      }
+
+      indexModule++;
+    });
+  }
+
+  function get_module_permission_text(indexModule, switchList) {
     const textTranslatePermissions = window.translate_text('rolesAndPermissions.subtext.permissions');
     const textTranslateActivate = window.translate_text('rolesAndPermissions.subtext.permissions.activate');
     
 
     let countActive = 0;
-    const globalStatus=document.getElementById('activate_all_the_permissions_0').getChecked();
     switchList.forEach(sw => {
-      if(globalStatus){
-        document.getElementById(sw).setChecked(true)
-      }
-
-
       if(document.getElementById(sw).getChecked()){
         countActive++;
       }
     });
 
+    //here we will see if all the permits are activate
+    const allMyPermissions=switchList.length;
+    if(countActive==allMyPermissions){
+      document.getElementById(`activate_all_the_permissions_${indexModule}`).setChecked(true)
+    }else{
+      document.getElementById(`activate_all_the_permissions_${indexModule}`).setChecked(false)
+    }
 
     //return the answer of the permissions that the module have activate, if the countActive is 0 return 0
-    return `${switchList.length } ${textTranslatePermissions} - ${countActive} ${textTranslateActivate}`;
+    return `${allMyPermissions} ${textTranslatePermissions} - ${countActive} ${textTranslateActivate}`;
   }
 
 
   function update_module_permission_count(value) {
-    for (let app of switchInfo) {
-      const newDesc = get_module_permission_text(app.switch);
+    let indexModule=0;
+    switchInfo.forEach(item => {
+      const newDesc = get_module_permission_text(indexModule, item.switch);
 
       //update the attribute des and update the information of the permittions that the module have activate
-      app.module.setAttribute('desc', newDesc);
-      const sidebarDesc = document.querySelector(`.plus-modules-sidebar li[data-index='${switchInfo.indexOf(app)}'] .plus-modules-desc`);
+      item.module.setAttribute('desc', newDesc);
+      const sidebarDesc = document.querySelector(`.plus-modules-sidebar li[data-index='${switchInfo.indexOf(item)}'] .plus-modules-desc`);
       if (sidebarDesc) sidebarDesc.textContent = newDesc;
-    }
+
+      indexModule++;
+    });
   }
 
   (async()=>{
@@ -112,7 +135,7 @@
       //get all the permissions of the server and update the UI for render all the permissions
       const apps=backend.answer;
       const container = document.getElementById("permissions-container");
-      //container.innerHTML = ''; // Clear existing content
+      container.innerHTML = ''; // Clear existing content
 
       const containerPermissions = document.createElement('plus-modules');
 
@@ -129,7 +152,7 @@
           //if exist information now we will to create the module with his permissions
           //create the module father
           const plusModule = document.createElement("plus-module");
-          plusModule.setAttribute("name", appData.translate.es.app_name || appKey);
+          plusModule.setAttribute("name", appData.translate[languageUser]?.app_name || appKey);
           plusModule.setAttribute("desc", `${appData.permissions.length} ${textTranslatePermissions} - 0 ${textTranslateActivate}`);
           plusModule.setAttribute("icon", appData.character?.icon || "fi-rr-box");
 
@@ -153,13 +176,13 @@
                   <i class="${appData.character?.icon || 'fi-rr-box'}"></i>
                 </div>
                 <div class="permission-text">
-                  <h4>${appData.translate?.es?.app_name || appKey}</h4>
-                  <h5 class="permission-account">${appData.translate.es.description}</h5>
+                  <h4>${appData.translate[languageUser]?.app_name || appKey}</h4>
+                  <h5 class="permission-account">${appData.translate[languageUser]?.description}</h5>
                 </div>
               </div>
 
 
-              <plus-switch text="rolesAndPermissions.subtext.permissions.activate-all" t='rolesAndPermissions.subtext.permissions.activate-all' id='activate_all_the_permissions_${account_module}'></plus-switch>
+              <plus-switch text="rolesAndPermissions.subtext.permissions.activate-all" t='rolesAndPermissions.subtext.permissions.activate-all' id='activate_all_the_permissions_${account_module}' onclick='activate_all_the_permissions_of_a_module'></plus-switch>
           `;
           
 
@@ -175,7 +198,7 @@
 
           appData.permissions.forEach(permKey => {
             const permission = document.createElement("plus-switch");
-            permission.setAttribute("text", appData.translate.es[permKey] || permKey);
+            permission.setAttribute("text", appData.translate[languageUser]?.[permKey] || permKey);
             
             permission.setAttribute("name", permKey);
             permission.setAttribute("id", permKey);
@@ -203,7 +226,6 @@
 
               //get the switch of the module and show or hide the switch
               const sectionDiv = e.target.closest("plus-modules")
-              console.log(sectionDiv)
               const switches = sectionDiv.querySelectorAll("plus-switch");
 
 
