@@ -145,7 +145,7 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
                 const answer=t("info.no_results");
                 if(loadingImage===null){
                     field.innerHTML = `
-                    <div style="width: 100%; height: auto;">
+                    <div style="width: 100%; height: auto; text-align:center;">
                         <center>
                             ${answer}
                         </center>
@@ -165,11 +165,18 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
             const answer=t("message.error.server");
             show_alert('alert', 'Error', `${answer}`, `Error in the search ${searchUrl}: ${data.error}`);
 
+            if(loadingImage===null){
             field.innerHTML = `
-            <div style="text-align:center; color:#e74c3c;">
-                <img src="${loadingImage}" alt="Loading..." style="width: 100%; height: auto;"/>
-                ${answer}
-            </div>`;
+                <div style="text-align:center; color:#e74c3c;">
+                    ${answer}
+                </div>`;
+            }else{
+            field.innerHTML = `
+                <div style="text-align:center; color:#e74c3c;">
+                    <img src="${loadingImage}" alt="Loading..." style="width: 100%; height: auto;"/>
+                    ${answer}
+                </div>`;
+            }
         }
 
         translate_dynamic_content(field); //translate the dynamic content of the field

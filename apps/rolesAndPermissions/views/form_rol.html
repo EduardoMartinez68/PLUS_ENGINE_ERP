@@ -52,7 +52,7 @@
 <form id="form-role">
   <div class="p-4">
       <div class="section">
-          <plus-title label="rolesAndPermissions.form.label.name-rol" placeholder="rolesAndPermissions.form.placeholder.name-rol" name="name_role" id="name_role"></plus-title>
+          <input-field label="rolesAndPermissions.form.label.name-rol" placeholder="rolesAndPermissions.form.placeholder.name-rol" name="name_role" id="name_role" required></input-field>
       </div>
   </div>
 
@@ -74,7 +74,7 @@
 <script>
   async function save_the_rol(params) {
     //first we will see if have the information need for save the permission
-    if(document.getElementById('name_role').value!==''){
+    if(document.getElementById('name_role').value==''){
       show_alert('alert', 'rolesAndPermissions.message.error.title', 'rolesAndPermissions.message.error.the-name-is-need')
     }else{
       const backend=await send_form_to_the_server('form-role','/rolesAndPermissions/add_a_new_rol/');
@@ -154,7 +154,7 @@
     let switchInfo=[];
 
     //here we will get all the permissions of the erp from the backend 
-    const backend=await send_message_to_the_server('rolesAndPermissions/get_all_the_permissions_of_the_erp/', {}, false);
+    const backend=await send_message_to_the_server('rolesAndPermissions/get_all_the_permissions_of_the_erp/', {}, false, 'GET');
     if(backend.success){
       //get all the permissions of the server and update the UI for render all the permissions
       const apps=backend.answer;

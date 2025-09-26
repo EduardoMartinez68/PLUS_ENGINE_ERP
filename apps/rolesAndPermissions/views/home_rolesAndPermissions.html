@@ -19,7 +19,7 @@
 
 <div class="search-container">
   <i class="fi fi-rs-search search-icon"></i>
-  <input type="text" class="search-input" t-placeholder="message.search">
+  <input type="text" class="search-input" t-placeholder="message.search" id="seacrh">
 </div>
 
 
@@ -31,7 +31,7 @@
             <th style="width: 10%;"></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="table-role">
         <tr>
             <td>Administrador</td>
             <td>Puede gestionar usuarios, roles y todos los permisos del sistema.</td>
@@ -67,3 +67,19 @@
     </tbody>
 </table>
 </div>
+
+<script>
+    (()=>{
+        const divHtml=`
+            <tr>
+                <td> { name } </td>
+                <td> { description } </td>
+                <td>
+                    <button onclick="editRole(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-pencil"></i></button>
+                    <button onclick="deleteRole(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-trash"></i></button>
+                </td>
+            </tr>
+        `
+        update_container_with_seeker('seacrh', 'table-role', divHtml, 'rolesAndPermissions/get_information_of_the_role', 'GET');
+    })();
+</script>
