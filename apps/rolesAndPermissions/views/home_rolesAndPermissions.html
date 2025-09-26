@@ -75,11 +75,17 @@
                 <td> { name } </td>
                 <td> { description } </td>
                 <td>
-                    <button onclick="editRole(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-pencil"></i></button>
-                    <button onclick="deleteRole(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-trash"></i></button>
+                    <button onclick="edit_rol(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-pencil"></i></button>
+                    <button onclick="delete_rol(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-trash"></i></button>
                 </td>
             </tr>
         `
         update_container_with_seeker('seacrh', 'table-role', divHtml, 'rolesAndPermissions/get_information_of_the_role', 'GET');
     })();
+
+
+    async function edit_rol(id){
+        id = String(id).trim();
+        await nextWeb(`rolesAndPermissions/edit_rol/${id}/`);
+    }
 </script>

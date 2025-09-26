@@ -57,7 +57,7 @@ def edit_customer(request, customer_id):
     return render(request, "formCustomer.html", {"customer": customer['answer']})
 
 
-@csrf_exempt
+
 def customers_search(request):
     if request.method == "GET":
         all_filters = request.GET.get("allFilters", "")

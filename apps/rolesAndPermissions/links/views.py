@@ -34,14 +34,59 @@ def get_all_the_permissions_of_the_erp(request):
 
 
 
-from apps.rolesAndPermissions.services.role import save_a_new_role
+from apps.rolesAndPermissions.services.role import save_a_new_role, get_role_by_id, update_rol_by_id
 def add_a_new_rol(request):
     if request.method == "POST":
-        data = json.loads(request.body)
-        print(data)
-        #save_a_new_role(request.user, data)
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )        
 
+        result=save_a_new_role(request.user, data)
+        if result.get("success"):
+            return JsonResponse(result, status=200)
+        else:
+            return JsonResponse(result, status=400)
 
-        return JsonResponse({'success': True, 'answer': ''}, status=200)
     elif request.method == "GET":
         return render(request, 'form_rol.html')
+    
+
+    return JsonResponse({"success": False, "answer": "Method not allowed"}, status=405)
+
+def edit_rol(request, rol_id):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )        
+        
+        result=update_rol_by_id(request.user, data)
+        if result.get("success"):
+            return JsonResponse(result, status=200)
+        else:
+            return JsonResponse(result, status=400)
+
+    elif request.method == "GET":
+        return render(request, 'form_rol.html', {
+            "role": {"rol_id": rol_id} 
+        })
+        
+
+    return JsonResponse({"success": False, "answer": "Method not allowed"}, status=405)
+
+def get_information_rol(request, rol_id):
+    company = getattr(request.user, "company", None)
+
+    if request.method == "GET":
+        result = get_role_by_id(company, rol_id)
+        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)
+        
+
+    return JsonResponse({"success": False, "answer": "Method not allowed"}, status=405)

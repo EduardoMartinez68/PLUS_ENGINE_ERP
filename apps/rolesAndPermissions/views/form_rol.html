@@ -52,6 +52,10 @@
 <form id="form-role">
   <div class="p-4">
       <div class="section">
+          {% if role %}
+            <input type="hidden" value=" {{role.rol_id}}" id="rol_id" name="rol_id">
+          {% endif %}
+
           <input-field label="rolesAndPermissions.form.label.name-rol" placeholder="rolesAndPermissions.form.placeholder.name-rol" name="name_role" id="name_role" required></input-field>
       </div>
   </div>
@@ -64,9 +68,14 @@
 
   <div class="section">
     <label t="rolesAndPermissions.form.label.description"></label>
-    <textarea name="description" id=""></textarea>
+    <textarea name="description" id="description">{{role.description}}</textarea>
   </div>
-  <button class="btn btn-add btn-success" type="button" onclick="save_the_rol()" t="message.save">Save</button>
+
+  {% if role %}
+    <button class="btn btn-edit btn-success" type="button" onclick="update_rol_server()" t="btn.update">Update</button>
+  {% else %}
+    <button class="btn btn-add btn-success" type="button" onclick="save_the_rol()"  t="message.save">Save</button>
+  {% endif %}
 </form>
 <br>
 
@@ -82,6 +91,23 @@
         //if the rol can be save, we will restart the form 
         restart_form('form-role')
         show_alert('success', 'rolesAndPermissions.message.success.title.the-rol-can-be-save', 'rolesAndPermissions.message.success.description.the-rol-can-be-save', backend.error || '')
+      }else{
+        show_alert('error', 'rolesAndPermissions.message.error.title', backend.message, backend.error || '')
+      }
+    }
+  }
+
+  async function update_rol_server(params){
+    //first we will see if have the information need for save the permission
+    if(document.getElementById('name_role').value==''){
+      show_alert('alert', 'rolesAndPermissions.message.error.title', 'rolesAndPermissions.message.error.the-name-is-need')
+    }else{
+      const id = String(document.getElementById('rol_id').value).trim();
+      console.log(formToJSON(document.getElementById('form-role')));
+      const backend=await send_form_to_the_server('form-role',`/rolesAndPermissions/edit_rol/${id}/`);
+      if(backend.success){
+        //if the rol can be update, we will show a message 
+        show_alert('success', 'rolesAndPermissions.message.success.title.the-rol-was-update-with-success', 'rolesAndPermissions.message.success.the-rol-was-update-with-success', backend.error || '')
       }else{
         show_alert('error', 'rolesAndPermissions.message.error.title', backend.message, backend.error || '')
       }
@@ -152,10 +178,27 @@
      //this is for save all the permissions of the apps with his reference of the web for after
      //we can know how many permissions have each module
     let switchInfo=[];
+    let permissions;
 
     //here we will get all the permissions of the erp from the backend 
     const backend=await send_message_to_the_server('rolesAndPermissions/get_all_the_permissions_of_the_erp/', {}, false, 'GET');
     if(backend.success){
+      //now we will get the information of the rol if we are editing the rol
+      const rol_input=document.getElementById('rol_id');
+      if(rol_input){
+        //if the user is edit a rol, now we will get the information of the rol from the server
+        const rol_id=String(rol_input.value).trim();
+        const backend=await send_message_to_the_server(`rolesAndPermissions/get_information_rol/${rol_id}/`, {}, false, 'GET');
+        
+        if(backend.success){
+          //now update the information of the rol
+          const rol=backend.answer;
+          document.getElementById('name_role').value=rol.name;
+          document.getElementById('description').value=rol.description;
+          permissions=rol.permits;
+        }
+      }
+
       //get all the permissions of the server and update the UI for render all the permissions
       const apps=backend.answer;
       const container = document.getElementById("permissions-container");
@@ -270,7 +313,14 @@
       container.appendChild(containerPermissions);
     }
 
-    
+    //here we will see if the user is editing a rol, 
+    // and if the user is edititng now we will see if this permits exist in the information that get from the backend
+    permissions.forEach(permission => {
+        const code = permission.code;
+        const active = permission.active;
+        document.getElementById(code).setChecked(active)
+    });
+
 
     window.switchInfo=switchInfo;
   })();

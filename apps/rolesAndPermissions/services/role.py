@@ -47,43 +47,184 @@ def get_role_of_the_company(company, name: str = '', page: int = 1, limit: int =
         "answer": roles_data,
     }
 
-def save_a_new_role(user, data:dict)->dict:
-    #here we will see if exist the name of the rol 
-    name_role=data.get("name_role", "").strip()
-    description=data.get("description", "").strip()
+def save_a_new_role(user, data: dict) -> dict:
+    name_role = data.get("name_role", "").strip()
+    description = data.get("description", "").strip()
 
-    if name_role=='':
-        return {"success": False, "answer": "rolesAndPermissions.message.error.the-name-is-need" ,"error": "Customer updated successfully"}
-    
+    #first we will see if the user add the name of the rol
+    if not name_role:
+        return {
+            "success": False,
+            "answer": "rolesAndPermissions.message.error.the-name-is-need",
+            "error": "The name of the role is required"
+        }
+
     try:
+        #see if alredy exist this name of the rol in the company
+        if UserRole.objects.filter(id_company=user.company, name=name_role).exists():
+            return {
+                "success": False,
+                "answer": "rolesAndPermissions.message.error.role-already-exist",
+                "error": f"The role '{name_role}' already exists for this company"
+            }
+
+        #create a new rol
         role = UserRole.objects.create(
             id_company=user.company,
             name=name_role,
             description=description
         )
 
-        #this inputs not are permissions
-        exclude_keys = {"name_role", "description", "csrfmiddlewaretoken"}
+        # Exclude keys that are not permissions
+        exclude_keys = {"rol_id", "name_role", "description", "rol_id","csrfmiddlewaretoken"}
 
-
-        # 4. Recorrer todas las demás claves como permisos
-        for key in data.keys():
+        # Browse the other fields as permissions
+        for key, value in data.items():
             if key in exclude_keys:
                 continue
 
-            # Si viene marcado (checkbox o similar)
-            if data.get(key) == "on":
+            if value == "on": 
                 permit, created = Permit.objects.get_or_create(
                     code=key,
                     defaults={"app": "default", "description": ""}
                 )
                 Role.objects.create(
-                    role=new_role,
+                    role=role,
                     permit=permit,
                     active=True
                 )
 
+        return {
+            "success": True,
+            "answer": f"rolesAndPermissions.message.success.this-role-was-create-with-success",
+            "error": f"Role '{name_role}' created successfully"
+        }
 
-    except:
-        pass 
+    except Exception as e:
+        return {
+            "success": False,
+            "answer": "rolesAndPermissions.message.error.unexpected-error",
+            "error": str(e)
+        }
+    
+def update_rol_by_id(user, data: dict) -> dict:
+    rol_id = data.get("rol_id")
+    name_role = data.get("name_role", "").strip()
+    description = data.get("description", "").strip()
 
+    if not rol_id:
+        return {
+            "success": False,
+            "answer": "rolesAndPermissions.message.error.role-id-required",
+            "error": "Role ID is required"
+        }
+
+    try:
+        #Find the user's role in the company
+        user_role = UserRole.objects.filter(id_company=user.company, id=rol_id).first()
+        if not user_role:
+            return {
+                "success": False,
+                "answer": "rolesAndPermissions.message.error.role-not-found",
+                "error": f"Role with id {rol_id} not found for this company"
+            }
+
+        # Update name and description if submitted
+        if name_role:
+            user_role.name = name_role
+        if description:
+            user_role.description = description
+        user_role.save()
+
+        # Step 1: Disable all role permissions
+        Role.objects.filter(role=user_role).update(active=False)
+
+        # Step 2: Reactivate only sent permissions
+        exclude_keys = {"rol_id", "name_role", "description", "rol_id","csrfmiddlewaretoken"}
+        for key, value in data.items():
+            if key in exclude_keys:
+                continue
+
+            if value == "on":
+                permit, _ = Permit.objects.get_or_create(
+                    code=key,
+                    defaults={"app": "default", "description": ""}
+                )
+
+                # Find if the relationship already exists
+                role_perm, created = Role.objects.get_or_create(
+                    role=user_role,
+                    permit=permit,
+                    defaults={"active": True}
+                )
+                if not created:  #if it already existed, we just reactivated it
+                    role_perm.active = True
+                    role_perm.save()
+
+        return {
+            "success": True,
+            "answer": "rolesAndPermissions.message.success.the-rol-was-update-with-success",
+            "error": f"Role '{user_role.name}' updated successfully"
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "answer": "rolesAndPermissions.message.error.unexpected-error",
+            "error": str(e)
+        }
+
+
+def get_role_by_id(company, role_id: int) -> Dict[str, Any]:
+    if not company:
+        return {
+            "success": False,
+            "answer": "rolesAndPermissions.message.error.company-is-required",
+            "error": "Company is required"
+        }
+
+    try:
+        role = UserRole.objects.get(id=role_id, id_company=company)
+
+        # Traer los permisos asociados a este rol
+        role_permits = Role.objects.filter(role=role).select_related("permit")
+
+        permits_data: List[Dict[str, Any]] = [
+            {
+                "id": rp.permit.id,
+                "code": rp.permit.code,
+                "app": rp.permit.app,
+                "description": rp.permit.description,
+                "active": rp.active,
+            }
+            for rp in role_permits
+        ]
+
+        role_data = {
+            "id": role.id,
+            "name": role.name,
+            "description": role.description,
+            "creation_date": role.creation_date,
+            "activated": role.activated,
+            "permits": permits_data,
+        }
+
+        return {
+            "success": True,
+            "answer": role_data,
+            "error": "Success"
+        }
+
+    except UserRole.DoesNotExist:
+        return {
+            "success": False,
+            "answer": "rolesAndPermissions.message.error.role-not-found",
+            "error": f"Role with id {role_id} not found in this company"
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "answer": "rolesAndPermissions.message.error.unexpected-error",
+            "error": str(e)
+        }

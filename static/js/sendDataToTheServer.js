@@ -73,7 +73,7 @@ function formToJSON(form) {
     const data = {};
     const formData = new FormData(form);
     for (let [key, value] of formData.entries()) {
-        if (data[key] !== undefined) { // Soporte campos múltiples
+        if (data[key] !== undefined) { //this is for save multi inputs
             if (!Array.isArray(data[key])) {
                 data[key] = [data[key]];
             }

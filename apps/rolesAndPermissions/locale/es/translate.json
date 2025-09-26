@@ -12,5 +12,14 @@
     "rolesAndPermissions.message.success.description.the-rol-can-be-save":"El nuevo rol fue guardado con exito en tu base de datos.",
 
     "rolesAndPermissions.message.error.title":"No se pudo guardar el Rol",
-    "rolesAndPermissions.message.error.the-name-is-need":"El nombre del Rol es necesario. Llena todos los campos requeridos."
+    "rolesAndPermissions.message.error.the-name-is-need":"El nombre del Rol es necesario. Llena todos los campos requeridos.",
+    "rolesAndPermissions.message.error.role-already-exist":"Este Rol ya existe en tu empresa.",
+    "rolesAndPermissions.message.error.unexpected-error":"Sucedio un error en el servidor",
+    "rolesAndPermissions.message.success.this-role-was-create-with-success":"El Rol fue creado con exito",
+    "rolesAndPermissions.message.success.title.the-rol-was-update-with-success":"Rol actualizado",
+    "rolesAndPermissions.message.success.the-rol-was-update-with-success":"El Rol fue actualizado con exito en tu base de datos.",
+
+
+    "rolesAndPermissions.message.error.role-id-required":"El id del Rol es necesario.",
+    "rolesAndPermissions.message.error.role-not-found":"Este Rol no existe en tu empresa."
 }
