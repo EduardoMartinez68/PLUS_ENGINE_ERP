@@ -3,24 +3,21 @@ from django.shortcuts import render
 import json
 from apps.rolesAndPermissions.services.permits import get_all_the_permissions
 from apps.rolesAndPermissions.services.role import get_role_of_the_company
+from ..plus_wrapper import Plus
 
 def rolesAndPermissions_home(request):
     return render(request, 'home_rolesAndPermissions.html')
 
-
-def get_information_of_the_role(request):
+def get_information_of_the_role(request, activated):
     if request.method == "GET": 
         name = request.GET.get("query", "")
         page = request.GET.get("page", 1)
-        activated = request.GET.get("activated", True)
+        activated = Plus.to_bool(activated)
 
         answer = get_role_of_the_company(request.user, name=name, page=page, activated=activated)
         return JsonResponse(answer, status=200)
 
     return JsonResponse({"success": False, "message": "Method not allowed"}, status=405)
-
-
-
 
 def get_all_the_permissions_of_the_erp(request):
     if request.method == "GET": 
@@ -34,7 +31,7 @@ def get_all_the_permissions_of_the_erp(request):
 
 
 
-from apps.rolesAndPermissions.services.role import save_a_new_role, get_role_by_id, update_rol_by_id, desactivate_rol
+from apps.rolesAndPermissions.services.role import save_a_new_role, get_role_by_id, update_rol_by_id, change_status_of_a_role
 def add_a_new_rol(request):
     if request.method == "POST":
         try:
@@ -89,12 +86,12 @@ def get_information_rol(request, rol_id):
 
     return JsonResponse({"success": False, "answer": "Method not allowed"}, status=405)
 
-
-def delete_rol(request):
+def change_status(request):
     if request.method == "POST":
         body_json = json.loads(request.body)
         role_id = body_json.get("role_id")
-        result = desactivate_rol(request.user, role_id)
+        status = Plus.to_bool(body_json.get("status"))
+        result = change_status_of_a_role(request.user, role_id, status)
         return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
     
     return JsonResponse({"success": False, "answer": "Method not allowed"}, status=405)

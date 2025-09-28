@@ -190,7 +190,7 @@ def update_rol_by_id(user, data: dict) -> dict:
             "error": str(e)
         }
 
-def desactivate_rol(user, role_id) -> dict:
+def change_status_of_a_role(user, role_id, status) -> dict:
     if not role_id:
         return {
             "success": False,
@@ -218,11 +218,11 @@ def desactivate_rol(user, role_id) -> dict:
             }
 
         # desactivate the rol
-        user_role.activated = False
+        user_role.activated = status
         user_role.save()
 
         # desactivate all the permissions of this rol
-        Role.objects.filter(role=user_role).update(active=False)
+        #Role.objects.filter(role=user_role).update(active=status)
 
         return {
             "success": True,
