@@ -2423,7 +2423,7 @@ hr {
     margin-top: 8.5px;
 }
 
-.plus-search-options .btn:hover{
+.plus-search-options .btn-add:hover{
     background-color: var(--color-hover-success);
 }
 
@@ -2508,5 +2508,9 @@ hr {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  max-width: 320px;
+  min-width: 320px;
+}
+
+.skeleton-width-all{
+  width: 100%;
 }

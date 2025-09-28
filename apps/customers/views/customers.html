@@ -223,19 +223,6 @@
 }
 </style>
 
-
-<div class="input-actions-wrapper section">
-  <input type="text" t-placeholder="placeholder-search-home" id="search-customer">
-  <button class="btn btn-add" onclick="nextWeb('customers/add_customer')">+</button>
-  <button class="btn btn-transparent filter-btn" onclick="open_my_pop('pop-filter-customer')">
-    <i class="fi fi-rr-settings-sliders"></i>
-  </button>
-  <plus-actions>
-    <plus-action text="title-source" onclick="open_pop_table_source"></plus-action>
-    <plus-action text="title-type-customer" onclick="open_pop_table_type_customer"></plus-action>
-  </plus-actions>
-</div>
-
 <!---this is the pop for filter the customer that the user would like search---->
 <message-pop title="title-filter" name="pop-filter-customer">
     <div class="row">
@@ -260,12 +247,40 @@
 
     <button t="message.success" class="btn btn-edit btn-success" onclick="hide_pop('pop-filter-customer')">Search</button>
 </message-pop>
-
+<br>
 <plus-switch-column id="customers-switch">
   <div slot="col1">
+    <plus-search input_id="search-customer">
+      <search-option>
+        <button class="btn btn-add" onclick="nextWeb('customers/add_customer')">+</button>
+      </search-option>
+      <search-option>
+        <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-customer')"><i class="fi fi-rr-settings-sliders"></i></button>
+      </search-option>
+      <search-option>
+          <plus-actions>
+            <plus-action text="title-source" onclick="open_pop_table_source"></plus-action>
+            <plus-action text="title-type-customer" onclick="open_pop_table_type_customer"></plus-action>
+          </plus-actions>
+      </search-option>
+    </plus-search>
+    <br>
     <!---here is for update the container of the table---->
     <div class="customers-list" id="customer-list">
+      <div class="section skeleton-container">
+        <div class="skeleton skeleton-circle"></div>
+        <div class="skeleton skeleton-rect"></div>
+        <div class="skeleton skeleton-rect" style="width: 80%;"></div>
+        <div class="skeleton skeleton-input"></div>
+      </div>
 
+      <br>
+      <div class="section skeleton-container">
+        <div class="skeleton skeleton-circle"></div>
+        <div class="skeleton skeleton-rect"></div>
+        <div class="skeleton skeleton-rect" style="width: 80%;"></div>
+        <div class="skeleton skeleton-input"></div>
+      </div>
     </div>  
   </div>
 
