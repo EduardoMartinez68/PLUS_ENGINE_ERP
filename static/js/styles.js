@@ -1124,6 +1124,7 @@ class PlusSelect extends HTMLElement {
     this._selectElement = null;
     this._thisSlectSendDataToTheServer = false;
     this._textSelected = null;
+    this._textLabelTranslate=null;
     this._method = 'GET'
   }
 
@@ -1136,6 +1137,7 @@ class PlusSelect extends HTMLElement {
     //get the information that the programmer added to the select
     const textLabel = this.getAttribute('t') || this.getAttribute('label') || '';
     const textLabelTranslate = window.translate_text(textLabel); //translate the text of the label
+    
 
     const name = this.getAttribute('name') || '';
     const isRequired = this.hasAttribute('requerid');
@@ -1147,7 +1149,8 @@ class PlusSelect extends HTMLElement {
     //get the value for if the programmer would like show other message that not be the default
     const tilteBtn = this.getAttribute('btn_delete_title') || '';
     const textBtn = this.getAttribute('btn_delete_text') || '';
-
+    this._textLabelTranslate=textLabelTranslate;
+    
     //her we will know if the programmer need show a message to the user
     if (thisLabelHaveAMessage) {
       //if the programmer need show a messga, we will to create the special label when the information that need
@@ -1539,7 +1542,12 @@ class PlusSelect extends HTMLElement {
       //if not exist in the select of the options is because is a data of a tabla of search 
       if (this._thisSlectSendDataToTheServer) {
         this._hiddenInput.value = value;
-        var info = text || option.getAttribute('data-text') || value;
+
+        if(option!=null){
+          var info = text || value || option.getAttribute('data-text');
+        }else{
+          var info = window.translate_text(this._textLabelTranslate);
+        }
 
         this._selectText.setAttribute('t', info);
         this._selectText.textContent = info;
