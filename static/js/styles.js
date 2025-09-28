@@ -1543,10 +1543,11 @@ class PlusSelect extends HTMLElement {
       if (this._thisSlectSendDataToTheServer) {
         this._hiddenInput.value = value;
 
+        var info;
         if(option!=null){
-          var info = text || value || option.getAttribute('data-text');
+          info = text || value || option.getAttribute('data-text');
         }else{
-          var info = window.translate_text(this._textLabelTranslate);
+          info = text || value || window.translate_text(this._textLabelTranslate);
         }
 
         this._selectText.setAttribute('t', info);

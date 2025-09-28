@@ -272,14 +272,13 @@ def update_event_in_google_calendar(user,event_id,new_title=None,new_description
     if not event_id:
         return None
     
-    creds = get_credential_google_calendar(user)
-    if not creds:
-        return None
     
     try:
-        # Recuperar el token guardado en DB        
+        # Recuperar el token guardado en DB    
+        creds = get_credential_google_calendar(user)
+        if not creds:
+            return None    
         service = build('calendar', 'v3', credentials=creds)
-
         # Obtener el evento actual
         evento_existente = service.events().get(calendarId='primary', eventId=event_id).execute()
 
@@ -307,14 +306,15 @@ def update_event_in_google_calendar(user,event_id,new_title=None,new_description
             }
 
         # Repetición
-        if repeat_this_event is not None:
+        if repeat_this_event is False:
+            # Si se pasa False, eliminamos la repetición
+            evento_existente.pop('recurrence', None)
+        elif repeat_this_event is not None:
             if time_repeat and int(time_repeat) > 0:
                 evento_existente['recurrence'] = [f'RRULE:FREQ=DAILY;INTERVAL={int(time_repeat)}']
             else:
                 evento_existente['recurrence'] = ['RRULE:FREQ=WEEKLY;BYDAY=MO']
-        elif repeat_this_event is False:
-            # Si se pasa False, eliminamos la repetición
-            evento_existente.pop('recurrence', None)
+
 
         # Invitados
         if emails_guests:

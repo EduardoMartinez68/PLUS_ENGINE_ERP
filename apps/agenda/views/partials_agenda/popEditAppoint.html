@@ -229,6 +229,8 @@
             document.getElementById('id_event').value=dataAppoints.id || '';
             document.getElementById('title_event').value=dataAppoints.title || '';
             window.set_value_plus_select('priority_edit', dataAppoints.priority || '0');
+
+            
             window.set_value_plus_select('type_appoint_edit', dataAppoints.type_appoint.id || '', dataAppoints.type_appoint.name || '');
 
             //here we will to update the format date in the form
