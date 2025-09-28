@@ -1,5 +1,6 @@
 {
-    "rolesAndPermissions.navbar.add-a-new-rol": "Agregar nuevo rol",
+    "rolesAndPermissions.navbar.add-a-new-rol": "Agregar nuevo rol (Shift + N)",
+    "rolesAndPermissions.option.restart-role": "Restaurar Roles (Shift + R)",
     "rolesAndPermissions.navbar.rol": "Roles",
     "rolesAndPermissions.subtext.permissions.activate-all": "Activar todos los permisos",
     "rolesAndPermissions.subtext.permissions": "Permisos",

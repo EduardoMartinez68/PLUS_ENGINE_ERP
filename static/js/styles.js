@@ -2829,7 +2829,52 @@ class PlusFilterTable extends HTMLElement {
   }
 }
 
+class PlusSearch extends HTMLElement {
+  constructor() {
+    super();
+  }
 
+  connectedCallback() {
+    // Crear contenedor principal
+    const container = document.createElement("div");
+    container.classList.add("plus-search-container");
+
+    // Contenedor input con icono
+    const inputWrapper = document.createElement("div");
+    inputWrapper.classList.add("plus-search-input");
+
+    // Icono lupa
+    const icon = document.createElement("i");
+    icon.className = "fi fi-rs-search";
+
+    // Input
+    const idInput = this.getAttribute('input_id') || generate_unique_dom_id();
+    const input = document.createElement("input");
+    input.type = "search";
+    input.placeholder = this.getAttribute("placeholder") || "message.search";
+    input.setAttribute('t-placeholder', input.placeholder);
+    input.setAttribute('id', idInput);
+
+    inputWrapper.appendChild(icon);
+    inputWrapper.appendChild(input);
+
+    // Contenedor de opciones
+    const optionsContainer = document.createElement("div");
+    optionsContainer.classList.add("plus-search-options");
+
+    // Mover los hijos <search-option>
+    const options = this.querySelectorAll("search-option");
+    options.forEach(opt => {
+      optionsContainer.appendChild(opt.firstElementChild);
+    });
+
+    // Limpiar y renderizar
+    this.innerHTML = "";
+    container.appendChild(inputWrapper);
+    container.appendChild(optionsContainer);
+    this.appendChild(container);
+  }
+}
 
 /*----------------DATE------------------------------------- */
 function format_date_to_text(date) {
@@ -5229,6 +5274,10 @@ function transform_my_labels_erp() {
 
   if (!customElements.get("plus-switch-column")) {
     customElements.define('plus-switch-column', PlusSwitchColumn);
+  }
+
+  if (!customElements.get("plus-search")) {
+    customElements.define('plus-search', PlusSearch);
   }
 }
 

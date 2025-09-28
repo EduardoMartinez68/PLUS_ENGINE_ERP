@@ -54,8 +54,16 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
 
     //first we will get the input that the user is using for write
     const inputId = Array.isArray(inputsId) ? inputsId[0] : inputsId;
-    const input = document.getElementById(inputId);
+    let input = document.getElementById(inputId);
     const field = document.getElementById(fieldId);
+
+    //here we will see if the input exist in the UI, if not exist we will to wait 1 second and we will try again
+    if (!input) {
+        setTimeout(() => {
+            update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, method, loadingImage, delay, type);
+        }, 500);
+        return; // stop execution here until re-entered
+    }
 
     //when this we will see if send a notification to the server for update the table
     let timer;
@@ -152,7 +160,7 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
                     </div>`;
                 }else{
                     field.innerHTML = `
-                    <div style="width: 100%; height: auto;">
+                    <div style="width: 100%; height: auto; text-align:center;">
                         <center>
                             <img src="${loadingImage}" alt="Loading..." style="width: 80px; height: auto;"/>
                             ${answer}
