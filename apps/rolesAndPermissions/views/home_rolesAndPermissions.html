@@ -1,5 +1,19 @@
+<style>
+    .plus-search-options .btn{
+        width: 100%;
+        height: 100%;
+        margin-top: 8.5px;
+    }
+
+    .plus-search-options .btn:hover{
+        background-color: var(--color-hover-success);
+    }
+</style>
 <div class="container-section">
     <plus-search input_id="seacrh">
+        <search-option>
+            <button  class="btn btn-add" onclick="nextWeb('rolesAndPermissions/add_a_new_rol/')">+</button>
+        </search-option>
         <search-option>
             <plus-actions>
                 <plus-action text="rolesAndPermissions.navbar.add-a-new-rol" onclick="create_new_role" combo="Shift+n" icon="fi fi-sr-add"></plus-action>
