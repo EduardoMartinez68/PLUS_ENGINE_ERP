@@ -162,6 +162,8 @@
   flex-direction: column;
   gap: 1rem;
   width: 100%;
+  padding-right: 2.5rem;
+  box-sizing: border-box; 
 }
 
 .container-padding {
@@ -270,10 +272,10 @@
   <div slot="col2">
     <button class="btn btn-edit btn-mobile" onclick="toggle_switch_column('customers-switch',false)">×</button>
     <div class="info-customer" id="info-customer">
-        <center>
-            <img src="{% static 'img/customer_home.webp' %}" alt="Customer Home">
+        <div class="full-center">
+            <img src="{% static 'img/customer_home.webp' %}" alt="Customer Home" loading="lazy">
             <h3 t="dashboard-no-customer-selected">No customer selected</h3>
-        </center>
+        </div>
     </div>
   </div>
 </plus-switch-column>

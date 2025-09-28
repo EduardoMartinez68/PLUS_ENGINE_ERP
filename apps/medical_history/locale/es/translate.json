@@ -1,4 +1,6 @@
 {
+    "medical-history.home.message.no-history-select":"No has seleccionado ningun expediente",
+    
     "medical-history.title": "Historial Médico",
     "patient-info": "Información del Paciente",
     "medical-history.form.label.skull":"Identificador (Skull)",
