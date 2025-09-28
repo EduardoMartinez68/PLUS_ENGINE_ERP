@@ -1,13 +1,10 @@
 <message-pop title="title-source" name="pop-data-source">
     <div class="container-pop">
-        <div class="row">
-            <div class="col-8">
-                 <input t-placeholder="search-source" id="serach-source"></input>
-            </div>
-            <div class="col-2">
+        <plus-search placeholder="search-source" input_id="serach-source">
+            <search-option>
                 <button class="btn btn-add" onclick="open_pop_create_source()">+</button>
-            </div>
-        </div>
+            </search-option>
+        </plus-search>
         <table>
             <thead>
                 <tr>
