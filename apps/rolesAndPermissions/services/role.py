@@ -2,29 +2,45 @@ from core.models import Permit, UserRole, Role
 from typing import Dict, Any, List
 
 
-def get_role_of_the_company(company, name: str = '', page: int = 1, limit: int = 20) -> Dict[str, Any]:
+def get_role_of_the_company(user, name: str = '', page: int = 1, activated: bool = True, limit: int = 20) -> Dict[str, Any]:
+    company = getattr(user, "company", None)
     if not company:
-        return {"success": False, "message": "Company is required", "answer": [], "error": "Company is required"}
+        return {
+            "success": False,
+            "message": "Company is required",
+            "answer": [],
+            "error": "Company is required"
+        }
 
     # calculate offset
     try:
-        page=int(page)
+        page = int(page)
     except:
-        return {"success": False, "message": "The page need be a number", "answer": [], "error": "The page need be a number"}
+        return {
+            "success": False,
+            "message": "The page need be a number",
+            "answer": [],
+            "error": "The page need be a number"
+        }
     
     offset = (max(page, 1) - 1) * limit  
 
     # base queryset
     queryset = UserRole.objects.filter(id_company=company)
 
+    # filtro por nombre
     if name.strip():
         queryset = queryset.filter(name__icontains=name)
+
+    # filtro por estado (activado / desactivado)
+    if activated is not None:
+        queryset = queryset.filter(activated=activated)
 
     total = queryset.count()  # total unpaginated results
 
     roles = queryset.order_by("id")[offset:offset + limit]
 
-    # we convert results
+    # convertimos resultados
     roles_data: List[Dict[str, Any]] = [
         {
             "id": role.id,
@@ -174,8 +190,62 @@ def update_rol_by_id(user, data: dict) -> dict:
             "error": str(e)
         }
 
+def desactivate_rol(user, role_id) -> dict:
+    if not role_id:
+        return {
+            "success": False,
+            "answer": "rolesAndPermissions.message.error.role-id-required",
+            "error": "Role ID is required"
+        }
 
-def get_role_by_id(company, role_id: int) -> Dict[str, Any]:
+    company = getattr(user, "company", None)
+    if not company:
+        return {
+            "success": False,
+            "answer": "rolesAndPermissions.message.error.company-is-required",
+            "error": "Company is required"
+        }
+    
+
+    try:
+        # search the rol of the company
+        user_role = UserRole.objects.filter(id_company=company, id=role_id).first()
+        if not user_role:
+            return {
+                "success": False,
+                "answer": "rolesAndPermissions.message.error.role-not-found",
+                "error": f"Role with id '{role_id}' not found for this company"
+            }
+
+        # desactivate the rol
+        user_role.activated = False
+        user_role.save()
+
+        # desactivate all the permissions of this rol
+        Role.objects.filter(role=user_role).update(active=False)
+
+        return {
+            "success": True,
+            "answer": "rolesAndPermissions.message.success.the-rol-was-deactivated",
+            "error": f"Role '{user_role.name}' was deactivated successfully"
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "answer": "rolesAndPermissions.message.error.unexpected-error",
+            "error": str(e)
+        }
+
+def get_role_by_id(user, role_id: int) -> Dict[str, Any]:
+    if not role_id:
+        return {
+            "success": False,
+            "answer": "rolesAndPermissions.message.error.role-id-required",
+            "error": "Role ID is required"
+        }
+    
+    company = getattr(user, "company", None)
     if not company:
         return {
             "success": False,

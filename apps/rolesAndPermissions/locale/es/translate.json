@@ -21,5 +21,10 @@
 
 
     "rolesAndPermissions.message.error.role-id-required":"El id del Rol es necesario.",
-    "rolesAndPermissions.message.error.role-not-found":"Este Rol no existe en tu empresa."
+    "rolesAndPermissions.message.error.role-not-found":"Este Rol no existe en tu empresa.",
+
+    "rolesAndPermissions.message.question.title.do-you-like-delete-this-role":"Eliminar Rol",
+    "rolesAndPermissions.message.question.description.do-you-like-delete-this-role":"Te gustaria Eliminar este Rol de tu empresa?",
+    "rolesAndPermissions.message.success.title.the-rol-was-deactivated":"Rol Eliminado.",
+    "rolesAndPermissions.message.success.the-rol-was-deactivated":"Rol Eliminado con exito. Puedes recuperarlo si lo necesitas."
 }

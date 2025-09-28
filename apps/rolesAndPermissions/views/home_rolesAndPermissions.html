@@ -75,8 +75,8 @@
                 <td> { name } </td>
                 <td> { description } </td>
                 <td>
-                    <button onclick="edit_rol(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-pencil"></i></button>
-                    <button onclick="delete_rol(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-trash"></i></button>
+                    <button onclick="edit_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-pencil"></i></button>
+                    <button onclick="delete_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-trash"></i></button>
                 </td>
             </tr>
         `
@@ -84,8 +84,31 @@
     })();
 
 
-    async function edit_rol(id){
-        id = String(id).trim();
-        await nextWeb(`rolesAndPermissions/edit_rol/${id}/`);
+    async function edit_role(rol_id){
+        rol_id = String(rol_id).trim();
+        await nextWeb(`rolesAndPermissions/edit_rol/${rol_id}/`);
+    }
+
+    async function delete_role(role_id){
+        if(await show_message_question('rolesAndPermissions.message.question.title.do-you-like-delete-this-role', 'rolesAndPermissions.message.question.description.do-you-like-delete-this-role')){
+            role_id = String(role_id).trim();
+            const backend=await send_message_to_the_server('rolesAndPermissions/delete_rol/', {role_id:role_id}, true);
+            if(backend.success){
+                const divHtml=`
+                    <tr>
+                        <td> { name } </td>
+                        <td> { description } </td>
+                        <td>
+                            <button onclick="edit_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-pencil"></i></button>
+                            <button onclick="delete_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-trash"></i></button>
+                        </td>
+                    </tr>
+                `
+                update_container_from_the_server('seacrh', 'table-role', divHtml, 'rolesAndPermissions/get_information_of_the_role', 'GET'); //update the table
+                show_alert('success', 'rolesAndPermissions.message.success.title.the-rol-was-deactivated','rolesAndPermissions.message.success.the-rol-was-deactivated', backend.error || '');
+            }else{
+                show_alert('error', 'Error', backend.message || 'rolesAndPermissions.message.error.unexpected-error', backend.error || '');
+            }
+        }
     }
 </script>

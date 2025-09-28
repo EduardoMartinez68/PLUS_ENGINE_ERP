@@ -8,4 +8,5 @@ urlpatterns = [
     path('add_a_new_rol/', views.add_a_new_rol, name='add_a_new_rol'),
     path('edit_rol/<int:rol_id>/', views.edit_rol, name='edit_rol'),
     path('get_information_rol/<int:rol_id>/', views.get_information_rol, name='get_information_rol'),
+    path('delete_rol/', views.delete_rol, name='delete_rol'),
 ]

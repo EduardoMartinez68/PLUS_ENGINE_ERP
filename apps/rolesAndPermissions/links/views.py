@@ -7,14 +7,14 @@ from apps.rolesAndPermissions.services.role import get_role_of_the_company
 def rolesAndPermissions_home(request):
     return render(request, 'home_rolesAndPermissions.html')
 
+
 def get_information_of_the_role(request):
     if request.method == "GET": 
         name = request.GET.get("query", "")
         page = request.GET.get("page", 1)
+        activated = request.GET.get("activated", True)
 
-        company = getattr(request.user, "company", None)
-
-        answer = get_role_of_the_company(company, name=name, page=page)
+        answer = get_role_of_the_company(request.user, name=name, page=page, activated=activated)
         return JsonResponse(answer, status=200)
 
     return JsonResponse({"success": False, "message": "Method not allowed"}, status=405)
@@ -34,7 +34,7 @@ def get_all_the_permissions_of_the_erp(request):
 
 
 
-from apps.rolesAndPermissions.services.role import save_a_new_role, get_role_by_id, update_rol_by_id
+from apps.rolesAndPermissions.services.role import save_a_new_role, get_role_by_id, update_rol_by_id, desactivate_rol
 def add_a_new_rol(request):
     if request.method == "POST":
         try:
@@ -82,11 +82,19 @@ def edit_rol(request, rol_id):
     return JsonResponse({"success": False, "answer": "Method not allowed"}, status=405)
 
 def get_information_rol(request, rol_id):
-    company = getattr(request.user, "company", None)
-
     if request.method == "GET":
-        result = get_role_by_id(company, rol_id)
+        result = get_role_by_id(request.user, rol_id)
         return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)
         
 
+    return JsonResponse({"success": False, "answer": "Method not allowed"}, status=405)
+
+
+def delete_rol(request):
+    if request.method == "POST":
+        body_json = json.loads(request.body)
+        role_id = body_json.get("role_id")
+        result = desactivate_rol(request.user, role_id)
+        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
+    
     return JsonResponse({"success": False, "answer": "Method not allowed"}, status=405)

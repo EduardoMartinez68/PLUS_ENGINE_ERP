@@ -88,10 +88,10 @@
                 <td> { priority } </td>
                 <td>{ location }</td>
                 <td>
-                    <button class="btn btn-transparent" onclick='show_character_appoint( { id } )'><i class="fi fi-sr-pencil"></i></button>
+                    <button class="btn btn-transparent" onclick='show_character_appoint(' { id } ')'><i class="fi fi-sr-pencil"></i></button>
                 </td>
                 <td>
-                    <button class="btn btn-transparent" onclick="delete_event( { id } )"><i class="fi fi-sr-trash"></i></button>
+                    <button class="btn btn-transparent" onclick="delete_event(' { id } ')"><i class="fi fi-sr-trash"></i></button>
                 </td>
             `
 
@@ -106,6 +106,7 @@
     }
 
     async function delete_event(id){
+        id = String(id).trim();
         if (await show_message_question('question.delete-event', 'question.delete-event-description')) {
             const answer=await window.send_message_to_the_server('/agenda/delete_event/',{id_event: id})
             if (answer.success) {
