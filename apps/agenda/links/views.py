@@ -757,8 +757,12 @@ def delete_event(request):
             #if not exist this event in our database, it is because the event is from google calendar and our delete this event
             delete_event_in_google_calendar(user, event_id)
 
-
-    
+        return JsonResponse({
+            'success': True,
+            'message': 'message.success.event-deleted',
+            'event_id': event_id
+        }, status=200)
+        
 
     
 

@@ -61,7 +61,7 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
     if (!input) {
         setTimeout(() => {
             update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, method, loadingImage, delay, type);
-        }, 500);
+        }, 250);
         return; // stop execution here until re-entered
     }
 

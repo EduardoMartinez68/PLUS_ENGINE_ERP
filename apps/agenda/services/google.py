@@ -29,20 +29,34 @@ def get_credential_google_calendar(user):
         print(f"Error obteniendo credenciales de Google Calendar: {e}")
         return None
     
+from googleapiclient.discovery import build
+from google.auth.exceptions import RefreshError
+from datetime import datetime
+
 def obtener_eventos_google(user, start_date, end_date):
     creds = get_credential_google_calendar(user)
     if not creds:
         return []
 
-    service = build('calendar', 'v3', credentials=creds)
+    try:
+        service = build('calendar', 'v3', credentials=creds)
 
-    events_result = service.events().list(
-        calendarId='primary',
-        timeMin=start_date.isoformat(),
-        timeMax=end_date.isoformat(),
-        singleEvents=True,
-        orderBy='startTime'
-    ).execute()
+        events_result = service.events().list(
+            calendarId='primary',
+            timeMin=start_date.isoformat(),
+            timeMax=end_date.isoformat(),
+            singleEvents=True,
+            orderBy='startTime'
+        ).execute()
+
+    except RefreshError:
+        # Token expirado o revocado, devolver lista vacía
+        print(f"Google token expired or revoked for user {user}")
+        return []
+    except Exception as e:
+        # Cualquier otro error en la API
+        print(f"Error fetching Google events: {e}")
+        return []
 
     events = events_result.get('items', [])
 

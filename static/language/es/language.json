@@ -64,14 +64,6 @@
     "info.of":"de",
     "info.select-a-country":"país",
 
-    "menu.search": "Buscar una app...",
-    "app.agenda": "Agenda",
-    "app.cases": "Casos",
-    "app.contracts": "Contratos",
-    "app.customers": "Clientes",
-    "app.settings": "Configuraciones",
-    "app.exit": "Salir",
-
     "btn.edit-quantity": "Editar cantidad",
 
     "btn.restart": "Reiniciar",
@@ -153,6 +145,20 @@
     "gener.label":"Sexo",
     "gender.men":"Hombre",
     "gender.woman":"Mujer",
-    "gender.other":"Otros"
+    "gender.other":"Otros",
+
+
+
+    "menu.search": "Buscar una app...",
+    "app.agenda": "Agenda",
+    "app.cases": "Casos",
+    "app.contracts": "Contratos",
+    "app.customers": "Clientes",
+    "app.settings": "Configuraciones",
+    "app.rolesAndPermissions": "Roles y permisos",
+    "app.products": "Productos",
+    "app.medical_history": "Historial Medico",
+    "app.services": "Servicios",
+    "app.exit": "Salir"
 }
 
