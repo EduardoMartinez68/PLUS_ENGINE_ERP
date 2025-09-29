@@ -505,7 +505,7 @@
     }else{
         //if not can get the information of the customer, we will show a pop error and clear the div <info-customer>
       document.getElementById('info-customer').innerHTML = `
-        <div>
+        <div class="full-center">
           <img src="{% static 'img/customer_home.webp' %}" alt="Customer Home">
           <h3 t="dashboard-no-customer-selected">No customer selected</h3>
         </div>
@@ -697,7 +697,7 @@
                   if (typeof window[onClickFunction] === "function") {
                       window[onClickFunction]();
                   } else {
-                      console.warn(`La función ${onClickFunction} no existe en window`);
+                      console.warn(`The function ${onClickFunction} not exist in window`);
                   }
               });
           }

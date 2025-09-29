@@ -54,6 +54,7 @@
 
     "medical-history.message.server.error.no-exist-the-company":"No existe esta empresa.",
     "medical-history.message.server.error.error-in-the-server":"Ocurrio un error en el servidor.",
+    "medical-history.message.server.error.customer-not-found":"Este Historial Medico no existe",
 
 
     "medical-history.home.card.no-name":"Sin nombre",
@@ -63,7 +64,16 @@
     "medical-history.home.card.cellphone":"Celular",
     "medical-history.home.card.phone":"Telefono",
     "medical-history.home.card.email":"Email",
+    "medical-history.home.card.address":"Direccion",
 
     "medical-history.home.card.card-points":"Puntos",
-    "medical-history.home.card.card-credit":"Credito"
+    "medical-history.home.card.card-credit":"Credito",
+    
+    "medical-history.form.info.female":"Mujer",
+    "medical-history.form.info.men":"Hombre",
+    "medical-history.form.info.other":"Otro",
+
+    "medical-history.form.section.info":"Información",
+    "medical-history.form.section.history":"Historial de Citas",
+    "medical-history.form.section.files":"Documentos"
 }

@@ -1,0 +1,109 @@
+{% load static %}
+<br><br>
+<div class="section" id="medical-info-section">
+    <br><br>
+    <!-- INFORMACIÓN PERSONAL (solo lectura) -->
+    <div class="row">
+        <div class="col-3">
+            <img id="customer-avatar" 
+                 src="{% if data.avatar %}{{ data.avatar }}{% else %}{% static 'img/profile.webp' %}{% endif %}" 
+                 alt="Customer Avatar"
+                 style="width:100%; border-radius:10%; object-fit:cover;">
+        </div>
+        <div class="col-9">
+            <plus-title value="{{ data.name }}"></plus-title>
+            <p>
+                <strong t="medical-history.home.card.email">Email:</strong> 
+                <label for="">{{ data.email }}</label>
+            </p>
+
+            <div class="row">
+                <div class="col">
+                    <p><strong>Phone:</strong> {{ data.phone }}</p>
+                </div>
+                <div class="col">
+                    <p><strong>Cellphone:</strong> {{ data.cellphone }}</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    <p><strong><i class="fi fi-rr-cake-birthday"></i></strong> {% if data.date_of_birth %}{{ data.date_of_birth }}{% else %}-{% endif %}</p>
+                </div>
+                <div class="col">
+                    {% if data.gender == "F" %}
+                    <label t="medical-history.form.info.female"></label>
+                    {% endif %}
+                    {% if data.gender == "M" %}
+                    <label t="medical-history.form.info.men"></label>
+                    {% endif %}
+                    {% if data.gender == "O" %}
+                    <label t="medical-history.form.info.other"></label>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-10">
+                </div>
+                <div class="col-2">
+                    <button class="btn btn-edit" onclick="nextWeb('customers/edit_customer/{{data.id}}/')"><i class="fi fi-sr-user-pen"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <p>
+        <strong t="medical-history.home.card.address">Address:</strong> 
+        <label for="">
+            {% if data.address %}{{ data.address }}{% else %}-{% endif %}, 
+            {% if data.city %}{{ data.city }}{% endif %}, 
+            {% if data.state %}{{ data.state }}{% endif %}, 
+            {% if data.postal_code %}{{ data.postal_code }}{% endif %}
+        </label>
+    </p>
+</div>
+
+
+<div class="section">
+    <plus-tabs>
+        <plus-tab text="medical-history.form.section.info">
+            <!-- HISTORIAL MÉDICO (editable) -->
+            <h3 style="margin-bottom:15px;">Medical History</h3>
+            {% if data.medical_info %}
+                <div class="row" style="display:flex; gap:20px; flex-wrap:wrap;">
+                    <div class="col-6">
+                        <input-field label="Blood Type" value="{{ data.medical_info.blood_type }}"></input-field>
+                        <input-field label="Skull" value="{{ data.medical_info.skull }}"></input-field>
+                        <input-field label="Height (cm)" value="{{ data.medical_info.height_cm }}"></input-field>
+                        <input-field label="Weight (kg)" value="{{ data.medical_info.weight_kg }}"></input-field>
+                        <input-field label="BMI" value="{{ data.medical_info.bmi }}"></input-field>
+                        <input-field label="Chronic Conditions" value="{{ data.medical_info.chronic_conditions }}"></input-field>
+                        <input-field label="Allergies" value="{{ data.medical_info.allergies }}"></input-field>
+                        <input-field label="Medications" value="{{ data.medical_info.medications }}"></input-field>
+                    </div>
+                    <div class="col-6">
+                        <input-field label="Surgeries" value="{{ data.medical_info.surgeries }}"></input-field>
+                        <input-field label="Immunizations" value="{{ data.medical_info.immunizations }}"></input-field>
+                        <input-field label="Family History" value="{{ data.medical_info.family_history }}"></input-field>
+                        <input-field label="Lifestyle" value="{{ data.medical_info.lifestyle }}"></input-field>
+                        <input-field label="Emergency Contact Name" value="{{ data.medical_info.emergency_contact_name }}"></input-field>
+                        <input-field label="Emergency Contact Phone" value="{{ data.medical_info.emergency_contact_phone }}"></input-field>
+                        <input-field label="Emergency Contact Relation" value="{{ data.medical_info.emergency_contact_relation }}"></input-field>
+                        <input-field label="Last Visit" value="{{ data.medical_info.last_visit }}"></input-field>
+                        <input-field label="Notes" value="{{ data.medical_info.notes }}"></input-field>
+                        <input-field label="Other Doctor Info" value="{{ data.medical_info.info_other_doctor }}"></input-field>
+                    </div>
+                </div>
+            {% else %}
+                <p>No medical history available for this patient.</p>
+            {% endif %}
+        </plus-tab>
+        <plus-tab text="medical-history.form.section.history">
+        </plus-tab>
+        <plus-tab text="medical-history.form.section.files">
+        </plus-tab>
+    </plus-tabs>
+</div>
