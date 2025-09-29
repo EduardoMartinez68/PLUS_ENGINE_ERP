@@ -1,6 +1,0 @@
-name: "contracts"
-appName: "contratos"
-icon: "/contracts/static/icon.webp"
-path: "/contracts"
-dbInit: true
-permissionsFile: 'permissions.json'

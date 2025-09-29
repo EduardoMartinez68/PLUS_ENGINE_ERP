@@ -8,11 +8,238 @@
 .keleton-width-all{
   width: 100%;
 }
+
+
 </style>
+<style>
+/* === Tarjeta principal === */
+.info-customer-card {
+  padding: 28px 32px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+  margin: 20px auto;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+/* === Encabezado del cliente === */
+.customer-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 28px;
+  border-bottom: 2px solid #f0f0f5;
+  padding-bottom: 20px;
+}
+
+.customer-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 10%;
+  object-fit: cover;
+  border: 4px solid #e6ebf2;
+}
+
+.customer-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1c1e21;
+}
+
+.status {
+  margin-left: auto;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.status.active {
+  background: #e6f9f0;
+  color: #219150;
+  border: 1px solid #a8e5c1;
+}
+
+.fi-whatsapp{
+  color: #219150;
+}
+
+.status.inactive {
+  background: #fdecec;
+  color: #d93025;
+  border: 1px solid #f5b9b9;
+}
+
+/* === Detalles del cliente === */
+.customer-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px 24px;
+  margin-top: 10px;
+}
+
+.customer-details .detail-box {
+  background: #ffffff;
+  border: 1px solid #f0f2f6;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  transition: all 0.2s ease;
+}
+
+.customer-details .detail-box:hover {
+  background: #f8faff;
+  border-color: #d9e4f5;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.detail-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.4;
+}
+
+
+/* === Mensaje de error elegante === */
+.error-message {
+  background: #fff2f2;
+  color: #b91c1c;
+  padding: 16px;
+  border-radius: 14px;
+  text-align: center;
+  font-weight: 600;
+  border: 1px solid #f5c2c2;
+}
+
+
+.stars {
+    color: #FFD700; /* amarillo brillante para estrellas */
+    font-size: 1.4rem;
+}
+
+.star.filled {
+    color: #FFD700;
+}
+
+.star {
+    color: #ccc;
+}
+
+.status-points {
+    display: flex;
+    gap: 10px; /* Espacio entre tags */
+    margin: 10px 0;
+    font-weight: 500;
+    align-items: center;
+}
+
+/* Estilo común para los tags */
+.status-points span {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px; /* Redondeado completo */
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Tag de puntos */
+.status-points .points {
+    background: #4c7faf; /* Verde agradable */
+}
+
+/* Tag de crédito */
+.status-points .credit {
+    background: #798ebb; /* Naranja cálido */
+}
+
+.customers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  padding-right: 2.5rem;
+  box-sizing: border-box; 
+}
+
+.container-padding {
+  padding-top: 0px;
+  padding-right: 30px;
+  padding-bottom: 0px;
+  padding-left: 30px;
+}
+
+
+.info-customer{
+  margin-top: -58px;
+}
+
+
+/**/
+
+/**/
+.btn-mobile {
+  display: none;
+}
+
+/**/
+.input-actions-wrapper {
+  display: flex;
+  align-items: center; /* centra verticalmente */
+  gap: 8px; /* espacio entre elementos */
+  padding: 0px 32px; /* espacio interno: 8px arriba/abajo, 12px izquierda/derecha */
+  box-sizing: border-box; /* asegura que el padding no rompa el ancho */
+  width: 50%;
+}
+
+.input-actions-wrapper input {
+  flex: 1; /* ocupa todo el espacio restante */
+}
+
+.input-actions-wrapper button,
+.input-actions-wrapper plus-actions {
+  flex: 0 0 auto; /* tamaño según su contenido */
+}
+
+#customer-list {
+  max-height: 83vh;
+  overflow-y: auto;  /* Scroll vertical */
+  overflow-x: hidden; /* Evita scroll horizontal */
+}
+
+
+@media (max-width: 768px) {
+  .btn-mobile {
+    display: inline-block;
+  }
+
+  .input-actions-wrapper {
+    width: 100%;
+  }
+}
+</style>
+
+
+
+
 <plus-switch-column id="customers-switch">
   <div slot="col1">
   <div class="container-section">
-    <plus-search input_id="seacrh">
+    <plus-search input_id="search">
         <search-option>
             <plus-actions>
                 <plus-action text="rolesAndPermissions.navbar.add-a-new-rol" onclick="create_new_role" combo="Shift+n" icon="fi fi-sr-add"></plus-action>
@@ -23,7 +250,7 @@
   </div>
 
     <!---here is for update the container of the table---->
-    <div class="customers-list" id="customer-list">
+    <div class="customers-list" id="medical-history-list">
       <div class="section skeleton-container">
         <div class="skeleton skeleton-circle"></div>
         <div class="skeleton skeleton-rect"></div>
@@ -38,6 +265,22 @@
         <div class="skeleton skeleton-rect" style="width: 80%;"></div>
         <div class="skeleton skeleton-input"></div>
       </div>
+
+      <br>
+      <medical-info
+        skull="SK-2025-01"
+        blood_type="O+"
+        created_at="2025-09-29T12:00:00Z"
+        updated_at="2025-09-29T14:00:00Z"
+        customer_id="15"
+        avatar="https://via.placeholder.com/60"
+        name="Juan Pérez"
+        email="juan@example.com"
+        phone="555-1234"
+        cellphone="555-5678">
+      </medical-info>
+
+
     </div>  
   </div>
 
@@ -51,3 +294,255 @@
     </div>
   </div>
 </plus-switch-column>
+
+<!---this is for change the filter of weeker--->
+<message-pop title="title-filter" name="pop-filter-customer">
+    <div class="row">
+        <div class="col">
+            <label t="select-priority"></label>
+            <select label="select-priority" id="filter-priority-customer">
+                <option value="" t="select-priority-0"></option>
+                <option value="1" t="select-priority-1"></option>
+                <option value="2" t="select-priority-2"></option>
+                <option value="3" t="select-priority-3"></option>
+            </select>
+        </div>
+        <div class="col">
+            <label t="customers.options.status-customer"></label>
+            <select label="customers.options.status-customer" id="status-customer">
+                <option value="true" t="option-status-activated">Activate</option>
+                <option value="false" t="option-status-deleted">Delete</option>
+                <option value="" t="option-status-all">All</option>
+            </select>
+        </div>
+    </div>
+
+    <button t="message.success" class="btn btn-edit btn-success" onclick="hide_pop('pop-filter-customer')">Search</button>
+</message-pop>
+
+
+
+<script>
+  class PlusHistoryMedical extends HTMLElement {
+      constructor() {
+          super();
+          this.attachShadow({ mode: "open" });
+      }
+
+      connectedCallback() {
+          if (this._rendered) return;
+          this._rendered = true;
+
+          // atributos recibidos
+          const customerId = this.getAttribute("customer-id") || "";
+          const name = this.getAttribute("name") || window.translate_text('customers.info.without-name');
+          const email = this.getAttribute("email") || window.translate_text('customers.info.without-email');
+          const cellphone = this.getAttribute("cellphone") || window.translate_text('customers.info.without-cellphone');
+          const phone = this.getAttribute("phone") || window.translate_text('customers.info.without-phone');
+
+          const tag = this.getAttribute("tag") || "";
+          const customer_type=this.getAttribute('customer_type');
+          const customerTypeName=this.getAttribute('customer_type').name || window.translate_text('customers.info.customer');
+          const colorTypeCustomer = customer_type.color || '#3B82F6';
+          const points = this.getAttribute("points") || "0";
+          const credit = this.getAttribute("credit") || "0";
+
+          let image = this.getAttribute("image");
+          if(this.hasAttribute("image")){
+            image = this.getAttribute("image");
+            if(image=='None' || image==null || image=='null'){
+              image="{% static '/img/profile.webp' %}";
+            }    
+          }
+
+         
+
+          const status = this.getAttribute("status") || "active"; // active | inactive
+          const priority = parseInt(this.getAttribute("priority")) || 0; // 0-3
+          
+          // estilos
+          const style = document.createElement("style");
+          style.textContent = `
+    .card-customer {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: all 0.3s ease-in-out;
+      width:100%;
+    }
+
+    .card-customer:hover{
+      cursor:pointer;
+    }
+
+    .card-customer.inactive {
+      opacity: 0.6;
+      filter: grayscale(60%);
+    }
+
+    .customer-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .customer-img {
+      width: 128px;
+      height: 128px;
+      border-radius: 10%;
+      object-fit: cover;
+      border: 2px solid #e5e7eb;
+    }
+
+    .customer-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #111827;
+      margin: 0;
+    }
+
+    .customer-info {
+      font-size: 0.9rem;
+      color: #374151;
+    }
+
+    .customer-tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background-color: var(--tag-color, #3B82F6);
+      color: var(--tag-text-color, #ffffff);       
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-top: 4px;
+      width: auto;          
+      max-width: 100px;
+      text-align: center;   
+    }
+
+    .customer-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .customer-stat {
+      background: #f9fafb;
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
+    .priority {
+      display: flex;
+      gap: 4px;
+      font-size: 1.2rem;
+      margin-top: 6px;
+    }
+
+    .star {
+      color: #d1d5db; 
+    }
+
+    .star.filled {
+      color: #fbbf24; 
+      text-shadow: 0px 2px 6px rgba(0,0,0,0.15);
+    }
+  `;
+
+          // generar estrellas según prioridad
+          const renderStars = () => {
+              let starsHTML = "";
+              for (let i = 1; i <= 3; i++) {
+                  starsHTML += `<span class="star ${i <= priority ? "filled" : ""}">★</span>`;
+              }
+              return starsHTML;
+          };
+
+          // estructura HTML
+          const wrapper = document.createElement("div");
+          wrapper.classList.add("card-customer");
+          if (status === "inactive") wrapper.classList.add("inactive");
+
+
+          wrapper.innerHTML = `
+    <div class="customer-header">
+              <img class="customer-img" src="${image}" alt="${name}">
+              <div>
+                <p class="customer-name">${name}</p>
+                <div class="priority">${renderStars()}</div>
+                <div class="customer-info">${email}</div>
+                <div class="customer-info">${phone}</div>
+              </div>
+            </div>
+            
+            <div class="customer-stats">
+              <div class="customer-stat" t='medical-history.home.card.card-points'>${window.translate_text('medical-history.home.card.card-points')}: ${points}</div>
+              <div class="customer-stat" t='medical-history.home.card.card-credit'>${window.translate_text('medical-history.home.card.card-credit')}: $${credit}</div>
+            </div>
+            <input type="hidden" name="customer_id" value="${customerId}">
+          `;
+
+          this.shadowRoot.append(style, wrapper);
+
+          const onClickFunction = this.getAttribute("onclick") || null;
+          if (onClickFunction) {
+              wrapper.style.cursor = "pointer"; // opcional: mostrar que es clickable
+              wrapper.addEventListener("click", () => {
+                  if (typeof window[onClickFunction] === "function") {
+                      window[onClickFunction]();
+                  } else {
+                      console.warn(`La función ${onClickFunction} no existe en window`);
+                  }
+              });
+          }
+      }
+  }
+
+  if (!customElements.get("plus-medical-history")) {
+    customElements.define("plus-medical-history", PlusHistoryMedical);
+  }
+
+  (()=>{
+    const divHtml = `
+    <plus-medical-history
+        id-customer="{ id }" 
+        name="{ name }" 
+        email="{ email }" 
+        phone="{ phone }"
+        tag="{ tag }" 
+        points="{ points }" 
+        credit="{ credit }" 
+        priority="{ priority }"
+        image="{ avatar }"
+        status="{ activated }"
+        customer_type="{ customer_type }"
+        country="{ country }"
+        address="{ address }"
+        city="{ city }"
+        state="{ state }"
+        postal_code="{ postal_code }"
+        num_ext="{ num_ext }"
+        num_int="{ num_int }"
+        reference="{ reference }"
+        this_customer_is_a_company="{ this_customer_is_a_company }"
+        source=" { source } "
+        onclick="window.update_information_div_customer('{ id }')">
+    </plus-medical-history>
+    `;
+
+    update_container_with_seeker(
+      ['search', 'filter-priority-customer', 'status-customer'],
+      'medical-history-list',
+      divHtml,
+      '/customers/customers_search',
+      'GET'
+    );
+  })();
+</script>

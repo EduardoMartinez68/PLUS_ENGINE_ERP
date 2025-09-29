@@ -47,5 +47,23 @@
     "medical-history.form.label.emergency-contact-phone":"Teléfono del Contacto de Emergencia",
     "medical-history.form.placeholder.emergency-contact-phone":"Ingrese el teléfono del contacto de emergencia",
     "medical-history.form.label.emergency-contact-relation":"Relación con el Contacto de Emergencia",
-    "medical-history.form.placeholder.emergency-contact-relation":"Ingrese la relación con el contacto de emergencia"
+    "medical-history.form.placeholder.emergency-contact-relation":"Ingrese la relación con el contacto de emergencia",
+
+
+
+
+    "medical-history.message.server.error.no-exist-the-company":"No existe esta empresa.",
+    "medical-history.message.server.error.error-in-the-server":"Ocurrio un error en el servidor.",
+
+
+    "medical-history.home.card.no-name":"Sin nombre",
+    "medical-history.home.card.no-email":"Sin email",
+    "medical-history.home.card.no-cellphone":"Sin Celular",
+    "medical-history.home.card.no-phone":"Sin Telefono",
+    "medical-history.home.card.cellphone":"Celular",
+    "medical-history.home.card.phone":"Telefono",
+    "medical-history.home.card.email":"Email",
+
+    "medical-history.home.card.card-points":"Puntos",
+    "medical-history.home.card.card-credit":"Credito"
 }
