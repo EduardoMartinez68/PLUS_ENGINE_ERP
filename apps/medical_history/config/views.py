@@ -35,21 +35,19 @@ def get_list_of_medical_history(request, page):
         return JsonResponse({"success": False, "answer": "Method not allowed"}, status=405)
 
 @login_required(login_url='login')
-def medical_history(request, customer_id):
+def view_history_medical(request, customer_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         result = get_information_of_the_medical_history_for_customer_id(request.user, customer_id)
         if result["success"]:
-            # Renderizamos el HTML como string
-            html = render_to_string("form_medical_history.html", {"data": result["answer"]}, request=request)
-            return JsonResponse({"success": True, "html": html})
+            html = render_to_string("view_medical_history.html", {"data": result["answer"]}, request=request)
+            return JsonResponse({"success": True, "answer": html})
         else:
             return JsonResponse({"success": False, "error": result.get("error", "Unknown error")})
     else:
         result = get_information_of_the_medical_history_for_customer_id(request.user, customer_id)
         if result["success"]:
-            # Renderizamos el HTML como string
-            html = render_to_string("form_medical_history.html", {"data": result["answer"]}, request=request)
-            return JsonResponse({"success": True, "html": html})
+            html = render_to_string("view_medical_history.html", {"data": result["answer"]}, request=request)
+            return JsonResponse({"success": True, "answer": html})
         else:
             return JsonResponse({"success": False, "error": result.get("error", "Unknown error")})
 
@@ -71,4 +69,13 @@ def get_medical_history_with_customer_id(request, customer_id):
         
     
         return JsonResponse({"success": False, "answer": "Method not allowed"}, status=405)
+
+@login_required(login_url='login')
+def form_history_medical(request, customer_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        result = {"customer_id": customer_id} 
+        return render(request, 'form_medical_history.html', result) 
+    else:
+        result = {"customer_id": customer_id} 
+        return render(request, 'form_medical_history.html', result) 
 

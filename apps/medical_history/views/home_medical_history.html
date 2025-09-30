@@ -324,48 +324,12 @@
 <script>
   //--------------------------
   async function update_information_div_history_medical(customer_id){
-    try {
-        const response = await fetch(`/medical_history/medical_history/${customer_id}/`);
-        const result = await response.json();
+    const backend=await send_message_to_the_server(`/medical_history/view_history_medical/${customer_id}/`, {}, true, 'GET')
 
-        if(result.success){
-            // Inserta el HTML directamente en el contenedor
-            const container = document.getElementById('info-customer');
-            container.innerHTML = result.html;
-            console.log(result.html)
-        } else {
-            console.error(result.error);
-            // Mostrar mensaje de error en la UI
-            document.getElementById('info-customer').innerHTML = `<p>Error al cargar la información</p>`;
-        }
-    } catch(err){
-        console.error(err);
-        document.getElementById('info-customer').innerHTML = `<p>Error de conexión</p>`;
-    }
-
-    //this function is for update the div information use the information that the user selected 
-    /*
-    const answer=await send_message_to_the_server('/customers/get_information_of_the_customer/', {customer_id}, true, 'GET');
-    if(answer.success){
-        //if get a answer of the server, we will get his data and update the div <info-customer> with all the information of the server
-        const data=answer.answer;
-
-        // Render of the template
-        const container = document.getElementById('info-customer');
-        container.innerHTML = ""; //clear the container
-        
-        //here we will get a image beta if the customer not have a photo
-        let image="{% static '/img/profile.webp' %}";
-        if(data.avatar){
-          image = data.avatar;
-          if(image=='None' || image==null || image=='null'){
-            image="{% static '/img/profile.webp' %}";
-          }    
-        }
-
-        
+    if(backend.success){
+      const container = document.getElementById('info-customer');
+      container.innerHTML = backend.answer;
     }else{
-        //if not can get the information of the customer, we will show a pop error and clear the div <info-customer>
       const t=window.translate_text('medical-history.home.message.no-history-select')
       document.getElementById('info-customer').innerHTML = `
         <div class="full-center">
@@ -374,7 +338,6 @@
         </div>
       `;
     }
-    */
 
     window.toggle_switch_column('customers-switch'); //show the div that is hidden if the user is in cellphone
   }

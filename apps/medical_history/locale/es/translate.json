@@ -46,7 +46,7 @@
     "medical-history.form.placeholder.emergency-contact-name":"Ingrese el nombre del contacto de emergencia",
     "medical-history.form.label.emergency-contact-phone":"Teléfono del Contacto de Emergencia",
     "medical-history.form.placeholder.emergency-contact-phone":"Ingrese el teléfono del contacto de emergencia",
-    "medical-history.form.label.emergency-contact-relation":"Relación con el Contacto de Emergencia",
+    "medical-history.form.label.emergency-contact-relation":"Relación con el Paciente",
     "medical-history.form.placeholder.emergency-contact-relation":"Ingrese la relación con el contacto de emergencia",
 
 

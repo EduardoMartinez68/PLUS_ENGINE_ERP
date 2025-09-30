@@ -1,0 +1,129 @@
+{% load static %}
+<br><br>
+<style>
+    .icon-whatsapp{
+        color: rgb(17, 126, 17);
+    }
+</style>
+<div class="section" id="medical-info-section">
+    <br><br>
+    <!-- INFORMACIÓN PERSONAL (solo lectura) -->
+    <div class="row">
+        <div class="col-3">
+            <img id="customer-avatar" 
+                 src="{% if data.avatar %}{{ data.avatar }}{% else %}{% static 'img/profile.webp' %}{% endif %}" 
+                 alt="Customer Avatar"
+                 style="width:100%; border-radius:10%; object-fit:cover;">
+        </div>
+        <div class="col-9">
+            <plus-title value="{{ data.name }}"></plus-title>
+            <p>
+                <strong t="medical-history.home.card.email"><i class="fi fi-ss-email-pending"></i></strong>{% if data.email %}{{ data.email }}{% else %}------{% endif %}
+            </p>
+
+            <div class="row">
+                <div class="col">
+                    <p>
+                        <strong t="medical-history.home.card.phone"><i class="fi fi-sr-phone-call"></i></strong>{% if data.phone %}{{ data.phone }}{% else %}----{% endif %}
+                    </p>
+                </div>
+                <div class="col">
+                    <p>
+                        <strong t="medical-history.home.card.cellphone"><i class="icon-whatsapp fi fi-brands-whatsapp"></i></strong>{% if data.cellphone %}{{ data.cellphone }}{% else %}----{% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    <p><strong><i class="fi fi-rr-cake-birthday"></i></strong> {% if data.date_of_birth %}{{ data.date_of_birth }}{% else %}-{% endif %}</p>
+                </div>
+                <div class="col">
+                    {% if data.gender == "F" %}
+                    <label t="medical-history.form.info.female"></label>
+                    {% endif %}
+                    {% if data.gender == "M" %}
+                    <label t="medical-history.form.info.men"></label>
+                    {% endif %}
+                    {% if data.gender == "O" %}
+                    <label t="medical-history.form.info.other"></label>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-10">
+                </div>
+                <div class="col-2">
+                    <button class="btn btn-edit" onclick="nextWeb('customers/edit_customer/{{data.id}}/')"><i class="fi fi-sr-eye"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <strong t="medical-history.home.card.address"><i class="fi fi-ss-marker"></i></strong> 
+    <label for="">
+        {% if data.address %}{{ data.address }}{% else %}-{% endif %}, 
+        {% if data.city %}{{ data.city }}{% endif %}, 
+        {% if data.state %}{{ data.state }}{% endif %}, 
+        {% if data.postal_code %}{{ data.postal_code }}{% endif %}
+    </label>
+</div>
+
+
+<div class="section">
+    <plus-tabs>
+        <plus-tab text="medical-history.form.section.info">
+            <!-- HISTORIAL MÉDICO (editable) -->
+            <h3 style="margin-bottom:15px;" t="medical-history.title.medical-history">Medical History</h3>
+
+
+            {% if data.medical_info %}
+                <div class="row">
+                    <div class="col-6">
+
+                        <plus-select label="medical-history.form.label.blood-type" name="blood_type" value="{{ data.medical_info.blood_type }}" disable>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </plus-select>
+
+                        
+                        <input-field label="medical-history.form.label.height" value="{{ data.medical_info.height_cm }}" placeholder="medical-history.form.placeholder.height" name="height_cm"></input-field>
+                    </div>
+                    <div class="col-6">
+                        <input-field label="medical-history.form.label.weight" value="{{ data.medical_info.weight_kg }}" placeholder="60" name="weight_kg"></input-field>
+                        <input-field label="BMI" value="{{ data.medical_info.bmi }}"></input-field> 
+                    </div>
+                </div>
+                <br><br>
+                <div class="row">
+                    <div class="col">
+                        <input-field label="medical-history.form.label.emergency-contact-name" value="{{ data.medical_info.emergency_contact_name }}"></input-field>
+                    </div>   
+                    <div class="col">
+                        <input-field label="medical-history.home.card.cellphone" value="{{ data.medical_info.emergency_contact_phone }}"></input-field>
+                    </div>
+                    <div class="col">
+                        <input-field label="medical-history.form.label.emergency-contact-relation" value="{{ data.medical_info.emergency_contact_relation }}"></input-field>   
+                    </div>
+                </div>
+            {% else %}
+                <p>No medical history available for this patient.</p>
+            {% endif %}
+        </plus-tab>
+        <plus-tab text="medical-history.form.section.history">
+        </plus-tab>
+        <plus-tab text="medical-history.form.section.files">
+        </plus-tab>
+    </plus-tabs>
+</div>
+<br>
+<button class="btn btn-edit btn-success" t="btn.edit" onclick="nextWeb('medical_history/form_history_medical/{{data.id}}/')"><i class="fi fi-sr-user-pen"></i></button>
