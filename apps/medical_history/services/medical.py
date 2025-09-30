@@ -2,6 +2,9 @@ from ..models import MedicalInformation
 from django.core.exceptions import ObjectDoesNotExist
 from typing import Dict, Any, List
 from apps.customers.models import Customer
+from django.db import transaction
+import uuid
+
 '''
 this function is for get the information that we will show in the screen of the frontend of the home. 
 Need the user that is be the application from the frontend, the skull and the page that need.
@@ -82,7 +85,7 @@ def get_information_of_the_medical_history_for_customer_id(user, customer_id:int
         }
 
     try:
-        # Primero obtenemos el customer que pertenece a la misma company
+        # First we get the customer that belongs to the same company
         customer = Customer.objects.get(id=customer_id, company=company)
     except ObjectDoesNotExist:
         return {
@@ -91,11 +94,18 @@ def get_information_of_the_medical_history_for_customer_id(user, customer_id:int
             "error": "Customer not found or not in your company"
         }
 
-    # Obtenemos el historial médico del customer (si existe)
+    # We obtain the customer's medical history (if any)
     try:
         medical_info = MedicalInformation.objects.get(customer=customer, company=company)
     except ObjectDoesNotExist:
-        medical_info = None  # No tiene historial médico
+        #if this customer not have a medical history we will to create
+        with transaction.atomic():
+            skull_identifier = str(uuid.uuid4())  # puedes cambiar esto a un uuid4() si prefieres
+            medical_info = MedicalInformation.objects.create(
+                company=company,
+                customer=customer,
+                skull=skull_identifier
+            )
 
     # Construimos el diccionario que vamos a devolver
     data = {
@@ -126,6 +136,7 @@ def get_information_of_the_medical_history_for_customer_id(user, customer_id:int
         "source": customer.source.name if customer.source else None,
         "priority": customer.priority,
         "activated": customer.activated,
+
         # Información médica
         "medical_info": {
             "skull": medical_info.skull if medical_info else None,

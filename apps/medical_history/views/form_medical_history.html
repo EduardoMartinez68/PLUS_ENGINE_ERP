@@ -71,15 +71,33 @@
     <plus-tabs>
         <plus-tab text="medical-history.form.section.info">
             <!-- HISTORIAL MÉDICO (editable) -->
-            <h3 style="margin-bottom:15px;">Medical History</h3>
+            <h3 style="margin-bottom:15px;" t="medical-history.title.medical-history">Medical History</h3>
+
+
             {% if data.medical_info %}
-                <div class="row" style="display:flex; gap:20px; flex-wrap:wrap;">
+                <div class="row">
+                    <div class="col">
+                        <input-field label="medical-history.label.skull" value="{{ data.medical_info.skull }}" name="skull"></input-field>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-6">
-                        <input-field label="Blood Type" value="{{ data.medical_info.blood_type }}"></input-field>
-                        <input-field label="Skull" value="{{ data.medical_info.skull }}"></input-field>
-                        <input-field label="Height (cm)" value="{{ data.medical_info.height_cm }}"></input-field>
-                        <input-field label="Weight (kg)" value="{{ data.medical_info.weight_kg }}"></input-field>
-                        <input-field label="BMI" value="{{ data.medical_info.bmi }}"></input-field>
+
+                        <plus-select label="medical-history.form.label.blood-type" name="blood_type" value="{{ data.medical_info.blood_type }}">
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </plus-select>
+
+                        
+                        <input-field label="medical-history.form.label.height" value="{{ data.medical_info.height_cm }}" placeholder="medical-history.form.placeholder.height" name="height_cm"></input-field>
+                        <input-field label="medical-history.form.label.weight" value="{{ data.medical_info.weight_kg }}" placeholder="60" name="weight_kg"></input-field>
+                        <input-field label="BMI" value="{{ data.medical_info.bmi }}"></input-field> 
                         <input-field label="Chronic Conditions" value="{{ data.medical_info.chronic_conditions }}"></input-field>
                         <input-field label="Allergies" value="{{ data.medical_info.allergies }}"></input-field>
                         <input-field label="Medications" value="{{ data.medical_info.medications }}"></input-field>

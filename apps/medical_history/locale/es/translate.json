@@ -12,7 +12,7 @@
     "medical-history.form.placeholder.age":"Ej. 20-65",
 
     "medical-history.form.label.height":"Ingrese la altura en centímetros (cm)",
-    "medical-history.form.placeholder.height":"1.70",
+    "medical-history.form.placeholder.height":"170",
     "medical-history.form.label.weight":"Peso (kg)",
     "medical-history.form.label.blood-type":"Tipo de Sangre",
     "medical-history.personal-info": "Información Personal",
@@ -75,5 +75,10 @@
 
     "medical-history.form.section.info":"Información",
     "medical-history.form.section.history":"Historial de Citas",
-    "medical-history.form.section.files":"Documentos"
+    "medical-history.form.section.files":"Documentos",
+
+
+
+    "medical-history.title.medical-history":"Historial Medico",
+    "medical-history.label.skull":"Identificador"
 }
