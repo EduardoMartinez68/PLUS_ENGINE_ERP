@@ -75,6 +75,19 @@ def get_information_medical_in_list(user, skull: str='', page:int=1, limit:int=2
         }
     
 
+from datetime import date
+from dateutil.relativedelta import relativedelta
+def calculate_exact_age(birth_date):
+    if not birth_date:
+        return None
+    today = date.today()
+    diff = relativedelta(today, birth_date)
+    return {
+        "years": diff.years,
+        "months": diff.months,
+        "days": diff.days,
+    }
+
 def get_information_of_the_medical_history_for_customer_id(user, customer_id:int)->Dict[str, Any]:
     company = getattr(user, "company", None)
     if not company:
@@ -116,6 +129,7 @@ def get_information_of_the_medical_history_for_customer_id(user, customer_id:int
         "phone": customer.phone,
         "cellphone": customer.cellphone,
         "date_of_birth": customer.date_of_birth,
+        "age": calculate_exact_age(customer.date_of_birth),
         "gender": customer.gender,
         "address": customer.address,
         "city": customer.city,

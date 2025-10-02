@@ -1,0 +1,24 @@
+{
+    "character":{
+        "icon":"fi fi-rr-employee-man-alt"
+    },
+    "permissions": [
+        "add_departament_employee",
+        "view_departament_employee",
+        "update_departament_employee",
+        "delete_departament_employee",
+        "recover_departament_employee"
+    ], 
+    "translate":{
+        "es": {
+            "app_name": "Departamentos de la Empresa",
+            "description": "Gestiona la información de los departamentos de los empleados de la empresa.",
+
+            "add_customer": "Agregar un nuevo Departamento",
+            "view_customer": "Ver detalles y lista de empleados del departamento",
+            "update_customer": "Actualizar información de un departamento de la empresa",
+            "delete_customer": "Eliminar un departamento del sistema",
+            "recover_customer": "Restaurar departamentos eliminados de la empresa"
+        }
+    }
+}

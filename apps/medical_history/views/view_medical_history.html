@@ -36,7 +36,7 @@
             
             <div class="row">
                 <div class="col">
-                    <p><strong><i class="fi fi-rr-cake-birthday"></i></strong> {% if data.date_of_birth %}{{ data.date_of_birth }}{% else %}-{% endif %}</p>
+                    <p><strong><i class="fi fi-rr-cake-birthday"></i></strong> {% if data.date_of_birth %}{{ data.date_of_birth }} ({{data.age}}) {% else %}-{% endif %}</p>
                 </div>
                 <div class="col">
                     {% if data.gender == "F" %}
@@ -83,36 +83,25 @@
             {% if data.medical_info %}
                 <div class="row">
                     <div class="col-6">
-
-                        <plus-select label="medical-history.form.label.blood-type" name="blood_type" value="{{ data.medical_info.blood_type }}" disable>
-                            <option value="A+">A+</option>
-                            <option value="A-">A-</option>
-                            <option value="B+">B+</option>
-                            <option value="B-">B-</option>
-                            <option value="AB+">AB+</option>
-                            <option value="AB-">AB-</option>
-                            <option value="O+">O+</option>
-                            <option value="O-">O-</option>
-                        </plus-select>
-
+                        <input-field label="medical-history.form.label.blood-type" value="{{ data.medical_info.blood_type }}" placeholder="medical-history.form.placeholder.height" name="height_cm" readonly></input-field>
                         
-                        <input-field label="medical-history.form.label.height" value="{{ data.medical_info.height_cm }}" placeholder="medical-history.form.placeholder.height" name="height_cm"></input-field>
+                        <input-field label="medical-history.form.label.height" value="{{ data.medical_info.height_cm }}" placeholder="medical-history.form.placeholder.height" name="height_cm" readonly></input-field>
                     </div>
                     <div class="col-6">
-                        <input-field label="medical-history.form.label.weight" value="{{ data.medical_info.weight_kg }}" placeholder="60" name="weight_kg"></input-field>
-                        <input-field label="BMI" value="{{ data.medical_info.bmi }}"></input-field> 
+                        <input-field label="medical-history.form.label.weight" value="{{ data.medical_info.weight_kg }}" placeholder="60" name="weight_kg" readonly></input-field>
+                        <input-field label="BMI" value="{{ data.medical_info.bmi }}" readonly></input-field> 
                     </div>
                 </div>
                 <br><br>
                 <div class="row">
                     <div class="col">
-                        <input-field label="medical-history.form.label.emergency-contact-name" value="{{ data.medical_info.emergency_contact_name }}"></input-field>
+                        <input-field label="medical-history.form.label.emergency-contact-name" value="{{ data.medical_info.emergency_contact_name }}" readonly></input-field>
                     </div>   
                     <div class="col">
-                        <input-field label="medical-history.home.card.cellphone" value="{{ data.medical_info.emergency_contact_phone }}"></input-field>
+                        <input-field label="medical-history.home.card.cellphone" value="{{ data.medical_info.emergency_contact_phone }}" readonly></input-field>
                     </div>
                     <div class="col">
-                        <input-field label="medical-history.form.label.emergency-contact-relation" value="{{ data.medical_info.emergency_contact_relation }}"></input-field>   
+                        <input-field label="medical-history.form.label.emergency-contact-relation" value="{{ data.medical_info.emergency_contact_relation }}" readonly></input-field>   
                     </div>
                 </div>
             {% else %}

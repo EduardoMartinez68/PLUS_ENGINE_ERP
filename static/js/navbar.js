@@ -30,6 +30,35 @@ function filterApps() {
 let sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || [];
 
 //this function is for load the web that need
+async function load_html_in_the_container(container, html){
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+
+  //her we will update the DOM
+  const mainContent = doc.getElementById(container);
+  document.getElementById(container).innerHTML = mainContent ? mainContent.innerHTML : html;
+
+  //this is for load the script of the view
+  const scripts = doc.querySelectorAll("script");
+  scripts.forEach(oldScript => {
+    const newScript = document.createElement("script");
+    if (oldScript.src) {
+      newScript.src = oldScript.src; // scripts externos
+    } else {
+      newScript.textContent = oldScript.textContent; // scripts inline
+    }
+    document.body.appendChild(newScript);
+  });
+
+  //update all the labels that the programmer do with the syntax of the ERP, to the labels that the user can see
+  let sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || [];
+  let lastUrl = sessionHistory[sessionHistory.length - 1];
+  transform_my_labels_erp();
+  const pathTranslate = get_path_of_the_file_translate_of_the_app(url);
+  await load_language(pathTranslate);
+}
+
+
 async function nextWeb(url) {
   if (typeof url === 'string' && url.trim() !== '') {
     try {
@@ -112,7 +141,6 @@ function get_path_of_the_app(url) {
   const parts = url.replace(/^\/+|\/+$/g, '').split('/');
   return parts[0] || '';
 }
-
 
 function get_path_of_the_file_translate_of_the_app(url) {
   const basePathTranslate = get_path_of_the_app(url); //get the path of the app

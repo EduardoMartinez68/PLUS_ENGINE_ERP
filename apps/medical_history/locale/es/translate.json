@@ -80,5 +80,11 @@
 
 
     "medical-history.title.medical-history":"Historial Medico",
-    "medical-history.label.skull":"Identificador"
+    "medical-history.label.skull":"Identificador",
+
+
+
+    "medical-history.title.advanced-information":"Información Avanzada",
+    "medical-history.title.dental-information":"Información Dental",
+    "medical-history.title.emergency-information":"Contacto de Emergencia"
 }

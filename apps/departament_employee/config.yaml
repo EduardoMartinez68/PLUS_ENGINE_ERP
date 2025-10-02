@@ -1,0 +1,6 @@
+name: "departament_employee"
+appName: "Departamento de empleados"
+icon: "departament_employee/icon.webp"
+path: "/departament_employee"
+dbInit: true
+permissionsFile: 'permissions.json'
