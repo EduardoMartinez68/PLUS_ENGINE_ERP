@@ -56,6 +56,8 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
     const inputId = Array.isArray(inputsId) ? inputsId[0] : inputsId;
     let input = document.getElementById(inputId);
     const field = document.getElementById(fieldId);
+    //const EMPTY_IMAGE_URL = "{% static 'img/info/empty.webp' %}";
+    const EMPTY_IMAGE_URL=window.STATIC_URLS.emptyImage;
 
     //here we will see if the input exist in the UI, if not exist we will to wait 1 second and we will try again
     if (!input) {
@@ -136,9 +138,8 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
         hidden_loader_in_the_div_container_of_plus(fieldId)
 
         //we will see if the server can answer with the information or exist a error
+        field.innerHTML = ''; //clear the container
         if (data.success) {
-            field.innerHTML = ''; //clear the container
-
             //we will see if exist container for print in screen
             if (data.answer && data.answer.length > 0) {
                 //if exist container, we will show in the field
@@ -153,16 +154,20 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
                 const answer=t("info.no_results");
                 if(loadingImage===null){
                     field.innerHTML = `
-                    <div style="width: 100%; height: auto; text-align:center;">
-                        <center>
-                            ${answer}
-                        </center>
+                    <div class='full-center' style="width: 100%; height: 100%;">
+                            <b>${answer}<b>
+                    </div>`;
+                }else if(loadingImage===true){
+                    field.innerHTML = `
+                    <div class='full-center' style="width: 100%; height: 100%;">
+                            <img src="${EMPTY_IMAGE_URL}" alt="empty" style="width: 50%; height: auto;"/><br>
+                            <b>${answer}<b>
                     </div>`;
                 }else{
                     field.innerHTML = `
-                    <div style="width: 100%; height: auto; text-align:center;">
+                    <div class='full-center'>
                         <center>
-                            <img src="${loadingImage}" alt="Loading..." style="width: 80px; height: auto;"/>
+                            <img src="${loadingImage}" alt="Loading..." style="width: 100%; height: auto;"/>
                             ${answer}
                         </center>
                     </div>`;
@@ -175,12 +180,12 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
 
             if(loadingImage===null){
             field.innerHTML = `
-                <div style="text-align:center; color:#e74c3c;">
+                <div class='full-center'>
                     ${answer}
                 </div>`;
             }else{
             field.innerHTML = `
-                <div style="text-align:center; color:#e74c3c;">
+                <div class='full-center'>
                     <img src="${loadingImage}" alt="Loading..." style="width: 100%; height: auto;"/>
                     ${answer}
                 </div>`;

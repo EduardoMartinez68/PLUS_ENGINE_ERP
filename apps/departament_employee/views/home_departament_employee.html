@@ -106,7 +106,7 @@ image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
 }
 </style>
 
-
+{% load static %}
 <div class="row">
     <div class="col-9">
 
@@ -114,7 +114,7 @@ image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
     <div class="col-3 p-3">
         <plus-search input_id="search-department">
             <search-option>
-                <button class="btn btn-add">+</button>
+                <button class="btn btn-add" onclick="window.open_my_pop('new-department')">+</button>
             </search-option>
         </plus-search>
     </div>
@@ -219,7 +219,27 @@ image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
 
 </div>
 
+<message-pop title="departament_employee.title.create-new-departament" name="new-department">
+    <form>
+        <plus-title label="departament_employee.label.name-departament" placeholder="departament_employee.input.name-departament"></plus-title>
+        <label t="departament_employee.input.description"></label>
+        <textarea name="" id=""></textarea>
 
+        <div class="row">
+            <div class="col">
+                <plus-select name="id_manager" id="id_manager" label="departament_employee.label.manager" 
+                link="/departament_employee/search_employee/" method="GET"
+                ></plus-select>
+            </div>
+            <div class="col">
+                <label t="departament_employee.label.color"></label>
+                <input-color></input-color>
+            </div>
+        </div>
+
+        <button class="btn btn-add btn-success" t="btn.save"></button>
+    </form>
+</message-pop>
 
 <script>
     (()=>{
@@ -229,7 +249,7 @@ image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
                 <h2>Marketing</h2>
                 <i class="fi fi-rr-menu-dots-vertical plus-departament-menu-icon"></i>
                 </div>
-                <p class="plus-departament-description">Se encarga de campañas publicitarias, branding y comunicación externa.</p>
+                <p class="plus-departament-description"> { description } </p>
                 
                 <!-- Manager -->
                 <div class="plus-departament-manager">
@@ -238,8 +258,8 @@ image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
                 </div>
 
                 <div class="plus-departament-card-footer">
-                <span><i class="fi fi-rr-employee-man-alt"></i> 10 empleados</span>
-                <span class="plus-departament-badge">Activo</span>
+                <span><i class="fi fi-rr-employee-man-alt"></i> 10</span>
+                <span class="plus-departament-badge" t="departament_employee.label.activate">Activate</span>
                 </div>
             </div>
         `
@@ -249,7 +269,8 @@ image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
             'department-list',
             divHtml,
             '/departament_employee/search_employee_department/1/',
-            'GET'
+            'GET',
+            true
         );
     })();
 </script>

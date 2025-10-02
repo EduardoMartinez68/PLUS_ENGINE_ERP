@@ -1407,6 +1407,27 @@ class PlusSelect extends HTMLElement {
             redSquare.style.verticalAlign = 'middle';
           }
 
+          if (data.photo) {
+            const imgThumb = document.createElement('img');
+            imgThumb.src = data.photo;
+            imgThumb.alt = data.text;
+            imgThumb.loading = 'lazy'; // carga diferida
+            imgThumb.style.width = '24px';
+            imgThumb.style.height = '24px';
+            imgThumb.style.objectFit = 'cover';
+            imgThumb.style.borderRadius = '4px';
+            imgThumb.style.marginRight = '8px';
+            imgThumb.style.verticalAlign = 'middle';
+
+            // si la imagen no existe, poner imagen por defecto
+            //imgThumb.onerror = function() {
+              //this.onerror = null;
+              //this.src = window.STATIC_URLS.imageProfile; // ruta a imagen por defecto
+            //};
+
+            contentContainer.appendChild(imgThumb);
+          }
+
           // Texto
           const textSpan = document.createElement('span');
           textSpan.classList.add('option-text');

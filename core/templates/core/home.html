@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-straight/css/uicons-regular-straight.css">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-brands/css/uicons-brands.css'>
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-thin-straight/css/uicons-thin-straight.css'>
     
     <!--our styles-->
     {% load static %}
@@ -70,6 +71,13 @@
     <script src="{% static 'js/library/Sortable.min.js' %}" defer></script>
 
     <!---js for the UI-->
+    <script>
+        window.STATIC_URLS = {
+            emptyImage: "{% static 'img/info/empty.webp' %}",
+            imageProfile:"{% static '/img/profile.webp' %}"
+        };
+
+    </script>
     <script src="{% static 'js/translate.js' %}" defer></script>
     <script src="{% static 'js/sendDataToTheServer.js' %}" defer></script>
     <script src="{% static 'js/navbar.js' %}" defer></script>

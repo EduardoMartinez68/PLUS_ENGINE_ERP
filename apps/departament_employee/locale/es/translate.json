@@ -1,0 +1,11 @@
+{
+    "departament_employee.label.activate":"Activo",
+
+
+    "departament_employee.title.create-new-departament":"Nuevo Departamento",
+    "departament_employee.label.name-departament":"Escribe el nombre del Departamento",
+    "departament_employee.input.name-departament":"Departamento de la empresa",
+    "departament_employee.input.description":"Descripcion",
+    "departament_employee.label.manager":"Gerente",
+    "departament_employee.label.color":"Color"
+  }
