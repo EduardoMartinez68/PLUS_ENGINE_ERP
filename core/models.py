@@ -230,6 +230,7 @@ class Branch(models.Model):
         return self.name_branch
 
 class UserDepartment(models.Model):
+    color = models.CharField(max_length=100, null=True)
     name = models.CharField(max_length=100)
     description = models.TextField(null=True)
     id_company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='id_company')

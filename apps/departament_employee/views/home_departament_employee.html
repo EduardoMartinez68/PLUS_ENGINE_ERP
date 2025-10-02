@@ -112,7 +112,7 @@ image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
 
     </div>
     <div class="col-3 p-3">
-        <plus-search>
+        <plus-search input_id="search-department">
             <search-option>
                 <button class="btn btn-add">+</button>
             </search-option>
@@ -120,7 +120,7 @@ image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
     </div>
 </div>
 
-<div class="plus-departament-dashboard p-4">
+<div class="plus-departament-dashboard p-4" id="department-list">
     <div class="plus-departament-card" style="--color:#085DA9">
         <div class="skeleton skeleton-rect" style="width: 40%;"></div>
         <br>
@@ -223,7 +223,7 @@ image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
 
 <script>
     (()=>{
-        const div=`
+        const divHtml=`
             <div class="plus-departament-card" style="--color:#9C27B0">
                 <div class="plus-departament-card-header">
                 <h2>Marketing</h2>
@@ -243,5 +243,13 @@ image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
                 </div>
             </div>
         `
+    
+        update_container_with_seeker(
+            'search-department',
+            'department-list',
+            divHtml,
+            '/departament_employee/search_employee_department/1/',
+            'GET'
+        );
     })();
 </script>
