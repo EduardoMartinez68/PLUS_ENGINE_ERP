@@ -7,5 +7,11 @@
     "departament_employee.input.name-departament":"Departamento de la empresa",
     "departament_employee.input.description":"Descripcion",
     "departament_employee.label.manager":"Gerente",
-    "departament_employee.label.color":"Color"
+    "departament_employee.label.color":"Color",
+
+    "departament_employee.error.the-departament-need-name":"Necesitas agregarle un nombre al departamento",
+
+    "departament_employee.error.the-departament-not-was-added-with-success":"El departamento no fue agregado",
+    "departament_employee.title.the-departament-was-added-with-success":"Departamento agregado",
+    "departament_employee.message.the-departament-was-added-with-success":"El nuevo departamento fue agregado con exito a la empresa."
   }

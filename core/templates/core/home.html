@@ -72,12 +72,14 @@
 
     <!---js for the UI-->
     <script>
+        //this variable be use for default in the UI
         window.STATIC_URLS = {
             emptyImage: "{% static 'img/info/empty.webp' %}",
-            imageProfile:"{% static '/img/profile.webp' %}"
+            imageDefault:"{% static '/img/imageDefault.webp' %}"
         };
-
     </script>
+
+    
     <script src="{% static 'js/translate.js' %}" defer></script>
     <script src="{% static 'js/sendDataToTheServer.js' %}" defer></script>
     <script src="{% static 'js/navbar.js' %}" defer></script>

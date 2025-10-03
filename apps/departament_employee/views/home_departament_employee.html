@@ -81,9 +81,10 @@ height: 40px;
 border-radius: 10%;
 margin-right: 10px;
 object-fit: cover;
-object-position: center; /* centra bien la cara dentro del círculo */
-image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
+object-position: center;
+image-rendering: auto;  
 }
+
 .plus-departament-manager span {
     font-size: 0.9rem;
     color: #333;
@@ -107,6 +108,7 @@ image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
 </style>
 
 {% load static %}
+<!---seeker---->
 <div class="row">
     <div class="col-9">
 
@@ -114,12 +116,13 @@ image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
     <div class="col-3 p-3">
         <plus-search input_id="search-department">
             <search-option>
-                <button class="btn btn-add" onclick="window.open_my_pop('new-department')">+</button>
+                <button class="btn btn-add" onclick="window.open_my_pop('pop-form-departament')">+</button>
             </search-option>
         </plus-search>
     </div>
 </div>
 
+<!---table of the departament--->
 <div class="plus-departament-dashboard p-4" id="department-list">
     <div class="plus-departament-card" style="--color:#085DA9">
         <div class="skeleton skeleton-rect" style="width: 40%;"></div>
@@ -219,28 +222,6 @@ image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
 
 </div>
 
-<message-pop title="departament_employee.title.create-new-departament" name="new-department">
-    <form>
-        <plus-title label="departament_employee.label.name-departament" placeholder="departament_employee.input.name-departament"></plus-title>
-        <label t="departament_employee.input.description"></label>
-        <textarea name="" id=""></textarea>
-
-        <div class="row">
-            <div class="col">
-                <plus-select name="id_manager" id="id_manager" label="departament_employee.label.manager" 
-                link="/departament_employee/search_employee/" method="GET"
-                ></plus-select>
-            </div>
-            <div class="col">
-                <label t="departament_employee.label.color"></label>
-                <input-color></input-color>
-            </div>
-        </div>
-
-        <button class="btn btn-add btn-success" t="btn.save"></button>
-    </form>
-</message-pop>
-
 <script>
     (()=>{
         const divHtml=`
@@ -274,3 +255,92 @@ image-rendering: auto;  /* asegura calidad en la mayoría de navegadores */
         );
     })();
 </script>
+
+<!---pop for add a new departament--->
+<message-pop title="departament_employee.title.create-new-departament" name="pop-form-departament">
+    <form id="form-departament">
+        <input type="hidden" id="departament_id" name="departament_id">
+        <plus-title label="departament_employee.label.name-departament" placeholder="departament_employee.input.name-departament" name="name-departament" id="name-departament" required></plus-title>
+        <label t="departament_employee.input.description"></label>
+        <textarea name="description-departament" id="description-departament"></textarea>
+
+        <div class="row">
+            <div class="col">
+                <plus-select name="id_manager" id="id_manager" label="departament_employee.label.manager" 
+                link="/departament_employee/search_employee/" method="GET"
+                ></plus-select>
+            </div>
+            <div class="col">
+                <label t="departament_employee.label.color"></label>
+                <input-color name="color-departament" id="color-departament"></input-color>
+            </div>
+        </div>
+
+        <button class="btn btn-add btn-edit" t="btn.save" type="button" onclick="send_form_departament_to_the_server()"></button>
+    </form>
+</message-pop>
+
+<script>
+    async function add_a_new_departament(){
+        //here we will send the form to the server for try add a new departament in the company
+        //if the departament was added we will show a message of success or a message of error 
+        const backend=await window.send_form_to_the_server('form-departament', 'departament_employee/add_new_departament/');
+        if(backend.success){
+            window.restart_form('form-departament') //restart the form
+            window.hide_pop('pop-form-departament')
+            window.show_alert('success', 'departament_employee.title.the-departament-was-added-with-success', 'departament_employee.message.the-departament-was-added-with-success', backend.error || '')
+        }else{
+            window.show_alert('error', 'departament_employee.error.the-departament-not-was-added-with-success', backend.message, backend.error || '')
+        }
+    }
+
+    async function update_a_departament(){
+        //here we will send the form to the server for try update a departament of the company
+        //if the departament was update we will show a message of success or a message of error 
+        const backend=await window.send_form_to_the_server('form-departament', 'departament_employee/add_new_departament/');
+        if(backend.success){
+            window.restart_form('form-departament') //restart the form
+            window.hide_pop('pop-form-departament')
+            window.show_alert('success', 'departament_employee.title.the-departament-was-added-with-success', 'departament_employee.message.the-departament-was-added-with-success', backend.error || '')
+        }else{
+            window.show_alert('error', 'departament_employee.error.the-departament-not-was-added-with-success', backend.message, backend.error || '')
+        }  
+    }
+
+    async function send_form_departament_to_the_server(){
+        //first we will see if the form have name
+        if(document.getElementById('name-departament').value==''){
+            window.show_alert('alert', 'departament_employee.error.the-departament-not-was-added-with-success', 'departament_employee.error.the-departament-need-name')
+        }else{
+            //now we will see if the user would like update the departament or need add a new departament in the company
+            //if the input of the <departament_id> is null is because the user would like add a new departament
+            if(document.getElementById('departament_id').value==''){
+                await add_a_new_departament();
+            }else{
+                await update_a_departament();
+            }
+        }
+    }
+
+    async function get_information_for_edit_departament(departament_id){
+        //this function is for get the information of the departament from the backend 
+        //and update the inputs of the <pop-form-departament> 
+        const backend=await send_message_to_the_server(`departament_employee/get_information_of_the_departament/${departament_id}`, {}, true, 'GET');
+        if(backend.success){
+            //if we can get the information of the server, now we will update the information of the form and show in the screen
+            const dataDepartament=backend.answer;
+            document.getElementById('departament_id').value=dataDepartament.id;
+            document.getElementById('name-departament').value=dataDepartament.name;
+            document.getElementById('description-departament').value=dataDepartament.description;
+            document.getElementById('id_manager').setValue(dataDepartament.id_manager, dataDepartament.name_manager);
+            document.getElementById('color-departament').updateColor(dataDepartament.color);
+
+            window.open_my_pop('pop-form-departament');
+        }else{
+            window.show_alert('error', 'departament_employee.error.the-departament-not-was-added-with-success', backend.message, backend.error || '')
+        }
+    }
+</script>
+
+
+
