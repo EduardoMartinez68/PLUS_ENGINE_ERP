@@ -100,7 +100,7 @@ def add_new_department(user, data):
         # 1. here we will see if the user have a company save
         company = getattr(user, "company", None)
         if not company:
-            return {"success": False, "answer": 'departament_employee.error.this-user-not-have-a-company', "error": "El usuario no tiene una compañía asociada."}
+            return {"success": False, "answer": 'departament_employee.error.this-user-not-have-a-company', "error": "This user not have a company"}
 
         # 2. get the data in style JSON
         name = data.get("name-departament")
@@ -159,6 +159,74 @@ def add_new_department(user, data):
     except Exception as e:
         return {"success": False, "answer": 'departament_employee.error.error-in-the-server', "error": str(e)}
     
+def update_departament(user, data):
+    try:
+        # 1. Verificar que el usuario tenga compañía
+        company = getattr(user, "company", None)
+        if not company:
+            return {"success": False, "answer": 'departament_employee.error.this-user-not-have-a-company', "error": "This user not have a company."}
+
+        # 2. Obtener los datos del formulario
+        departament_id = data.get("departament_id")
+        name = data.get("edit-name-departament")
+        description = data.get("edit-description-departament")
+        color = data.get("edit-color-departament") or "#085DA9"
+        activated = data.get("activated", True)
+        id_manager = data.get("edit-id_manager")
+
+        if not departament_id:
+            return {"success": False, "answer": 'departament_employee.error.department-id-required', "error": "we need the id of the departament"}
+
+        # 3. Buscar el departamento
+        try:
+            department = UserDepartment.objects.get(id=departament_id, id_company=company)
+        except UserDepartment.DoesNotExist:
+            return {"success": False, "answer": 'departament_employee.error.department-not-found', "error": "This departament not exist in this company"}
+
+        # 4. Validar el nombre
+        if not name or name.strip() == "":
+            return {"success": False, "answer": 'departament_employee.error.the-departament-need-name', "error": "You need add the name of the departament"}
+
+        # 5. Validar duplicados de nombre en la compañía (excepto el mismo departamento)
+        if UserDepartment.objects.filter(name__iexact=name.strip(), id_company=company).exclude(id=departament_id).exists():
+            return {"success": False, "answer": 'departament_employee.error.this-departament-is-already-in-this-company', "error": "This departament already exist in this company"}
+
+        # 6. Validar el manager
+        manager_instance = None
+        if id_manager:
+            try:
+                id_manager=int(id_manager)
+                manager_instance = CustomUser.objects.get(id=id_manager, company=company)
+            except CustomUser.DoesNotExist:
+                return {"success": False, "answer": 'departament_employee.error.the-manager-not-exit', "error": "This manager not exist in this company"}
+
+        # 7. Actualizar los campos
+        department.name = name.strip()
+        department.description = description or ""
+        department.color = color
+        department.activated = activated
+        department.manager = manager_instance
+        department.save()
+
+        # 8. Retornar la respuesta
+        return {
+            "success": True,
+            "answer": {
+                "id": department.id,
+                "name": department.name,
+                "description": department.description,
+                "color": department.color,
+                "activated": "active" if department.activated else "inactive"
+            },
+            "error": None
+        }
+
+    except ValidationError as ve:
+        return {"success": False, "answer": 'departament_employee.error.error-in-the-server', "error": str(ve)}
+
+    except Exception as e:
+        return {"success": False, "answer": 'departament_employee.error.error-in-the-server', "error": str(e)}
+
 
 def delete_departament_by_id(user, departament_id):
     try:

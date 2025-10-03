@@ -266,7 +266,7 @@ image-rendering: auto;
 
         <div class="row">
             <div class="col-8">
-                <button class="btn btn-success btn-edit" t="btn.update" type="button" onclick="send_form_departament_to_the_server()"></button>
+                <button class="btn btn-success btn-edit" t="btn.update" type="button" onclick="update_a_departament()"></button>
             </div>
             <div class="col-4">
                 <button class="btn btn-success btn-delete-tr" type="button" onclick="delete_departament()">
@@ -339,16 +339,28 @@ image-rendering: auto;
     }
 
     async function update_a_departament(){
-        //here we will send the form to the server for try update a departament of the company
-        //if the departament was update we will show a message of success or a message of error 
-        const backend=await window.send_form_to_the_server('form-departament', 'departament_employee/add_new_departament/');
-        if(backend.success){
-            window.restart_form('form-departament') //restart the form
-            window.hide_pop('pop-form-departament')
-            window.show_alert('success', 'departament_employee.title.the-departament-was-added-with-success', 'departament_employee.message.the-departament-was-added-with-success', backend.error || '')
+        //first we will see if the form have name
+        if(document.getElementById('edit-name-departament').value==''){
+            window.show_alert('alert', 'departament_employee.error.the-departament-not-was-update-with-sucees', 'departament_employee.error.the-departament-need-name')
         }else{
-            window.show_alert('error', 'departament_employee.error.the-departament-not-was-added-with-success', backend.message, backend.error || '')
-        }  
+            //here we will see if exist a id for edit the departament
+            if(document.getElementById('departament_id').value==''){
+                show_alert('alert', window.t('error.general'), window.t('error.to_delete'), 'Not exist the input <departament_id>')
+                return;
+            }
+
+            //here we will send the form to the server for try update a departament of the company
+            //if the departament was update we will show a message of success or a message of error 
+            const backend=await window.send_form_to_the_server('form-departament-edit', 'departament_employee/edit_departament/');
+            if(backend.success){
+                await update_information_container_departament();
+                window.restart_form('form-departament-edit') //restart the form
+                window.hide_pop('pop-form-edit-departament')
+                window.show_alert('success', 'departament_employee.title.departament-update', 'departament_employee.message.the-departament-was-update', backend.error || '')
+            }else{
+                window.show_alert('error', 'departament_employee.error.the-departament-not-was-update-with-sucees', backend.message, backend.error || '')
+            }  
+        }
     }
 
     async function send_form_departament_to_the_server(){
