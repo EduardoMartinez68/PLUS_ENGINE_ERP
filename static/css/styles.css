@@ -773,6 +773,22 @@ hr {
   background-color: #c9302c;
 }
 
+.btn-delete-tr{
+  background-color: transparent;
+  border: 2px solid var(--btn-cancel-bg);        
+  color: var(--btn-cancel-bg);               
+  padding: 8px 16px;          
+  border-radius: 8px;          
+  cursor: pointer;            
+  font-weight: 500;           
+  transition: all 0.2s ease;   
+}
+
+.btn-delete-tr:hover {
+  background-color: var(--btn-cancel-bg);       
+  color: white;                
+}
+
 .btn-normal {
   background-color: var(--primary);
 }

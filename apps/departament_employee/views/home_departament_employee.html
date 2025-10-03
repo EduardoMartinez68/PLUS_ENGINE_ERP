@@ -225,7 +225,6 @@ image-rendering: auto;
 <!---pop for add a new departament--->
 <message-pop title="departament_employee.title.create-new-departament" name="pop-form-departament">
     <form id="form-departament">
-        <input type="hidden" id="departament_id" name="departament_id">
         <plus-title label="departament_employee.label.name-departament" placeholder="departament_employee.input.name-departament" name="name-departament" id="name-departament" required></plus-title>
         <label t="departament_employee.input.description"></label>
         <textarea name="description-departament" id="description-departament"></textarea>
@@ -242,15 +241,48 @@ image-rendering: auto;
             </div>
         </div>
 
-        <button class="btn btn-success btn-edit" t="btn.save" type="button" onclick="send_form_departament_to_the_server()"></button>
+        <button class="btn btn-success btn-add" t="btn.save" type="button" onclick="send_form_departament_to_the_server()"></button>
     </form>
 </message-pop>
+
+<message-pop title="departament_employee.title.edit-departament" name="pop-form-edit-departament">
+    <form id="form-departament-edit">
+        <input type="hidden" id="departament_id" name="departament_id">
+        <plus-title label="departament_employee.label.name-departament" placeholder="departament_employee.input.name-departament" name="edit-name-departament" id="edit-name-departament" required></plus-title>
+        <label t="departament_employee.input.description"></label>
+        <textarea name="edit-description-departament" id="edit-description-departament"></textarea>
+
+        <div class="row">
+            <div class="col">
+                <plus-select name="edit-id_manager" id="edit-id_manager" label="departament_employee.label.manager" 
+                link="/departament_employee/search_employee/" method="GET"
+                ></plus-select>
+            </div>
+            <div class="col">
+                <label t="departament_employee.label.color"></label>
+                <input-color  id="edit-color-departament" name="edit-color-departament"></input-color>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-8">
+                <button class="btn btn-success btn-edit" t="btn.update" type="button" onclick="send_form_departament_to_the_server()"></button>
+            </div>
+            <div class="col-4">
+                <button class="btn btn-success btn-delete-tr" type="button" onclick="delete_departament()">
+                    <i class="fi fi-rr-trash"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+</message-pop>
+
 
 <script>
     //-------------update container---------------//
     function get_struct_div(){
         return `
-            <div class="plus-departament-card" style="--color:{ color }" departament_id=' { id } '>
+            <div class="plus-departament-card" style="--color:{ color }; cursor: pointer;" onclick="get_information_for_edit_departament(' { id } ')">
                 <div class="plus-departament-card-header">
                     <h2> { name } </h2>
                     <i class="fi fi-rr-menu-dots-vertical plus-departament-menu-icon"></i>
@@ -337,19 +369,35 @@ image-rendering: auto;
     async function get_information_for_edit_departament(departament_id){
         //this function is for get the information of the departament from the backend 
         //and update the inputs of the <pop-form-departament> 
+        departament_id=departament_id.trim()
         const backend=await send_message_to_the_server(`departament_employee/get_information_of_the_departament/${departament_id}/`, {}, true, 'GET');
         if(backend.success){
             //if we can get the information of the server, now we will update the information of the form and show in the screen
             const dataDepartament=backend.answer;
             document.getElementById('departament_id').value=dataDepartament.id;
-            document.getElementById('name-departament').value=dataDepartament.name;
-            document.getElementById('description-departament').value=dataDepartament.description;
-            document.getElementById('id_manager').setValue(dataDepartament.id_manager, dataDepartament.name_manager);
-            document.getElementById('color-departament').updateColor(dataDepartament.color);
+            document.getElementById('edit-name-departament').value=dataDepartament.name;
+            document.getElementById('edit-description-departament').value=dataDepartament.description;
+            document.getElementById('edit-id_manager').setValue(dataDepartament.id_manager, dataDepartament.name_manager);
+            document.getElementById('edit-color-departament').updateColor(dataDepartament.color);
 
-            window.open_my_pop('pop-form-departament');
+            window.show_pop('pop-form-edit-departament');
         }else{
             window.show_alert('error', 'departament_employee.error.the-departament-not-was-added-with-success', backend.message, backend.error || '')
+        }
+    }
+
+    async function delete_departament(){
+        const departament_id=document.getElementById('departament_id').value;
+        if(departament_id.value!=''){
+            if(await plus_delete_with_help_button(departament_id, 'departament_employee/delete_departament/', 
+            'departament_employee.question.delete-departament', 'departament_employee.question.do-you-like-delete-this-departament',
+            'departament_employee.success.departament-delete','departament_employee.success.the-departament-was-delete-with-success')){
+                await update_information_container_departament();
+                window.hide_pop('pop-form-edit-departament')
+                window.restart_form('form-departament-edit') //restart the form
+            }
+        }else{
+            show_alert('alert', window.t('error.general'), window.t('error.to_delete'), 'Not exist the input <departament_id>')
         }
     }
 </script>

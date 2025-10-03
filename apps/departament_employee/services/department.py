@@ -60,7 +60,7 @@ def get_data_of_the_departament_by_id(user, departament_id):
     try:
         company = getattr(user, "company", None)
         if not company:
-            return {"success": False, "answer": None, "error": "The user no have a company"}
+            return {"success": False, "answer": 'departament_employee.error.this-user-not-have-a-company', "error": "The user no have a company"}
 
         #search the departament for the departament id and the user company
         d = UserDepartment.objects.filter(
@@ -87,10 +87,6 @@ def get_data_of_the_departament_by_id(user, departament_id):
             "description": d.description or "",
             "color": d.color or "#085DA9",
             "activated": "active" if d.activated else "inactive",
-            "company": {
-                "id": d.id_company.id if d.id_company else None,
-                "name": d.id_company.name if d.id_company else None,
-            } if d.id_company else None,
             "manager": manager_data,
         }
 
@@ -104,7 +100,7 @@ def add_new_department(user, data):
         # 1. here we will see if the user have a company save
         company = getattr(user, "company", None)
         if not company:
-            return {"success": False, "answer": None, "error": "El usuario no tiene una compañía asociada."}
+            return {"success": False, "answer": 'departament_employee.error.this-user-not-have-a-company', "error": "El usuario no tiene una compañía asociada."}
 
         # 2. get the data in style JSON
         name = data.get("name-departament")
@@ -159,6 +155,33 @@ def add_new_department(user, data):
 
     except ValidationError as ve:
         return {"success": False, "answer": 'departament_employee.error.error-in-the-server', "error": str(ve)}
+
+    except Exception as e:
+        return {"success": False, "answer": 'departament_employee.error.error-in-the-server', "error": str(e)}
+    
+
+def delete_departament_by_id(user, departament_id):
+    try:
+        # 1. Verificar que el usuario tenga compañía
+        company = getattr(user, "company", None)
+        if not company:
+            return {"success": False, "answer": 'departament_employee.error.this-user-not-have-a-company', "error": "The user not have a company"}
+
+        # 2. Intentar obtener el departamento dentro de la compañía
+        try:
+            department = UserDepartment.objects.get(id=departament_id, id_company=company)
+        except UserDepartment.DoesNotExist:
+            return {"success": False, "answer": 'departament_employee.error.department-not-found', "error": "El departamento no existe en esta compañía."}
+
+        # 3. Eliminar el departamento
+        department.delete()
+
+        # 4. Retornar éxito
+        return {
+            "success": True,
+            "answer": f"The departament '{department.name}' was delete with success",
+            "error": f"The departament '{department.name}' was delete with success."
+        }
 
     except Exception as e:
         return {"success": False, "answer": 'departament_employee.error.error-in-the-server', "error": str(e)}

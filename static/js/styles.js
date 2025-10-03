@@ -1685,7 +1685,7 @@ function get_value_plus_select(id) {
   return null;
 }
 
-async function plus_delete_with_help_button(id, link, title = '', message = '') {
+async function plus_delete_with_help_button(id, link, title = '', message = '' ,title_success='', message_success='') {
   //her we will see if the proggramer would like show other message that not be the default
   const titleToTranslate = title || 'info.confirm_delete';
   const messageToTranslate = message || 'info.description_delete';
@@ -1697,7 +1697,9 @@ async function plus_delete_with_help_button(id, link, title = '', message = '') 
   if (await show_message_question(titleDelete, messageDelete)) {
     const answer = await send_message_to_the_server(link, { id }, true);
     if (answer.success) {
-      show_alert('success', window.t('success.deleted'), window.t('description.deleted'))
+      const title=title_success || 'success.deleted'
+      const message=message_success || 'success.deleted'
+      show_alert('success', title, message)
       return true;
     } else {
       show_alert('alert', window.t('error.general'), window.t('error.to_delete'), answer.error)
