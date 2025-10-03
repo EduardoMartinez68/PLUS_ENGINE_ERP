@@ -225,21 +225,21 @@ image-rendering: auto;
 <script>
     (()=>{
         const divHtml=`
-            <div class="plus-departament-card" style="--color:#9C27B0">
+            <div class="plus-departament-card" style="--color:{ color }">
                 <div class="plus-departament-card-header">
-                <h2>Marketing</h2>
+                <h2> { name } </h2>
                 <i class="fi fi-rr-menu-dots-vertical plus-departament-menu-icon"></i>
                 </div>
                 <p class="plus-departament-description"> { description } </p>
                 
                 <!-- Manager -->
                 <div class="plus-departament-manager">
-                <img src="https://img.freepik.com/fotos-premium/retrato-mujer-negocios-cara-feliz-sobre-fondo-blanco-aislado-nuestra-foto-perfil-e-identificacion-empleado-trabajador-corporativo-sonrisa-gestion-ideas-vision-e-innovacion-maqueta_590464-128059.jpg" alt="Manager Marketing">
-                <span>Laura Ramírez</span>
+                <img src=" { manager_photo } " alt="Manager Marketing">
+                <span>{ manager_name } </span>
                 </div>
 
                 <div class="plus-departament-card-footer">
-                <span><i class="fi fi-rr-employee-man-alt"></i> 10</span>
+                <span><i class="fi fi-rr-employee-man-alt"></i> { employees_count } </span>
                 <span class="plus-departament-badge" t="departament_employee.label.activate">Activate</span>
                 </div>
             </div>
@@ -276,7 +276,7 @@ image-rendering: auto;
             </div>
         </div>
 
-        <button class="btn btn-add btn-edit" t="btn.save" type="button" onclick="send_form_departament_to_the_server()"></button>
+        <button class="btn btn-success btn-edit" t="btn.save" type="button" onclick="send_form_departament_to_the_server()"></button>
     </form>
 </message-pop>
 
@@ -325,7 +325,7 @@ image-rendering: auto;
     async function get_information_for_edit_departament(departament_id){
         //this function is for get the information of the departament from the backend 
         //and update the inputs of the <pop-form-departament> 
-        const backend=await send_message_to_the_server(`departament_employee/get_information_of_the_departament/${departament_id}`, {}, true, 'GET');
+        const backend=await send_message_to_the_server(`departament_employee/get_information_of_the_departament/${departament_id}/`, {}, true, 'GET');
         if(backend.success){
             //if we can get the information of the server, now we will update the information of the form and show in the screen
             const dataDepartament=backend.answer;

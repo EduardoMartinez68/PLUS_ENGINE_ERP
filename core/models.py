@@ -236,6 +236,14 @@ class UserDepartment(models.Model):
     id_company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='id_company')
     activated = models.BooleanField(default=True)
 
+    manager = models.ForeignKey(
+        "core.CustomUser",         
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="departments_managed"
+    )
+
     class Meta:
         db_table = "companies_user_type"
 

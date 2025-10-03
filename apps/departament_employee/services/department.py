@@ -1,11 +1,14 @@
 from django.db.models import Q
 from ..plus_wrapper import Plus
 from core.models import UserDepartment
+from django.core.exceptions import ValidationError
+from core.models import CustomUser
 
 def search_department_for_filter(user, search=None, activated=None, limit=20):
     try:
         # --- 1. limit first to the user's company ---
-        qs = UserDepartment.objects.filter(id_company=user.company)
+        company = getattr(user, "company", None)
+        qs = UserDepartment.objects.filter(id_company=company)
 
         # --- 2. filter by activated ---
         qs = qs.filter(activated=Plus.to_bool(activated))
@@ -23,19 +26,134 @@ def search_department_for_filter(user, search=None, activated=None, limit=20):
         # --- 5. format the response ---
         departments = []
         for d in qs:
+            manager_data = None
+            if hasattr(d, "manager") and d.manager:  #only if exist the data of the manager we will to save it
+                manager_data = {
+                    "id": d.manager.id,
+                    "name": d.manager.username,
+                    "photo": d.manager.avatar.url if d.manager.avatar else '/static/img/profile.webp',
+                }
+
             departments.append({
                 "id": d.id,
                 "name": d.name,
                 "description": d.description or "",
-                "color": d.color or "#6C63FF",
+                "color": d.color or "#085DA9",
                 "activated": "active" if d.activated else "inactive",
-                "company": {
-                    "id": d.id_company.id if d.id_company else None,
-                    "name": d.id_company.name if d.id_company else None,
-                } if d.id_company else None,
+                "manager_id": manager_data['id'],
+                "manager_name": manager_data['name'],
+                "manager_photo": manager_data['photo'],
+                "employees_count": d.customuser_set.filter(is_active=True).count() #the number of employees that exist in this departament
             })
 
         return {"success": True, "answer": departments, "error": None}
 
     except Exception as e:
         return {"success": False, "answer": [], "error": str(e)}
+
+def get_data_of_the_departament_by_id(user, departament_id):
+    try:
+        company = getattr(user, "company", None)
+        if not company:
+            return {"success": False, "answer": None, "error": "The user no have a company"}
+
+        #search the departament for the departament id and the user company
+        d = UserDepartment.objects.filter(
+            id=departament_id,
+            id_company=company
+        ).first()
+
+        if not d:
+            return {"success": False, "answer": None, "error": "This departament not exist in this company"}
+
+        #save the data of the manager
+        manager_data = None
+        if hasattr(d, "manager") and d.manager:
+            manager_data = {
+                "id": d.manager.id,
+                "name": d.manager.username,
+                "photo": d.manager.avatar.url if d.manager.avatar else None,
+            }
+
+        # Formatear respuesta
+        department_data = {
+            "id": d.id,
+            "name": d.name,
+            "description": d.description or "",
+            "color": d.color or "#085DA9",
+            "activated": "active" if d.activated else "inactive",
+            "company": {
+                "id": d.id_company.id if d.id_company else None,
+                "name": d.id_company.name if d.id_company else None,
+            } if d.id_company else None,
+            "manager": manager_data,
+        }
+
+        return {"success": True, "answer": department_data, "error": None}
+
+    except Exception as e:
+        return {"success": False, "answer": None, "error": str(e)}
+    
+def add_new_department(user, data):
+    try:
+        # 1. here we will see if the user have a company save
+        company = getattr(user, "company", None)
+        if not company:
+            return {"success": False, "answer": None, "error": "El usuario no tiene una compañía asociada."}
+
+        # 2. get the data in style JSON
+        name = data.get("name-departament")
+        description = data.get("description-departament")
+        color = data.get("color-departament") or "#085DA9"
+        activated = data.get("activated", True)
+        id_manager = data.get("id_manager")
+
+        # 3. we will see if can save the information or the user need other data for save
+        if not name or name.strip() == "":
+            return {"success": False, "answer": None, "error": "The name of the departament is required"}
+        
+        # 4. check if the manager exists in the company
+        manager_instance = None
+        if id_manager:
+            try:
+                manager_instance = CustomUser.objects.get(id=id_manager, company=company)
+            except CustomUser.DoesNotExist:
+                return {"success": False, "answer": None, "error": "The manager not exist in this company."}
+            
+
+        # 5. Avoid duplicates in the same company
+        if UserDepartment.objects.filter(name__iexact=name.strip(), id_company=company).exists():
+            return {"success": False, "answer": None, "error": "This department is already in this company."}
+
+        # 6. create the departament
+        department = UserDepartment.objects.create(
+            name=name.strip(),
+            description=description or "",
+            color=color,
+            id_company=company,
+            activated=activated,
+            manager=manager_instance
+        )
+
+        # 7. return the answer of the backend
+        return {
+            "success": True,
+            "answer": {
+                "id": department.id,
+                "name": department.name,
+                "description": department.description,
+                "color": department.color,
+                "activated": "active" if department.activated else "inactive",
+                "manager": {
+                    "id": department.manager.id if department.manager else None,
+                    "name": str(department.manager) if department.manager else None
+                }
+            },
+            "error": None
+        }
+
+    except ValidationError as ve:
+        return {"success": False, "answer": None, "error": str(ve)}
+
+    except Exception as e:
+        return {"success": False, "answer": None, "error": str(e)}
