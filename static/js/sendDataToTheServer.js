@@ -141,7 +141,10 @@ function restart_form(formId) {
   });
 
   //  PlusTag 
-  form.querySelector("plus-tags").resetTags();
+  const plusTags = form.querySelector("plus-tags");
+  if (plusTags && typeof plusTags.resetTags === "function") {
+      plusTags.resetTags();
+  }
 
   // ===== restart all the ImageUploader =====
   form.querySelectorAll("image-uploader").forEach(el => {

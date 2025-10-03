@@ -23,16 +23,13 @@ def search_employee_department(request, activated):
             }, status=405)
     
         try:
-            # --- parámetros que vienen por query string ---
             search = request.GET.get("query")
-    
-            # --- ejecutar la búsqueda ---
             result = search_department_for_filter(
                 user=request.user,
                 search=search,
                 activated=activated
             )
-            print(search)
+    
             return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
     
         except Exception as e:
@@ -50,16 +47,13 @@ def search_employee_department(request, activated):
             }, status=405)
     
         try:
-            # --- parámetros que vienen por query string ---
             search = request.GET.get("query")
-    
-            # --- ejecutar la búsqueda ---
             result = search_department_for_filter(
                 user=request.user,
                 search=search,
                 activated=activated
             )
-            print(search)
+    
             return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
     
         except Exception as e:
@@ -126,8 +120,6 @@ def add_new_departament(request):
                 status=400
             )   
             
-        print("POST DATA:", data)
-    
         result=add_new_department(request.user, data)
         return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
     else:
@@ -146,8 +138,6 @@ def add_new_departament(request):
                 status=400
             )   
             
-        print("POST DATA:", data)
-    
         result=add_new_department(request.user, data)
         return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
 

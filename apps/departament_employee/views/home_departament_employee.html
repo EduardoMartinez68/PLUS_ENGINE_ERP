@@ -116,7 +116,7 @@ image-rendering: auto;
     <div class="col-3 p-3">
         <plus-search input_id="search-department">
             <search-option>
-                <button class="btn btn-add" onclick="window.open_my_pop('pop-form-departament')">+</button>
+                <button class="btn btn-add" onclick="window.show_pop('pop-form-departament')">+</button>
             </search-option>
         </plus-search>
     </div>
@@ -222,40 +222,6 @@ image-rendering: auto;
 
 </div>
 
-<script>
-    (()=>{
-        const divHtml=`
-            <div class="plus-departament-card" style="--color:{ color }">
-                <div class="plus-departament-card-header">
-                <h2> { name } </h2>
-                <i class="fi fi-rr-menu-dots-vertical plus-departament-menu-icon"></i>
-                </div>
-                <p class="plus-departament-description"> { description } </p>
-                
-                <!-- Manager -->
-                <div class="plus-departament-manager">
-                <img src=" { manager_photo } " alt="Manager Marketing">
-                <span>{ manager_name } </span>
-                </div>
-
-                <div class="plus-departament-card-footer">
-                <span><i class="fi fi-rr-employee-man-alt"></i> { employees_count } </span>
-                <span class="plus-departament-badge" t="departament_employee.label.activate">Activate</span>
-                </div>
-            </div>
-        `
-    
-        update_container_with_seeker(
-            'search-department',
-            'department-list',
-            divHtml,
-            '/departament_employee/search_employee_department/1/',
-            'GET',
-            true
-        );
-    })();
-</script>
-
 <!---pop for add a new departament--->
 <message-pop title="departament_employee.title.create-new-departament" name="pop-form-departament">
     <form id="form-departament">
@@ -272,7 +238,7 @@ image-rendering: auto;
             </div>
             <div class="col">
                 <label t="departament_employee.label.color"></label>
-                <input-color name="color-departament" id="color-departament"></input-color>
+                <input-color  id="color-departament" name="color-departament"></input-color>
             </div>
         </div>
 
@@ -281,13 +247,59 @@ image-rendering: auto;
 </message-pop>
 
 <script>
+    //-------------update container---------------//
+    function get_struct_div(){
+        return `
+            <div class="plus-departament-card" style="--color:{ color }" departament_id=' { id } '>
+                <div class="plus-departament-card-header">
+                    <h2> { name } </h2>
+                    <i class="fi fi-rr-menu-dots-vertical plus-departament-menu-icon"></i>
+                </div>
+                <p class="plus-departament-description"> { description } </p>
+                
+                <!-- Manager -->
+                <div class="plus-departament-manager">
+                    <img src=" { manager_photo } " alt="{ name }">
+                    <span>{ manager_name } </span>
+                </div>
+
+                <div class="plus-departament-card-footer">
+                    <span><i class="fi fi-rr-employee-man-alt"></i> { employees_count } </span>
+                    <span class="plus-departament-badge" t="departament_employee.label.activate">Activate</span>
+                </div>
+            </div>
+        `
+    }
+
+    window.update_container_with_seeker(
+        'search-department',
+        'department-list',
+        get_struct_div(),
+        '/departament_employee/search_employee_department/1/',
+        'GET',
+        true
+    );
+
+    async function update_information_container_departament(){
+        await window.update_container_from_the_server(            
+            'search-department',
+            'department-list',
+            get_struct_div(),
+            '/departament_employee/search_employee_department/1/',
+            'GET',
+            true
+        )
+    }
+
+    //------------update, add or delete departament----------------//
     async function add_a_new_departament(){
         //here we will send the form to the server for try add a new departament in the company
         //if the departament was added we will show a message of success or a message of error 
         const backend=await window.send_form_to_the_server('form-departament', 'departament_employee/add_new_departament/');
         if(backend.success){
-            window.restart_form('form-departament') //restart the form
             window.hide_pop('pop-form-departament')
+            window.restart_form('form-departament') //restart the form
+            await update_information_container_departament();
             window.show_alert('success', 'departament_employee.title.the-departament-was-added-with-success', 'departament_employee.message.the-departament-was-added-with-success', backend.error || '')
         }else{
             window.show_alert('error', 'departament_employee.error.the-departament-not-was-added-with-success', backend.message, backend.error || '')

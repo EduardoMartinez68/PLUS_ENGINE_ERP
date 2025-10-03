@@ -9,7 +9,10 @@
     "departament_employee.label.manager":"Gerente",
     "departament_employee.label.color":"Color",
 
-    "departament_employee.error.the-departament-need-name":"Necesitas agregarle un nombre al departamento",
+    "departament_employee.error.error-in-the-server":"Sucedio un error en el servidor. Intentalo mas tarde.",
+    "departament_employee.error.the-departament-need-name":"Necesitas agregarle un nombre al departamento.",
+    "departament_employee.error.the-manager-not-exit":"Este gerente no existe en tu empresa.",
+    "departament_employee.error.this-departament-is-already-in-this-company":"Este departamento ya existe en tu empresa.",
 
     "departament_employee.error.the-departament-not-was-added-with-success":"El departamento no fue agregado",
     "departament_employee.title.the-departament-was-added-with-success":"Departamento agregado",

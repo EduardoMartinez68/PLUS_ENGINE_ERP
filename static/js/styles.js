@@ -3681,6 +3681,15 @@ class InputColor extends HTMLElement {
 
     this.value = colorInicial;
 
+    // --- Crear hidden input FUERA del shadow DOM ---
+    this.hiddenInput = document.createElement('input');
+    this.hiddenInput.type = 'hidden';
+    this.hiddenInput.name = name;
+    this.hiddenInput.id = id;
+    this.hiddenInput.value = colorInicial;
+    this.appendChild(this.hiddenInput); // ✅ Light DOM, se envía con form
+
+    // --- Contenedor visual dentro del shadow ---
     const container = document.createElement('div');
     container.innerHTML = `
       <style>
@@ -3700,7 +3709,6 @@ class InputColor extends HTMLElement {
           box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
       </style>
-      <input type="hidden" name="${name}" id="${id}" value="${colorInicial}" />
       <div class="input-color-container">
         <div class="color-box" style="background-color: ${colorInicial}"></div>
       </div>
@@ -3717,11 +3725,10 @@ class InputColor extends HTMLElement {
 
     // referencias
     this.box = this.shadowRoot.querySelector('.color-box');
-    this.hiddenInput = this.shadowRoot.querySelector('input[type="hidden"]');
 
     // evento abrir
     this.box.addEventListener('click', (e) => {
-      e.stopPropagation(); // evitar que el click en la caja cierre el popup
+      e.stopPropagation();
       if (this.popupEl && document.body.contains(this.popupEl)) {
         this.closePopup();
       } else {
@@ -3730,6 +3737,12 @@ class InputColor extends HTMLElement {
     });
   }
 
+  updateColor(color) {
+    this.value = color;
+    this.box.style.backgroundColor = color;
+    if (this.hiddenInput) this.hiddenInput.value = color; // actualizar Light DOM
+    this.dispatchEvent(new CustomEvent('change', { detail: { color } }));
+  }
   openPopup() {
     // cerrar si ya está abierto
     if (this.popupEl) {
@@ -3892,13 +3905,6 @@ class InputColor extends HTMLElement {
     }
   }
 
-  updateColor(color) {
-    this.value = color;
-    this.box.style.backgroundColor = color;
-    this.hiddenInput.value = color;
-    this.dispatchEvent(new CustomEvent('change', { detail: { color } }));
-  }
-
   get value() {
     return this.getAttribute('value');
   }
@@ -3906,6 +3912,7 @@ class InputColor extends HTMLElement {
   set value(val) {
     this.setAttribute('value', val);
   }
+
 }
 
 class PlusTag extends HTMLElement {

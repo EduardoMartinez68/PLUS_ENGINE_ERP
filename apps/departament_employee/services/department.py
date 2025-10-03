@@ -26,7 +26,12 @@ def search_department_for_filter(user, search=None, activated=None, limit=20):
         # --- 5. format the response ---
         departments = []
         for d in qs:
-            manager_data = None
+            manager_data = {
+                "id": '',
+                "name": '',
+                "photo": '/static/img/profile.webp'         
+            }
+
             if hasattr(d, "manager") and d.manager:  #only if exist the data of the manager we will to save it
                 manager_data = {
                     "id": d.manager.id,
@@ -110,7 +115,7 @@ def add_new_department(user, data):
 
         # 3. we will see if can save the information or the user need other data for save
         if not name or name.strip() == "":
-            return {"success": False, "answer": None, "error": "The name of the departament is required"}
+            return {"success": False, "answer": 'departament_employee.error.the-departament-need-name', "error": "The name of the departament is required"}
         
         # 4. check if the manager exists in the company
         manager_instance = None
@@ -118,12 +123,12 @@ def add_new_department(user, data):
             try:
                 manager_instance = CustomUser.objects.get(id=id_manager, company=company)
             except CustomUser.DoesNotExist:
-                return {"success": False, "answer": None, "error": "The manager not exist in this company."}
+                return {"success": False, "answer": 'departament_employee.error.the-manager-not-exit', "error": "The manager not exist in this company."}
             
 
         # 5. Avoid duplicates in the same company
         if UserDepartment.objects.filter(name__iexact=name.strip(), id_company=company).exists():
-            return {"success": False, "answer": None, "error": "This department is already in this company."}
+            return {"success": False, "answer": 'departament_employee.error.this-departament-is-already-in-this-company', "error": "This department is already in this company."}
 
         # 6. create the departament
         department = UserDepartment.objects.create(
@@ -153,7 +158,7 @@ def add_new_department(user, data):
         }
 
     except ValidationError as ve:
-        return {"success": False, "answer": None, "error": str(ve)}
+        return {"success": False, "answer": 'departament_employee.error.error-in-the-server', "error": str(ve)}
 
     except Exception as e:
-        return {"success": False, "answer": None, "error": str(e)}
+        return {"success": False, "answer": 'departament_employee.error.error-in-the-server', "error": str(e)}
