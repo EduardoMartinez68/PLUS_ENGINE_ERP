@@ -285,7 +285,6 @@ image-rendering: auto;
             <div class="plus-departament-card" style="--color:{ color }; cursor: pointer;" onclick="get_information_for_edit_departament(' { id } ')">
                 <div class="plus-departament-card-header">
                     <h2> { name } </h2>
-                    <i class="fi fi-rr-menu-dots-vertical plus-departament-menu-icon"></i>
                 </div>
                 <p class="plus-departament-description"> { description } </p>
                 
@@ -370,11 +369,7 @@ image-rendering: auto;
         }else{
             //now we will see if the user would like update the departament or need add a new departament in the company
             //if the input of the <departament_id> is null is because the user would like add a new departament
-            if(document.getElementById('departament_id').value==''){
-                await add_a_new_departament();
-            }else{
-                await update_a_departament();
-            }
+            await add_a_new_departament();
         }
     }
 
@@ -389,7 +384,14 @@ image-rendering: auto;
             document.getElementById('departament_id').value=dataDepartament.id;
             document.getElementById('edit-name-departament').value=dataDepartament.name;
             document.getElementById('edit-description-departament').value=dataDepartament.description;
-            document.getElementById('edit-id_manager').setValue(dataDepartament.id_manager, dataDepartament.name_manager);
+
+            if(dataDepartament.manager){
+                document.getElementById('edit-id_manager').setValue(dataDepartament.manager.id, dataDepartament.manager.name);
+            }
+            else{
+                document.getElementById('edit-id_manager').setValue('', '');
+            }
+
             document.getElementById('edit-color-departament').updateColor(dataDepartament.color);
 
             window.show_pop('pop-form-edit-departament');
