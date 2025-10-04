@@ -12,7 +12,7 @@
         <img src="{% static 'img/upload-home.webp' %}" alt="Customer Home" loading="lazy">
         <input type="file" id="file-input" accept=".xlsx,.xls" style="display: none;">
         <br><br><br><br>
-        <button class="btn btn-info btn-sucess" t="customers.btn.download-excel"></button>
+        <button class="btn btn-info btn-sucess" t="customers.btn.download-excel" id="btn-download"></button>
         <button class="btn btn-edit btn-sucess" t="customers.btn.upload-excel" id="btn-upload"></button>
         
     </center>
@@ -20,6 +20,10 @@
 
 <script>
 (()=>{
+document.getElementById('btn-download').addEventListener('click', function() {
+    // Descarga directa desde Django
+    window.location.href = "{% url 'download_excel_template' %}";
+});
 
 document.getElementById('btn-upload').addEventListener('click', function() {
     document.getElementById('file-input').click();
@@ -31,6 +35,22 @@ document.getElementById('file-input').addEventListener('change', function() {
 
     const formData = new FormData();
     formData.append('file', file);
+
+    fetch("{% url 'upload_excel_customers' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message || 'Archivo subido correctamente');
+    })
+    .catch(error => {
+        alert('Ocurrió un error al subir el archivo');
+        console.error(error);
+    });
 });
 })();
 

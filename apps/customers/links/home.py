@@ -130,8 +130,45 @@ def change_status_customer(request):
     ) 
 
 #--------------------------excel---------------------------------
+import openpyxl
+from openpyxl import Workbook
+import tempfile
+from django.http import HttpResponse
+from openpyxl import Workbook
+from io import BytesIO
+from ..services.excel import create_excel
+
 def upload_customer_with_excel(request):
     return render(request, 'upload_customer.html') 
+
+def download_excel_template(request):
+    return create_excel(request.user)
+
+
+def upload_excel_customers(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        excel_file = request.FILES['file']
+
+        try:
+            wb = openpyxl.load_workbook(excel_file)
+            sheet = wb.active
+            data = []
+
+            for row in sheet.iter_rows(min_row=2, values_only=True):
+                nombre, correo, telefono, direccion, ciudad = row
+                data.append({
+                    "nombre": nombre,
+                    "correo": correo,
+                    "telefono": telefono,
+                    "direccion": direccion,
+                    "ciudad": ciudad
+                })
+
+            return JsonResponse({"success": True, "message": "Archivo procesado correctamente", "rows": len(data)})
+        except Exception as e:
+            return JsonResponse({"success": False, "message": f"Error al procesar el archivo: {str(e)}"})
+    
+    return JsonResponse({"success": False, "message": "No se recibió ningún archivo"})
 
 #-------------------------type customer-------------------------
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service

@@ -2,6 +2,13 @@
 from django.contrib.auth.decorators import login_required
 from ..services.customer_source import get_customer_source, add_a_new_source, update_source, delete_a_source_with_his_id, get_source_by_id, get_customer_source_select
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service
+from ..services.excel import create_excel
+from io import BytesIO
+from openpyxl import Workbook
+from django.http import HttpResponse
+import tempfile
+from openpyxl import Workbook
+import openpyxl
 from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, change_status_of_the_customer, update_customer
 from ..models import Customer, CustomerType
 from django.http import HttpResponse
@@ -250,6 +257,64 @@ def upload_customer_with_excel(request):
         return render(request, 'upload_customer.html') 
     else:
         return render(request, 'upload_customer.html') 
+
+@login_required(login_url='login')
+def download_excel_template(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return create_excel(request.user)
+    else:
+        return create_excel(request.user)
+
+@login_required(login_url='login')
+def upload_excel_customers(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == 'POST' and request.FILES.get('file'):
+            excel_file = request.FILES['file']
+    
+            try:
+                wb = openpyxl.load_workbook(excel_file)
+                sheet = wb.active
+                data = []
+    
+                for row in sheet.iter_rows(min_row=2, values_only=True):
+                    nombre, correo, telefono, direccion, ciudad = row
+                    data.append({
+                        "nombre": nombre,
+                        "correo": correo,
+                        "telefono": telefono,
+                        "direccion": direccion,
+                        "ciudad": ciudad
+                    })
+    
+                return JsonResponse({"success": True, "message": "Archivo procesado correctamente", "rows": len(data)})
+            except Exception as e:
+                return JsonResponse({"success": False, "message": f"Error al procesar el archivo: {str(e)}"})
+        
+        return JsonResponse({"success": False, "message": "No se recibió ningún archivo"})
+    else:
+        if request.method == 'POST' and request.FILES.get('file'):
+            excel_file = request.FILES['file']
+    
+            try:
+                wb = openpyxl.load_workbook(excel_file)
+                sheet = wb.active
+                data = []
+    
+                for row in sheet.iter_rows(min_row=2, values_only=True):
+                    nombre, correo, telefono, direccion, ciudad = row
+                    data.append({
+                        "nombre": nombre,
+                        "correo": correo,
+                        "telefono": telefono,
+                        "direccion": direccion,
+                        "ciudad": ciudad
+                    })
+    
+                return JsonResponse({"success": True, "message": "Archivo procesado correctamente", "rows": len(data)})
+            except Exception as e:
+                return JsonResponse({"success": False, "message": f"Error al procesar el archivo: {str(e)}"})
+        
+        return JsonResponse({"success": False, "message": "No se recibió ningún archivo"})
 
 @login_required(login_url='login')
 def search_type_customer(request):

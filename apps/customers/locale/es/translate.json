@@ -253,5 +253,40 @@
   "customers.tutorial.steps-for-upload-customer-with-excel": "Descarga la plantilla de Excel para PLUS, completa los campos con la información de tus clientes (como nombre, correo, teléfono y dirección) y luego súbela al sistema. Asegúrate de no modificar la estructura del archivo para garantizar una carga correcta.",
   "customers.note.steps-for-upload-customer-with-excel":"Los campos requeridos se identificaran con un * en el nombre de la columna",
   "customers.btn.download-excel":"Descargar Plantilla de Excel",
-  "customers.btn.upload-excel":"Seleccionar Archivo de Excel"
+  "customers.btn.upload-excel":"Seleccionar Archivo de Excel",
+
+
+
+
+
+
+  "customers.excel.name": "Nombre T",
+  "customers.excel.email": "Correo",
+  "customers.excel.phone": "Teléfono",
+  "customers.excel.cellphone": "Celular",
+  "customers.excel.date_of_birth": "Fecha de Nacimiento",
+  "customers.excel.gender": "Género",
+  "customers.excel.country": "País",
+  "customers.excel.address": "Dirección",
+  "customers.excel.city": "Ciudad",
+  "customers.excel.state": "Estado",
+  "customers.excel.postal_code": "Código Postal",
+  "customers.excel.num_ext": "Número Exterior",
+  "customers.excel.num_int": "Número Interior",
+  "customers.excel.reference": "Referencia",
+  "customers.excel.is_company": "¿Es Empresa?",
+  "customers.excel.company_name": "Nombre de la Empresa",
+  "customers.excel.contact_name": "Nombre del Contacto",
+  "customers.excel.contact_email": "Correo del Contacto",
+  "customers.excel.contact_phone": "Teléfono del Contacto",
+  "customers.excel.contact_cellphone": "Celular del Contacto",
+  "customers.excel.website": "Sitio Web",
+  "customers.excel.note": "Nota",
+  "customers.excel.points": "Puntos",
+  "customers.excel.credit": "Crédito",
+  "customers.excel.tags": "Etiquetas (JSON o separadas por coma)",
+  "customers.excel.customer_type": "Tipo de Cliente (ID o Nombre)",
+  "customers.excel.customer_source": "Fuente del Cliente (ID o Nombre)",
+  "customers.excel.priority": "Prioridad",
+  "customers.excel.price_list_number": "Número de Lista de Precio"
   }
