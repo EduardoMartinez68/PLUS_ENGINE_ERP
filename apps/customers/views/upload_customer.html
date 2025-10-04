@@ -1,19 +1,50 @@
 {% load static %}
+{% include 'partialsCustomers/navbarHome.html' %}
+<style>
+
+    .img-upload{
+        width: 28%;
+        height: auto;
+    }
+
+    .text-description{
+        width: 50%; text-align: left;
+    }
+
+    @media (max-width: 768px) {
+        .text-description {
+            width: 100%;
+            text-align: center;
+        }
+
+        .img-upload{
+            width: 100%;
+            height: auto;
+        }
+    }
+</style>
 <div class="container-section">
     <center>
         <label for="" t="customers.tutorial.title-upload-excel"></label>
         <br>
-        <div style="width: 50%; text-align: left;">
+        <div class="text-description">
             <label for="" t="customers.tutorial.steps-for-upload-customer-with-excel"></label>
             <br>
             <b for="" t="customers.note.steps-for-upload-customer-with-excel" class="text-alert"></b>
             <br>
         </div>
-        <img src="{% static 'img/upload-home.webp' %}" alt="Customer Home" loading="lazy">
+        <img src="{% static 'img/upload-home.webp' %}" alt="Customer Home" loading="lazy" class="img-upload">
         <input type="file" id="file-input" accept=".xlsx,.xls" style="display: none;">
         <br><br><br><br>
-        <button class="btn btn-info btn-sucess" t="customers.btn.download-excel" id="btn-download"></button>
-        <button class="btn btn-edit btn-sucess" t="customers.btn.upload-excel" id="btn-upload"></button>
+
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-info btn-success" t="customers.btn.download-excel" id="btn-download"></button>
+            </div>
+            <div class="col">
+                <button class="btn btn-edit btn-success" t="customers.btn.upload-excel" id="btn-upload"></button>
+            </div>
+        </div>
         
     </center>
 </div>

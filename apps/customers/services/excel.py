@@ -8,9 +8,12 @@ import os
 import json
 
 def create_excel(user):
+    '''
+    this script is for create a excel and send to the frontend for that the 
+    user can upload most speed the information of his customers
+    '''
     language=user.language
-    print(user)
-    
+
     #here we will to create the book of excel
     wb = Workbook()
     ws = wb.active
@@ -81,9 +84,10 @@ def get_header_of_excel(language):
     return headers_list
 
 def get_file_translate(language):
+    #create the path of the file <translate.json> for read the translate
     current_dir = os.path.dirname(__file__) #get the path current of the script
-    file_path = os.path.join(current_dir, '..', language, 'translate.json') #We get the path where the translation file is located.
-    
+    file_path = os.path.join(current_dir, '..', 'locale', language, 'translate.json') #We get the path where the translation file is located.
+    print(file_path)
     #now we will see if this file exist and if not exist we will to return all the language in spanish
     if not os.path.exists(file_path):
         return  {
