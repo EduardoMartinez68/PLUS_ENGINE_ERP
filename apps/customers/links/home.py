@@ -130,13 +130,7 @@ def change_status_customer(request):
     ) 
 
 #--------------------------excel---------------------------------
-import openpyxl
-from openpyxl import Workbook
-import tempfile
-from django.http import HttpResponse
-from openpyxl import Workbook
-from io import BytesIO
-from ..services.excel import create_excel
+from ..services.excel import create_excel, upload_excel_customers
 
 def upload_customer_with_excel(request):
     return render(request, 'upload_customer.html') 
@@ -144,31 +138,22 @@ def upload_customer_with_excel(request):
 def download_excel_template(request):
     return create_excel(request.user)
 
-
 def upload_excel_customers(request):
+    #we will see if the user send the file by a method POST
     if request.method == 'POST' and request.FILES.get('file'):
         excel_file = request.FILES['file']
 
-        try:
-            wb = openpyxl.load_workbook(excel_file)
-            sheet = wb.active
-            data = []
+        #we will see if can save the information in the database
+        answer=upload_excel_customers(excel_file)
+        return JsonResponse(
+            {"success": answer["success"], "answer": answer["answer"], "error": answer["error"]},
+            status=200
+        )
 
-            for row in sheet.iter_rows(min_row=2, values_only=True):
-                nombre, correo, telefono, direccion, ciudad = row
-                data.append({
-                    "nombre": nombre,
-                    "correo": correo,
-                    "telefono": telefono,
-                    "direccion": direccion,
-                    "ciudad": ciudad
-                })
-
-            return JsonResponse({"success": True, "message": "Archivo procesado correctamente", "rows": len(data)})
-        except Exception as e:
-            return JsonResponse({"success": False, "message": f"Error al procesar el archivo: {str(e)}"})
-    
-    return JsonResponse({"success": False, "message": "No se recibió ningún archivo"})
+    return JsonResponse(
+        {"success": False, "answer": [], "error": ''},
+        status=400
+    )
 
 #-------------------------type customer-------------------------
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service

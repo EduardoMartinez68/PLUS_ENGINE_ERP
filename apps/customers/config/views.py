@@ -2,13 +2,7 @@
 from django.contrib.auth.decorators import login_required
 from ..services.customer_source import get_customer_source, add_a_new_source, update_source, delete_a_source_with_his_id, get_source_by_id, get_customer_source_select
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service
-from ..services.excel import create_excel
-from io import BytesIO
-from openpyxl import Workbook
-from django.http import HttpResponse
-import tempfile
-from openpyxl import Workbook
-import openpyxl
+from ..services.excel import create_excel, upload_excel_customers
 from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, change_status_of_the_customer, update_customer
 from ..models import Customer, CustomerType
 from django.http import HttpResponse
@@ -268,53 +262,37 @@ def download_excel_template(request):
 @login_required(login_url='login')
 def upload_excel_customers(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        #we will see if the user send the file by a method POST
         if request.method == 'POST' and request.FILES.get('file'):
             excel_file = request.FILES['file']
     
-            try:
-                wb = openpyxl.load_workbook(excel_file)
-                sheet = wb.active
-                data = []
+            #we will see if can save the information in the database
+            answer=upload_excel_customers(excel_file)
+            return JsonResponse(
+                {"success": answer["success"], "answer": answer["answer"], "error": answer["error"]},
+                status=200
+            )
     
-                for row in sheet.iter_rows(min_row=2, values_only=True):
-                    nombre, correo, telefono, direccion, ciudad = row
-                    data.append({
-                        "nombre": nombre,
-                        "correo": correo,
-                        "telefono": telefono,
-                        "direccion": direccion,
-                        "ciudad": ciudad
-                    })
-    
-                return JsonResponse({"success": True, "message": "Archivo procesado correctamente", "rows": len(data)})
-            except Exception as e:
-                return JsonResponse({"success": False, "message": f"Error al procesar el archivo: {str(e)}"})
-        
-        return JsonResponse({"success": False, "message": "No se recibió ningún archivo"})
+        return JsonResponse(
+            {"success": False, "answer": [], "error": ''},
+            status=400
+        )
     else:
+        #we will see if the user send the file by a method POST
         if request.method == 'POST' and request.FILES.get('file'):
             excel_file = request.FILES['file']
     
-            try:
-                wb = openpyxl.load_workbook(excel_file)
-                sheet = wb.active
-                data = []
+            #we will see if can save the information in the database
+            answer=upload_excel_customers(excel_file)
+            return JsonResponse(
+                {"success": answer["success"], "answer": answer["answer"], "error": answer["error"]},
+                status=200
+            )
     
-                for row in sheet.iter_rows(min_row=2, values_only=True):
-                    nombre, correo, telefono, direccion, ciudad = row
-                    data.append({
-                        "nombre": nombre,
-                        "correo": correo,
-                        "telefono": telefono,
-                        "direccion": direccion,
-                        "ciudad": ciudad
-                    })
-    
-                return JsonResponse({"success": True, "message": "Archivo procesado correctamente", "rows": len(data)})
-            except Exception as e:
-                return JsonResponse({"success": False, "message": f"Error al procesar el archivo: {str(e)}"})
-        
-        return JsonResponse({"success": False, "message": "No se recibió ningún archivo"})
+        return JsonResponse(
+            {"success": False, "answer": [], "error": ''},
+            status=400
+        )
 
 @login_required(login_url='login')
 def search_type_customer(request):

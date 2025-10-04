@@ -260,7 +260,7 @@
 
 
 
-  "customers.excel.name": "Nombre",
+  "customers.excel.name": "Nombre *",
   "customers.excel.email": "Correo",
   "customers.excel.phone": "Teléfono",
   "customers.excel.cellphone": "Celular",
