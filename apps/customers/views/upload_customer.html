@@ -1,0 +1,37 @@
+{% load static %}
+<div class="container-section">
+    <center>
+        <label for="" t="customers.tutorial.title-upload-excel"></label>
+        <br>
+        <div style="width: 50%; text-align: left;">
+            <label for="" t="customers.tutorial.steps-for-upload-customer-with-excel"></label>
+            <br>
+            <b for="" t="customers.note.steps-for-upload-customer-with-excel" class="text-alert"></b>
+            <br>
+        </div>
+        <img src="{% static 'img/upload-home.webp' %}" alt="Customer Home" loading="lazy">
+        <input type="file" id="file-input" accept=".xlsx,.xls" style="display: none;">
+        <br><br><br><br>
+        <button class="btn btn-info btn-sucess" t="customers.btn.download-excel"></button>
+        <button class="btn btn-edit btn-sucess" t="customers.btn.upload-excel" id="btn-upload"></button>
+        
+    </center>
+</div>
+
+<script>
+(()=>{
+
+document.getElementById('btn-upload').addEventListener('click', function() {
+    document.getElementById('file-input').click();
+});
+
+document.getElementById('file-input').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+});
+})();
+
+</script>

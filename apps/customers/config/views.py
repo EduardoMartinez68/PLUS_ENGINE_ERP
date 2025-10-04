@@ -15,15 +15,11 @@ from django.shortcuts import render, redirect
 @login_required(login_url='login')
 def customers_home(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        company = request.user.company
-    
         # get the first 20 answers from the branch ordered by ID and that his status is True
         #customers = Customer.objects.filter(id_company=id_company.id, activated=True).order_by('id')[:20]
         customers=[]
         return render(request, 'customers.html', {'customers': customers})
     else:
-        company = request.user.company
-    
         # get the first 20 answers from the branch ordered by ID and that his status is True
         #customers = Customer.objects.filter(id_company=id_company.id, activated=True).order_by('id')[:20]
         customers=[]
@@ -247,6 +243,13 @@ def change_status_customer(request):
         return JsonResponse(
             {"success": False, "message": "Invalid request method"}, status=400
         ) 
+
+@login_required(login_url='login')
+def upload_customer_with_excel(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'upload_customer.html') 
+    else:
+        return render(request, 'upload_customer.html') 
 
 @login_required(login_url='login')
 def search_type_customer(request):

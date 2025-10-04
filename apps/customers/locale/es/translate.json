@@ -239,5 +239,19 @@
   "customers.message.update.title.customer-update-with-success":"Cleinte Actualizado",
   "customers.message.update.description.customer-update-with-success":"El cliente fue actualizado correctamente en la base de datos de tu empresa.",
   "customers.message.update.error-to-update-the-customer":"Cliente no actualizado",
-  "customers.message.update.error-to-update-the-customer-description":"Sucedio un error en el servidor al momento de intentar actualizar al cliente."
+  "customers.message.update.error-to-update-the-customer-description":"Sucedio un error en el servidor al momento de intentar actualizar al cliente.",
+
+
+
+
+
+
+
+
+  "customers.module.upload-customer-with-excel":"Subir Clientes con excel",
+  "customers.tutorial.title-upload-excel": "Importa fácilmente tus clientes a PLUS desde un archivo de Excel",
+  "customers.tutorial.steps-for-upload-customer-with-excel": "Descarga la plantilla de Excel para PLUS, completa los campos con la información de tus clientes (como nombre, correo, teléfono y dirección) y luego súbela al sistema. Asegúrate de no modificar la estructura del archivo para garantizar una carga correcta.",
+  "customers.note.steps-for-upload-customer-with-excel":"Los campos requeridos se identificaran con un * en el nombre de la columna",
+  "customers.btn.download-excel":"Descargar Plantilla de Excel",
+  "customers.btn.upload-excel":"Seleccionar Archivo de Excel"
   }

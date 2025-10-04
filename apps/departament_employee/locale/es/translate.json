@@ -26,5 +26,7 @@
 
     "departament_employee.error.the-departament-not-was-update-with-sucees":"El Departamento no fue actualizado",
     "departament_employee.title.departament-update":"Departamento Actualizado",
-    "departament_employee.message.the-departament-was-update":"El departamento fue actualizado correctamente en tu base de datos."
+    "departament_employee.message.the-departament-was-update":"El departamento fue actualizado correctamente en tu base de datos.",
+
+    "departament_employee.module.upload-departament-with-excel":"Subir Departamentos con excel"
   }

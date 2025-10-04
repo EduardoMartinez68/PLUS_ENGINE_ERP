@@ -259,8 +259,9 @@
       </search-option>
       <search-option>
           <plus-actions>
-            <plus-action text="title-source" onclick="open_pop_table_source"></plus-action>
-            <plus-action text="title-type-customer" onclick="open_pop_table_type_customer"></plus-action>
+            <plus-action text="title-source" onclick="open_pop_table_source" icon="fi-rr-filter"></plus-action>
+            <plus-action text="title-type-customer" onclick="open_pop_table_type_customer" icon="fi-rs-category"></plus-action>
+            <plus-action text="customers.module.upload-customer-with-excel" onclick="change_web" icon="fi-rr-upload"></plus-action>
           </plus-actions>
       </search-option>
     </plus-search>
@@ -298,6 +299,10 @@
 
 
 <script>
+  function change_web(){
+    window.nextWeb('customers/upload_customer_with_excel/');
+  }
+
   async function clear_div_data_customer(){
     // Render of the template
     const container = document.getElementById('info-customer');

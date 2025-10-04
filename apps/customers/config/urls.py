@@ -8,6 +8,7 @@ urlpatterns = [
     path('customers_search/', views.customers_search, name='customers_search'),
     path('get_information_of_the_customer/', views.get_information_of_the_customer, name='get_information_of_the_customer'),
     path('change_status_customer/', views.change_status_customer, name='change_status_customer'),
+    path('upload_customer_with_excel/', views.upload_customer_with_excel, name='upload_customer_with_excel'),
     path('search_type_customer/', views.search_type_customer, name='search_type_customer'),
     path('search_type_customer_for_id/', views.search_type_customer_for_id, name='search_type_customer_for_id'),
     path('add_type_customer/', views.add_type_customer, name='add_type_customer'),

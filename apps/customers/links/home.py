@@ -10,8 +10,6 @@ from ..models import Customer, CustomerType
 
 
 def customers_home(request):
-    company = request.user.company
-
     # get the first 20 answers from the branch ordered by ID and that his status is True
     #customers = Customer.objects.filter(id_company=id_company.id, activated=True).order_by('id')[:20]
     customers=[]
@@ -131,6 +129,9 @@ def change_status_customer(request):
         {"success": False, "message": "Invalid request method"}, status=400
     ) 
 
+#--------------------------excel---------------------------------
+def upload_customer_with_excel(request):
+    return render(request, 'upload_customer.html') 
 
 #-------------------------type customer-------------------------
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service
