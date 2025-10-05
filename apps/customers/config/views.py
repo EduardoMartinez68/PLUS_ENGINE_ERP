@@ -4,6 +4,7 @@ from ..services.customer_source import get_customer_source, add_a_new_source, up
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service
 from ..services.excel import create_excel, upload_customers_with_excel
 from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, change_status_of_the_customer, update_customer
+from ..plus_wrapper import Plus
 from ..models import Customer, CustomerType
 from django.http import HttpResponse
 import json
@@ -30,32 +31,46 @@ def customers_home(request):
 def add_customer(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == 'POST':
-            try:
-                data = json.loads(request.body)  # El body lo mandas en JSON con fetch
-                answer=save_customer(request.user,data)
+            #we will to check if this user have this permission
+            if Plus.this_user_have_this_permission(request.user, 'add_customer'):
+                try:
+                    data = json.loads(request.body)  # El body lo mandas en JSON con fetch
+                    answer=save_customer(request.user,data)
     
-                if answer["success"]:
-                    return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
-                else: 
-                    return JsonResponse({'success': False, 'error': f'Error to save the customer: {str(answer["error"])}'}, status=300)
-            except Exception as e:
-                return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)
+                    if answer["success"]:
+                        return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
+                    else: 
+                        return JsonResponse({'success': False, 'error': f'Error to save the customer: {str(answer["error"])}'}, status=300)
+                except Exception as e:
+                    return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)
+            else:
+                return JsonResponse(
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )
     
     
     
         return render(request, 'formCustomer.html')
     else:
         if request.method == 'POST':
-            try:
-                data = json.loads(request.body)  # El body lo mandas en JSON con fetch
-                answer=save_customer(request.user,data)
+            #we will to check if this user have this permission
+            if Plus.this_user_have_this_permission(request.user, 'add_customer'):
+                try:
+                    data = json.loads(request.body)  # El body lo mandas en JSON con fetch
+                    answer=save_customer(request.user,data)
     
-                if answer["success"]:
-                    return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
-                else: 
-                    return JsonResponse({'success': False, 'error': f'Error to save the customer: {str(answer["error"])}'}, status=300)
-            except Exception as e:
-                return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)
+                    if answer["success"]:
+                        return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
+                    else: 
+                        return JsonResponse({'success': False, 'error': f'Error to save the customer: {str(answer["error"])}'}, status=300)
+                except Exception as e:
+                    return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)
+            else:
+                return JsonResponse(
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )
     
     
     
@@ -65,17 +80,25 @@ def add_customer(request):
 def edit_customer(request, customer_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == 'POST':
-            try:
-                data = json.loads(request.body)  #get the new information of the customer
-                answer=update_customer(request.user,customer_id, data)
+            #we will to check if this user have this permission
+            if Plus.this_user_have_this_permission(request.user, 'update_customer'):
+                try:
+                    data = json.loads(request.body)  #get the new information of the customer
+                    answer=update_customer(request.user,customer_id, data)
     
-                #here we will see if can update the information
-                if answer["success"]:
-                    return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
-                else: 
-                    return JsonResponse({'success': False, 'error': f'Error to update the customer: {str(answer["error"])}'}, status=300)
-            except Exception as e:
-                return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=300)
+                    #here we will see if can update the information
+                    if answer["success"]:
+                        return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
+                    else: 
+                        return JsonResponse({'success': False, 'error': f'Error to update the customer: {str(answer["error"])}'}, status=300)
+                except Exception as e:
+                    return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=300)
+            else:
+                return JsonResponse(
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )
+            
     
     
     
@@ -83,17 +106,25 @@ def edit_customer(request, customer_id):
         return render(request, "formCustomer.html", {"customer": customer['answer']})
     else:
         if request.method == 'POST':
-            try:
-                data = json.loads(request.body)  #get the new information of the customer
-                answer=update_customer(request.user,customer_id, data)
+            #we will to check if this user have this permission
+            if Plus.this_user_have_this_permission(request.user, 'update_customer'):
+                try:
+                    data = json.loads(request.body)  #get the new information of the customer
+                    answer=update_customer(request.user,customer_id, data)
     
-                #here we will see if can update the information
-                if answer["success"]:
-                    return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
-                else: 
-                    return JsonResponse({'success': False, 'error': f'Error to update the customer: {str(answer["error"])}'}, status=300)
-            except Exception as e:
-                return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=300)
+                    #here we will see if can update the information
+                    if answer["success"]:
+                        return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
+                    else: 
+                        return JsonResponse({'success': False, 'error': f'Error to update the customer: {str(answer["error"])}'}, status=300)
+                except Exception as e:
+                    return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=300)
+            else:
+                return JsonResponse(
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )
+            
     
     
     
@@ -104,28 +135,35 @@ def edit_customer(request, customer_id):
 def customers_search(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == "GET":
-            all_filters = request.GET.get("allFilters", "")
-            values = all_filters.split(",")
+            #we will to check if this user have this permission
+            if Plus.this_user_have_this_permission(request.user, 'view_customer'):
+                all_filters = request.GET.get("allFilters", "")
+                values = all_filters.split(",")
     
-            search = values[0] if len(values) > 0 else ""
-            customer_type = request.GET.get("customer_type")
-            source = request.GET.get("source")
-            priority = values[1] if len(values) > 1 else None
-            activated = values[2] if len(values) > 2 else None
+                search = values[0] if len(values) > 0 else ""
+                customer_type = request.GET.get("customer_type")
+                source = request.GET.get("source")
+                priority = values[1] if len(values) > 1 else None
+                activated = values[2] if len(values) > 2 else None
     
-            answer = search_customer_for_filter(
-                request.user, search, customer_type, source, priority, activated
-            )
-    
-            if answer["success"]:
-                return JsonResponse(
-                    {"success": True, "answer": answer["answer"], "error": answer["error"]},
-                    status=200
+                answer = search_customer_for_filter(
+                    request.user, search, customer_type, source, priority, activated
                 )
+    
+                if answer["success"]:
+                    return JsonResponse(
+                        {"success": True, "answer": answer["answer"], "error": answer["error"]},
+                        status=200
+                    )
+                else:
+                    return JsonResponse(
+                        {"success": False, "answer": [], "error": str(answer["error"])},
+                        status=400
+                    )
             else:
                 return JsonResponse(
-                    {"success": False, "answer": [], "error": str(answer["error"])},
-                    status=400
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
                 )
         else:
             return JsonResponse(
@@ -134,28 +172,35 @@ def customers_search(request):
             )
     else:
         if request.method == "GET":
-            all_filters = request.GET.get("allFilters", "")
-            values = all_filters.split(",")
+            #we will to check if this user have this permission
+            if Plus.this_user_have_this_permission(request.user, 'view_customer'):
+                all_filters = request.GET.get("allFilters", "")
+                values = all_filters.split(",")
     
-            search = values[0] if len(values) > 0 else ""
-            customer_type = request.GET.get("customer_type")
-            source = request.GET.get("source")
-            priority = values[1] if len(values) > 1 else None
-            activated = values[2] if len(values) > 2 else None
+                search = values[0] if len(values) > 0 else ""
+                customer_type = request.GET.get("customer_type")
+                source = request.GET.get("source")
+                priority = values[1] if len(values) > 1 else None
+                activated = values[2] if len(values) > 2 else None
     
-            answer = search_customer_for_filter(
-                request.user, search, customer_type, source, priority, activated
-            )
-    
-            if answer["success"]:
-                return JsonResponse(
-                    {"success": True, "answer": answer["answer"], "error": answer["error"]},
-                    status=200
+                answer = search_customer_for_filter(
+                    request.user, search, customer_type, source, priority, activated
                 )
+    
+                if answer["success"]:
+                    return JsonResponse(
+                        {"success": True, "answer": answer["answer"], "error": answer["error"]},
+                        status=200
+                    )
+                else:
+                    return JsonResponse(
+                        {"success": False, "answer": [], "error": str(answer["error"])},
+                        status=400
+                    )
             else:
                 return JsonResponse(
-                    {"success": False, "answer": [], "error": str(answer["error"])},
-                    status=400
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
                 )
         else:
             return JsonResponse(
@@ -167,22 +212,36 @@ def customers_search(request):
 def get_information_of_the_customer(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == "GET":
-            customer_id = request.GET.get("id_customer")
-            answer=get_information_of_a_customer_for_id(request.user, customer_id)
-            return JsonResponse(
-                {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=200
-            ) 
+            #we will to check if this user have this permission
+            if Plus.this_user_have_this_permission(request.user, 'view_customer'):
+                customer_id = request.GET.get("id_customer")
+                answer=get_information_of_a_customer_for_id(request.user, customer_id)
+                return JsonResponse(
+                    {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=200
+                ) 
+            else:
+                return JsonResponse(
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )
             
         return JsonResponse(
             {"success": False, "message": "Invalid request method"}, status=400
         ) 
     else:
         if request.method == "GET":
-            customer_id = request.GET.get("id_customer")
-            answer=get_information_of_a_customer_for_id(request.user, customer_id)
-            return JsonResponse(
-                {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=200
-            ) 
+            #we will to check if this user have this permission
+            if Plus.this_user_have_this_permission(request.user, 'view_customer'):
+                customer_id = request.GET.get("id_customer")
+                answer=get_information_of_a_customer_for_id(request.user, customer_id)
+                return JsonResponse(
+                    {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=200
+                ) 
+            else:
+                return JsonResponse(
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )
             
         return JsonResponse(
             {"success": False, "message": "Invalid request method"}, status=400
@@ -192,54 +251,68 @@ def get_information_of_the_customer(request):
 def change_status_customer(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == "POST":
-            data = json.loads(request.body)
-            customer_id = data.get("customer_id")
-            status = data.get("status", False)
-            answer=change_status_of_the_customer(request.user,customer_id, status) 
+            #we will to check if this user have this permission
+            if Plus.this_user_have_this_permission(request.user, 'recover_customer'):
+                data = json.loads(request.body)
+                customer_id = data.get("customer_id")
+                status = data.get("status", False)
+                answer=change_status_of_the_customer(request.user,customer_id, status) 
     
-            #we will see if can edit the status of the customer, else send a message of error to the frontend
-            if answer['success']:
-                #we will see if the customer be recover of the trash
-                if status:
-                    return JsonResponse(
-                        {"success": answer['success'], "message": 'customers.message.the-customer-was-recover', "answer": answer['answer'], 'error':answer['error']}, status=200
-                    ) 
+                #we will see if can edit the status of the customer, else send a message of error to the frontend
+                if answer['success']:
+                    #we will see if the customer be recover of the trash
+                    if status:
+                        return JsonResponse(
+                            {"success": answer['success'], "message": 'customers.message.the-customer-was-recover', "answer": answer['answer'], 'error':answer['error']}, status=200
+                        ) 
+                    else:
+                        #we will see if need desactivate the customer 
+                        return JsonResponse(
+                            {"success": answer['success'], "message": 'customer.message.success.customer-desactivated', "answer": answer['answer'], 'error':answer['error']}, status=200
+                        ) 
                 else:
-                    #we will see if need desactivate the customer 
                     return JsonResponse(
-                        {"success": answer['success'], "message": 'customer.message.success.customer-desactivated', "answer": answer['answer'], 'error':answer['error']}, status=200
-                    ) 
+                        {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=500
+                    )  
             else:
                 return JsonResponse(
-                    {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=500
-                )          
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )        
         
         return JsonResponse(
             {"success": False, "message": "Invalid request method"}, status=400
         ) 
     else:
         if request.method == "POST":
-            data = json.loads(request.body)
-            customer_id = data.get("customer_id")
-            status = data.get("status", False)
-            answer=change_status_of_the_customer(request.user,customer_id, status) 
+            #we will to check if this user have this permission
+            if Plus.this_user_have_this_permission(request.user, 'recover_customer'):
+                data = json.loads(request.body)
+                customer_id = data.get("customer_id")
+                status = data.get("status", False)
+                answer=change_status_of_the_customer(request.user,customer_id, status) 
     
-            #we will see if can edit the status of the customer, else send a message of error to the frontend
-            if answer['success']:
-                #we will see if the customer be recover of the trash
-                if status:
-                    return JsonResponse(
-                        {"success": answer['success'], "message": 'customers.message.the-customer-was-recover', "answer": answer['answer'], 'error':answer['error']}, status=200
-                    ) 
+                #we will see if can edit the status of the customer, else send a message of error to the frontend
+                if answer['success']:
+                    #we will see if the customer be recover of the trash
+                    if status:
+                        return JsonResponse(
+                            {"success": answer['success'], "message": 'customers.message.the-customer-was-recover', "answer": answer['answer'], 'error':answer['error']}, status=200
+                        ) 
+                    else:
+                        #we will see if need desactivate the customer 
+                        return JsonResponse(
+                            {"success": answer['success'], "message": 'customer.message.success.customer-desactivated', "answer": answer['answer'], 'error':answer['error']}, status=200
+                        ) 
                 else:
-                    #we will see if need desactivate the customer 
                     return JsonResponse(
-                        {"success": answer['success'], "message": 'customer.message.success.customer-desactivated', "answer": answer['answer'], 'error':answer['error']}, status=200
-                    ) 
+                        {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=500
+                    )  
             else:
                 return JsonResponse(
-                    {"success": answer['success'], "message": answer['message'], "answer": answer['answer'], 'error':answer['error']}, status=500
-                )          
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )        
         
         return JsonResponse(
             {"success": False, "message": "Invalid request method"}, status=400
@@ -282,12 +355,18 @@ def upload_excel_customers(request):
             
     
             #now if the file have the size perfect we will see if can save the information in the database
-            answer=upload_customers_with_excel(request.user, excel_file)
-            return JsonResponse(
-                {"success": answer["success"], "answer": answer["answer"], "error": answer["error"]},
-                status=200
-            )
-    
+            if Plus.this_user_have_this_permission(request.user, 'upload_customer_for_excel'):
+                answer=upload_customers_with_excel(request.user, excel_file)
+                return JsonResponse(
+                    {"success": answer["success"], "answer": answer["answer"], "error": answer["error"]},
+                    status=200
+                )
+            else:
+                return JsonResponse(
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )
+                     
         return JsonResponse(
             {"success": False, "answer": [], "error": ''},
             status=400
@@ -313,12 +392,18 @@ def upload_excel_customers(request):
             
     
             #now if the file have the size perfect we will see if can save the information in the database
-            answer=upload_customers_with_excel(request.user, excel_file)
-            return JsonResponse(
-                {"success": answer["success"], "answer": answer["answer"], "error": answer["error"]},
-                status=200
-            )
-    
+            if Plus.this_user_have_this_permission(request.user, 'upload_customer_for_excel'):
+                answer=upload_customers_with_excel(request.user, excel_file)
+                return JsonResponse(
+                    {"success": answer["success"], "answer": answer["answer"], "error": answer["error"]},
+                    status=200
+                )
+            else:
+                return JsonResponse(
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )
+                     
         return JsonResponse(
             {"success": False, "answer": [], "error": ''},
             status=400
@@ -327,6 +412,13 @@ def upload_excel_customers(request):
 @login_required(login_url='login')
 def search_type_customer(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_type_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+    
         # Ensure request method is GET
         if request.method != "GET":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
@@ -338,6 +430,13 @@ def search_type_customer(request):
         answer, status = search_type_customer_service(request.user, query)
         return JsonResponse(answer, status=status)
     else:
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_type_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+    
         # Ensure request method is GET
         if request.method != "GET":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
@@ -352,6 +451,13 @@ def search_type_customer(request):
 @login_required(login_url='login')
 def search_type_customer_for_id(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_type_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+    
         # Ensure the request method is GET
         if request.method != "GET":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
@@ -363,6 +469,13 @@ def search_type_customer_for_id(request):
         result, status = search_type_customer_for_id_service(request.user, customer_type_id)
         return JsonResponse(result, status=status)
     else:
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_type_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+    
         # Ensure the request method is GET
         if request.method != "GET":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
@@ -377,6 +490,14 @@ def search_type_customer_for_id(request):
 @login_required(login_url='login')
 def add_type_customer(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'add_type_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+    
+    
         # Ensure the request method is POST
         if request.method != "POST":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
@@ -391,6 +512,14 @@ def add_type_customer(request):
         result, status = add_type_customer_service(request.user, data)
         return JsonResponse(result, status=status)
     else:
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'add_type_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+    
+    
         # Ensure the request method is POST
         if request.method != "POST":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
@@ -408,6 +537,13 @@ def add_type_customer(request):
 @login_required(login_url='login')
 def edit_type_customer(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'update_type_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "POST":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
     
@@ -419,6 +555,13 @@ def edit_type_customer(request):
         result, status = edit_type_customer_service(request.user, data)
         return JsonResponse(result, status=status)
     else:
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'update_type_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "POST":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
     
@@ -433,6 +576,13 @@ def edit_type_customer(request):
 @login_required(login_url='login')
 def delete_type_customer(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'delete_type_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "POST":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
     
@@ -441,6 +591,13 @@ def delete_type_customer(request):
         answer, status = delete_type_customer_service(request.user, customer_type_id)
         return JsonResponse(answer, status=status)
     else:
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'delete_type_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "POST":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
     
@@ -452,6 +609,13 @@ def delete_type_customer(request):
 @login_required(login_url='login')
 def get_customers_with_seeker(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "GET":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
     
@@ -460,6 +624,13 @@ def get_customers_with_seeker(request):
     
         return JsonResponse({"success": True, "answer": result}, status=200)
     else:
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "GET":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
     
@@ -471,6 +642,13 @@ def get_customers_with_seeker(request):
 @login_required(login_url='login')
 def search_source(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_source_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "GET":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
     
@@ -479,6 +657,13 @@ def search_source(request):
     
         return JsonResponse({"success": True, "answer": result}, status=200)
     else:
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_source_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "GET":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
     
@@ -490,6 +675,13 @@ def search_source(request):
 @login_required(login_url='login')
 def search_source_by_id(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_source_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "GET":
             return JsonResponse({"success": False, "message":"Invalid request method","error": "Invalid request method"}, status=405)
     
@@ -505,6 +697,13 @@ def search_source_by_id(request):
         answer = get_source_by_id(request.user, source_id)
         return JsonResponse(answer, status=200 if answer["success"] else 404)
     else:
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_source_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "GET":
             return JsonResponse({"success": False, "message":"Invalid request method","error": "Invalid request method"}, status=405)
     
@@ -523,6 +722,13 @@ def search_source_by_id(request):
 @login_required(login_url='login')
 def add_source(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'add_source_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "POST":
             return JsonResponse({"success": False, "message": "Not can do this", "error":"Invalid request method"}, status=405)
     
@@ -540,6 +746,13 @@ def add_source(request):
         answer = add_a_new_source(request.user, name, description)
         return JsonResponse(answer, status=200 if answer["success"] else 400)
     else:
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'add_source_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "POST":
             return JsonResponse({"success": False, "message": "Not can do this", "error":"Invalid request method"}, status=405)
     
@@ -560,6 +773,13 @@ def add_source(request):
 @login_required(login_url='login')
 def edit_source(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'update_source_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "POST":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
     
@@ -580,6 +800,13 @@ def edit_source(request):
         answer = update_source(request.user, source_id, name, description)
         return JsonResponse(answer, status=200 if answer["success"] else 400)
     else:
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'update_source_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "POST":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
     
@@ -603,6 +830,13 @@ def edit_source(request):
 @login_required(login_url='login')
 def delete_source(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'delete_source_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "POST":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
     
@@ -618,6 +852,13 @@ def delete_source(request):
         answer = delete_a_source_with_his_id(request.user, source_id)
         return JsonResponse(answer, status=200 if answer["success"] else 400)
     else:
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'delete_source_customer'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         if request.method != "POST":
             return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
     

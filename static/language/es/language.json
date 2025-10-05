@@ -148,7 +148,7 @@
     "gender.woman":"Mujer",
     "gender.other":"Otros",
 
-
+    "message.this-user-not-have-this-permission":"Este usuario no tiene asignado este permiso",
 
     "menu.search": "Buscar una app...",
     "app.agenda": "Agenda",

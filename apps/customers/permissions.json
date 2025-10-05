@@ -8,7 +8,19 @@
         "view_customer",
         "update_customer",
         "delete_customer",
-        "recover_customer"
+        "recover_customer",
+        
+
+
+        "view_type_customer",
+        "add_type_customer",
+        "update_type_customer",
+        "delete_type_customer",
+
+        "view_source_customer",
+        "add_source_customer",
+        "update_source_customer",
+        "delete_source_customer"
     ], 
     "translate":{
         "es": {
@@ -20,7 +32,17 @@
             "view_customer": "Ver detalles y lista de clientes registrados",
             "update_customer": "Actualizar información de un cliente",
             "delete_customer": "Eliminar un cliente del sistema",
-            "recover_customer": "Restaurar clientes eliminados"
+            "recover_customer": "Restaurar clientes eliminados",
+
+            "view_type_customer": "Ver las diferentes Categorias que existen de los Clientes",
+            "add_type_customer": "Agregar una nueva Categoria de Clientes",
+            "update_type_customer": "Actualizar las Categorias de los Clientes",
+            "delete_type_customer": "Eliminar las Categorias de los Clientes",
+
+            "view_source_customer": "Ver los diferentes Medios de Captacion que existen de los Clientes",
+            "add_source_customer": "Agregar un nuevo Medios de Captacion de Clientes",
+            "update_source_customer": "Actualizar los Medios de Captacion de los Clientes",
+            "delete_source_customer": "Eliminar los Medios de Captacion de los Clientes"
         }
     }
 }
