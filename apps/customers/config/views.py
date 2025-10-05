@@ -282,7 +282,7 @@ def upload_excel_customers(request):
             
     
             #now if the file have the size perfect we will see if can save the information in the database
-            answer=upload_customers_with_excel(excel_file)
+            answer=upload_customers_with_excel(request.user, excel_file)
             return JsonResponse(
                 {"success": answer["success"], "answer": answer["answer"], "error": answer["error"]},
                 status=200
@@ -313,7 +313,7 @@ def upload_excel_customers(request):
             
     
             #now if the file have the size perfect we will see if can save the information in the database
-            answer=upload_customers_with_excel(excel_file)
+            answer=upload_customers_with_excel(request.user, excel_file)
             return JsonResponse(
                 {"success": answer["success"], "answer": answer["answer"], "error": answer["error"]},
                 status=200

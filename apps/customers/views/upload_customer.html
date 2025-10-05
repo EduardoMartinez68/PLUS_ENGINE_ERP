@@ -110,13 +110,33 @@
                 </div>
             </div>
         </div>
-        <button id="btn-send" class="btn btn-add btn-success" t="customers.button.import" disabled type="button"></button>
+        <div class="row">
+            <div class="col-10">
+                <button id="btn-send" class="btn btn-add btn-success" t="customers.button.import" disabled type="button"></button>
+            </div>
+            <div class="col-2">
+                <button id="btn-send" class="btn btn-delete-tr btn-success" type="button" t="customers.button.delete-file" onclick="delete_file_excel()"></button>
+            </div>
+        </div>
     </form>
 </div>
 
 <script>
     // load the library SheetJS for read the files of excel
     load_script("{% static 'js/library/xlsx.full.min.js' %}");
+
+    function delete_file_excel(){
+        /*
+        this script is for return the the view of load for that the user 
+        can load other excel file and clear the input of the excel
+        */
+        const divUploadFile=document.getElementById('container-info-excel')
+        const divContainerExcel=document.getElementById('container-file-excel')
+        divContainerExcel.style.display = 'none';
+        divUploadFile.style.display = 'block';
+        selectedFile = null;
+        document.getElementById("file-input").value = "";
+    }
 
     (()=>{
         const input = document.getElementById('file-input');
@@ -286,10 +306,11 @@
                     body: formData
                 });
 
-                //we will see if can 
+                //we will see if can add all the customer
                 if (response.ok) {
                     fileInfo.textContent = '';
                     progressBar.style.width = '100%';
+                    delete_file_excel();
                     show_alert('success', 'customers.title.the-file-was-upload-with-sueccess', 'customers.message.the-file-was-upload-with-sueccess');
                 } else {
                     progressBar.style.width = '0%';

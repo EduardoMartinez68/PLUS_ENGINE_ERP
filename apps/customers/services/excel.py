@@ -6,8 +6,11 @@ from openpyxl import Workbook
 from io import BytesIO
 import os 
 import json
-
+from django.core.exceptions import ValidationError
+from apps.customers.models import Customer, CustomerType, CustomerSource
 from openpyxl.styles import PatternFill, Font
+from ..plus_wrapper import Plus
+
 
 def create_excel(user):
     '''
@@ -189,16 +192,97 @@ def get_the_data_of_the_file_excel(excel_file)->list:
     except Exception as e:
         return e
 
-def upload_customers_with_excel(excel_file)->bool:
-    data_customers=get_the_data_of_the_file_excel(excel_file) 
+
+def create_customer_from_dict(customer_data, company=None, branch=None)->bool:
+    """
+    Create a customer in the database use the dictionary of data that read from the file excel
+    """
+    try:
+        #Normalizes values
+        is_company = Plus.to_bool(customer_data.get("this_customer_is_a_company", ""))
+
+        #search if exist this customer
+        customer_type = None
+        type_name = customer_data.get("customer_type")
+        if type_name:
+
+            #get the type customer but if not exist we will to create the type customer
+            customer_type, _ = CustomerType.objects.get_or_create(
+                company=company,
+                name=type_name.strip(),
+                defaults={"color": "#3498db"}
+            )
+
+        #search user source if exist and if not exist in the database of the company we will to create
+        source = None
+        source_name = customer_data.get("source")
+        if source_name:
+            source, _ = CustomerSource.objects.get_or_create(
+                company=company,
+                name=source_name.strip()
+            )
+
+        #Create the customer
+        customer = Customer.objects.create(
+            company=company,
+            branch=branch,
+            name=customer_data.get("name"),
+            email=customer_data.get("email"),
+            phone=customer_data.get("phone"),
+            cellphone=customer_data.get("cellphone"),
+            date_of_birth=customer_data.get("date_of_birth") or None,
+            gender=customer_data.get("gender"),
+            country=customer_data.get("country"),
+            address=customer_data.get("address"),
+            city=customer_data.get("city"),
+            state=customer_data.get("state"),
+            postal_code=customer_data.get("postal_code"),
+            num_ext=customer_data.get("num_ext"),
+            num_int=customer_data.get("num_int"),
+            reference=customer_data.get("reference"),
+            this_customer_is_a_company=is_company,
+            company_name=customer_data.get("company_name"),
+            contact_name=customer_data.get("contact_name"),
+            contact_email=customer_data.get("contact_email"),
+            contact_phone=customer_data.get("contact_phone"),
+            contact_cellphone=customer_data.get("contact_cellphone"),
+            website=customer_data.get("website"),
+            note=customer_data.get("note"),
+            points=customer_data.get("points") or 0,
+            credit=customer_data.get("credit") or 0,
+            tags=customer_data.get("tags") or {},
+            customer_type=customer_type,
+            source=source,
+            priority=customer_data.get("priority") or 0,
+            number_of_price_of_sale=customer_data.get("number_of_price_of_sale") or 1,
+        )
+
+        return True
+
+    except ValidationError as e:
+        return False
+    except Exception as e:
+        return False
+    
+def upload_customers_with_excel(user, excel_file)->bool:
+    data_customers=get_the_data_of_the_file_excel(excel_file) #read the file excel and get his data like a list
 
     #when already have all the information, now we will save all the customers in the database
+    customers_that_not_was_add=''
+    message_answer='customers.message.al-the-customer-was-added'
     for customer in data_customers:
-        print(customer["name"]) 
+        answer=create_customer_from_dict(customer, user.company, user.branch)
 
-    print(data_customers)
+        #we will see if can added this customer, if not can add this customer save his information and his error for show after in the frontend
+        all_the_customer_was_added=True
+        if not answer:
+            all_the_customer_was_added=False
+            message_answer='customers.message.not-all-the-customer-was-added'
+            customers_that_not_was_add+=customer["name"]+','
+
+
     return {
-        "success": True,
-        "answer": data_customers,
-        "error": ''
+        "success": all_the_customer_was_added,
+        "answer": message_answer,
+        "error": customers_that_not_was_add
     }  

@@ -266,10 +266,13 @@
   "customers.error.upload-file":"Error de conexión al subir el archivo",
   "customers.error.not-exist-file":"No se subió ningún archivo.",
 
+  "customers.button.delete-file":"Eliminar archivo",
   "customers.title.the-file-was-upload-with-sueccess":"El archivo se subio correctamente",
   "customers.message.the-file-was-upload-with-sueccess":"Todos tus clientes fueron subidos exitosamente a la base de datos",
   "customers.title.the-file-not-was-upload-with-sueccess":"El archivo no se subio",
   "customers.message.the-file-not-was-upload-with-sueccess":"El archivo no se pudo subir correctamente al servidor intenatlo mas tarde.",
+  "customers.message.all-the-customer-was-added":"Todos tus clientes fueron agregados con exito a tu base de datos.",
+  "customers.message.not-all-the-customer-was-added":"Ocurrio un error al subir algunos clientes a tu base de datos. Presiona 'leer mas' para saber cuales clientes no fueron agregados.",
 
   "customers.excel.sku": "Clave",
   "customers.excel.name": "Nombre *",
