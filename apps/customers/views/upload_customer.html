@@ -92,24 +92,26 @@
 
 
 <!---container for show the preview of the excel--->
-<div class="container-section" id="container-file-excel">
-    <plus-search input_id="search-table-customers"></plus-search>
+<div class="container-section" id="container-file-excel">    
+    <form id="form-file-excel">
+        {% csrf_token %}
+        <input type="file" id="file-input" accept=".xlsx,.xls" style="display: none;" name="file">
+        <div class="file-info" id="file-info"><p t="customers.button.nothing-file-selected"></p></div>
+        <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
 
-    <input type="file" id="file-input" accept=".xlsx,.xls" style="display: none;">
-    <div class="file-info" id="file-info">Ningún archivo seleccionado</div>
-    <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
 
-    <div class="section">
-        <div class="table-preview">
-            <div id="preview-meta" class="mb-2 text-muted"></div>
-            <div class="table-responsive">
-                <table class="table table-sm table-bordered" id="container-table-customers">
-                </table>
+        <!---preview container of the excel--->
+        <div class="section">
+            <div class="table-preview">
+                <div id="preview-meta" class="mb-2 text-muted"></div>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered" id="container-table-customers">
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
-
-    <button id="btn-send" class="btn btn-add btn-success" t="customers.button.import" disabled></button>
+        <button id="btn-send" class="btn btn-add btn-success" t="customers.button.import" disabled type="button"></button>
+    </form>
 </div>
 
 <script>
@@ -246,12 +248,12 @@
 
             //save the file excel that be send after to the server and activate the button for send the file to the server
             selectedFile = file;
-            fileInfo.innerHTML = `✅ Archivo listo: <b>${file.name}</b> (${fileSizeMBRounded} MB)`;
+            fileInfo.innerHTML = `✅ <b>${file.name}</b> (${fileSizeMBRounded} MB)`;
             btnSend.disabled = false;
             progressBar.style.width = '0%';
 
             //show a message of preview
-            previewMeta.innerHTML = 'Cargando previsualización...';
+            previewMeta.innerHTML = window.translate_text('customers.message.load-preview');
             try {
                 await ensureXLSXLoaded(7000);
                 await parseAndPreview(file);
@@ -260,8 +262,8 @@
                 containerInfo.style.display = 'none';
                 containerFile.style.display = 'block';
             } catch (err) {
-                console.error(err);
-                previewMeta.innerHTML = '❌ No se pudo generar la previsualización del archivo.';
+                previewMeta.innerHTML = '';
+                show_alert('error', 'customers.title.the-file-not-was-upload-with-sueccess', 'customers.error.load-preview', err);
             }
         });
 
@@ -271,12 +273,11 @@
         // send the file to the server when the user do a click in the button of import 
         btnSend.addEventListener('click', async () => {
             if (!selectedFile) return;
-
             const formData = new FormData();
             formData.append('file', selectedFile);
 
             btnSend.disabled = true;
-            fileInfo.textContent = 'Subiendo archivo...';
+            fileInfo.textContent = window.translate_text('customers.message.upload-file');
 
             try {
                 const response = await fetch("{% url 'upload_excel_customers' %}", {
@@ -285,19 +286,18 @@
                     body: formData
                 });
 
-                // Nota: si quieres ver progreso real de subida, usa XMLHttpRequest y upload.onprogress
+                //we will see if can 
                 if (response.ok) {
-                    fileInfo.textContent = '✅ Archivo subido correctamente';
+                    fileInfo.textContent = '';
                     progressBar.style.width = '100%';
                     show_alert('success', 'customers.title.the-file-was-upload-with-sueccess', 'customers.message.the-file-was-upload-with-sueccess');
                 } else {
-                    fileInfo.textContent = '❌ Error al subir el archivo';
                     progressBar.style.width = '0%';
                     show_alert('error', 'customers.title.the-file-not-was-upload-with-sueccess', 'customers.message.the-file-not-was-upload-with-sueccess');
                 }
             } catch (error) {
-                console.error(error);
-                fileInfo.textContent = '❌ Error de conexión al subir el archivo';
+                fileInfo.textContent = '';
+                show_alert('error', 'customers.title.the-file-not-was-upload-with-sueccess', 'customers.error.upload-file', error);
                 progressBar.style.width = '0%';
             } finally {
                 btnSend.disabled = false;

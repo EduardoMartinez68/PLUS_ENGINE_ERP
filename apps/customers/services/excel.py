@@ -57,6 +57,7 @@ def get_header_of_excel(language)->list:
 
     #this be the key of the name that exist in the <translate.json>
     EXCEL_KEYS = [
+        "customers.excel.sku",
         "customers.excel.name",
         "customers.excel.email",
         "customers.excel.phone",
@@ -98,11 +99,12 @@ def get_file_translate(language)->list:
     #create the path of the file <translate.json> for read the translate
     current_dir = os.path.dirname(__file__) #get the path current of the script
     file_path = os.path.join(current_dir, '..', 'locale', language, 'translate.json') #We get the path where the translation file is located.
-    print(file_path)
+
     #now we will see if this file exist and if not exist we will to return all the language in spanish
     if not os.path.exists(file_path):
         return  {
-        "customers.excel.name": "Nombre",
+        "customers.excel.sku": "Clave",
+        "customers.excel.name": "Nombre *",
         "customers.excel.email": "Correo",
         "customers.excel.phone": "Teléfono",
         "customers.excel.cellphone": "Celular",
@@ -190,6 +192,11 @@ def get_the_data_of_the_file_excel(excel_file)->list:
 def upload_customers_with_excel(excel_file)->bool:
     data_customers=get_the_data_of_the_file_excel(excel_file) 
 
+    #when already have all the information, now we will save all the customers in the database
+    for customer in data_customers:
+        print(customer["name"]) 
+
+    print(data_customers)
     return {
         "success": True,
         "answer": data_customers,

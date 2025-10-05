@@ -4,6 +4,7 @@
     },
     "permissions": [
         "add_customer",
+        "upload_customer_for_excel",
         "view_customer",
         "update_customer",
         "delete_customer",
@@ -15,6 +16,7 @@
             "description": "Gestiona la información de clientes y sus registros.",
 
             "add_customer": "Agregar un nuevo cliente al sistema",
+            "upload_customer_for_excel": "Agregar clientes subiendo archivos xlsx",
             "view_customer": "Ver detalles y lista de clientes registrados",
             "update_customer": "Actualizar información de un cliente",
             "delete_customer": "Eliminar un cliente del sistema",

@@ -260,12 +260,18 @@
   "customers.button.nothing-file-selected":"Ningun archivo seleccionado",
   "customers.message.the-file-is-very-heavy":"El archivo que intentas subir pesa",
   "customers.message.the-maximum-allowed-is":"El máximo permitido es",
+  "customers.message.load-preview":"Cargando previsualización...",
+  "customers.message.upload-file":"Subiendo archivo...",
+  "customers.error.load-preview":"No se pudo generar la previsualización del archivo..",
+  "customers.error.upload-file":"Error de conexión al subir el archivo",
+  "customers.error.not-exist-file":"No se subió ningún archivo.",
 
   "customers.title.the-file-was-upload-with-sueccess":"El archivo se subio correctamente",
   "customers.message.the-file-was-upload-with-sueccess":"Todos tus clientes fueron subidos exitosamente a la base de datos",
   "customers.title.the-file-not-was-upload-with-sueccess":"El archivo no se subio",
   "customers.message.the-file-not-was-upload-with-sueccess":"El archivo no se pudo subir correctamente al servidor intenatlo mas tarde.",
 
+  "customers.excel.sku": "Clave",
   "customers.excel.name": "Nombre *",
   "customers.excel.email": "Correo",
   "customers.excel.phone": "Teléfono",
@@ -280,7 +286,7 @@
   "customers.excel.num_ext": "Número Exterior",
   "customers.excel.num_int": "Número Interior",
   "customers.excel.reference": "Referencia",
-  "customers.excel.is_company": "¿Es Empresa?",
+  "customers.excel.is_company": "¿Es Empresa? 1=si/0=no",
   "customers.excel.company_name": "Nombre de la Empresa",
   "customers.excel.contact_name": "Nombre del Contacto",
   "customers.excel.contact_email": "Correo del Contacto",
@@ -291,8 +297,8 @@
   "customers.excel.points": "Puntos",
   "customers.excel.credit": "Crédito",
   "customers.excel.tags": "Etiquetas (JSON o separadas por coma)",
-  "customers.excel.customer_type": "Tipo de Cliente (ID o Nombre)",
-  "customers.excel.customer_source": "Fuente del Cliente (ID o Nombre)",
-  "customers.excel.priority": "Prioridad",
-  "customers.excel.price_list_number": "Número de Lista de Precio"
+  "customers.excel.customer_type": "Tipo de Cliente (Nombre)",
+  "customers.excel.customer_source": "Canal de adquisición del Cliente (Nombre)",
+  "customers.excel.priority": "Prioridad (0,1,2,3)",
+  "customers.excel.price_list_number": "Número de Precio"
   }

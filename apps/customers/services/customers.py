@@ -22,6 +22,7 @@ def save_customer(user, form, user_admin=None, password_admin=None):
         customer.branch = user.branch
 
         # Personal information
+        customer.sku = form.get("sku", "")
         customer.name = form.get("name", "")
         customer.email = form.get("email") or None
         customer.phone = form.get("phone") or None
@@ -120,6 +121,7 @@ def update_customer(user, customer_id, form):
         customer = Customer.objects.get(id=customer_id, company=user.company)
 
         #----- Personal information -----
+        customer.sku = form.get("sku") or ''
         customer.name = form.get("name") or ''
         customer.email = form.get("email") or ''
         customer.phone = form.get("phone") or ''
@@ -292,6 +294,7 @@ def search_customer_for_filter(user, search, customer_type, source, priority, ac
         if search:
             search = search.lower()
             qs = [c for c in qs if (
+                (c.sku and search in c.sku.lower()) or
                 (c.name and search in c.name.lower()) or
                 (c.email and search in c.email.lower()) or
                 (c.phone and search in c.phone.lower()) or
@@ -306,6 +309,7 @@ def search_customer_for_filter(user, search, customer_type, source, priority, ac
         for c in qs:
             customers.append({
                 "id": c.id,
+                "sku": c.sku or '',
                 "name": c.name or '',
                 "email": c.email or '',
                 "phone": c.phone or '',
@@ -360,6 +364,7 @@ def get_information_of_a_customer_for_id(user, customer_id):
         #create the answer that send to the frontend or to other script that need this iformation
         data = {
             "id": customer.id,
+            "sku": customer.sku or '',
             "name": customer.name or '',
             "email": customer.email or '',
             "phone": customer.phone or '',

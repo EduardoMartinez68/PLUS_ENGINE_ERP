@@ -263,10 +263,25 @@ def download_excel_template(request):
 def upload_excel_customers(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         #we will see if the user send the file by a method POST
-        if request.method == 'POST' and request.FILES.get('file'):
-            excel_file = request.FILES['file']
+        if request.method == 'POST':
+            excel_file = request.FILES.get('file')
+            if not excel_file:
+                return JsonResponse({"success": False, "answer":"customers.error.not-exist-file",'error': 'The user not upload nothing file'}, status=400)
     
-            #we will see if can save the information in the database
+             # 🔒 We verify the size of the file (maximum 5 MB)
+            max_size_mb = 5
+            max_size_bytes = max_size_mb * 1024 * 1024  # convert to bytes
+    
+            #if the size of the file is very big we will return a message of error to the frontend
+            if excel_file.size > max_size_bytes:
+                return JsonResponse({
+                    "success": False,
+                    "answer": "customers.error.file-too-large",
+                    "error": f"The file exceeds the limit {max_size_mb} MB"
+                }, status=400)
+            
+    
+            #now if the file have the size perfect we will see if can save the information in the database
             answer=upload_customers_with_excel(excel_file)
             return JsonResponse(
                 {"success": answer["success"], "answer": answer["answer"], "error": answer["error"]},
@@ -279,10 +294,25 @@ def upload_excel_customers(request):
         )
     else:
         #we will see if the user send the file by a method POST
-        if request.method == 'POST' and request.FILES.get('file'):
-            excel_file = request.FILES['file']
+        if request.method == 'POST':
+            excel_file = request.FILES.get('file')
+            if not excel_file:
+                return JsonResponse({"success": False, "answer":"customers.error.not-exist-file",'error': 'The user not upload nothing file'}, status=400)
     
-            #we will see if can save the information in the database
+             # 🔒 We verify the size of the file (maximum 5 MB)
+            max_size_mb = 5
+            max_size_bytes = max_size_mb * 1024 * 1024  # convert to bytes
+    
+            #if the size of the file is very big we will return a message of error to the frontend
+            if excel_file.size > max_size_bytes:
+                return JsonResponse({
+                    "success": False,
+                    "answer": "customers.error.file-too-large",
+                    "error": f"The file exceeds the limit {max_size_mb} MB"
+                }, status=400)
+            
+    
+            #now if the file have the size perfect we will see if can save the information in the database
             answer=upload_customers_with_excel(excel_file)
             return JsonResponse(
                 {"success": answer["success"], "answer": answer["answer"], "error": answer["error"]},

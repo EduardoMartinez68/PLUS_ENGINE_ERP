@@ -62,6 +62,7 @@ class Customer(models.Model):
     #------personal information------
     id = models.BigAutoField(primary_key=True)  
     avatar = models.ImageField(upload_to=customer_avatar_path, blank=True, null=True)
+    sku= models.CharField(db_column="sku", blank=True, null=True, max_length=300)
     name=EncryptedCharField(db_column="name", blank=True, null=True, max_length=300)
     email = EncryptedCharField(db_column="email", blank=True, null=True, max_length=300)
     phone = EncryptedCharField(db_column="phone", blank=True, null=True, max_length=20)
