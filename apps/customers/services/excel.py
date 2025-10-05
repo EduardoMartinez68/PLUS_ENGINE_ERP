@@ -183,17 +183,15 @@ def get_the_data_of_the_file_excel(excel_file)->list:
                 "number_of_price_of_sale": row[28] if len(row) > 28 else None,
             })
 
-        return {
-            "success": True,
-            "answer": "rolesAndPermissions.message.error.company-is-required",
-            "error": ""
-        }    
+        return data
     except Exception as e:
-        return {
-            "success": False,
-            "answer": "rolesAndPermissions.message.error.company-is-required",
-            "error": e
-        } 
+        return e
 
-def upload_excel_customers(excel_file)->bool:
+def upload_customers_with_excel(excel_file)->bool:
     data_customers=get_the_data_of_the_file_excel(excel_file) 
+
+    return {
+        "success": True,
+        "answer": data_customers,
+        "error": ''
+    }  

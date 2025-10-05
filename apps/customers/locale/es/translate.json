@@ -256,9 +256,15 @@
   "customers.btn.upload-excel":"Seleccionar Archivo de Excel",
 
 
+  "customers.button.import":"Importar",
+  "customers.button.nothing-file-selected":"Ningun archivo seleccionado",
+  "customers.message.the-file-is-very-heavy":"El archivo que intentas subir pesa",
+  "customers.message.the-maximum-allowed-is":"El máximo permitido es",
 
-
-
+  "customers.title.the-file-was-upload-with-sueccess":"El archivo se subio correctamente",
+  "customers.message.the-file-was-upload-with-sueccess":"Todos tus clientes fueron subidos exitosamente a la base de datos",
+  "customers.title.the-file-not-was-upload-with-sueccess":"El archivo no se subio",
+  "customers.message.the-file-not-was-upload-with-sueccess":"El archivo no se pudo subir correctamente al servidor intenatlo mas tarde.",
 
   "customers.excel.name": "Nombre *",
   "customers.excel.email": "Correo",

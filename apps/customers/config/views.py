@@ -2,7 +2,7 @@
 from django.contrib.auth.decorators import login_required
 from ..services.customer_source import get_customer_source, add_a_new_source, update_source, delete_a_source_with_his_id, get_source_by_id, get_customer_source_select
 from ..services.type_customer import delete_type_customer_service, edit_type_customer_service, add_type_customer_service, search_type_customer_for_id_service, search_type_customer_service
-from ..services.excel import create_excel, upload_excel_customers
+from ..services.excel import create_excel, upload_customers_with_excel
 from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, change_status_of_the_customer, update_customer
 from ..models import Customer, CustomerType
 from django.http import HttpResponse
@@ -267,7 +267,7 @@ def upload_excel_customers(request):
             excel_file = request.FILES['file']
     
             #we will see if can save the information in the database
-            answer=upload_excel_customers(excel_file)
+            answer=upload_customers_with_excel(excel_file)
             return JsonResponse(
                 {"success": answer["success"], "answer": answer["answer"], "error": answer["error"]},
                 status=200
@@ -283,7 +283,7 @@ def upload_excel_customers(request):
             excel_file = request.FILES['file']
     
             #we will see if can save the information in the database
-            answer=upload_excel_customers(excel_file)
+            answer=upload_customers_with_excel(excel_file)
             return JsonResponse(
                 {"success": answer["success"], "answer": answer["answer"], "error": answer["error"]},
                 status=200

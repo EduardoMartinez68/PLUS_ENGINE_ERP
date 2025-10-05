@@ -130,7 +130,7 @@ def change_status_customer(request):
     ) 
 
 #--------------------------excel---------------------------------
-from ..services.excel import create_excel, upload_excel_customers
+from ..services.excel import create_excel, upload_customers_with_excel
 
 def upload_customer_with_excel(request):
     return render(request, 'upload_customer.html') 
@@ -144,7 +144,7 @@ def upload_excel_customers(request):
         excel_file = request.FILES['file']
 
         #we will see if can save the information in the database
-        answer=upload_excel_customers(excel_file)
+        answer=upload_customers_with_excel(excel_file)
         return JsonResponse(
             {"success": answer["success"], "answer": answer["answer"], "error": answer["error"]},
             status=200
