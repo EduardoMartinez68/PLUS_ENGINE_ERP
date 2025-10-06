@@ -3,7 +3,8 @@
         "icon":"fi fi-rr-employee-man-alt"
     },
     "permissions": [
-        "view_employee",
+        "view_employee_of_my_branch",
+        "view_employee_of_all_the_branch",
         "add_employee",
         "update_employee",
         "delete_employee",
@@ -13,15 +14,15 @@
     "translate":{
         "es": {
             "app_name": "Empleados",
-            "description": "Gestiona la información de los empleados de la empresa y sucursales.",
+            "description": "Administra y mantiene actualizada toda la información de los empleados de la empresa y sus sucursales, incluyendo datos de contacto, roles y departamentos.",
 
-
-            "view_employee": "Ver Empleados",
-            "add_employee": "Agregar nuevos empleados",
-            "update_employee": "Actualizar información de los empleados",
-            "delete_employee": "Eliminar empleados de la empresa",
-            "recover_employee": "Restaurar un Empleado eliminado",
-            "upload_employee": "Subir empleados con un archivo xlsx de forma masiva"
+            "view_employee_of_my_branch": "Permite visualizar los datos completos de los empleados que pertenecen únicamente a su propia sucursal.",
+            "view_employee_of_all_the_branch": "Permite visualizar los datos completos de todos los empleados de todas las sucursales de la empresa.",
+            "add_employee": "Permite registrar nuevos empleados en el sistema, asignándoles sucursal, rol y departamento.",
+            "update_employee": "Permite modificar o actualizar la información existente de los empleados, incluyendo datos personales, rol y departamento.",
+            "delete_employee": "Permite eliminar empleados del sistema de forma permanente, restringiendo su acceso y visibilidad.",
+            "recover_employee": "Permite restaurar empleados previamente eliminados, recuperando toda su información y permisos asociados.",
+            "upload_employee": "Permite importar múltiples empleados de manera masiva mediante un archivo XLSX, agilizando la carga de datos."
         }
     }
 }

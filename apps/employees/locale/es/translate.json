@@ -1,3 +1,9 @@
 {
-    "employees.title.employees":"Empleados"
+    "employees.title.employees":"Empleados",
+
+    "employees.title.filter-employee":"Filtrar",
+    "employees.label.select-the-branch":"Sucursal",
+    "employees.label.status-employee":"Estados del empleado",
+    "employees.select.employees-activate":"Empleados Activos",
+    "employees.select.employees-delete":"Empelados Eliminados"
 }

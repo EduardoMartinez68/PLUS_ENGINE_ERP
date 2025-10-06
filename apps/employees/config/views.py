@@ -1,5 +1,6 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
+from apps.employees.services.branch import get_information_of_the_branch
 from apps.employees.services.employees import get_employees_for_search
 from ..plus_wrapper import Plus
 import json
@@ -28,16 +29,19 @@ def search_employee(request, activated):
                 {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
                 status=200
             )
-        
-    
     
         try:
-            search = request.GET.get("query")
+            all_filters = request.GET.get("allFilters", "")
+            values = all_filters.split(",")
+            search=values[0]
+            branch_name = values[1].strip() if values[1] and values[1].strip() else request.user.branch
+            some_flag = values[2] if values[2] not in (None, "") else True
+    
             result = get_employees_for_search(
                 company=request.user.company,
-                branch=request.user.branch,
+                branch= branch_name,
                 sku=search,
-                activated=activated
+                activated=some_flag
             )
     
             return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
@@ -62,16 +66,82 @@ def search_employee(request, activated):
                 {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
                 status=200
             )
-        
-    
     
         try:
-            search = request.GET.get("query")
+            all_filters = request.GET.get("allFilters", "")
+            values = all_filters.split(",")
+            search=values[0]
+            branch_name = values[1].strip() if values[1] and values[1].strip() else request.user.branch
+            some_flag = values[2] if values[2] not in (None, "") else True
+    
             result = get_employees_for_search(
                 company=request.user.company,
-                branch=request.user.branch,
+                branch= branch_name,
                 sku=search,
-                activated=activated
+                activated=some_flag
+            )
+    
+            return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
+    
+        except Exception as e:
+            return JsonResponse({
+                "success": False,
+                "answer": [],
+                "error": str(e)
+            }, status=500) 
+
+@login_required(login_url='login')
+def search_branch(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == "POST":
+            return JsonResponse({
+                "success": False,
+                "answer": [],
+                "error": "Method not allowed."
+            }, status=405)  
+        
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_employee_of_all_the_branch'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
+        try:
+            search = request.GET.get("query")
+            result = get_information_of_the_branch(
+                company=request.user.company,
+                name=search
+            )
+    
+            return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
+    
+        except Exception as e:
+            return JsonResponse({
+                "success": False,
+                "answer": [],
+                "error": str(e)
+            }, status=500) 
+    else:
+        if request.method == "POST":
+            return JsonResponse({
+                "success": False,
+                "answer": [],
+                "error": "Method not allowed."
+            }, status=405)  
+        
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_employee_of_all_the_branch'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
+        try:
+            search = request.GET.get("query")
+            result = get_information_of_the_branch(
+                company=request.user.company,
+                name=search
             )
     
             return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 

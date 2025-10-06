@@ -109,6 +109,8 @@
 }
 
 </style>
+
+
 <!---seeker---->
 <div class="row">
     <div class="col-9">
@@ -117,15 +119,31 @@
     <div class="col-3 p-3">
         <plus-search input_id="search-employee">
             <search-option>
-                <button class="btn btn-transparent"><i class="fi fi-rr-settings-sliders"></i></button>
+                <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-employee')"><i class="fi fi-rr-settings-sliders"></i></button>
             </search-option>
             <search-option>
-                <button class="btn btn-add" onclick="window.show_pop('pop-form-departament')">+</button>
+                <button class="btn btn-add" onclick="window.show_pop('pop-filter-employee')">+</button>
             </search-option>
         </plus-search>
     </div>
 </div>
 
+<message-pop title="employees.title.filter-employee" name="pop-filter-employee">
+    <div class="row section">
+        <div class="col">
+            <plus-select label="employees.label.select-the-branch" link="/employees/search_branch/" method="GET" value="{{ request.user.branch.id }}" data-text="{{ request.user.branch }}" id="branch-id-select">
+
+            </plus-select>
+        </div>
+        <div class="col">
+            <plus-select label="employees.label.status-employee" value="true" id="status-employe">
+                <option value="true" t="employees.select.employees-activate"></option>
+                <option value="false" t="employees.select.employees-delete"></option>
+            </plus-select>
+        </div>
+    </div>
+    <button class="btn btn-edit btn-success" t="message.success" onclick="window.hide_pop('pop-filter-employee')"></button>
+</message-pop>
 
 <!---table of the departament--->
 <div class="plus-departament-dashboard p-4" id="employee-list">
@@ -215,7 +233,7 @@
 
     //here we will to start the container dynamic of the employees
     window.update_container_with_seeker(
-        'search-employee',
+        ['search-employee', 'branch-id-select', 'status-employe'],
         'employee-list',
         get_struct_div(),
         '/employees/search_employee/1/',
