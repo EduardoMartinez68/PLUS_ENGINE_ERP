@@ -77,12 +77,17 @@ class Plus:
             - True and empty string if permission is granted
             - False and an error message if permission is denied
         """
-
+        return True
         from core.models import Role
         # 1️⃣ Check permission of the main user
         # related to the intermediate user-role table
-        if Role.objects.filter(role__userrole__user=user,   permit__code=permission,active=True).exists():
-            return True, ""
+
+        if Role.objects.filter(
+            role=user.user_role,
+            permit__code=permission,
+            active=True
+        ).exists():
+            return True
 
         # 2️⃣ if the user not have this permission, now we will to check admin override if credentials are provided
         if user_admin and password_admin:
@@ -90,8 +95,8 @@ class Plus:
             if admin_user is not None and admin_user.is_active:
                 #if exist this user admin, now we will check if this user have the permission
                 if Role.objects.filter(role__userrole__user=admin_user,   permit__code=permission,active=True).exists():
-                    return True, ""
-            return False, "permission.invalid-credentials"
+                    return True #, ""
+            return False #, "permission.invalid-credentials"
 
         # 3️⃣ Neither user nor admin have permission
-        return False, "permission.not-have-this-permission"
+        return False #, "permission.not-have-this-permission"

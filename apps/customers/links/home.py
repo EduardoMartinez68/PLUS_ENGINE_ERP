@@ -1,12 +1,7 @@
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from datetime import datetime
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 import json
-from django.http import HttpResponse
-from ..models import Customer, CustomerType
 from ..plus_wrapper import Plus
 
 def customers_home(request):

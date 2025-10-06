@@ -1,0 +1,27 @@
+{
+    "character":{
+        "icon":"fi fi-rr-employee-man-alt"
+    },
+    "permissions": [
+        "view_employee",
+        "add_employee",
+        "update_employee",
+        "delete_employee",
+        "recover_employee",
+        "upload_employee"
+    ], 
+    "translate":{
+        "es": {
+            "app_name": "Empleados",
+            "description": "Gestiona la información de los empleados de la empresa y sucursales.",
+
+
+            "view_employee": "Ver Empleados",
+            "add_employee": "Agregar nuevos empleados",
+            "update_employee": "Actualizar información de los empleados",
+            "delete_employee": "Eliminar empleados de la empresa",
+            "recover_employee": "Restaurar un Empleado eliminado",
+            "upload_employee": "Subir empleados con un archivo xlsx de forma masiva"
+        }
+    }
+}

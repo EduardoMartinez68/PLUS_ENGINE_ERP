@@ -23,12 +23,12 @@ def create_app(app_name):
 
     # Crear config.yaml
     config_content = f"""
-        name: "{app_name}"
-        appName: "{app_name}"
-        icon: "{app_name}/icon.webp"
-        path: "/{app_name}"
-        dbInit: true
-        permissionsFile: 'permissions.json'
+    name: "{app_name}"
+    appName: "{app_name}"
+    icon: "{app_name}/icon.webp"
+    path: "/{app_name}"
+    dbInit: true
+    permissionsFile: 'permissions.json'
     """
     with open(os.path.join(base_path, 'config.yaml'), 'w', encoding='utf-8') as f:
         f.write(config_content)
@@ -68,19 +68,8 @@ def {app_name}_home(request):
 
 def create_web_html(app_name):
     return f"""
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
         <title>Welcome to {app_name}</title>
         <style>
-            body {{
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background: #f0f4f8;
-                color: #333;
-                text-align: center;
-                padding: 50px;
-            }}
             h1 {{
                 color: #007ACC;
                 margin-bottom: 20px;
@@ -97,13 +86,9 @@ def create_web_html(app_name):
                 font-weight: bold;
             }}
         </style>
-    </head>
-    <body>
         <h1>Welcome to your app <span class="highlight">{app_name}</span> in PLUS</h1>
         <p>Thank you for choosing our platform. This app is designed to help you manage your <strong>{app_name}</strong> efficiently and effortlessly.</p>
         <p>Explore the features and enjoy a seamless experience!</p>
-    </body>
-    </html>
     """
 
 if __name__ == '__main__':

@@ -40,7 +40,7 @@
             "delete_type_customer": "Eliminar las Categorias de los Clientes",
 
             "view_source_customer": "Ver los diferentes Medios de Captacion que existen de los Clientes",
-            "add_source_customer": "Agregar un nuevo Medios de Captacion de Clientes",
+            "add_source_customer": "Agregar nuevos Medios de Captacion de Clientes",
             "update_source_customer": "Actualizar los Medios de Captacion de los Clientes",
             "delete_source_customer": "Eliminar los Medios de Captacion de los Clientes"
         }
