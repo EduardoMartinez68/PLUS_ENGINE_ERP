@@ -25,7 +25,7 @@ def search_users_in_company(user, search_name=None, limit=20):
             users.append({
                 "id": u.id,
                 "text": u.username,
-                "photo": u.avatar.url if u.avatar else '/static/img/profile.webp',
+                "photo": u.avatar.url if u.avatar else '/static/img/employees-select.webp',
             })
 
         return {"success": True, "answer": users, "error": None}

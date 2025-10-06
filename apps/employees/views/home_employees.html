@@ -117,6 +117,9 @@
     <div class="col-3 p-3">
         <plus-search input_id="search-employee">
             <search-option>
+                <button class="btn btn-transparent"><i class="fi fi-rr-settings-sliders"></i></button>
+            </search-option>
+            <search-option>
                 <button class="btn btn-add" onclick="window.show_pop('pop-form-departament')">+</button>
             </search-option>
         </plus-search>
@@ -185,22 +188,22 @@
                 
                 <div class="plus-employee-info-card">
                     <div class="employee-photo">
-                        <img src="https://img.freepik.com/foto-gratis/hermosa-joven-doctora-mirando-camara-oficina_1301-7807.jpg?semt=ais_hybrid&w=740&q=80" alt="Foto del empleado">
+                        <img src=" { avatar } " alt="photo demployee">
                     </div>
                     <div class="employee-info">
-                        <h3 class="employee-name">Dr. Juan Pérez</h3>
-                        <p class="employee-branch"><i class="fi fi-rs-building"></i> Clínica Vida - Sucursal Roma</p>
+                        <h3 class="employee-name">{name}</h3>
+                        <p class="employee-branch"><i class="fi fi-rs-building"></i> { branch }</p>
                         <div class="employee-tags">
-                            <span class="tag-department dentista">Odontología</span>
-                            <span>● Dentista</span>
+                            <span class="tag-department dentista">{ department }</span>
+                            <span>● { role }</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="employee-contact p-2">
-                    <p> <i class="fi fi-rr-envelope"></i> juan.perez@clinicavida.com</p>
-                    <p><i class="fi fi-brands-whatsapp"></i> +52 55 1234 5678</p>
-                    <p><i class="fi fi-rr-phone-flip"></i> (55) 4321 8765</p>
+                    <p> <i class="fi fi-rr-envelope"></i> { email } </p>
+                    <p><i class="fi fi-brands-whatsapp"></i> { cellphone }</p>
+                    <p><i class="fi fi-rr-phone-flip"></i> { phone }</p>
                 </div>
             </div>
         `

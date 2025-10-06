@@ -29,14 +29,14 @@ def search_department_for_filter(user, search=None, activated=None, limit=20):
             manager_data = {
                 "id": '',
                 "name": '',
-                "photo": '/static/img/profile.webp'         
+                "photo": '/static/img/employees-select.webp'         
             }
 
             if hasattr(d, "manager") and d.manager:  #only if exist the data of the manager we will to save it
                 manager_data = {
                     "id": d.manager.id,
                     "name": d.manager.username,
-                    "photo": d.manager.avatar.url if d.manager.avatar else '/static/img/profile.webp',
+                    "photo": d.manager.avatar.url if d.manager.avatar else '/static/img/employees-select.webp',
                 }
 
             departments.append({

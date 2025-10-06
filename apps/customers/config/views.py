@@ -5,15 +5,10 @@ from ..services.type_customer import delete_type_customer_service, edit_type_cus
 from ..services.excel import create_excel, upload_customers_with_excel
 from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, change_status_of_the_customer, update_customer
 from ..plus_wrapper import Plus
-from ..models import Customer, CustomerType
-from django.http import HttpResponse
 import json
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime
-from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 @login_required(login_url='login')
 def customers_home(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':

@@ -9,13 +9,6 @@ def employees_home(request):
 
 from apps.employees.services.employees import get_employees_for_search
 def search_employee(request, activated):
-    #now we will see if the user have the permsssion need that the ERP need
-    if not Plus.this_user_have_this_permission(request.user, 'delete_source_customer'):
-        return JsonResponse(
-            {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
-            status=200
-        )
-    
     if request.method == "POST":
         return JsonResponse({
             "success": False,
@@ -23,11 +16,21 @@ def search_employee(request, activated):
             "error": "Method not allowed."
         }, status=405)  
     
+    #now we will see if the user have the permsssion need that the ERP need
+    if not Plus.this_user_have_this_permission(request.user, 'view_employee'):
+        return JsonResponse(
+            {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+            status=200
+        )
+    
+
+
     try:
         search = request.GET.get("query")
         result = get_employees_for_search(
-            user=request.user.company,
-            search=search,
+            company=request.user.company,
+            branch=request.user.branch,
+            sku=search,
             activated=activated
         )
 

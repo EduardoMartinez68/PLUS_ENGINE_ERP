@@ -5,3 +5,5 @@ path: "/medical_history"
 depends: ["customers"]
 dbInit: true
 permissionsFile: 'permissions.json'
+dependencies:
+  - "customers"
