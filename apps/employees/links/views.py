@@ -6,6 +6,8 @@ from ..plus_wrapper import Plus
 def employees_home(request):
     return render(request, 'home_employees.html')
 
+def add_employee(request):
+    return render(request, 'add_employee.html')
 
 from apps.employees.services.employees import get_employees_for_search
 def search_employee(request, activated):

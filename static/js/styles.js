@@ -471,7 +471,7 @@ class InputField extends HTMLElement {
 
     input.type = type;
     input.name = name;
-    input.id = this.getAttribute('id') || generate_unique_dom_id();
+    input.id = this.getAttribute('id') || name || generate_unique_dom_id();
 
     //her we will add more atributes to the input only if the user would like do 
     const pattern = this.getAttribute("pattern");

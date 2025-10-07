@@ -14,6 +14,13 @@ def employees_home(request):
         return render(request, 'home_employees.html')
 
 @login_required(login_url='login')
+def add_employee(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'add_employee.html')
+    else:
+        return render(request, 'add_employee.html')
+
+@login_required(login_url='login')
 def search_employee(request, activated):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == "POST":

@@ -42,6 +42,7 @@ def search_department_for_filter(user, search=None, activated=None, limit=20):
             departments.append({
                 "id": d.id,
                 "name": d.name,
+                "text": d.name,
                 "description": d.description or "",
                 "color": d.color or "#085DA9",
                 "activated": "active" if d.activated else "inactive",

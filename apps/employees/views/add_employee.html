@@ -1,0 +1,203 @@
+<form>
+<div class="container-section">
+    <div class="row section">
+        <div class="col-2">
+            <image-uploader id="avatar" name="avatar"></image-uploader>
+        </div>
+        <div class="col-10">
+            <plus-title name="name" label="employees.label.name-employee" placeholder="employees.placeholder.name-employee" required></plus-title>
+            <div class="row">
+              <div class="col">
+                <plus-select
+                  name="user_role"
+                  label="employees.label.user-role"
+                  link="rolesAndPermissions/get_information_of_the_role/1/"
+                  >
+                </plus-select>
+              </div>
+
+              <div class="col">
+                <plus-select
+                  name="user_department"
+                  label="employees.label.user-department"
+                  link="departament_employee/search_employee_department/1/"
+                  >
+                </plus-select>
+              </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row section">
+        <div class="col">
+            <input-field name="username"  label="employees.label.username" placeholder="employees.placeholder.username" required></input-field>
+        </div>
+    </div>
+
+    <div class="row section">
+        <div class="col">
+            <input-field name="email" type="email" label="employees.label.email" placeholder="employees.placeholder.email" required></input-field>
+        </div>
+    </div>
+
+    <div class="row section">
+      <div class="col">
+        <input-field
+          name="password"
+          type="password"
+          label="employees.label.password"
+          placeholder="employees.placeholder.password"
+          required>
+        </input-field>
+      </div>
+      <div class="col">
+        <input-field
+          name="confirm-password"
+          type="password"
+          label="employees.label.confirm-password"
+          placeholder="employees.placeholder.confirm-password"
+          required>
+        </input-field>     
+      </div>
+    </div>
+
+    <show-more text="employees.showmore.more-information" onclick="window.show_pop('pop-more-information')" description='({{employee.state}} {{employee.city}}.{{employee.country}})'></show-more>
+
+    <show-more text="employees.showmore.address" onclick="window.show_pop('pop-data-address')" description='({{employee.state}} {{employee.city}}.{{employee.country}})'></show-more>
+
+
+    <button class="btn btn-edit btn-success" t="btn.save"></button>
+</div>
+
+<message-pop title="employees.title.more-information" name="pop-more-information">
+    <div class="container-pop">
+        <div class="row section">
+          <div class="col">
+            <label t="employees.label.date_of_birth"></label>
+            <plus-date></plus-date>
+          </div>
+        </div>
+
+        <div class="row section">
+          <div class="col">
+            <input-field
+              name="phone"
+              type="text"
+              label="employees.label.phone"
+              placeholder="employees.placeholder.phone">
+            </input-field>
+          </div>
+          <div class="col">
+            <input-field
+              name="cellphone"
+              type="text"
+              label="employees.label.cellphone"
+              placeholder="employees.placeholder.cellphone">
+            </input-field>
+          </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+              <plus-select label="employees.label.language" value="{{ request.user.language }}">
+                <option value="es" t="Español" required></option>
+              </plus-select>
+            </div>
+            <div class="col">
+              <plus-select label="employees.label.timezone" name="timezone" required value="{{request.user.timezone}}">
+                <!-- México y América Central -->
+                <option value="America/Tijuana">(GMT-8) Tijuana, Baja California - México</option>
+                <option value="America/Mazatlan">(GMT-7) Mazatlán, Sinaloa - México</option>
+                <option value="America/Chihuahua">(GMT-7) Chihuahua - México</option>
+                <option value="America/Mexico_City">(GMT-6) Ciudad de México - México</option>
+                <option value="America/Merida">(GMT-6) Mérida, Yucatán - México</option>
+                <option value="America/Cancun">(GMT-5) Cancún, Quintana Roo - México</option>
+                <option value="America/Guatemala">(GMT-6) Guatemala</option>
+                <option value="America/El_Salvador">(GMT-6) El Salvador</option>
+                <option value="America/Tegucigalpa">(GMT-6) Honduras</option>
+                <option value="America/Managua">(GMT-6) Nicaragua</option>
+                <option value="America/Costa_Rica">(GMT-6) Costa Rica</option>
+                <option value="America/Panama">(GMT-5) Panamá</option>
+
+                <!-- Región Andina -->
+                <option value="America/Bogota">(GMT-5) Bogotá - Colombia</option>
+                <option value="America/Lima">(GMT-5) Lima - Perú</option>
+                <option value="America/Guayaquil">(GMT-5) Guayaquil - Ecuador</option>
+                <option value="America/Caracas">(GMT-4) Caracas - Venezuela</option>
+
+                <!-- Cono Sur -->
+                <option value="America/La_Paz">(GMT-4) La Paz - Bolivia</option>
+                <option value="America/Asuncion">(GMT-4) Asunción - Paraguay</option>
+                <option value="America/Santiago">(GMT-3) Santiago - Chile</option>
+                <option value="America/Argentina/Buenos_Aires">(GMT-3) Buenos Aires - Argentina</option>
+                <option value="America/Montevideo">(GMT-3) Montevideo - Uruguay</option>
+                <option value="America/Sao_Paulo">(GMT-3) São Paulo - Brasil</option>
+                <option value="America/Miquelon">(GMT-3) Saint Pierre y Miquelón</option>
+
+                <!-- Caribe -->
+                <option value="America/Havana">(GMT-5) La Habana - Cuba</option>
+                <option value="America/Santo_Domingo">(GMT-4) Santo Domingo - República Dominicana</option>
+                <option value="America/Puerto_Rico">(GMT-4) Puerto Rico</option>
+                <option value="America/Port_of_Spain">(GMT-4) Trinidad y Tobago</option>
+                <option value="America/Jamaica">(GMT-5) Jamaica</option>
+
+                <!-- Otros territorios -->
+                <option value="America/Belize">(GMT-6) Belice</option>
+                <option value="America/Guyana">(GMT-4) Guyana</option>
+                <option value="America/Paramaribo">(GMT-3) Surinam</option>
+              </plus-select>
+            </div>
+        </div>
+        <br>
+    </div>
+
+
+    <button class="btn btn-edit btn-success" t="message.success" onclick="hide_pop('pop-more-information')"
+        type="button"></button>
+</message-pop>
+
+<message-pop title="employees.title.address-of-the-employee" name="pop-data-address">
+    <div class="container-pop">
+        <div class="row section">
+            <div class="col">
+                <input-field type="text" label="employees.label.address" placeholder="employees.placeholder.address" name="address"
+                    value="{{employee.address}}"></input-field>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col">
+                <plus-country value="{{request.user.country}}"></plus-country>
+            </div>
+            <div class="col">
+                <input-field type="text" label="employees.label.postal_code" placeholder="employees.placeholder.postal_code" name="postal_code"
+                    value="{{employee.postal_code}}"></input-field>         
+            </div>
+        </div>
+        <br>
+    </div>
+
+
+    <button class="btn btn-edit btn-success" t="message.success" onclick="hide_pop('pop-data-address')"
+        type="button"></button>
+</message-pop>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</form>

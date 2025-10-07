@@ -5,5 +5,35 @@
     "employees.label.select-the-branch":"Sucursal",
     "employees.label.status-employee":"Estados del empleado",
     "employees.select.employees-activate":"Empleados Activos",
-    "employees.select.employees-delete":"Empelados Eliminados"
+    "employees.select.employees-delete":"Empelados Eliminados",
+
+    "employees.label.name-employee":"Nombre del Empleado *",
+    "employees.placeholder.name-employee":"Escribe el Nombre del Empleado",
+    "employees.label.username":"Nombre del usuario *",
+    "employees.placeholder.username":"Escribe la clave del empleado",
+    "employees.label.email":"Email del empleado *",
+    "employees.placeholder.email":"Ej. empleado@hotmail.com",
+    "employees.label.password":"Contrasena *",
+    "employees.placeholder.password":"**********",
+    "employees.label.confirm-password":"Confirmar contrasena *",
+    "employees.placeholder.confirm-password":"**********",
+    "employees.label.user-role":"Roles y Permisos *",
+    "employees.label.user-department":"Departamento *",
+    "employees.label.phone":"Telefono",
+    "employees.placeholder.phone":"13175550116",
+    "employees.label.cellphone":"Celular",
+    "employees.placeholder.cellphone":"+1 444 444 444",
+
+    "employees.showmore.more-information":"Mas informacion",
+    "employees.title.more-information":"information personal",
+    "employees.label.date_of_birth":"Cumpleanos",
+    "employees.label.timezone":"Zona Horaria",
+    "employees.label.language":"Idioma",
+
+    "employees.showmore.address":"Direccion",
+    "employees.title.address-of-the-employee":"Direccion del Empleado",
+    "employees.label.address":"Direccion del Empleado",
+    "employees.placeholder.address":"Escribe la Direccion del Empleado",
+    "employees.label.postal_code":"Codigo Postal",
+    "employees.placeholder.postal_code":"Escribe tu codigo postal"
 }

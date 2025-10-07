@@ -337,7 +337,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     # Additional employee information
     _address = models.BinaryField(db_column="address", blank=True, null=True)
-    country = models.CharField(max_length=2, blank=True, null=True)
+    country = models.CharField(max_length=2, blank=True, null=True, default='MX')
     postal_code = models.CharField(max_length=20, blank=True, null=True)
     _date_of_birth = models.BinaryField(db_column="date_of_birth", blank=True, null=True)  # iso string encrypted
     hiring_date = models.DateField(blank=True, null=True)

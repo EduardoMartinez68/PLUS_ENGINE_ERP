@@ -45,6 +45,7 @@ def get_role_of_the_company(user, name: str = '', page: int = 1, activated: bool
         {
             "id": role.id,
             "name": role.name,
+            "text": role.name,
             "description": role.description,
             "creation_date": role.creation_date,
             "activated": role.activated,
