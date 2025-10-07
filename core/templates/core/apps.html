@@ -40,7 +40,7 @@ apps-grid
 
 
 
-
+{% load static %}
 
 <style>
   /* Modal fullscreen */
@@ -482,8 +482,12 @@ window.addEventListener('resize', () => {
 
   <!-- Logo empresa -->
   <div class="info-branch">
-    <img src="https://pluspuntodeventa.com/img/ED%20PLUS%20(3).png" alt="" class="icon-company-menu">
-    <span class="name_company">{{ branch.branch_name }}</span>
+    {% if request.user.company.logo %}
+      <img src="{{ request.user.company.logo.url }}" alt="{{ request.user.company.company_name }}" class="icon-company-menu">
+    {% else %}
+      <img src="{% static 'img/logo.png' %}" alt="icon for default" class="icon-company-menu">
+    {% endif %}
+    <span class="name_company">{{ request.user.branch.branch_name }}</span>
   </div>
 
 
@@ -494,13 +498,17 @@ window.addEventListener('resize', () => {
     {% endfor %}
   </div>
 
-  <!-- Info empleado -->
   <div class="info-employee">
-    <img src="https://thumbs.dreamstime.com/b/imagen-de-perfil-un-empleado-cauc%C3%A1sico-posando-en-el-cargo-joven-y-feliz-trabajador-masculino-mira-la-c%C3%A1mara-trabajo-oficina-190186649.jpg" alt="" class="image-icon-user-menu">
+    {% if request.user.avatar %}
+      <img src="{{ request.user.avatar.url }}" alt="Avatar de {{ request.user.username }}" class="image-icon-user-menu">
+    {% else %}
+      <img src="{% static 'img/photo-profile.webp' %}" alt="avatar for default" class="image-icon-user-menu">
+    {% endif %}
+
     <div class="employee-details">
-      <label class="name-menu">{{ user.username }}</label>
-      <label class="departament-menu">Cajas</label>
-      <label class="area-menu">Ventas</label>
+      <label class="name-menu">{{ request.user.username }}</label>
+      <label class="departament-menu">{{ request.user.user_department.name }}</label>
+      <label class="area-menu">{{ request.user.user_role.name }}</label>
     </div>
   </div>
 
