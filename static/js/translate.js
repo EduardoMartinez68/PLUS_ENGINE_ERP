@@ -4,6 +4,11 @@
 let languageUser = 'es'//'pl' 'es'; //get the language of the user example (es,pl,en,fr,etc)
 let translateOld={};
 let lastUrl=''; //here we will save the last loaded URL for avoid loading the same URL again
+let numberLanguageLoad=0;
+let allTheDictionary=[];
+const MAX_DICTIONARIES = 5;
+
+/*
 async function load_language(langUrl) {
   //her we will check if the langUrl is equal to the lastUrl, if it is equal we will not load the language again
   if (lastUrl === langUrl) {
@@ -11,6 +16,7 @@ async function load_language(langUrl) {
     apply_translation_to_the_web(translateOld);
     return;
   }
+  //
 
   //if we not have save the language, will load the language
   try {
@@ -19,9 +25,83 @@ async function load_language(langUrl) {
     translateOld = translations;
     apply_translation_to_the_web(translations);
     lastUrl = langUrl;
+
+
   } catch (err) {
-    console.error('Error al cargar el idioma:', err);
+    console.error('Error to load the language:', err);
   }
+}
+*/
+
+async function load_language(langUrl, first=true) {
+  if (lastUrl === langUrl) {
+    //if we have save the translation of the web, we will apply the translation to the web evit load the language again
+    apply_translation_to_the_web(existing.dictionary);
+    return;
+  }
+
+  const MAX_DICTIONARIES = 5;
+
+  //we will see if already exist the dictionary in the memory
+  const existing = allTheDictionary.find(d => d.name === langUrl);
+  if (existing) {
+    apply_translation_to_the_web(existing.dictionary);
+    return;
+  }
+
+  //if not exist the dictionary now we will the download and save in memory
+  try {
+    const res = await fetch(langUrl);
+    const translations = await res.json();
+
+    // if the memory of the cache be full, delete the more old
+    if (allTheDictionary.length >= MAX_DICTIONARIES) {
+      allTheDictionary.shift();
+    }
+
+    // save the new dictionary in memory
+    allTheDictionary.push({ name: langUrl, dictionary: translations });
+
+    //now we will see if the app have other app like dependencies for load his translate also
+    //get the path of the information of the app
+    const configUrl = get_base_path_from_lang_url(langUrl) + "config.yaml";
+    const infoConfig=await load_config(configUrl);
+
+    //if this app have dependencies, now we will to load his language
+    if (infoConfig && infoConfig.dependencies) {
+      for(var i=0;i<infoConfig.dependencies.length;i++){
+        const link=`static/${infoConfig.dependencies[i]}/locale/${languageUser}/translate.json`;
+        await load_language(link, false);
+      }
+    }
+
+    // apply the translate
+    if(first){
+      lastUrl=langUrl;
+    }
+    apply_translation_to_the_web(translations);
+  } catch (err) {
+    console.error('Error loading dictionary:', err);
+  }
+}
+
+async function load_config(configUrl) {
+  try {
+    const response = await fetch(configUrl);
+    if (!response.ok) throw new Error(`No can load the file YAML in the path: ${configUrl}`);
+
+    const yamlText = await response.text();
+    const config = jsyaml.load(yamlText);
+
+    return config;
+  } catch (error) {
+    console.error('❌ Error to load YAML:', error);
+    return null;
+  }
+}
+
+function get_base_path_from_lang_url(langUrl) {
+  return langUrl.replace(/locale\/.*\/translate\.json$/, "");
 }
 
 function get_language_of_the_system() {
@@ -139,8 +219,20 @@ function translate_text(key) {
   // Check if the key exists in the provided listLanguage
   //if not exist in the listLanguage, we will return the key
   let textTranslate=t(key); 
-  textTranslate=translateOld[textTranslate] || textTranslate;
 
+  // if we already found the work success, return the meaning
+  if (textTranslate !== key) return textTranslate;
+
+  //now if not found the work in the dictionary global, we will see if can translate the word with help of all the dictionary that exist in memory
+  for (const infoDictionary of allTheDictionary) {
+    //if we found the work in a dictionary, break the loop and save the translate
+    const possibleTranslation = infoDictionary.dictionary[textTranslate];
+    if (possibleTranslation) {
+      textTranslate = possibleTranslation;
+      break; 
+    }
+  }
+  
   return textTranslate;
 }
 
