@@ -8,6 +8,16 @@ let numberLanguageLoad=0;
 let allTheDictionary=[];
 const MAX_DICTIONARIES = 5;
 
+//here we will see if exist in memory the dictionary that the user can save
+const storedDict = localStorage.getItem('allTheDictionary');
+if (storedDict) {
+  try {
+    allTheDictionary = JSON.parse(storedDict);
+  } catch (err) {
+    console.warn("Error to load the dictionaries from localStorage", err);
+  }
+}
+
 /*
 async function load_language(langUrl) {
   //her we will check if the langUrl is equal to the lastUrl, if it is equal we will not load the language again
@@ -70,11 +80,18 @@ async function load_language(langUrl, first=true) {
     const infoConfig=await load_config(configUrl);
 
     //if this app have dependencies, now we will to load his language
-    if (infoConfig && infoConfig.dependencies) {
+    if (infoConfig && infoConfig?.dependencies) {
       for(var i=0;i<infoConfig.dependencies.length;i++){
         const link=`static/${infoConfig.dependencies[i]}/locale/${languageUser}/translate.json`;
         await load_language(link, false);
       }
+    }
+
+    //save in localStorage
+    try {
+      localStorage.setItem('allTheDictionary', JSON.stringify(allTheDictionary));
+    } catch(e) {
+      console.warn("Not can save the dictionaries", e);
     }
 
     // apply the translate
