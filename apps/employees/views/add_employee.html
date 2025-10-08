@@ -9,19 +9,26 @@
             <div class="row">
               <div class="col">
                 <plus-select
+                  id="user_role"
                   name="user_role"
                   label="employees.label.user-role"
-                  link="rolesAndPermissions/get_information_of_the_role/1/"
+                  link="/rolesAndPermissions/get_information_of_the_role/1/"
+                  add="open_pop_role"
+                  edit_data="open_pop_edit_role"
+                  method="GET"
                   >
                 </plus-select>
               </div>
 
               <div class="col">
                 <plus-select
+                  id="user_department"
                   name="user_department"
                   label="employees.label.user-department"
-                  link="departament_employee/search_employee_department/1/"
+                  link="/departament_employee/search_employee_department/1/"
                   add="open_pop_add_departament"
+                  edit_data="open_pop_edit_departament"
+                  method="GET"
                   >
                 </plus-select>
               </div>
@@ -206,3 +213,27 @@
 
 <!---here we will to create the pop for edit and add new departament for the employees--->
 {% include "partials_departament_employee/pop_add_and_edit_departament.html" %}
+
+<!---here we will to create the pop for edit and add new role and permissions for the employees--->
+<message-pop title="employees.title.role" name="pop-role-and-permissions">
+  {% include 'partials_rolesAndPermissions/from_role.html' %}
+
+
+</message-pop>
+
+
+
+<script>
+  function open_pop_role(){
+    window.show_pop('pop-role-and-permissions')
+  }
+
+  async function open_pop_edit_role(id){
+    await update_form_for_edit_role(id);
+    window.show_pop('pop-role-and-permissions')
+  }
+
+  (async ()=>{
+    await create_form_of_the_role(); //first we will to create all the form
+  })()
+</script>

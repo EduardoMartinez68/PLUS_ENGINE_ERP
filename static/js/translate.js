@@ -34,11 +34,13 @@ async function load_language(langUrl) {
 */
 
 async function load_language(langUrl, first=true) {
+  /*
   if (lastUrl === langUrl) {
     //if we have save the translation of the web, we will apply the translation to the web evit load the language again
     apply_translation_to_the_web(existing.dictionary);
     return;
   }
+  */
 
   const MAX_DICTIONARIES = 5;
 

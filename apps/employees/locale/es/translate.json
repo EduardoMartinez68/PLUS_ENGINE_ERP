@@ -35,5 +35,7 @@
     "employees.label.address":"Direccion del Empleado",
     "employees.placeholder.address":"Escribe la Direccion del Empleado",
     "employees.label.postal_code":"Codigo Postal",
-    "employees.placeholder.postal_code":"Escribe tu codigo postal"
+    "employees.placeholder.postal_code":"Escribe tu codigo postal",
+
+    "employees.title.role":"Roles y Permisos"
 }

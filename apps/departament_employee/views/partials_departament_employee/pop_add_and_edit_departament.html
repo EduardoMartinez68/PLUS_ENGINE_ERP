@@ -63,7 +63,9 @@
         if(backend.success){
             window.hide_pop('pop-form-departament')
             window.restart_form('form-departament') //restart the form
-            await update_information_container_departament();
+            if (typeof update_information_container_departament === "function") {
+                await update_information_container_departament();
+            }
             window.show_alert('success', 'departament_employee.title.the-departament-was-added-with-success', 'departament_employee.message.the-departament-was-added-with-success', backend.error || '')
         }else{
             window.show_alert('error', 'departament_employee.error.the-departament-not-was-added-with-success', backend.message, backend.error || '')
@@ -85,7 +87,10 @@
             //if the departament was update we will show a message of success or a message of error 
             const backend=await window.send_form_to_the_server('form-departament-edit', 'departament_employee/edit_departament/');
             if(backend.success){
-                await update_information_container_departament();
+                //this is for know if this be in like a message pop in other app or is in the app father 
+                if (typeof update_information_container_departament === "function") {
+                    await update_information_container_departament();
+                }
                 window.restart_form('form-departament-edit') //restart the form
                 window.hide_pop('pop-form-edit-departament')
                 window.show_alert('success', 'departament_employee.title.departament-update', 'departament_employee.message.the-departament-was-update', backend.error || '')
@@ -155,5 +160,10 @@
 
     function open_pop_add_departament(){
         window.show_pop('pop-form-departament')
+    }
+
+    async function open_pop_edit_departament(id){
+        await get_information_for_edit_departament(id+'')
+        window.show_pop('pop-form-edit-departament')
     }
 </script>
