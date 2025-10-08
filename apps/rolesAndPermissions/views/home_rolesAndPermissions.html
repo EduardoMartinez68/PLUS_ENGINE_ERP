@@ -47,7 +47,9 @@
     }
 
     async function delete_role(role_id) {
-        if (await show_message_question('rolesAndPermissions.message.question.title.do-you-like-delete-this-role', 'rolesAndPermissions.message.question.description.do-you-like-delete-this-role')) {
+        
+        if (await show_message_question(window.translate_text('rolesAndPermissions.message.question.title.do-you-like-delete-this-role'), 
+        window.translate_text('rolesAndPermissions.message.question.description.do-you-like-delete-this-role'))) {
             role_id = String(role_id).trim();
             const backend = await send_message_to_the_server('rolesAndPermissions/change_status/', { role_id: role_id, status: false }, true);
             if (backend.success) {

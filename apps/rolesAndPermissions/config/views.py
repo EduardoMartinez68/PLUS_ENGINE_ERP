@@ -172,7 +172,7 @@ def change_status(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == "POST":
             body_json = json.loads(request.body)
-            role_id = body_json.get("role_id")
+            role_id = body_json.get("role_id") or body_json.get("id") or ""
             status = Plus.to_bool(body_json.get("status"))
             result = change_status_of_a_role(request.user, role_id, status)
             return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
@@ -181,7 +181,7 @@ def change_status(request):
     else:
         if request.method == "POST":
             body_json = json.loads(request.body)
-            role_id = body_json.get("role_id")
+            role_id = body_json.get("role_id") or body_json.get("id") or ""
             status = Plus.to_bool(body_json.get("status"))
             result = change_status_of_a_role(request.user, role_id, status)
             return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
