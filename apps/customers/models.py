@@ -8,7 +8,7 @@ import uuid
 #here load the key of encrypt for encrypt the information of the customer
 from cryptography.fernet import Fernet
 import os
-from encrypted_model_fields.fields import EncryptedCharField
+from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField
 
 key = os.getenv("DATA_ENCRYPTION_KEY")
 cipher = Fernet(key.encode())

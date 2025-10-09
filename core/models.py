@@ -11,7 +11,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from PIL import Image
 from cryptography.fernet import Fernet
-
+from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField
 
 key = os.getenv("DATA_ENCRYPTION_KEY")
 cipher = Fernet(key.encode())
@@ -324,9 +324,8 @@ class Setting(models.Model):
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     # Required fields
     avatar = models.ImageField(upload_to=user_avatar_path, blank=True, null=True)
-    _name = models.BinaryField(db_column="name", blank=True, null=True)
-    email_hash = models.CharField(max_length=64, unique=True, db_index=True)
-    _email = models.BinaryField(db_column="email", blank=True, null=True)
+    name = EncryptedCharField(db_column="name", blank=True, null=True, max_length=600)
+    email = EncryptedCharField(db_column="email", blank=True, null=True, max_length=600)
     username = models.CharField(max_length=600)
 
     # Relationship with company and branch
@@ -336,13 +335,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     user_department = models.ForeignKey(UserDepartment, on_delete=models.SET_NULL, null=True, db_column='id_user_department')
 
     # Additional employee information
-    _address = models.BinaryField(db_column="address", blank=True, null=True)
+    address = EncryptedTextField(db_column="address", blank=True, null=True)
     country = models.CharField(max_length=2, blank=True, null=True, default='MX')
     postal_code = models.CharField(max_length=20, blank=True, null=True)
-    _date_of_birth = models.BinaryField(db_column="date_of_birth", blank=True, null=True)  # iso string encrypted
+    date_of_birth = models.DateField(db_column="date_of_birth", blank=True, null=True)  # iso string encrypted
     hiring_date = models.DateField(blank=True, null=True)
-    _cellphone = models.BinaryField(db_column="cellphone", blank=True, null=True)
-    _phone = models.BinaryField(db_column="phone", blank=True, null=True)
+    cellphone = EncryptedCharField(db_column="cellphone", blank=True, null=True,  max_length=20)
+    phone = EncryptedCharField(db_column="phone", blank=True, null=True,  max_length=20)
 
     #options ubication 
     timezone = models.CharField(max_length=50, blank=True, default='America/Mexico_City')
@@ -354,7 +353,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True)
 
     # Admin
-    USERNAME_FIELD = 'email_hash' #in the login your need calculate the has 
+    USERNAME_FIELD = 'email' #in the login your need calculate the has 
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
@@ -386,68 +385,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                 value = value.encode("utf-8")
             setattr(self, f"_{name}", cipher.encrypt(value))
 
-    # ----------------- properties públicas -----------------
-    @property
-    def email(self):
-        return self._get_field("email")
-
-    @email.setter
-    def email(self, value):
-        if value:
-            # almacenar hash para búsquedas/autenticación
-            self.email_hash = sha256_hex(value)
-            self._set_field("email", value)
-        else:
-            self._set_field("email", None)
-            self.email_hash = None
-
-    @property
-    def name(self):
-        return self._get_field("name")
-
-    @name.setter
-    def name(self, value):
-        self._set_field("name", value)
-
-    @property
-    def address(self):
-        return self._get_field("address")
-
-    @address.setter
-    def address(self, value):
-        self._set_field("address", value)
-
-    @property
-    def cellphone(self):
-        return self._get_field("cellphone")
-
-    @cellphone.setter
-    def cellphone(self, value):
-        self._set_field("cellphone", value)
-
-    @property
-    def phone(self):
-        return self._get_field("phone")
-
-    @phone.setter
-    def phone(self, value):
-        self._set_field("phone", value)
-
-    @property
-    def date_of_birth(self):
-        # almacenamos la fecha como ISO string en _date_of_birth (encrypted)
-        val = self._get_field("date_of_birth")
-        return val  # devuelves string ISO; conviente parsearlo fuera
-
-    @date_of_birth.setter
-    def date_of_birth(self, value):
-        # acepta date o string
-        if value is None:
-            self._set_field("date_of_birth", None)
-        else:
-            if hasattr(value, "isoformat"):
-                value = value.isoformat()
-            self._set_field("date_of_birth", value)
 
     # ----------------- save (avatar validations) -----------------
     def save(self, *args, **kwargs):
@@ -475,5 +412,5 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.email or self.email_hash
+        return self.email #or self.email_hash
     

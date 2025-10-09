@@ -11,90 +11,61 @@ from django.db import transaction
 from django.core.exceptions import ValidationError
 import hashlib
 
-def get_employees_for_search(company, branch=None, sku=None, activated=None, page=1, limit=20)->list:
+def get_employees_for_search(company, branch=None, sku=None, activated=None, page=1, limit=20) -> dict:
     """
-    Obtains employees filtered by company, branch, similar name, active status, role, or department.
-    Returns the first 20 results per page.
+    Get employees filtered by company, branch, username search, and activation status.
+    Returns paginated results including decrypted email, phone, and cellphone.
     """
 
-    # Base query: filter for company
     query = CustomUser.objects.filter(company=company)
 
-    #Filter for branch only if is send from the frontend
     if branch:
         query = query.filter(branch=branch)
 
-    # Filter by active/inactive
     if activated is not None:
-        activated = Plus.to_bool(activated)
-        query = query.filter(is_active=activated)
+        query = query.filter(is_active=Plus.to_bool(activated))
 
-    # Search by approximate name (case-insensitive)
+    # Solo búsqueda por username
     if sku:
         query = query.filter(username__icontains=sku)
 
-    # Only the fields that really matter (for performance)
-    query = query.select_related('user_role', 'user_department', 'branch')
+    # Cargar relaciones relacionadas
+    query = query.select_related("user_role", "user_department", "branch")
 
-    # Order by name
-    query = query.order_by('username')
+    # Ordenar por nombre real
+    query = query.order_by("name", "username")
 
-    # Pagination: 20 per page
     paginator = Paginator(query, limit)
     employees_page = paginator.get_page(page)
 
-    # Transform to clean and secure data
     results = []
     for emp in employees_page:
-        department_data = None
-        if emp.user_department:
-            department_data = {
-                "name": emp.user_department.name,
-                "color": emp.user_department.color,
-                "description": emp.user_department.description,
-            }
-
-        role_data = None
-        if emp.user_role:
-            role_data = {
-                "name": emp.user_role.name,
-                "description": emp.user_role.description,
-            }
-
-        branch_data = None
-        if emp.branch:
-            branch_data = {
-                "id": emp.branch.id,
-                "name": emp.branch.name_branch,
-                "nickname": emp.branch.nickname,
-                "email": emp.branch.email_branch,
-                "phone": emp.branch.phone,
-                "country": emp.branch.country,
-            }
-
         results.append({
             "id": emp.id,
-            "avatar": emp.avatar.url if emp.avatar else '/static/img/profile-employees.webp',
-            "name": emp.name or '',
-            "username": emp.username or '',
-            "email": emp.email or '',
-            "cellphone": emp.cellphone or '',
-            "phone": emp.phone or '',
-            "branch": branch_data["name"] if branch_data else '',
-            "department": department_data["name"] if department_data else '',
-            "department_color": department_data["color"] if department_data and department_data.get("color") else '#075FAC',
-            "role": role_data["name"] if role_data else '',
+            "avatar": emp.avatar.url if emp.avatar else "/static/img/profile-employees.webp",
+            "name": emp.name or "",
+            "username": emp.username or "",
+            "email": emp.email or "",
+            "cellphone": emp.cellphone or "",
+            "phone": emp.phone or "",
+            "branch": emp.branch.name_branch if emp.branch else "",
+            "department": emp.user_department.name if emp.user_department else "",
+            "department_color": emp.user_department.color if emp.user_department and emp.user_department.color else "#075FAC",
+            "role": emp.user_role.name if emp.user_role else "",
             "is_active": emp.is_active,
         })
 
     return {
         "success": True,
         "answer": results,
-        "error": '',
         "page": employees_page.number,
         "total_pages": paginator.num_pages,
-        "total_employees": paginator.count
+        "total_employees": paginator.count,
+        "error": "",
     }
+
+
+
 
 
 def sha256_hex(value: str) -> str:
@@ -129,8 +100,8 @@ def save_employee(company: Company, branch: Branch, data: dict)->list:
             return {"success": False, "message":"employees.message.the-password-is-need" ,"error": "Tha password not are equals"} 
         
         #here we will see if the email already exist in the system
-        if CustomUser.objects.filter(email_hash=sha256_hex(email)).exists():
-            return {"success": False, "message":"employees.message.email-exist", "error": "Email already registered."}
+        #if CustomUser.objects.filter(email_hash=sha256_hex(email)).exists():
+            #return {"success": False, "message":"employees.message.email-exist", "error": "Email already registered."}
         
         #now if exist all the field of the form and the email is valid, now we will to create to employee
         with transaction.atomic():

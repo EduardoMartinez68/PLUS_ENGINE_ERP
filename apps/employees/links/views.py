@@ -26,7 +26,7 @@ def add_employee(request):
             )
         
         result=save_employee(request.user.company,request.user.branch,data)
-        
+
         return JsonResponse({
             "success": result['success'],
             "message": result['message'],
@@ -59,29 +59,23 @@ def search_employee(request, activated):
             status=200
         )
 
-    try:
-        all_filters = request.GET.get("allFilters", "")
-        values = all_filters.split(",")
-        search=values[0]
-        branch_name = values[1].strip() if values[1] and values[1].strip() else request.user.branch
-        some_flag = values[2] if values[2] not in (None, "") else True
 
-        result = get_employees_for_search(
-            company=request.user.company,
-            branch= branch_name,
-            sku=search,
-            activated=some_flag
-        )
+    all_filters = request.GET.get("allFilters", "")
+    values = all_filters.split(",")
+    search=values[0]
+    branch_name = values[1].strip() if values[1] and values[1].strip() else request.user.branch
+    some_flag = values[2] if values[2] not in (None, "") else True
 
-        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
+    result = get_employees_for_search(
+        company=request.user.company,
+        branch= branch_name,
+        sku=search,
+        activated=some_flag
+    )
 
-    except Exception as e:
-        return JsonResponse({
-            "success": False,
-            "answer": [],
-            "error": str(e)
-        }, status=500) 
-    
+    return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
+
+
 
 from apps.employees.services.branch import get_information_of_the_branch
 def search_branch(request):
