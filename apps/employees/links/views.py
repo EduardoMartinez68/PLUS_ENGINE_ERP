@@ -6,7 +6,41 @@ from ..plus_wrapper import Plus
 def employees_home(request):
     return render(request, 'home_employees.html')
 
+
+from ..services.employees import save_employee
 def add_employee(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )   
+        
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'add_employee'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
+        result=save_employee(request.user.company,request.user.branch,data)
+        
+        return JsonResponse({
+            "success": result['success'],
+            "message": result['message'],
+            "error": result['error']
+        }, status=200) 
+    
+
+
+
+
+
+
+
+    
     return render(request, 'add_employee.html')
 
 from apps.employees.services.employees import get_employees_for_search

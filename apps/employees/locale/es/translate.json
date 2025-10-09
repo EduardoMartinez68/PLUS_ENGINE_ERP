@@ -9,8 +9,8 @@
 
     "employees.label.name-employee":"Nombre del Empleado *",
     "employees.placeholder.name-employee":"Escribe el Nombre del Empleado",
-    "employees.label.username":"Nombre del usuario *",
-    "employees.placeholder.username":"Escribe la clave del empleado",
+    "employees.label.username":"Usuario *",
+    "employees.placeholder.username":"Escribe el nombre del usuario que el empleado usara",
     "employees.label.email":"Email del empleado *",
     "employees.placeholder.email":"Ej. empleado@hotmail.com",
     "employees.label.password":"Contrasena *",
@@ -37,5 +37,17 @@
     "employees.label.postal_code":"Codigo Postal",
     "employees.placeholder.postal_code":"Escribe tu codigo postal",
 
-    "employees.title.role":"Roles y Permisos"
+    "employees.title.role":"Roles y Permisos",
+
+
+    "employees.message.error-in-the-form":"Error en el formulario",
+    "employees.message.we-not-can-add-this-employee":"No se pudo agregar al empelado a la base de datos. intentalo mas tarde.",
+    "employees.message.the-name-is-need":"El nombre del Empleado es requerido en el formulario.",
+    "employees.message.the-email-is-need":"El email del Empleado es requerido en el formulario.",
+    "employees.message.the-email-is-not-valid":"Este email no es valido",
+    "employees.message.the-password-is-need":"Debes ingresar la misma contrasena dos veces para confirmar la contrasena del usaurio",
+    "employees.error.this-branch-not-exit":"Esta sucursal no existe en la empresa",
+    "employees.error.this-email-already-exit":"Esta email ya existe en el sistema",
+    "employees.title.the-employee-was-added-with-success":"Empleado Agregado",
+    "employees.message.the-employee-was-added-with-success":"El Empelado fue agregado con exito a tu empresa."
 }

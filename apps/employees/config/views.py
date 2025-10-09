@@ -2,6 +2,7 @@
 from django.contrib.auth.decorators import login_required
 from apps.employees.services.branch import get_information_of_the_branch
 from apps.employees.services.employees import get_employees_for_search
+from ..services.employees import save_employee
 from ..plus_wrapper import Plus
 import json
 from django.http import JsonResponse
@@ -16,8 +17,72 @@ def employees_home(request):
 @login_required(login_url='login')
 def add_employee(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == "POST":
+            try:
+                data = json.loads(request.body)
+            except Exception as e:
+                return JsonResponse(
+                    {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                    status=400
+                )   
+            
+            #now we will see if the user have the permsssion need that the ERP need
+            if not Plus.this_user_have_this_permission(request.user, 'add_employee'):
+                return JsonResponse(
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )
+            
+            result=save_employee(request.user.company,request.user.branch,data)
+            
+            return JsonResponse({
+                "success": result['success'],
+                "message": result['message'],
+                "error": result['error']
+            }, status=200) 
+        
+    
+    
+    
+    
+    
+    
+    
+        
         return render(request, 'add_employee.html')
     else:
+        if request.method == "POST":
+            try:
+                data = json.loads(request.body)
+            except Exception as e:
+                return JsonResponse(
+                    {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                    status=400
+                )   
+            
+            #now we will see if the user have the permsssion need that the ERP need
+            if not Plus.this_user_have_this_permission(request.user, 'add_employee'):
+                return JsonResponse(
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )
+            
+            result=save_employee(request.user.company,request.user.branch,data)
+            
+            return JsonResponse({
+                "success": result['success'],
+                "message": result['message'],
+                "error": result['error']
+            }, status=200) 
+        
+    
+    
+    
+    
+    
+    
+    
+        
         return render(request, 'add_employee.html')
 
 @login_required(login_url='login')

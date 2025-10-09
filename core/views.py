@@ -40,8 +40,8 @@ def register(request):
 
                 # 2️⃣ create a branch
                 branch = Branch.objects.create(company=company, name_branch=f'Branch of {user.email}')
-                # 3️⃣ create a default role
                 
+                # 3️⃣ create a default role
                 role, created = UserRole.objects.get_or_create(
                     id_company=company,
                     name="Admin",

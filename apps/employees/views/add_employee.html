@@ -1,4 +1,4 @@
-<form>
+<form id="form-employee">
 <div class="container-section">
     <div class="row section">
         <div class="col-2">
@@ -55,6 +55,7 @@
     <div class="row section">
       <div class="col">
         <input-field
+          id="password"
           name="password"
           type="password"
           label="employees.label.password"
@@ -64,6 +65,7 @@
       </div>
       <div class="col">
         <input-field
+          id="confirm-password"
           name="confirm-password"
           type="password"
           label="employees.label.confirm-password"
@@ -78,7 +80,7 @@
     <show-more text="employees.showmore.address" onclick="window.show_pop('pop-data-address')" description='({{employee.state}} {{employee.city}}.{{employee.country}})'></show-more>
 
 
-    <button class="btn btn-edit btn-success" t="btn.save"></button>
+    <button class="btn btn-edit btn-success" t="btn.save" type="button" onclick="save_data_of_the_employee()"></button>
 </div>
 
 <message-pop title="employees.title.more-information" name="pop-more-information">
@@ -209,8 +211,8 @@
 
 
 
-
 </form>
+
 
 
 <!---here we will to create the pop for edit and add new departament for the employees--->
@@ -219,13 +221,99 @@
 <!---here we will to create the pop for edit and add new role and permissions for the employees--->
 <message-pop title="employees.title.role" name="pop-role-and-permissions">
   {% include 'partials_rolesAndPermissions/from_role.html' %}
-
-
 </message-pop>
 
-
-
 <script>
+  //this script is for save the form in the server
+  async function save_data_of_the_employee(){
+    //first we will see if all the information is correct
+    if(all_the_information_of_the_form_is_success()){
+      const backend=await send_form_to_the_server('form-employee','employees/add_employee/');
+      if(backend.success){
+        restart_form('form-employee');
+        window.show_alert('success', 'employees.title.the-employee-was-added-with-success', 'employees.message.the-employee-was-added-with-success')
+      }else{
+        window.show_alert('alert', 'employees.message.error-in-the-form', backend.message, backend.error)
+      }
+    }
+  }
+
+  function all_the_information_of_the_form_is_success(){
+    //first we will see if the employee have a name 
+    const name=document.getElementById('name');
+    if(name?.value==''){
+      window.show_alert('alert', 'employees.message.error-in-the-form', 'employees.message.the-name-is-need')
+      return false;
+    }
+
+
+    //second we will see if the user have a email valid
+    const email=document.getElementById('email');
+    if (!email?.value.trim()) {
+      window.show_alert('alert', 'employees.message.error-in-the-form', 'employees.message.the-email-is-need');
+      return false;
+    }
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email.value.trim())) {
+      window.show_alert('alert', 'employees.message.error-in-the-form', 'employees.message.the-email-is-not-valid');
+      return false;
+    }
+
+    const password=document.getElementById('password')
+    const confirm_password=document.getElementById('confirm-password')
+    if (password.value === '' && confirm_password.value === '') {
+      password.style.borderColor = '';
+      confirm_password.style.borderColor = '';
+      window.show_alert('alert', 'employees.message.error-in-the-form', 'employees.message.the-password-is-need')
+      return false;
+    }
+
+    if (password.value === confirm_password.value) {
+      password.style.borderColor = 'green';
+      confirm_password.style.borderColor = 'green';
+    } else {
+      password.style.borderColor = 'red';
+      confirm_password.style.borderColor = 'red';
+      window.show_alert('alert', 'employees.message.error-in-the-form', 'employees.message.the-password-is-need')
+      return false;
+    }
+
+
+    return true;
+  }
+
+  (()=>{
+    //here we will get the information of the inputs of the password for
+    //comparer if both password and if both password are equals we will to marker the inputs of a color green
+    //else if the password not be equals we will to marker the input of color red
+    const password=document.getElementById('password')
+    const confirm_password=document.getElementById('confirm-password')
+
+    if (!password || !confirm_password) return; //if not exist the input exit of the function
+
+    function check_passwords() {
+      if (password.value === '' && confirm_password.value === '') {
+        password.style.borderColor = '';
+        confirm_password.style.borderColor = '';
+        return;
+      }
+
+      if (password.value === confirm_password.value) {
+        password.style.borderColor = 'green';
+        confirm_password.style.borderColor = 'green';
+      } else {
+        password.style.borderColor = 'red';
+        confirm_password.style.borderColor = 'red';
+      }
+    }
+
+    // liseningh both change in the inputs
+    password.addEventListener('input', check_passwords);
+    confirm_password.addEventListener('input', check_passwords);
+  })()
+</script>
+<script>
+  //this scripts is for create the form for role and departament of the employees in the company
   function open_pop_role(){
     window.show_pop('pop-role-and-permissions')
   }
