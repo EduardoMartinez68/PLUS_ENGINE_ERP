@@ -51,6 +51,14 @@
   </div>
 </div>
 
+
+<div id="language-selector">
+  <select id="select-language">
+    <option value="es" {% if lang == "es" %}selected{% endif %}>Español</option>
+    <option value="pl" {% if lang == "pl" %}selected{% endif %}>Polski</option>
+  </select>
+</div>
+
 <!-- Modal Registration -->
 <div class="modal" id="registerModal">
   <div class="modal-content">
@@ -200,6 +208,17 @@ window.addEventListener('resize', updateBackgroundForMobile);
 </script>
 <script src="{% static 'js/translate.js' %}"></script>
 <script>
+  document.getElementById('select-language').addEventListener('change', function() {
+    const selectedLang = this.value;
+    // We save the choice in localStorage to keep the language when refreshing
+    localStorage.setItem('site_lang', selectedLang);
+    localStorage.removeItem('allTheDictionary'); //clear the dictionaries
+    
+    // load the page
+    location.reload();
+  });
+</script>
+<script>
   //here we will to load the language of the user for update the UI of the login
   (async()=>{
     const baseStaticUrl = "{% static 'language/' %}";
@@ -242,6 +261,11 @@ window.addEventListener('resize', updateBackgroundForMobile);
     // --- Get the timezone of the user ---
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     document.getElementById('timezone').value = timezone;
+
+
+    //change the language
+    const select = document.getElementById("select-language");
+    select.value = lang;
   })();
 
   //----------------------------------------here we will see if can send the form of login to the backend-------------------------------
@@ -254,7 +278,7 @@ window.addEventListener('resize', updateBackgroundForMobile);
     const popup = document.createElement("div");
     popup.classList.add("popup-message");
     popup.style.backgroundColor = color;
-    popup.textContent = message;
+    popup.textContent = window.translate_text(message);
 
     // add to the body
     document.body.appendChild(popup);
@@ -298,6 +322,34 @@ window.addEventListener('resize', updateBackgroundForMobile);
     if(!this_password_are_valid()){
       event.preventDefault(); // cancell the send to the backend if the password are wrong
     }
+
+    // Get the selected language from the select
+    const selectedLang = document.getElementById('select-language').value;
+
+    
+    // Check if hidden input already exists, if not, create it
+    let langInput = document.getElementById('form-language');
+    if (!langInput) {
+      langInput = document.createElement('input');
+      langInput.type = 'hidden';
+      langInput.name = 'language';
+      langInput.id = 'form-language';
+      this.appendChild(langInput);
+    }
+
+    // Set the value to the selected language
+    langInput.value = selectedLang;
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    {% if error_message %}
+      showPopupMessage("{{ error_message|escapejs }}", "#f44336");
+    {% endif %}
+
+    {% if success_message %}
+      showPopupMessage("{{ success_message|escapejs }}", "#4CAF50"); // verde
+    {% endif %}
   });
 </script>
 </body>

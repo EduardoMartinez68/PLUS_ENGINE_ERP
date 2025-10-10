@@ -1,7 +1,30 @@
 //This function is for load all the translations of the app of the ERP, this function is called forever that the user change the language or load the web
 ///example: load the language spanish to the app 'sales'
 //load_language('/apps/sales/translate.json');
-let languageUser = 'es'//'pl' 'es'; //get the language of the user example (es,pl,en,fr,etc)
+function get_language_of_the_system() {
+  // Get the language stored in localStorage, or fallback to the browser's language
+  const savedLang = localStorage.getItem('site_lang');
+  const browserLang = (navigator.language || navigator.userLanguage || 'es').toLowerCase();
+
+  // Supported language mapping
+  const listLanguages = {
+    'es': 'es',   // Spanish
+    'en': 'es',   // Map English to Spanish by default
+    'pl': 'pl',   // Polish
+    'pl-pl': 'pl'
+  };
+
+  // Determine which language to use: saved language takes priority
+  const langToUse = savedLang || browserLang;
+
+  // Extract the main language code (before '-')
+  const langCode = langToUse.split('-')[0];
+
+  // Return the mapped language or default to Spanish
+  return listLanguages[langCode] || 'es';
+}
+
+let languageUser=get_language_of_the_system()//'pl' 'es'; //get the language of the user example (es,pl,en,fr,etc)
 let translateOld={};
 let lastUrl=''; //here we will save the last loaded URL for avoid loading the same URL again
 let numberLanguageLoad=0;
@@ -123,22 +146,6 @@ function get_base_path_from_lang_url(langUrl) {
   return langUrl.replace(/locale\/.*\/translate\.json$/, "");
 }
 
-function get_language_of_the_system() {
-  // Detects the browser language
-  const languageBrowser = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
-
-  //Custom Language Mapping
-  const langCode = languageBrowser.split('-')[0];
-  const listLanguages = {
-    'es': 'es',
-    'en': 'es',
-    'pl': 'pl',
-    'pl-pl': 'pl'
-  };
-
-  //Returns the mapped language or the browser language as a fallback
-  return listLanguages[languageUser] || languageBrowser;
-}
 
 //this function is for translate the web with the translations loaded or saved. The function is called when the user load the web or change the language
 function apply_translation_to_the_web(translations) {

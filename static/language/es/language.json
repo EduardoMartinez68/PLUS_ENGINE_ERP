@@ -11,6 +11,11 @@
     "home.text.do-you-have-account": "¿No tienes cuenta?",
     "home.text.forgot-password": "¿Olvidaste tu contraseña?",
     "home.input.cellphone": "Celular",
+    "home.error.no-can-login": "Correo o contraseña incorrectos. Por favor verifica tus datos e inténtalo de nuevo.",
+    "home.message.the-user-was-register-with-success":"Usuario registrado correctamente, ahora inicia sesión.",
+    "home.error.the-password-not-be-equals":"Las contraseñas no coinciden.",
+    "home.error.the-cellphone-no-exist":"El número de celular no es válido.",
+    "home.error.the-email-no-is-valid":"El email no es válido.",
 
     "btn.update": "Actualizar",
     "btn.edit": "Editar",
