@@ -264,7 +264,7 @@ class Permit(models.Model):
 class UserRole(models.Model):
     #information of the rol of the user
     id_company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='id_company')
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     creation_date = models.DateTimeField(auto_now_add=True)
     activated = models.BooleanField(default=True)
@@ -325,7 +325,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     # Required fields
     avatar = models.ImageField(upload_to=user_avatar_path, blank=True, null=True)
     name = EncryptedCharField(db_column="name", blank=True, null=True, max_length=600)
-    email = EncryptedCharField(db_column="email", blank=True, null=True, max_length=600)
+    email = models.EmailField(unique=True)
     username = models.CharField(max_length=600)
 
     # Relationship with company and branch

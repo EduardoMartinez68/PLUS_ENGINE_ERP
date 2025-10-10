@@ -67,106 +67,77 @@
     <br>
     <hr>
     <br>
-    <form method="POST" action="{% url 'login' %}" id="registerForm">
+    <form method="POST" action="{% url 'singup' %}" id="registerForm">
       {% csrf_token %}
 
       <div class="input-group">
-        <input type="text" name="name" placeholder="Nombre completo" value="{{ register_form.name.value }}" required id="name-singup">
-        {% if register_form.name.errors %}<div class="error">{{ register_form.name.errors.0 }}</div>{% endif %}
+        <input type="text" name="name" placeholder="Nombre completo" value="{{ form_login.name.value }}" required id="name-singup">
       </div>
 
       <div class="input-group">
-        <input type="email" name="email" placeholder="Correo electrónico" value="{{ register_form.email.value }}" required id="email-singup">
-        {% if register_form.email.errors %}<div class="error">{{ register_form.email.errors.0 }}</div>{% endif %}
+        <input type="email" name="email" placeholder="Correo electrónico" value="{{ form_login.email.value }}" required id="email-singup">
       </div>
 
       <div class="input-group">
-        <input type="text" name="name_company" placeholder="Empresa" value="{{ register_form.phone.value }}" required id="name_company">
+        <input type="text" name="name_company" placeholder="Empresa" value="{{ form_login.name_company.value }}" required id="name_company">
       </div>
 
       <div class="input-group">
-        <input type="text" name="cellphone" placeholder="Celular" value="{{ register_form.phone.value }}" required id="cellphone-singup">
-        {% if register_form.phone.errors %}<div class="error">{{ register_form.phone.errors.0 }}</div>{% endif %}
+        <input type="text" name="cellphone" placeholder="Celular" value="{{ form_login.phone.value }}" required id="cellphone-singup">
       </div>
 
       <div class="input-group">
-        <select name="country" id="id_country" required>
-          <option value="" disabled {% if not register_form.country.value|default:'' %}selected{% endif %}>Selecciona tu país</option>
+      <select name="country" id="id_country" required>
+        <option value="" disabled {% if not form_login.country.value|default:'' %}selected{% endif %}>Selecciona tu país</option>
 
-          <!-- Américas -->
-          <option value="AR" {% if register_form.country.value|default:'' == "AR" %}selected{% endif %}>Argentina</option>
-          <option value="BO" {% if register_form.country.value|default:'' == "BO" %}selected{% endif %}>Bolivia</option>
-          <option value="BR" {% if register_form.country.value|default:'' == "BR" %}selected{% endif %}>Brasil</option>
-          <option value="CL" {% if register_form.country.value|default:'' == "CL" %}selected{% endif %}>Chile</option>
-          <option value="CO" {% if register_form.country.value|default:'' == "CO" %}selected{% endif %}>Colombia</option>
-          <option value="CR" {% if register_form.country.value|default:'' == "CR" %}selected{% endif %}>Costa Rica</option>
-          <option value="CU" {% if register_form.country.value|default:'' == "CU" %}selected{% endif %}>Cuba</option>
-          <option value="DO" {% if register_form.country.value|default:'' == "DO" %}selected{% endif %}>República Dominicana</option>
-          <option value="EC" {% if register_form.country.value|default:'' == "EC" %}selected{% endif %}>Ecuador</option>
-          <option value="SV" {% if register_form.country.value|default:'' == "SV" %}selected{% endif %}>El Salvador</option>
-          <option value="GT" {% if register_form.country.value|default:'' == "GT" %}selected{% endif %}>Guatemala</option>
-          <option value="HN" {% if register_form.country.value|default:'' == "HN" %}selected{% endif %}>Honduras</option>
-          <option value="MX" {% if register_form.country.value|default:'' == "MX" %}selected{% endif %}>México</option>
-          <option value="NI" {% if register_form.country.value|default:'' == "NI" %}selected{% endif %}>Nicaragua</option>
-          <option value="PA" {% if register_form.country.value|default:'' == "PA" %}selected{% endif %}>Panamá</option>
-          <option value="PY" {% if register_form.country.value|default:'' == "PY" %}selected{% endif %}>Paraguay</option>
-          <option value="PE" {% if register_form.country.value|default:'' == "PE" %}selected{% endif %}>Perú</option>
-          <option value="PR" {% if register_form.country.value|default:'' == "PR" %}selected{% endif %}>Puerto Rico</option>
-          <option value="UY" {% if register_form.country.value|default:'' == "UY" %}selected{% endif %}>Uruguay</option>
-          <option value="VE" {% if register_form.country.value|default:'' == "VE" %}selected{% endif %}>Venezuela</option>
+        <!-- América del Norte -->
+        <option value="MX" {% if form_login.country.value|default:'' == "MX" %}selected{% endif %}>México</option>
+        <option value="US" {% if form_login.country.value|default:'' == "US" %}selected{% endif %}>Estados Unidos</option>
+        <option value="CA" {% if form_login.country.value|default:'' == "CA" %}selected{% endif %}>Canadá</option>
 
-          <!-- Norteamérica / Oceanía -->
-          <option value="US" {% if register_form.country.value|default:'' == "US" %}selected{% endif %}>Estados Unidos</option>
-          <option value="CA" {% if register_form.country.value|default:'' == "CA" %}selected{% endif %}>Canadá</option>
-          <option value="AU" {% if register_form.country.value|default:'' == "AU" %}selected{% endif %}>Australia</option>
-          <option value="NZ" {% if register_form.country.value|default:'' == "NZ" %}selected{% endif %}>Nueva Zelanda</option>
+        <!-- América del Sur -->
+        <option value="AR" {% if form_login.country.value|default:'' == "AR" %}selected{% endif %}>Argentina</option>
+        <option value="BO" {% if form_login.country.value|default:'' == "BO" %}selected{% endif %}>Bolivia</option>
+        <option value="BR" {% if form_login.country.value|default:'' == "BR" %}selected{% endif %}>Brasil</option>
+        <option value="CL" {% if form_login.country.value|default:'' == "CL" %}selected{% endif %}>Chile</option>
+        <option value="CO" {% if form_login.country.value|default:'' == "CO" %}selected{% endif %}>Colombia</option>
+        <option value="CR" {% if form_login.country.value|default:'' == "CR" %}selected{% endif %}>Costa Rica</option>
+        <option value="CU" {% if form_login.country.value|default:'' == "CU" %}selected{% endif %}>Cuba</option>
+        <option value="DO" {% if form_login.country.value|default:'' == "DO" %}selected{% endif %}>República Dominicana</option>
+        <option value="EC" {% if form_login.country.value|default:'' == "EC" %}selected{% endif %}>Ecuador</option>
+        <option value="SV" {% if form_login.country.value|default:'' == "SV" %}selected{% endif %}>El Salvador</option>
+        <option value="GT" {% if form_login.country.value|default:'' == "GT" %}selected{% endif %}>Guatemala</option>
+        <option value="HN" {% if form_login.country.value|default:'' == "HN" %}selected{% endif %}>Honduras</option>
+        <option value="NI" {% if form_login.country.value|default:'' == "NI" %}selected{% endif %}>Nicaragua</option>
+        <option value="PA" {% if form_login.country.value|default:'' == "PA" %}selected{% endif %}>Panamá</option>
+        <option value="PY" {% if form_login.country.value|default:'' == "PY" %}selected{% endif %}>Paraguay</option>
+        <option value="PE" {% if form_login.country.value|default:'' == "PE" %}selected{% endif %}>Perú</option>
+        <option value="PR" {% if form_login.country.value|default:'' == "PR" %}selected{% endif %}>Puerto Rico</option>
+        <option value="UY" {% if form_login.country.value|default:'' == "UY" %}selected{% endif %}>Uruguay</option>
+        <option value="VE" {% if form_login.country.value|default:'' == "VE" %}selected{% endif %}>Venezuela</option>
 
-          <!-- Europa -->
-          <option value="ES" {% if register_form.country.value|default:'' == "ES" %}selected{% endif %}>España</option>
-          <option value="GB" {% if register_form.country.value|default:'' == "GB" %}selected{% endif %}>Reino Unido</option>
-          <option value="FR" {% if register_form.country.value|default:'' == "FR" %}selected{% endif %}>Francia</option>
-          <option value="DE" {% if register_form.country.value|default:'' == "DE" %}selected{% endif %}>Alemania</option>
-          <option value="IT" {% if register_form.country.value|default:'' == "IT" %}selected{% endif %}>Italia</option>
-          <option value="NL" {% if register_form.country.value|default:'' == "NL" %}selected{% endif %}>Países Bajos</option>
-          <option value="BE" {% if register_form.country.value|default:'' == "BE" %}selected{% endif %}>Bélgica</option>
-          <option value="CH" {% if register_form.country.value|default:'' == "CH" %}selected{% endif %}>Suiza</option>
-          <option value="PT" {% if register_form.country.value|default:'' == "PT" %}selected{% endif %}>Portugal</option>
-          <option value="IE" {% if register_form.country.value|default:'' == "IE" %}selected{% endif %}>Irlanda</option>
-          <option value="PL" {% if register_form.country.value|default:'' == "PL" %}selected{% endif %}>Polonia</option>
-          <option value="SE" {% if register_form.country.value|default:'' == "SE" %}selected{% endif %}>Suecia</option>
-          <option value="NO" {% if register_form.country.value|default:'' == "NO" %}selected{% endif %}>Noruega</option>
-          <option value="DK" {% if register_form.country.value|default:'' == "DK" %}selected{% endif %}>Dinamarca</option>
-          <option value="FI" {% if register_form.country.value|default:'' == "FI" %}selected{% endif %}>Finlandia</option>
-          <option value="CZ" {% if register_form.country.value|default:'' == "CZ" %}selected{% endif %}>República Checa</option>
-          <option value="HU" {% if register_form.country.value|default:'' == "HU" %}selected{% endif %}>Hungría</option>
+        <!-- Europa -->
+        <option value="PL" {% if form_login.country.value|default:'' == "PL" %}selected{% endif %}>Polonia</option>
+        <option value="GB" {% if form_login.country.value|default:'' == "GB" %}selected{% endif %}>Reino Unido</option>
 
-          <!-- Asia / África -->
-          <option value="CN" {% if register_form.country.value|default:'' == "CN" %}selected{% endif %}>China</option>
-          <option value="JP" {% if register_form.country.value|default:'' == "JP" %}selected{% endif %}>Japón</option>
-          <option value="KR" {% if register_form.country.value|default:'' == "KR" %}selected{% endif %}>Corea del Sur</option>
-          <option value="IN" {% if register_form.country.value|default:'' == "IN" %}selected{% endif %}>India</option>
-          <option value="ZA" {% if register_form.country.value|default:'' == "ZA" %}selected{% endif %}>Sudáfrica</option>
-
-          <!-- Otros -->
-          <option value="OTHER" {% if register_form.country.value|default:'' == "OTHER" %}selected{% endif %}>Otro</option>
-        </select>
-
-        {% if register_form.country.errors %}
-          <div class="error">{{ register_form.country.errors.0 }}</div>
+        <!-- Oceanía -->
+        <option value="AU" {% if form_login.country.value|default:'' == "AU" %}selected{% endif %}>Australia</option>
+      </select>
+        {% if form_login.country.errors %}
+          <div class="error">{{ form_login.country.errors.0 }}</div>
         {% endif %}
       </div>
-
 
       <div class="input-group">
         <input type="password" name="password1" id="reg-password" placeholder="Contraseña" required>
         <span class="toggle-password" onclick="togglePassword('reg-password')">👁️</span>
-        {% if register_form.password1.errors %}<div class="error">{{ register_form.password1.errors.0 }}</div>{% endif %}
+        {% if form_login.password1.errors %}<div class="error">{{ form_login.password1.errors.0 }}</div>{% endif %}
       </div>
 
       <div class="input-group">
         <input type="password" name="password2" id="reg-confirm-password" placeholder="Confirmar contraseña" required>
         <span class="toggle-password" onclick="togglePassword('reg-confirm-password')">👁️</span>
-        {% if register_form.password2.errors %}<div class="error">{{ register_form.password2.errors.0 }}</div>{% endif %}
+        {% if form_login.password2.errors %}<div class="error">{{ form_login.password2.errors.0 }}</div>{% endif %}
       </div>
 
       <input type="hidden" id="timezone" name="timezone" readonly>
@@ -302,23 +273,28 @@ window.addEventListener('resize', updateBackgroundForMobile);
     const password1 = document.getElementById('reg-password').value.trim();
     const password2 = document.getElementById('reg-confirm-password').value.trim();
 
-    // --- Validaciones ---
     let errorMessage = "";
 
-    // Comprobamos que sean iguales
+    //here we will see if both password are equals
     if (password1 !== password2) {
-      showPopupMessage("Las contraseñas no coinciden.");
+      showPopupMessage("home.error.the-password-not-be-equals");
+      return false;
     }
 
-    // Comprobamos longitud mínima
+    // We check minimum length
     else if (password1.length < 8) {
-      errorMessage = "La contraseña debe tener al menos 8 caracteres.";
+      showPopupMessage("home.error.the-password-is-very-short");
+      return false;
     }
 
-    // Comprobamos si tiene mayúsculas, minúsculas, números y símbolos
+    // We check if it has uppercase, lowercase, numbers and symbols
     else if (!/[A-Z]/.test(password1) || !/[a-z]/.test(password1) || !/[0-9]/.test(password1) || !/[!@#$%^&*(),.?":{}|<>]/.test(password1)) {
-      errorMessage = "La contraseña debe incluir mayúsculas, minúsculas, números y un carácter especial.";
+      showPopupMessage("home.error.the-password-need-more-characteres");
+      return false;
     }
+
+
+    return true;
   }
 
 

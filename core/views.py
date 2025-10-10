@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from core.readApps import APPS_CACHE #get the list of our apps in the ERP
-from core.models import Company, Branch, UserRole, Role, UserDepartment, Permit
+from core.models import Company, Branch, UserRole, Role, UserDepartment, Permit, CustomUser
 import os
 from django.contrib import messages
 import re
@@ -30,125 +30,136 @@ from core.forms import SignUpForm
 import core.message_language as ml
 from apps.rolesAndPermissions.services.permits import get_all_the_permissions
 import json
-def is_valid_email(email):
-    pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-    return re.match(pattern, email) is not None
+
 
 def register(request):
-    is_valid=True
-    error_message=None
+    import re
+
+    is_valid = True
+    error_message = None
+    form_login = {}
 
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        try:
-            data = json.loads(request.body)
-        except Exception as e:
-            error_message=e
-            return render(request, 'login.html', {'form': form, 'error_message': error_message})   
-        
-        
-        #here we will see if have all the information need for create a company in the database 
+        def is_valid_email(email):
+            pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+            return re.match(pattern, email) is not None
+
+        data = request.POST  # QueryDict
+        # --- Convertimos a diccionario plano ---
+        form_login = {k: v[0] for k, v in data.lists()}
+
+
+        # --- Check required fields ---
         required_fields = ['email', 'name', 'cellphone', 'country', 'password1', 'password2']
-        missing_fields = [field for field in required_fields if not data.get(field)]
+        missing_fields = [field for field in required_fields if not form_login[field]]
         if missing_fields:
-            error_message = f"home.message.please-fill-in-all-required-fields"
+            error_message = "home.message.please-fill-in-all-required-fields"
             is_valid = False
 
-        #now we will see if the form be success 
-        password1 = data.get('password1', '').strip()
-        password2 = data.get('password2', '').strip()
+        # --- Validate passwords ---
+        password1 = form_login['password1'].strip()
+        password2 = form_login['password2'].strip()
+        if password1 != password2 or not password1:
+            error_message = 'home.error.the-password-not-be-equals'
+            is_valid = False
+        elif len(password1) < 8:
+            error_message = 'home.error.the-password-is-very-short'
+            is_valid = False
+        elif not (re.search(r'[A-Z]', password1) and 
+                  re.search(r'[a-z]', password1) and 
+                  re.search(r'[0-9]', password1) and 
+                  re.search(r'[!@#$%^&*(),.?":{}|<>]', password1)):
+            error_message = 'home.error.the-password-need-more-characteres'
+            is_valid = False
 
-        if password1!=password2 or password1=='':
-            error_message='home.error.the-password-not-be-equals'
-            is_valid=False 
-
-        #we will see if the user add a cellphone valid
-        cellphone_pattern = re.compile(r'^\+?\d{8,15}$')  #optionally allows + at the beginning
-        if not cellphone_pattern.match(data.get('password1', '')):
+        # --- Validate cellphone ---
+        cellphone_pattern = re.compile(r'^\+?\d{8,15}$')
+        if not cellphone_pattern.match(form_login['cellphone']):
             error_message = "home.error.the-cellphone-no-exist"
             is_valid = False
 
-        if not is_valid_email(data.get('email', '')):
+        # --- Validate email ---
+        emailUser=form_login['email'].strip().lower()
+        if not is_valid_email(emailUser):
             error_message = "home.error.the-email-no-is-valid"
             is_valid = False
 
-        #we will see if all the information of the form is valid and if is valid we will try of add the user to the database
+        # --- Check if email already exists ---
+        if CustomUser.objects.filter(email=emailUser).exists():
+            error_message = "home.error.email-already-exists"
+            is_valid = False
+
         if is_valid:
             try:
-                #1 create the information of the user
-                user = form.save(commit=False)
-                user.email = data['email']
-                user.username = data['name']
-                user.name = data['name']
-                user.cellphone = data['cellphone']
-                user.country = data['country'] or 'MX'
-                user.language = data['language'] or 'es'
-                user.timezone = data('timezone') or 'America/Mexico_City'
-                user.set_password(data['password1'])  # hash del password
-
-                # 2 Create a company
-                company_name=data['name_company'] or f'Company of {user.email}'
-                company = Company.objects.create(
-                    company_name=company_name,
-                    name_of_the_person_in_charge=user.name,
-                    email_of_the_person_in_charge=user.email,
-                    cellphone=user.cellphone,
-                    country=user.country,
-                    timezone=user.timezone
+                # --- Create user ---
+                user = CustomUser.objects.create_user(
+                    email=emailUser,
+                    password=password1,
+                    username=form_login['name'],
+                    name=form_login['name'],
+                    cellphone=form_login['cellphone'],
+                    country=form_login['country'],
+                    language = form_login['language'] if 'language' in form_login else 'es',
+                    timezone = form_login['timezone'] if 'timezone' in form_login else 'America/Mexico_City'
                 )
 
-                # 3 create a branch
+                # --- Create company ---
+                company_name = form_login['name_company'] if 'name_company' in form_login else f'Company of {emailUser}'
+                company = Company.objects.create(
+                    company_name=company_name,
+                    name_of_the_person_in_charge=form_login['name'],
+                    email_of_the_person_in_charge=form_login['email'],
+                    cellphone=form_login['cellphone'],
+                    country=form_login['country'],
+                    timezone = form_login['timezone'] if 'timezone' in form_login else 'America/Mexico_City'
+                )
+
+                # --- Create branch ---
                 branch = Branch.objects.create(
                     company=company,
                     name_branch=company_name,
-                    country=user.country,
-                    cellphone=user.cellphone,
-                    timezone=user.timezone
+                    country=form_login['country'],
+                    cellphone=form_login['cellphone'],
+                    timezone = form_login['timezone'] if 'timezone' in form_login else 'America/Mexico_City'
                 )
 
-                # 4 create a rol for default
+                # --- Create default role ---
                 role, created = UserRole.objects.get_or_create(
                     id_company=company,
                     name="Admin",
                     defaults={'description': 'Rol Admin'}
                 )
 
-                # 5 get all the permits in the ERP and we will to create
+                # --- Assign all permissions ---
                 all_permissions = get_all_the_permissions()
-
-                for app_name, app_data in all_permissions.items():
-                    perms_list = app_data.get("permissions", [])
+                for app_name, perms_list in all_permissions.items():
                     for code in perms_list:
-                        try:
-                            permit = Permit.objects.get(code=code)
-                            Role.objects.get_or_create(role=role, permit=permit, defaults={'active': True})
-                        except Permit.DoesNotExist:
-                            # if the permit not exist in the database, we will to create the permit
-                            permit = Permit.objects.create(code=code, app=app_name)
-                            Role.objects.create(role=role, permit=permit, active=True)
+                        permit, created = Permit.objects.get_or_create(code=code, defaults={'app': app_name})
+                        Role.objects.get_or_create(role=role, permit=permit, defaults={'active': True})
 
-                # 6 save the relation like the user
+                # --- Assign user to company/branch/role ---
                 user.company = company
                 user.branch = branch
                 user.user_role = role
                 user.save()
 
-                # 7 Authenticate and log in automatically
-                authenticated_user = authenticate(request, email=user.email, password=form.cleaned_data['password1'])
-                if authenticated_user is not None:
-                    login(request, authenticated_user)  # login session automatic
+                # --- Authenticate and log in automatically ---
+                authenticated_user = authenticate(request, email=form_login['email'], password=password1)
+                if authenticated_user:
+                    login(request, authenticated_user)
                     return redirect('/home')
 
-                messages_success="home.message.the-user-was-register-with-success"
-                return render(request, 'login.html', {'form': form, 'error_message': messages_success})
+                messages_success = "home.message.the-user-was-register-with-success"
+                return render(request, 'login.html', {'form_login': form_login, 'success_message': messages_success})
 
             except Exception as e:
-                error_message=f"Error: {str(e)}"
+                print(e)
+                error_message = f"Error: {str(e)}"
 
-    else:
-        form = SignUpForm()
+    return render(request, 'login.html', {'form_login': form_login, 'error_message': error_message})
 
-    return render(request, 'login.html', {'form': form, 'error_message': error_message})
+
+
 
 
 from django.contrib.auth import authenticate, login
@@ -157,14 +168,15 @@ from core.forms import LoginForm
 def login_view(request):
     form = LoginForm()
     error_message = None
+
     if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+        email = request.POST['email'].strip().lower()
+        password = request.POST['password']
+
         
-        # Django will automatically call EmailHashBackend
-        user = authenticate(request, username=email, password=password)
-        
-        if user is not None:
+        # Authenticate usando USERNAME_FIELD='email'
+        user = CustomUser.objects.get(email=email)
+        if user.check_password(password):
             login(request, user)
             return redirect('home')
         else:
