@@ -1,36 +1,115 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login</title>
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'css/login.css' %}">
-  <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login / Registro</title>
+<link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
 
 </head>
+<body>
 
-<div class="login-container">
-    {% if messages %}
-    <ul>
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    <form method="post">
-        <h2 t="login">Login</h2>
+<div class="container">
+  <div class="left-side" style="background-image: url('{% static "img/ad.png" %}')"></div>
+  <div class="right-side">
+
+    <!-- Login Form -->
+    <div class="form-container">
+      <img src="{% static 'img/logo-login.png' %}" alt="Logo" class="logo">
+      <h2>Iniciar Sesión</h2>
+
+        <div class="form-messages">
+            {% if messages %}
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+      <form method="POST" action="{% url 'login' %}">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" t="inside">inside</button>
-        <br>
-    <div class="extra-link">
-        <label t="do-you-have-account">do you have a account?</label> <a href="/singup" t="create-new-account">Crear nueva cuenta</a>
-    </div>
+        <div class="input-group">
+          <input type="email" name="email" placeholder="Correo electrónico" value="{{ login_form.email.value }}" required>
+        </div>
+        <div class="input-group">
+          <input type="password" name="password" id="login-password" placeholder="Contraseña" required>
+          <span class="toggle-password" onclick="togglePassword('login-password')">👁️</span>
+        </div>
+        <button type="submit">Ingresar</button>
+      </form>
 
-    <div class="extra-link">
-        <label t="forgot-password">do you forgot your password?</label> <a href="/singup" t="recover-password">recover it here</a>
+      <div class="links">
+        <a href="#">¿Olvidaste tu contraseña?</a>
+        <a href="#" onclick="openModal()">Crear cuenta</a>
+      </div>
+
+      <div class="modal-footer">Power by {ED} Software Developer</div>
     </div>
-    </form>
+    
+  </div>
 </div>
-<script src="{% static 'js/translate.js' %}" ></script>
+
+<!-- Modal Registration -->
+<div class="modal" id="registerModal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeModal()">×</span>
+    <h2>Crear Cuenta</h2>
+    <form method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
+
+      <div class="input-group">
+        <input type="text" name="name" placeholder="Nombre completo" value="{{ register_form.name.value }}" required>
+        {% if register_form.name.errors %}<div class="error">{{ register_form.name.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="input-group">
+        <input type="email" name="email" placeholder="Correo electrónico" value="{{ register_form.email.value }}" required>
+        {% if register_form.email.errors %}<div class="error">{{ register_form.email.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="input-group">
+        <input type="text" name="cellphone" placeholder="Celular" value="{{ register_form.phone.value }}" required>
+        {% if register_form.phone.errors %}<div class="error">{{ register_form.phone.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="input-group">
+        <input type="text" name="country" placeholder="País" value="{{ register_form.country.value }}" required>
+        {% if register_form.country.errors %}<div class="error">{{ register_form.country.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="input-group">
+        <input type="password" name="password1" id="reg-password" placeholder="Contraseña" required>
+        <span class="toggle-password" onclick="togglePassword('reg-password')">👁️</span>
+        {% if register_form.password1.errors %}<div class="error">{{ register_form.password1.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="input-group">
+        <input type="password" name="password2" id="reg-confirm-password" placeholder="Confirmar contraseña" required>
+        <span class="toggle-password" onclick="togglePassword('reg-confirm-password')">👁️</span>
+        {% if register_form.password2.errors %}<div class="error">{{ register_form.password2.errors.0 }}</div>{% endif %}
+      </div>
+
+      <button type="submit">Crear Cuenta</button>
+    </form>
+    
+  </div>
+</div>
+
+<script>
+  // Toggle password visibility
+  function togglePassword(id) {
+    const input = document.getElementById(id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  // Modal open/close
+  const modal = document.getElementById('registerModal');
+  function openModal() { modal.style.display = 'flex'; }
+  function closeModal() { modal.style.display = 'none'; }
+  window.onclick = function(event){ if(event.target === modal) closeModal(); }
+</script>
+
+</body>
+</html>
