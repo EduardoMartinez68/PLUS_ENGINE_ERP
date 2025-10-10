@@ -52,11 +52,13 @@
 </div>
 
 
+<!---show all the languages that exist in the ERP---->
 <div id="language-selector">
-  <select id="select-language">
-    <option value="es" {% if lang == "es" %}selected{% endif %}>Español</option>
-    <option value="pl" {% if lang == "pl" %}selected{% endif %}>Polski</option>
-  </select>
+<select id="select-language">
+  {% for lang in languages %}
+    <option value="{{ lang }}">{{ lang }}</option>
+  {% endfor %}
+</select>
 </div>
 
 <!-- Modal Registration -->

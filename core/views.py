@@ -32,12 +32,24 @@ from apps.rolesAndPermissions.services.permits import get_all_the_permissions
 import json
 
 
+def get_languages_of_the_erp():
+    #if the user not have a login, now we will get all the language that exist in the system of home
+    base_path = os.path.join(os.path.dirname(__file__), '..', 'static', 'language')
+    base_path = os.path.abspath(base_path)
+    languages = [
+        name for name in os.listdir(base_path)
+        if os.path.isdir(os.path.join(base_path, name))
+    ]
+
+    return languages
+
 def register(request):
     import re
 
     is_valid = True
     error_message = None
     form_login = {}
+    languages=get_languages_of_the_erp()
 
     if request.method == 'POST':
         def is_valid_email(email):
@@ -130,12 +142,26 @@ def register(request):
                     defaults={'description': 'Rol Admin'}
                 )
 
-                # --- Assign all permissions ---
+                # --- Assign all permissions that exist in the ERP---
                 all_permissions = get_all_the_permissions()
-                for app_name, perms_list in all_permissions.items():
-                    for code in perms_list:
-                        permit, created = Permit.objects.get_or_create(code=code, defaults={'app': app_name})
-                        Role.objects.get_or_create(role=role, permit=permit, defaults={'active': True})
+                for app_name, perms_data in all_permissions.items():
+                    if isinstance(perms_data, dict) and "permissions" in perms_data:
+                        for code in perms_data["permissions"]:
+                            permit, created = Permit.objects.get_or_create(code=code, defaults={'app': app_name})
+                            Role.objects.get_or_create(role=role, permit=permit, defaults={'active': True})
+
+                #---------departament of the user---------------
+                department, created = UserDepartment.objects.get_or_create(
+                    id_company=company,
+                    name="Admin",
+                    defaults={
+                        "description": "",
+                        "color": "#007bff",
+                        "manager": user,
+                        "activated": True,
+                    },
+                )
+
 
                 # --- Assign user to company/branch/role ---
                 user.company = company
@@ -150,13 +176,13 @@ def register(request):
                     return redirect('/home')
 
                 messages_success = "home.message.the-user-was-register-with-success"
-                return render(request, 'login.html', {'form_login': form_login, 'success_message': messages_success})
+                return render(request, 'login.html', {'form_login': form_login, 'success_message': messages_success, 'languages': languages})
 
             except Exception as e:
                 print(e)
                 error_message = f"Error: {str(e)}"
 
-    return render(request, 'login.html', {'form_login': form_login, 'error_message': error_message})
+    return render(request, 'login.html', {'form_login': form_login, 'error_message': error_message, 'languages': languages})
 
 
 
@@ -182,4 +208,9 @@ def login_view(request):
         else:
             error_message = 'home.error.no-can-login'
 
-    return render(request, 'login.html', {'form': form, 'error_message': error_message})
+
+    #if the user not have a login, now we will get all the language that exist in the system of home
+    languages=get_languages_of_the_erp()
+
+
+    return render(request, 'login.html', {'form': form, 'error_message': error_message, 'languages': languages})
