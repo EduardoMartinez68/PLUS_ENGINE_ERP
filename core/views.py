@@ -87,8 +87,9 @@ def register(request):
                 user.set_password(data['password1'])  # hash del password
 
                 # 2 Create a company
+                company_name=data['name_company'] or f'Company of {user.email}'
                 company = Company.objects.create(
-                    company_name=f'Company of {user.email}',
+                    company_name=company_name,
                     name_of_the_person_in_charge=user.name,
                     email_of_the_person_in_charge=user.email,
                     cellphone=user.cellphone,
@@ -99,7 +100,7 @@ def register(request):
                 # 3 create a branch
                 branch = Branch.objects.create(
                     company=company,
-                    name_branch=f'Branch of {user.email}',
+                    name_branch=company_name,
                     country=user.country,
                     cellphone=user.cellphone,
                     timezone=user.timezone

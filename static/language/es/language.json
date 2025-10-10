@@ -4,6 +4,7 @@
     "home.title.login": "Iniciar Sesión",
     "home.input.email": "Correo electrónico",
     "home.input.name": "Nombre",
+    "home.input.name_company": "Nombre de tu empresa",
     "home.input.password":"Contraseña",
     "home.btn.inside": "Entrar",
     "home.title.create-new-account": "Crear nueva cuenta",

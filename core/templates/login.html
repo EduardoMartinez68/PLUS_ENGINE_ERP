@@ -81,6 +81,10 @@
       </div>
 
       <div class="input-group">
+        <input type="text" name="name_company" placeholder="Empresa" value="{{ register_form.phone.value }}" required id="name_company">
+      </div>
+
+      <div class="input-group">
         <input type="text" name="cellphone" placeholder="Celular" value="{{ register_form.phone.value }}" required id="cellphone-singup">
         {% if register_form.phone.errors %}<div class="error">{{ register_form.phone.errors.0 }}</div>{% endif %}
       </div>
@@ -245,6 +249,7 @@ window.addEventListener('resize', updateBackgroundForMobile);
     document.getElementById('reg-password').placeholder=window.translate_text('home.input.password');
     document.getElementById('reg-confirm-password').placeholder=window.translate_text('home.input.password');
     document.getElementById('btn-create-acount').textContent=window.translate_text('home.title.create-new-account');
+    document.getElementById('name_company').placeholder=window.translate_text('home.input.name_company');
 
     //Detects browser regional settings and update the select of the country
     const locale = Intl.DateTimeFormat().resolvedOptions().locale;
@@ -326,7 +331,7 @@ window.addEventListener('resize', updateBackgroundForMobile);
     // Get the selected language from the select
     const selectedLang = document.getElementById('select-language').value;
 
-    
+
     // Check if hidden input already exists, if not, create it
     let langInput = document.getElementById('form-language');
     if (!langInput) {
