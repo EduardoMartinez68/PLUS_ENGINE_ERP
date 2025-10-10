@@ -11,38 +11,38 @@
 </head>
 <body>
 
+
 <div class="container">
   <div class="left-side" style="background-image: url('{% static "img/ad.png" %}')"></div>
   <div class="right-side">
-
+    <div class="form-messages">
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
     <!-- Login Form -->
     <div class="form-container">
       <img src="{% static 'img/logo-login.png' %}" alt="Logo" class="logo">
-      <h2>Iniciar Sesión</h2>
+      <h2 id="title-login">Iniciar Sesión</h2>
 
-        <div class="form-messages">
-            {% if messages %}
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            {% endif %}
-        </div>
 
       <form method="POST" action="{% url 'login' %}">
         {% csrf_token %}
         <div class="input-group">
-          <input type="email" name="email" placeholder="Correo electrónico" value="{{ login_form.email.value }}" required>
+          <input type="email" name="email" placeholder="Correo electrónico" value="{{ login_form.email.value }}" required id="email">
         </div>
         <div class="input-group">
           <input type="password" name="password" id="login-password" placeholder="Contraseña" required>
           <span class="toggle-password" onclick="togglePassword('login-password')">👁️</span>
         </div>
-        <button type="submit">Ingresar</button>
+        <button type="submit" id="btnLogin">Ingresar</button>
       </form>
 
       <div class="links">
-        <a href="#">¿Olvidaste tu contraseña?</a>
-        <a href="#" onclick="openModal()">Crear cuenta</a>
+        <a href="#" id="inputRestartpassword">¿Olvidaste tu contraseña?</a>
+        <a href="#" onclick="openModal()" id="btnCreateUser">Crear cuenta</a>
       </div>
 
       <div class="modal-footer">Power by {ED} Software Developer</div>
@@ -55,12 +55,15 @@
 <div class="modal" id="registerModal">
   <div class="modal-content">
     <span class="close-modal" onclick="closeModal()">×</span>
-    <h2>Crear Cuenta</h2>
+    <center><h2 id="title-create-acount">Crear Cuenta</h2></center>
+    <br>
+    <hr>
+    <br>
     <form method="POST" action="{% url 'login' %}">
       {% csrf_token %}
 
       <div class="input-group">
-        <input type="text" name="name" placeholder="Nombre completo" value="{{ register_form.name.value }}" required>
+        <input type="text" name="name" placeholder="Nombre completo" value="{{ register_form.name.value }}" required id="name-singup">
         {% if register_form.name.errors %}<div class="error">{{ register_form.name.errors.0 }}</div>{% endif %}
       </div>
 
@@ -110,6 +113,22 @@
   function closeModal() { modal.style.display = 'none'; }
   window.onclick = function(event){ if(event.target === modal) closeModal(); }
 </script>
+<script src="{% static 'js/translate.js' %}"></script>
+<script>
+    //here we will to translate all the input and the information 
+    document.getElementById('title-login').textContent=window.t('home.title.login');
+    document.getElementById('email').placeholder=window.t('home.input.email');
+    document.getElementById('login-password').placeholder=window.t('home.input.password');
+    document.getElementById('btnLogin').textContent=window.t('home.btn.inside');
 
+
+    document.getElementById('inputRestartpassword').textContent=window.t('home.text.forgot-password');
+    document.getElementById('btnCreateUser').textContent=window.t('home.text.do-you-have-account');
+
+
+    //here we will to translate all the input of the add user
+    document.getElementById('title-create-acount').textContent=window.t('home.title.create-new-account');
+    document.getElementById('name-singup').placeholder=window.t('home.input.name');
+</script>
 </body>
 </html>
