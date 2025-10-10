@@ -128,11 +128,12 @@ function get_language_of_the_system() {
   const languageBrowser = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
 
   //Custom Language Mapping
+  const langCode = languageBrowser.split('-')[0];
   const listLanguages = {
-    'es': 'es-MX',
-    'es-mx': 'es-mx',
-    'pl': 'pl-pl',
-    'pl-pl': 'pl-pl'
+    'es': 'es',
+    'en': 'es',
+    'pl': 'pl',
+    'pl-pl': 'pl'
   };
 
   //Returns the mapped language or the browser language as a fallback

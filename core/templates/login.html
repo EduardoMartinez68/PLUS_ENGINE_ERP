@@ -59,7 +59,7 @@
     <br>
     <hr>
     <br>
-    <form method="POST" action="{% url 'login' %}">
+    <form method="POST" action="{% url 'login' %}" id="registerForm">
       {% csrf_token %}
 
       <div class="input-group">
@@ -68,19 +68,82 @@
       </div>
 
       <div class="input-group">
-        <input type="email" name="email" placeholder="Correo electrónico" value="{{ register_form.email.value }}" required>
+        <input type="email" name="email" placeholder="Correo electrónico" value="{{ register_form.email.value }}" required id="email-singup">
         {% if register_form.email.errors %}<div class="error">{{ register_form.email.errors.0 }}</div>{% endif %}
       </div>
 
       <div class="input-group">
-        <input type="text" name="cellphone" placeholder="Celular" value="{{ register_form.phone.value }}" required>
+        <input type="text" name="cellphone" placeholder="Celular" value="{{ register_form.phone.value }}" required id="cellphone-singup">
         {% if register_form.phone.errors %}<div class="error">{{ register_form.phone.errors.0 }}</div>{% endif %}
       </div>
 
       <div class="input-group">
-        <input type="text" name="country" placeholder="País" value="{{ register_form.country.value }}" required>
-        {% if register_form.country.errors %}<div class="error">{{ register_form.country.errors.0 }}</div>{% endif %}
+        <select name="country" id="id_country" required>
+          <option value="" disabled {% if not register_form.country.value|default:'' %}selected{% endif %}>Selecciona tu país</option>
+
+          <!-- Américas -->
+          <option value="AR" {% if register_form.country.value|default:'' == "AR" %}selected{% endif %}>Argentina</option>
+          <option value="BO" {% if register_form.country.value|default:'' == "BO" %}selected{% endif %}>Bolivia</option>
+          <option value="BR" {% if register_form.country.value|default:'' == "BR" %}selected{% endif %}>Brasil</option>
+          <option value="CL" {% if register_form.country.value|default:'' == "CL" %}selected{% endif %}>Chile</option>
+          <option value="CO" {% if register_form.country.value|default:'' == "CO" %}selected{% endif %}>Colombia</option>
+          <option value="CR" {% if register_form.country.value|default:'' == "CR" %}selected{% endif %}>Costa Rica</option>
+          <option value="CU" {% if register_form.country.value|default:'' == "CU" %}selected{% endif %}>Cuba</option>
+          <option value="DO" {% if register_form.country.value|default:'' == "DO" %}selected{% endif %}>República Dominicana</option>
+          <option value="EC" {% if register_form.country.value|default:'' == "EC" %}selected{% endif %}>Ecuador</option>
+          <option value="SV" {% if register_form.country.value|default:'' == "SV" %}selected{% endif %}>El Salvador</option>
+          <option value="GT" {% if register_form.country.value|default:'' == "GT" %}selected{% endif %}>Guatemala</option>
+          <option value="HN" {% if register_form.country.value|default:'' == "HN" %}selected{% endif %}>Honduras</option>
+          <option value="MX" {% if register_form.country.value|default:'' == "MX" %}selected{% endif %}>México</option>
+          <option value="NI" {% if register_form.country.value|default:'' == "NI" %}selected{% endif %}>Nicaragua</option>
+          <option value="PA" {% if register_form.country.value|default:'' == "PA" %}selected{% endif %}>Panamá</option>
+          <option value="PY" {% if register_form.country.value|default:'' == "PY" %}selected{% endif %}>Paraguay</option>
+          <option value="PE" {% if register_form.country.value|default:'' == "PE" %}selected{% endif %}>Perú</option>
+          <option value="PR" {% if register_form.country.value|default:'' == "PR" %}selected{% endif %}>Puerto Rico</option>
+          <option value="UY" {% if register_form.country.value|default:'' == "UY" %}selected{% endif %}>Uruguay</option>
+          <option value="VE" {% if register_form.country.value|default:'' == "VE" %}selected{% endif %}>Venezuela</option>
+
+          <!-- Norteamérica / Oceanía -->
+          <option value="US" {% if register_form.country.value|default:'' == "US" %}selected{% endif %}>Estados Unidos</option>
+          <option value="CA" {% if register_form.country.value|default:'' == "CA" %}selected{% endif %}>Canadá</option>
+          <option value="AU" {% if register_form.country.value|default:'' == "AU" %}selected{% endif %}>Australia</option>
+          <option value="NZ" {% if register_form.country.value|default:'' == "NZ" %}selected{% endif %}>Nueva Zelanda</option>
+
+          <!-- Europa -->
+          <option value="ES" {% if register_form.country.value|default:'' == "ES" %}selected{% endif %}>España</option>
+          <option value="GB" {% if register_form.country.value|default:'' == "GB" %}selected{% endif %}>Reino Unido</option>
+          <option value="FR" {% if register_form.country.value|default:'' == "FR" %}selected{% endif %}>Francia</option>
+          <option value="DE" {% if register_form.country.value|default:'' == "DE" %}selected{% endif %}>Alemania</option>
+          <option value="IT" {% if register_form.country.value|default:'' == "IT" %}selected{% endif %}>Italia</option>
+          <option value="NL" {% if register_form.country.value|default:'' == "NL" %}selected{% endif %}>Países Bajos</option>
+          <option value="BE" {% if register_form.country.value|default:'' == "BE" %}selected{% endif %}>Bélgica</option>
+          <option value="CH" {% if register_form.country.value|default:'' == "CH" %}selected{% endif %}>Suiza</option>
+          <option value="PT" {% if register_form.country.value|default:'' == "PT" %}selected{% endif %}>Portugal</option>
+          <option value="IE" {% if register_form.country.value|default:'' == "IE" %}selected{% endif %}>Irlanda</option>
+          <option value="PL" {% if register_form.country.value|default:'' == "PL" %}selected{% endif %}>Polonia</option>
+          <option value="SE" {% if register_form.country.value|default:'' == "SE" %}selected{% endif %}>Suecia</option>
+          <option value="NO" {% if register_form.country.value|default:'' == "NO" %}selected{% endif %}>Noruega</option>
+          <option value="DK" {% if register_form.country.value|default:'' == "DK" %}selected{% endif %}>Dinamarca</option>
+          <option value="FI" {% if register_form.country.value|default:'' == "FI" %}selected{% endif %}>Finlandia</option>
+          <option value="CZ" {% if register_form.country.value|default:'' == "CZ" %}selected{% endif %}>República Checa</option>
+          <option value="HU" {% if register_form.country.value|default:'' == "HU" %}selected{% endif %}>Hungría</option>
+
+          <!-- Asia / África -->
+          <option value="CN" {% if register_form.country.value|default:'' == "CN" %}selected{% endif %}>China</option>
+          <option value="JP" {% if register_form.country.value|default:'' == "JP" %}selected{% endif %}>Japón</option>
+          <option value="KR" {% if register_form.country.value|default:'' == "KR" %}selected{% endif %}>Corea del Sur</option>
+          <option value="IN" {% if register_form.country.value|default:'' == "IN" %}selected{% endif %}>India</option>
+          <option value="ZA" {% if register_form.country.value|default:'' == "ZA" %}selected{% endif %}>Sudáfrica</option>
+
+          <!-- Otros -->
+          <option value="OTHER" {% if register_form.country.value|default:'' == "OTHER" %}selected{% endif %}>Otro</option>
+        </select>
+
+        {% if register_form.country.errors %}
+          <div class="error">{{ register_form.country.errors.0 }}</div>
+        {% endif %}
       </div>
+
 
       <div class="input-group">
         <input type="password" name="password1" id="reg-password" placeholder="Contraseña" required>
@@ -94,7 +157,9 @@
         {% if register_form.password2.errors %}<div class="error">{{ register_form.password2.errors.0 }}</div>{% endif %}
       </div>
 
-      <button type="submit">Crear Cuenta</button>
+      <input type="hidden" id="timezone" name="timezone" readonly>
+
+      <button type="submit" id="btn-create-acount">Crear Cuenta</button>
     </form>
     
   </div>
@@ -113,22 +178,127 @@
   function closeModal() { modal.style.display = 'none'; }
   window.onclick = function(event){ if(event.target === modal) closeModal(); }
 </script>
+<script>
+  //this function is for update the background of the div 'right-side' for when the user
+  //be in cellphone, the background be show with the image of the ad
+function updateBackgroundForMobile() {
+  const rightSide = document.querySelector('.right-side');
+  const leftSide = document.querySelector('.left-side');
+
+  if (window.innerWidth <= 768) {
+    rightSide.style.backgroundImage = "url('{% static 'img/ad.png' %}')";
+    rightSide.style.backgroundSize = "cover";
+    rightSide.style.backgroundPosition = "center";
+    if (leftSide) leftSide.style.display = "none";
+  } else {
+    rightSide.style.backgroundImage = "";
+    if (leftSide) leftSide.style.display = "";
+  }
+}
+updateBackgroundForMobile();
+window.addEventListener('resize', updateBackgroundForMobile);
+</script>
 <script src="{% static 'js/translate.js' %}"></script>
 <script>
+  //here we will to load the language of the user for update the UI of the login
+  (async()=>{
+    const baseStaticUrl = "{% static 'language/' %}";
+    const lang = window.get_language_of_the_system(); 
+    const filePath = `${baseStaticUrl}${lang}/language.json`;
+    await window.load_language(filePath);
+
     //here we will to translate all the input and the information 
-    document.getElementById('title-login').textContent=window.t('home.title.login');
-    document.getElementById('email').placeholder=window.t('home.input.email');
-    document.getElementById('login-password').placeholder=window.t('home.input.password');
-    document.getElementById('btnLogin').textContent=window.t('home.btn.inside');
+    document.getElementById('title-login').textContent=window.translate_text('home.title.login');
+    document.getElementById('email').placeholder=window.translate_text('home.input.email');
+    document.getElementById('login-password').placeholder=window.translate_text('home.input.password');
+    document.getElementById('btnLogin').textContent=window.translate_text('home.btn.inside');
 
 
-    document.getElementById('inputRestartpassword').textContent=window.t('home.text.forgot-password');
-    document.getElementById('btnCreateUser').textContent=window.t('home.text.do-you-have-account');
+    document.getElementById('inputRestartpassword').textContent=window.translate_text('home.text.forgot-password');
+    document.getElementById('btnCreateUser').textContent=window.translate_text('home.text.do-you-have-account');
 
 
     //here we will to translate all the input of the add user
-    document.getElementById('title-create-acount').textContent=window.t('home.title.create-new-account');
-    document.getElementById('name-singup').placeholder=window.t('home.input.name');
+    document.getElementById('title-create-acount').textContent=window.translate_text('home.title.create-new-account');
+    document.getElementById('name-singup').placeholder=window.translate_text('home.input.name');
+    document.getElementById('email-singup').placeholder=window.translate_text('home.input.email');
+    document.getElementById('cellphone-singup').placeholder=window.translate_text('home.input.cellphone');
+    document.getElementById('reg-password').placeholder=window.translate_text('home.input.password');
+    document.getElementById('reg-confirm-password').placeholder=window.translate_text('home.input.password');
+    document.getElementById('btn-create-acount').textContent=window.translate_text('home.title.create-new-account');
+
+    //Detects browser regional settings and update the select of the country
+    const locale = Intl.DateTimeFormat().resolvedOptions().locale;
+    const countryCode = locale.split('-')[1]; // example: "es-MX" → "MX"
+
+    if (countryCode) {
+      const select = document.getElementById('id_country');
+      const option = select.querySelector(`option[value="${countryCode.toUpperCase()}"]`);
+      if (option) {
+        option.selected = true;
+      }
+    }
+
+    // --- Get the timezone of the user ---
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    document.getElementById('timezone').value = timezone;
+  })();
+
+  //----------------------------------------here we will see if can send the form of login to the backend-------------------------------
+  function showPopupMessage(message, color = "#f44336") {
+    //delete the pop if exist a message in the screen
+    const existingPopup = document.querySelector(".popup-message");
+    if (existingPopup) existingPopup.remove();
+
+    //create the element
+    const popup = document.createElement("div");
+    popup.classList.add("popup-message");
+    popup.style.backgroundColor = color;
+    popup.textContent = message;
+
+    // add to the body
+    document.body.appendChild(popup);
+
+    // animate
+    setTimeout(() => popup.classList.add("show"), 10);
+
+    // delete after 3 second
+    setTimeout(() => {
+      popup.classList.remove("show");
+      setTimeout(() => popup.remove(), 300);
+    }, 3000);
+  }
+
+  function this_password_are_valid(){
+    const password1 = document.getElementById('reg-password').value.trim();
+    const password2 = document.getElementById('reg-confirm-password').value.trim();
+
+    // --- Validaciones ---
+    let errorMessage = "";
+
+    // Comprobamos que sean iguales
+    if (password1 !== password2) {
+      showPopupMessage("Las contraseñas no coinciden.");
+    }
+
+    // Comprobamos longitud mínima
+    else if (password1.length < 8) {
+      errorMessage = "La contraseña debe tener al menos 8 caracteres.";
+    }
+
+    // Comprobamos si tiene mayúsculas, minúsculas, números y símbolos
+    else if (!/[A-Z]/.test(password1) || !/[a-z]/.test(password1) || !/[0-9]/.test(password1) || !/[!@#$%^&*(),.?":{}|<>]/.test(password1)) {
+      errorMessage = "La contraseña debe incluir mayúsculas, minúsculas, números y un carácter especial.";
+    }
+  }
+
+
+  document.getElementById('registerForm').addEventListener('submit', function(event) {
+    //here we will see if the password that write the user is valid
+    if(!this_password_are_valid()){
+      event.preventDefault(); // cancell the send to the backend if the password are wrong
+    }
+  });
 </script>
 </body>
 </html>
