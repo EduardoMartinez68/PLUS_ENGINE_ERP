@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from core.readApps import APPS_CACHE #get the list of our apps in the ERP
-from core.models import Company, Branch, UserRole, Role, UserDepartment
+from core.models import Company, Branch, UserRole, Role, UserDepartment, Permit
 import os
 from django.contrib import messages
 
@@ -27,51 +27,64 @@ from core.forms import SignUpForm
 
 #here we will import the message for translate the ERP with the language of the user
 import core.message_language as ml
+from apps.rolesAndPermissions.services.permits import get_all_the_permissions
 
 def register(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
             try:
-                user = form.save(commit=False)  # We haven't saved anything to add yet. company/branch
+                user = form.save(commit=False)
                 user.email = form.cleaned_data['email']
-                # 1️⃣ create a company
+
+                # 1 Create a company
                 company = Company.objects.create(company_name=f'Company of {user.email}')
 
-                # 2️⃣ create a branch
+                # 2 create a branch
                 branch = Branch.objects.create(company=company, name_branch=f'Branch of {user.email}')
-                
-                # 3️⃣ create a default role
+
+                # 3 create a rol for default
                 role, created = UserRole.objects.get_or_create(
                     id_company=company,
                     name="Admin",
                     defaults={'description': 'Rol Admin'}
                 )
 
-                #basic permissions that a new user will have
-                basic_permits = [
-                    "view_department_employees", "add_department_employees", "update_department_employees", 
-                    "view_profile", "update_profile"]  # example
+                # 4 get all the permits in the ERP and we will to create
+                all_permissions = get_all_the_permissions()
 
-                for code in basic_permits:
-                    permit = Permit.objects.get(code=code)
-                    Role.objects.get_or_create(role=role, permit=permit, defaults={'active': True})
+                for app_name, app_data in all_permissions.items():
+                    perms_list = app_data.get("permissions", [])
+                    for code in perms_list:
+                        try:
+                            permit = Permit.objects.get(code=code)
+                            Role.objects.get_or_create(role=role, permit=permit, defaults={'active': True})
+                        except Permit.DoesNotExist:
+                            # if the permit not exist in the database, we will to create the permit
+                            permit = Permit.objects.create(code=code, app=app_name)
+                            Role.objects.create(role=role, permit=permit, active=True)
 
-
-                # 3️⃣ save the ids in user
+                # 5 save the relation like the user
                 user.company = company
                 user.branch = branch
                 user.user_role = role
-
-                user.set_password(form.cleaned_data['password1'])  # hash the password
+                user.set_password(form.cleaned_data['password1'])  # hash del password
                 user.save()
 
-                messages.success(request, f"{ml.get_message('success')}")
-                return redirect('/login')  # or wherever you want to redirect after registration
+                # 6 Authenticate and log in automatically
+                authenticated_user = authenticate(request, email=user.email, password=form.cleaned_data['password1'])
+                if authenticated_user is not None:
+                    login(request, authenticated_user)  # login session automatic
+                    messages.success(request, "home.message.welcome-user")
+                    return redirect('/home')
+
+                messages.success(request, "home.message.the-user-was-register-with-success")
+                return redirect('/login')
+
             except Exception as e:
-                messages.error(request, f"{ml.get_message('email_taken')} {str(e)}")
+                messages.error(request, f"Error: {str(e)}")
         else:
-            messages.error(request, f"{ml.get_message('required_fields')}")
+            messages.error(request, "home.message.please-fill-in-all-required-fields")
     else:
         form = SignUpForm()
 
