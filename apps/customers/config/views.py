@@ -144,7 +144,7 @@ def customers_search(request):
                 answer = search_customer_for_filter(
                     request.user, search, customer_type, source, priority, activated
                 )
-    
+                print(answer)
                 if answer["success"]:
                     return JsonResponse(
                         {"success": True, "answer": answer["answer"], "error": answer["error"]},
@@ -181,7 +181,7 @@ def customers_search(request):
                 answer = search_customer_for_filter(
                     request.user, search, customer_type, source, priority, activated
                 )
-    
+                print(answer)
                 if answer["success"]:
                     return JsonResponse(
                         {"success": True, "answer": answer["answer"], "error": answer["error"]},
