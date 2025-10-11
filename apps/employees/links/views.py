@@ -7,7 +7,7 @@ def employees_home(request):
     return render(request, 'home_employees.html')
 
 
-from ..services.employees import save_employee
+from ..services.employees import save_employee, get_information_of_employee_by_id
 def add_employee(request):
     if request.method == "POST":
         try:
@@ -108,3 +108,30 @@ def search_branch(request):
             "answer": [],
             "error": str(e)
         }, status=500) 
+    
+
+
+
+
+
+
+
+#-----------------------------
+from django.template.loader import render_to_string
+def edit_employee(request,id):
+    return render(request, 'form.html', {'employee_id': id})
+
+def view_information_of_the_employee(request,id):
+    employee=get_information_of_employee_by_id(request.user.company, id)
+    html = render_to_string("add_employee.html", {'employee': employee}, request=request)
+    return JsonResponse({"success": True, "answer": html})
+    '''
+    
+    answer = get_information_of_the_medical_history_for_customer_id(request.user, customer_id)
+    if answer["success"]:
+        html = render_to_string("medical_history.html", {"patient": answer["answer"]}, request=request)
+        return JsonResponse({"success": True, "answer": html})
+    else:
+        return JsonResponse({"success": False, "error": answer.get("error", "Unknown error")})
+    return render(request, 'add_employee.html')
+    '''

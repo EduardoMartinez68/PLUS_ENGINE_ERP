@@ -177,3 +177,59 @@ def save_employee(company: Company, branch: Branch, data: dict)->list:
     except Exception as e:
         traceback.print_exc()
         return {"success": False, "message":"employees.message.we-not-can-add-this-employee", "error": str(e)}
+    
+
+
+def get_information_of_employee_by_id(company: Company, employee_id: int) -> dict:
+    """
+    Obtiene la información de un empleado filtrando por la empresa.
+    Esto asegura que un usuario solo pueda ver empleados de su compañía.
+    """
+    try:
+        # Filtrar empleado por ID y por empresa
+        employee = CustomUser.objects.select_related(
+            'company', 'branch', 'user_role', 'user_department'
+        ).get(id=employee_id, company=company)
+
+        # Preparar la información a devolver
+        employee_data = {
+            "id": employee.id,
+            "name": employee.name,
+            "username": employee.username,
+            "email": employee.email,
+            "avatar": employee.avatar.url if employee.avatar else None,
+            "address": employee.address,
+            "country": employee.country,
+            "postal_code": employee.postal_code,
+            "date_of_birth": employee.date_of_birth.isoformat() if employee.date_of_birth else None,
+            "hiring_date": employee.hiring_date.isoformat() if employee.hiring_date else None,
+            "cellphone": employee.cellphone,
+            "phone": employee.phone,
+            "timezone": employee.timezone,
+            "language": employee.language,
+            "is_active": employee.is_active,
+            "is_staff": employee.is_staff,
+            # --- Branch info ---
+            "branch": {
+                "id": employee.branch.id if employee.branch else None,
+                "name": employee.branch.name_branch if employee.branch else None,
+                "email": employee.branch.email_branch if employee.branch else None
+            } if employee.branch else None,
+            # --- Role info ---
+            "user_role": {
+                "id": employee.user_role.id if employee.user_role else None,
+                "name": employee.user_role.name if employee.user_role else None
+            } if employee.user_role else None,
+            # --- Department info ---
+            "user_department": {
+                "id": employee.user_department.id if employee.user_department else None,
+                "name": employee.user_department.name if employee.user_department else None
+            } if employee.user_department else None,
+        }
+
+        return {"success": True, "employee": employee_data, "error": ""}
+    
+    except ObjectDoesNotExist:
+        return {"success": False, "employee": None, "error": "Employee not found or does not belong to your company."}
+    except Exception as e:
+        return {"success": False, "employee": None, "error": str(e)}

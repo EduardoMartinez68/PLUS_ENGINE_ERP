@@ -1,11 +1,19 @@
+{% include 'partials_employees/navbarEmployee.html' %}
+
 <form id="form-employee">
 <div class="container-section">
     <div class="row section">
         <div class="col-2">
-            <image-uploader id="avatar" name="avatar"></image-uploader>
+            <image-uploader 
+                id="avatar" 
+                name="avatar"
+                {% if employee and employee.employee.avatar %}
+                    value-1="{{ employee.employee.avatar }}"
+                {% endif %}
+            ></image-uploader>
         </div>
         <div class="col-10">
-            <plus-title name="name" label="employees.label.name-employee" placeholder="employees.placeholder.name-employee" required></plus-title>
+            <plus-title name="name" label="employees.label.name-employee" placeholder="employees.placeholder.name-employee" required value="{{ employee.employee.name }}"></plus-title>
             <div class="row">
               <div class="col">
                 <plus-select
@@ -17,6 +25,8 @@
                   edit_data="open_pop_edit_role"
                   method="GET"
                   delete_data="/rolesAndPermissions/change_status/"
+                  value="{{employee.employee.user_role.id}}"
+                  data-text="{{employee.employee.user_role.name}}"
                   >
                 </plus-select>
               </div>
@@ -31,6 +41,8 @@
                   edit_data="open_pop_edit_departament"
                   delete_data="/departament_employee/delete_departament/"
                   method="GET"
+                  value="{{employee.employee.user_department.id}}"
+                  data-text="{{employee.employee.user_department.name}}"
                   >
                 </plus-select>
               </div>
@@ -42,16 +54,21 @@
 
     <div class="row section">
         <div class="col">
-            <input-field name="username"  label="employees.label.username" placeholder="employees.placeholder.username" required></input-field>
+            <input-field name="username"  label="employees.label.username" placeholder="employees.placeholder.username" required value="{{ employee.employee.username }}"></input-field>
         </div>
     </div>
 
     <div class="row section">
         <div class="col">
-            <input-field name="email" type="email" label="employees.label.email" placeholder="employees.placeholder.email" required></input-field>
+            <input-field name="email" type="email" label="employees.label.email" placeholder="employees.placeholder.email" required value="{{ employee.employee.email }}"></input-field>
         </div>
     </div>
 
+
+    <!--here we will see if the user is editing a employee, if the use is edititng a employee, not can show the inputs of password--->
+    {% if employee %}
+
+    {% else %}
     <div class="row section">
       <div class="col">
         <input-field
@@ -74,13 +91,21 @@
         </input-field>     
       </div>
     </div>
+    {% endif %}
 
     <show-more text="employees.showmore.more-information" onclick="window.show_pop('pop-more-information')" description='({{employee.state}} {{employee.city}}.{{employee.country}})'></show-more>
 
     <show-more text="employees.showmore.address" onclick="window.show_pop('pop-data-address')" description='({{employee.state}} {{employee.city}}.{{employee.country}})'></show-more>
 
 
-    <button class="btn btn-edit btn-success" t="btn.save" type="button" onclick="save_data_of_the_employee()"></button>
+
+
+    <!---here we will see the style of the button that show in the frontend--->
+    {% if employee %}
+      <button class="btn btn-edit btn-success" t="btn.update" type="button" onclick="save_data_of_the_employee()"></button>
+    {% else %}
+      <button class="btn btn-add btn-success" t="btn.save" type="button" onclick="save_data_of_the_employee()"></button>
+    {% endif %}
 </div>
 
 <message-pop title="employees.title.more-information" name="pop-more-information">

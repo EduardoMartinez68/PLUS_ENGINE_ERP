@@ -1,8 +1,9 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
 from apps.employees.services.branch import get_information_of_the_branch
 from apps.employees.services.employees import get_employees_for_search
-from ..services.employees import save_employee
+from ..services.employees import save_employee, get_information_of_employee_by_id
 from ..plus_wrapper import Plus
 import json
 from django.http import JsonResponse
@@ -210,4 +211,42 @@ def search_branch(request):
                 "answer": [],
                 "error": str(e)
             }, status=500) 
+
+@login_required(login_url='login')
+def edit_employee(request, id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'form.html', {'employee_id': id})
+    else:
+        return render(request, 'form.html', {'employee_id': id})
+
+@login_required(login_url='login')
+def view_information_of_the_employee(request, id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        employee=get_information_of_employee_by_id(request.user.company, id)
+        html = render_to_string("add_employee.html", {'employee': employee}, request=request)
+        return JsonResponse({"success": True, "answer": html})
+        '''
+        
+        answer = get_information_of_the_medical_history_for_customer_id(request.user, customer_id)
+        if answer["success"]:
+            html = render_to_string("medical_history.html", {"patient": answer["answer"]}, request=request)
+            return JsonResponse({"success": True, "answer": html})
+        else:
+            return JsonResponse({"success": False, "error": answer.get("error", "Unknown error")})
+        return render(request, 'add_employee.html')
+        '''
+    else:
+        employee=get_information_of_employee_by_id(request.user.company, id)
+        html = render_to_string("add_employee.html", {'employee': employee}, request=request)
+        return JsonResponse({"success": True, "answer": html})
+        '''
+        
+        answer = get_information_of_the_medical_history_for_customer_id(request.user, customer_id)
+        if answer["success"]:
+            html = render_to_string("medical_history.html", {"patient": answer["answer"]}, request=request)
+            return JsonResponse({"success": True, "answer": html})
+        else:
+            return JsonResponse({"success": False, "error": answer.get("error", "Unknown error")})
+        return render(request, 'add_employee.html')
+        '''
 

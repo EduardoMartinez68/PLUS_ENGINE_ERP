@@ -43,7 +43,7 @@ async function load_html_in_the_container(container, html){
   scripts.forEach(oldScript => {
     const newScript = document.createElement("script");
     if (oldScript.src) {
-      newScript.src = oldScript.src; // scripts externos
+      newScript.src = oldScript.src; // scripts external
     } else {
       newScript.textContent = oldScript.textContent; // scripts inline
     }

@@ -41,7 +41,6 @@ def get_medical_history_with_customer_id(request, customer_id):
 
 def get_form_medical_history(request, customer_id):
     answer = get_information_of_the_medical_history_for_customer_id(request.user, customer_id)
-    print(answer["answer"])
     if answer["success"]:
         html = render_to_string("medical_history.html", {"patient": answer["answer"]}, request=request)
         return JsonResponse({"success": True, "answer": html})
