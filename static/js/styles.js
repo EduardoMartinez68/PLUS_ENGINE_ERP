@@ -1529,23 +1529,26 @@ class PlusSelect extends HTMLElement {
 
     //if the select have a value for dafault
     const defaultValue = this.getAttribute('value');
-
     this.setValue(defaultValue);
   }
 
   setValue(value, text = null) {
     if (!this._selectElement) return;
-
+    
     if (this._textSelected) {
       this._selectText.setAttribute('t', this._textSelected);
       this._selectText.textContent = this._textSelected;
+      this._hiddenInput.value = value;
       return; //if the user selected a text, we not will update the select
     }
-
+    
     //her we will see if exist the information of the select
     const option = Array.from(this._selectElement.querySelectorAll('option'))
       .find(opt => opt.getAttribute('value') === value + '');
 
+
+      
+      
     //her we will verifiy if exist this option in the select
     if (option) {
       //if the option exist in the select, we will get his information and set it in the hidden input and the select text
@@ -1559,6 +1562,7 @@ class PlusSelect extends HTMLElement {
         this._selectText.textContent = window.translate_text(text);
       }
     } else {
+      
       //if not exist in the select of the options is because is a data of a tabla of search 
       if (this._thisSlectSendDataToTheServer) {
         this._hiddenInput.value = value;

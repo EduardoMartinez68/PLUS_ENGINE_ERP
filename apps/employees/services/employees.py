@@ -72,7 +72,7 @@ def sha256_hex(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
-def valid_the_form_of_employee(company, branch, data , validPassword=True):
+def valid_the_form_of_employee(company, branch, data , employee_id=None):
     # --- See if the branch exist in the company ---
     if branch.company_id != company.id:
         return {"success": False, "message":"employees.error.this-branch-not-exit","error": "The branch does not belong to the provided company."}
@@ -93,14 +93,17 @@ def valid_the_form_of_employee(company, branch, data , validPassword=True):
         return {"success": False, "message":"employees.message.the-email-is-need" ,"error": "Email is required for employee creation."}
     
     #we will see if the user need eval the password that send the user front the frontend, if not need do, is because the user is editing a employee
-    if validPassword:
+    if employee_id==None:
         if password1!=password2 or password1=='':
             return {"success": False, "message":"employees.message.the-password-is-need" ,"error": "Tha password not are equals"} 
         
         #here we will see if the email already exist in the system
-        if CustomUser.objects.filter(email=email).exists():
-            return {"success": False, "message":"employees.message.email-exist", "error": "Email already registered."}
-        
+        if employee_id==None:
+            if CustomUser.objects.filter(email=email).exists():
+                return {"success": False, "message":"employees.message.email-exist", "error": "Email already registered."}
+        else:
+            if CustomUser.objects.filter(email=email).exclude(id=employee_id).exists():
+                return {"success": False, "message":"employees.message.email-exist", "error": "Email already registered."}
 
 
     return {"success":True}
@@ -210,7 +213,7 @@ def update_employee(company: Company, branch: Branch, employee_id:int ,data: dic
         return {"success": False, "message":result["message"], "error": "Need send the id of the employee"} 
     
     #we will see if the form that send the frontend is success or need other data
-    result=valid_the_form_of_employee(company, branch, data, False)
+    result=valid_the_form_of_employee(company, branch, data, employee_id)
     if not result["success"]:
         return {"success": False, "message":result["message"], "error": result["error"]} 
     

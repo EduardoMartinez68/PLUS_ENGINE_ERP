@@ -93,9 +93,9 @@
     </div>
     {% endif %}
 
-    <show-more text="employees.showmore.more-information" onclick="window.show_pop('pop-more-information')" description='({{employee.state}} {{employee.city}}.{{employee.country}})'></show-more>
+    <show-more text="employees.showmore.more-information" onclick="window.show_pop('pop-more-information')" description='({{employee.employee.phone}} {{employee.employee.cellphone}}.{{employee.employee.language}})'></show-more>
 
-    <show-more text="employees.showmore.address" onclick="window.show_pop('pop-data-address')" description='({{employee.state}} {{employee.city}}.{{employee.country}})'></show-more>
+    <show-more text="employees.showmore.address" onclick="window.show_pop('pop-data-address')" description='({{employee.employee.address}}.{{employee.employee.postal_code}}.{{employee.employee.country}})'></show-more>
 
 
 
@@ -113,7 +113,11 @@
         <div class="row section">
           <div class="col">
             <label t="employees.label.date_of_birth"></label>
-            <plus-date></plus-date>
+            {% if employee %}
+              <plus-date value="{{employee.employee.date_of_birth}}" name="date_of_birth"></plus-date>
+            {% else %}
+              <plus-date name="date_of_birth"></plus-date>
+            {% endif %}
           </div>
         </div>
 
@@ -123,7 +127,9 @@
               name="phone"
               type="text"
               label="employees.label.phone"
-              placeholder="employees.placeholder.phone">
+              placeholder="employees.placeholder.phone"
+              value="{{employee.employee.phone}}"
+              >
             </input-field>
           </div>
           <div class="col">
@@ -131,7 +137,9 @@
               name="cellphone"
               type="text"
               label="employees.label.cellphone"
-              placeholder="employees.placeholder.cellphone">
+              placeholder="employees.placeholder.cellphone"
+              value="{{employee.employee.cellphone}}"
+              >
             </input-field>
           </div>
         </div>
@@ -200,7 +208,7 @@
         <div class="row section">
             <div class="col">
                 <input-field type="text" label="employees.label.address" placeholder="employees.placeholder.address" name="address"
-                    value="{{employee.address}}"></input-field>
+                    value="{{employee.employee.address}}"></input-field>
             </div>
         </div>
         <div class="row section">
@@ -209,7 +217,7 @@
             </div>
             <div class="col">
                 <input-field type="text" label="employees.label.postal_code" placeholder="employees.placeholder.postal_code" name="postal_code"
-                    value="{{employee.postal_code}}"></input-field>         
+                    value="{{employee.employee.postal_code}}"></input-field>         
             </div>
         </div>
         <br>
