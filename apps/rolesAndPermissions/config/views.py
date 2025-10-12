@@ -1,6 +1,7 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
-from apps.rolesAndPermissions.services.role import save_a_new_role, get_role_by_id, update_rol_by_id, change_status_of_a_role
+from apps.rolesAndPermissions.services.role import save_a_new_role, get_role_by_id, update_rol_by_id, change_status_of_a_role, duplicate_role
+from django.shortcuts import redirect
 from ..plus_wrapper import Plus
 from apps.rolesAndPermissions.services.role import get_role_of_the_company
 from apps.rolesAndPermissions.services.permits import get_all_the_permissions
@@ -146,6 +147,49 @@ def edit_rol(request, rol_id):
             return render(request, 'form_rol.html', {
                 "role": {"rol_id": rol_id} 
             })
+            
+    
+        return JsonResponse({"success": False, "answer": "Method not allowed"}, status=405)
+
+@login_required(login_url='login')
+def duplicate_rol_in_the_company(request, rol_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == "POST":
+            if not Plus.this_user_have_this_permission(request.user, 'duplicate_role'):
+                return JsonResponse(
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )
+            
+            #if the user have the permission of duplicate a role, we will do that
+            result=duplicate_role(rol_id, request.user.company.id)
+            #we will see if we can duplicate the role
+            return JsonResponse({
+                "success": result['success'],
+                "answer": result['message'],
+                "error": result['error']
+            }, status=200) 
+    
+            
+    
+        return JsonResponse({"success": False, "answer": "Method not allowed"}, status=405)
+    else:
+        if request.method == "POST":
+            if not Plus.this_user_have_this_permission(request.user, 'duplicate_role'):
+                return JsonResponse(
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )
+            
+            #if the user have the permission of duplicate a role, we will do that
+            result=duplicate_role(rol_id, request.user.company.id)
+            #we will see if we can duplicate the role
+            return JsonResponse({
+                "success": result['success'],
+                "answer": result['message'],
+                "error": result['error']
+            }, status=200) 
+    
             
     
         return JsonResponse({"success": False, "answer": "Method not allowed"}, status=405)

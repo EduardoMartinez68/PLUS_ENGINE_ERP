@@ -124,6 +124,50 @@ def save_a_new_role(user, data: dict) -> dict:
             "error": str(e)
         }
     
+def duplicate_role(role_id, company_id):
+    try:
+        # 1️⃣ get the rol origin of the company
+        original_role = UserRole.objects.get(id=role_id, id_company_id=company_id)
+
+        # 2️⃣ create the copy of the rol
+        new_role = UserRole.objects.create(
+            id_company=original_role.id_company,
+            name=f"{original_role.name} - copy",
+            description=original_role.description,
+            activated=original_role.activated
+        )
+
+        # 3️⃣ Duplicate all permissions of the original role
+        original_permissions = Role.objects.filter(role=original_role)
+        new_roles = [
+            Role(role=new_role, permit=rp.permit, active=rp.active)
+            for rp in original_permissions
+        ]
+        Role.objects.bulk_create(new_roles)
+
+        #is very important that return the id of the new rol 
+        return {
+            "success": True,
+            "role_id": new_role.id,
+            "message": new_role.id,
+            "error": f"Role duplicate with success: {new_role.name}",
+        }
+
+    except UserRole.DoesNotExist:
+        #if not exist the rol in this company
+        return {
+            "success": False,
+            "answer": "rolesAndPermissions.message.error.role-id-required",
+            "error": "The Role not exist in this company"
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "rolesAndPermissions.message.error.unexpected",
+            "error": str(e)
+        }
+    
 def update_rol_by_id(user, data: dict) -> dict:
     rol_id = data.get("rol_id")
     name_role = data.get("name_role", "").strip()
