@@ -102,7 +102,7 @@
 
     <!---here we will see the style of the button that show in the frontend--->
     {% if employee %}
-      <button class="btn btn-edit btn-success" t="btn.update" type="button" onclick="save_data_of_the_employee()"></button>
+      <button class="btn btn-edit btn-success" t="btn.update" type="button" onclick="update_employee('{{employee.employee.id}}')"></button>
     {% else %}
       <button class="btn btn-add btn-success" t="btn.save" type="button" onclick="save_data_of_the_employee()"></button>
     {% endif %}
@@ -263,6 +263,18 @@
     }
   }
 
+  async function update_employee(employee_id){
+    //first we will see if all the information is correct
+    if(all_the_information_of_the_form_is_success()){
+      const backend=await send_form_to_the_server('form-employee',`employees/edit_employee/${employee_id}/`);
+      if(backend.success){
+        window.show_alert('success', 'employees.title.the-employee-was-update-with-success', 'employees.message.the-employee-was-update-with-success')
+      }else{
+        window.show_alert('alert', 'employees.message.error-in-the-form', backend.message, backend.error)
+      }
+    }
+  }
+
   function all_the_information_of_the_form_is_success(){
     //first we will see if the employee have a name 
     const name=document.getElementById('name');
@@ -284,8 +296,22 @@
       return false;
     }
 
-    const password=document.getElementById('password')
-    const confirm_password=document.getElementById('confirm-password')
+    //now by last we will see if the password is success and return the value
+    return valid_password();
+  }
+
+
+  function valid_password(){
+    const password=document.getElementById('password');
+    const confirm_password=document.getElementById('confirm-password');
+
+    //we will see if exist the both inputs of the password, if not exist is because the user is editing the employee
+    if(!password && !confirm_password){
+      return true;
+    }
+
+
+    //now if exist the inputs of the passwod is because the user would like add a new employee and need see if the password is valid
     if (password.value === '' && confirm_password.value === '') {
       password.style.borderColor = '';
       confirm_password.style.borderColor = '';
@@ -303,10 +329,8 @@
       return false;
     }
 
-
     return true;
   }
-
   (()=>{
     //here we will get the information of the inputs of the password for
     //comparer if both password and if both password are equals we will to marker the inputs of a color green

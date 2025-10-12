@@ -7,7 +7,7 @@ def employees_home(request):
     return render(request, 'home_employees.html')
 
 
-from ..services.employees import save_employee, get_information_of_employee_by_id
+from ..services.employees import save_employee, get_information_of_employee_by_id, update_employee
 def add_employee(request):
     if request.method == "POST":
         try:
@@ -118,8 +118,33 @@ def search_branch(request):
 
 #-----------------------------
 from django.template.loader import render_to_string
-def edit_employee(request,id):
-    return render(request, 'form.html', {'employee_id': id})
+def edit_employee(request, employee_id):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )   
+        
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'update_employee'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
+        result=update_employee(request.user.company, request.user.branch, employee_id, data)
+
+        return JsonResponse({
+            "success": result['success'],
+            "message": result['message'],
+            "error": result['error']
+        }, status=200) 
+    
+
+    return render(request, 'form.html', {'employee_id': employee_id})
 
 def view_information_of_the_employee(request,id):
     employee=get_information_of_employee_by_id(request.user.company, id)

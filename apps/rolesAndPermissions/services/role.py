@@ -164,7 +164,7 @@ def duplicate_role(role_id, company_id):
     except Exception as e:
         return {
             "success": False,
-            "message": "rolesAndPermissions.message.error.unexpected",
+            "message": "rolesAndPermissions.message.error.unexpected-error",
             "error": str(e)
         }
     

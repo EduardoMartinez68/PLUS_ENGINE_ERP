@@ -49,5 +49,8 @@
     "employees.error.this-branch-not-exit":"Esta sucursal no existe en la empresa",
     "employees.error.this-email-already-exit":"Esta email ya existe en el sistema",
     "employees.title.the-employee-was-added-with-success":"Empleado Agregado",
-    "employees.message.the-employee-was-added-with-success":"El Empelado fue agregado con exito a tu empresa."
+    "employees.message.the-employee-was-added-with-success":"El Empelado fue agregado con exito a tu empresa.",
+    "employees.title.the-employee-was-update-with-success":"Empleado Actualizado",
+    "employees.message.the-employee-was-update-with-success":"El Empleado fue actualizado con exito en tu empresa",
+    "employees.message.we-not-can-update-this-employee":"No se pudo actualizar los datos de este empleado. intentalo mas tarde."
 }
