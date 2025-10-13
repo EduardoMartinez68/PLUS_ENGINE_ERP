@@ -52,5 +52,15 @@
     "employees.message.the-employee-was-added-with-success":"El Empelado fue agregado con exito a tu empresa.",
     "employees.title.the-employee-was-update-with-success":"Empleado Actualizado",
     "employees.message.the-employee-was-update-with-success":"El Empleado fue actualizado con exito en tu empresa",
-    "employees.message.we-not-can-update-this-employee":"No se pudo actualizar los datos de este empleado. intentalo mas tarde."
+    "employees.message.we-not-can-update-this-employee":"No se pudo actualizar los datos de este empleado. intentalo mas tarde.",
+
+    "employees.error.this-employee-not-exist":"Este empleado no existe o ya fue eliminado de la emrpesa",
+
+    "employees.title.delete-employee":"Eliminar Empleado?",
+    "employees.message.delete-employee":"Ten cuidado estas apunto de eliminar a un colaborador. Estas completamente seguro de que deseas eliminar este empleado?",
+    "employees.message.delete-employee-error":"No se elimino el elmpleado",
+    "message.error.not-can-change-the-status-of-your-self":"No puedes eliminarte a ti mismo",
+
+    "employees.title.delete-employee-success":"Empleado Eliminado",
+    "employees.message.delete-employee-success":"El empleado fue eliminado con exito de tu empresa. Puedes restaurarlo en cualquier momento si lo necesitas."
 }

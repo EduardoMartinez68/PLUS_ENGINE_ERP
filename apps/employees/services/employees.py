@@ -9,6 +9,7 @@ from django.core.files.base import ContentFile
 from PIL import Image
 from django.db import transaction
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from datetime import datetime, date
 import hashlib
 
 def get_employees_for_search(company, branch=None, sku=None, activated=None, page=1, limit=20) -> dict:
@@ -141,7 +142,17 @@ def save_employee(company: Company, branch: Branch, data: dict)->list:
             employee.address = data.get("address", "")
             employee.phone = data.get("phone", "")
             employee.cellphone = data.get("cellphone", "")
-            employee.date_of_birth = data.get("date_of_birth")
+
+            #get the birth and if not is of type date, we will to save a null
+            dob = data.get("date_of_birth")
+            if isinstance(dob, (datetime, date)):
+                employee.date_of_birth = dob if isinstance(dob, date) else dob.date()
+            else:
+                try:
+                    employee.date_of_birth = datetime.strptime(str(dob), "%Y-%m-%d").date()
+                except (ValueError, TypeError):
+                    employee.date_of_birth = None
+
             employee.set_password(password1)
 
             # --- OTHER OPTIONS ---
@@ -236,7 +247,16 @@ def update_employee(company: Company, branch: Branch, employee_id:int ,data: dic
         employee.address = data.get("address", "")
         employee.phone = data.get("phone", "")
         employee.cellphone = data.get("cellphone", "")
-        employee.date_of_birth = data.get("date_of_birth")
+
+        #we will to try save of birth of the employee
+        dob = data.get("date_of_birth")
+        if isinstance(dob, (datetime, date)):
+            employee.date_of_birth = dob if isinstance(dob, date) else dob.date()
+        else:
+            try:
+                employee.date_of_birth = datetime.strptime(str(dob), "%Y-%m-%d").date()
+            except (ValueError, TypeError):
+                employee.date_of_birth = None
 
         
         # --- OTHER OPTIONS ---
@@ -310,6 +330,66 @@ def update_employee(company: Company, branch: Branch, employee_id:int ,data: dic
         traceback.print_exc()
         return {"success": False, "message":"employees.message.we-not-can-update-this-employee", "error": str(e)}
     
+def change_employee_status(company: Company, employee_id: int, new_status: bool) -> dict:
+    """
+    Change the active status of an employee (activate or deactivate).
+    Parameters:
+        company (Company): The company that owns the employee.
+        employee_id (int): The ID of the employee whose status will be changed.
+        new_status (bool): True to activate, False to deactivate.
+    Returns:
+        dict: Result of the operation with success flag and message.
+    """
+    try:
+        #we will see if the id that send is valid
+        if not employee_id:
+            return {
+                "success": False,
+                "message": "employees.error.this-employee-not-exist",
+                "error": "invalid_id"
+            }
+
+        # try get the employee in the company
+        employee = CustomUser.objects.filter(id=employee_id, company=company).first()
+        if not employee:
+            return {
+                "success": False,
+                "message": "employees.error.this-employee-not-exist",
+                "error": "employee not found"
+            }
+
+        # update his status
+        employee.is_active = new_status
+
+        #now we will see if the employee have a photo, if have a photo we will to delete
+        if not new_status and employee.avatar:
+            try:
+                employee.avatar.delete(save=False)
+                employee.avatar = None
+            except Exception as e:
+                print(f"Error deleting avatar for employee {employee.id}: {e}")
+
+        # save the change
+        employee.save()
+
+        #return the answer
+        status_text = "activated" if new_status else "deactivated"
+        return {
+            "success": True,
+            "message": f"Employee '{employee.name}' was {status_text} successfully.",
+            "employee_id": employee.id,
+            "new_status": new_status,
+            "error": f"Employee '{employee.name}' was {status_text} successfully."
+        }
+
+    except Exception as e:
+        traceback.print_exc()
+        return {
+            "success": False,
+            "message": "An error occurred while changing the employee status.",
+            "error": str(e)
+        }
+
 
 def get_information_of_employee_by_id(company: Company, employee_id: int) -> dict:
     """

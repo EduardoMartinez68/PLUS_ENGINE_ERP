@@ -292,7 +292,17 @@
 
   async function delete_employee(employee_id){
     //here we will see if the user would like delete this employee
-    
+    if(await show_message_question('employees.title.delete-employee', 'employees.message.delete-employee')){
+      //if the user would like delete this customer we will send this information to the backend
+      const backend=await send_message_to_the_server(`employees/change_status/${employee_id}/`,{status:false});
+      if(backend.success){
+        //if can delete this employee, now we will to rederict to the user to the dashboard of employees
+        window.show_alert('success', 'employees.title.delete-employee-success', 'employees.message.delete-employee-success')
+        window.nextWeb('employees/employees/');
+      }else{
+        window.show_alert('alert', 'employees.message.delete-employee-error', backend.message, backend.error);
+      }
+    }
   }
 
 

@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from apps.employees.services.branch import get_information_of_the_branch
 from apps.employees.services.employees import get_employees_for_search
-from ..services.employees import save_employee, get_information_of_employee_by_id, update_employee
+from ..services.employees import save_employee, get_information_of_employee_by_id, update_employee, change_employee_status
 from ..plus_wrapper import Plus
 import json
 from django.http import JsonResponse
@@ -299,4 +299,109 @@ def view_information_of_the_employee(request, id):
             return JsonResponse({"success": False, "error": answer.get("error", "Unknown error")})
         return render(request, 'add_employee.html')
         '''
+
+@login_required(login_url='login')
+def change_status(request, employee_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == "GET":
+            return JsonResponse({
+                "success": False,
+                "answer": [],
+                "error": "Method not allowed."
+            }, status=405)  
+        
+        if request.method == "POST":
+            try:
+                data = json.loads(request.body)
+            except Exception as e:
+                return JsonResponse(
+                    {"success": False, "message": "Invalid JSON", "answer": "Invalid JSON", "error": str(e)}, 
+                    status=400
+                )   
+            
+            #first we will see if the employee that the user would like change his status not is self
+            if request.user.id==employee_id:
+                return JsonResponse(
+                    {"success": False, "message": "message.error.not-can-change-the-status-of-your-self", "answer": 'message.error.not-can-change-the-status-of-your-self', "error": 'Not can change the status of your self'},
+                    status=200
+                )         
+    
+    
+            '''
+            now we will see if the user have the permsssion need that the ERP need
+            if the status is True is because the user need recover a employee and if the status
+            is false is because the employee need delete to his companion
+            '''
+            status=data.get("status", False)
+            if status:
+                if not Plus.this_user_have_this_permission(request.user, 'recover_employee'):
+                    return JsonResponse(
+                        {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                        status=200
+                    )
+            else:
+                if not Plus.this_user_have_this_permission(request.user, 'delete_employee'):
+                    return JsonResponse(
+                        {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                        status=200
+                    )
+            
+    
+            result=change_employee_status(request.user.company, employee_id, status)
+            return JsonResponse({
+                "success": result['success'],
+                "message": result['message'],
+                "error": result['error']
+            }, status=200) 
+    else:
+        if request.method == "GET":
+            return JsonResponse({
+                "success": False,
+                "answer": [],
+                "error": "Method not allowed."
+            }, status=405)  
+        
+        if request.method == "POST":
+            try:
+                data = json.loads(request.body)
+            except Exception as e:
+                return JsonResponse(
+                    {"success": False, "message": "Invalid JSON", "answer": "Invalid JSON", "error": str(e)}, 
+                    status=400
+                )   
+            
+            #first we will see if the employee that the user would like change his status not is self
+            if request.user.id==employee_id:
+                return JsonResponse(
+                    {"success": False, "message": "message.error.not-can-change-the-status-of-your-self", "answer": 'message.error.not-can-change-the-status-of-your-self', "error": 'Not can change the status of your self'},
+                    status=200
+                )         
+    
+    
+            '''
+            now we will see if the user have the permsssion need that the ERP need
+            if the status is True is because the user need recover a employee and if the status
+            is false is because the employee need delete to his companion
+            '''
+            status=data.get("status", False)
+            if status:
+                if not Plus.this_user_have_this_permission(request.user, 'recover_employee'):
+                    return JsonResponse(
+                        {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                        status=200
+                    )
+            else:
+                if not Plus.this_user_have_this_permission(request.user, 'delete_employee'):
+                    return JsonResponse(
+                        {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                        status=200
+                    )
+            
+    
+            result=change_employee_status(request.user.company, employee_id, status)
+            return JsonResponse({
+                "success": result['success'],
+                "message": result['message'],
+                "error": result['error']
+            }, status=200) 
 
