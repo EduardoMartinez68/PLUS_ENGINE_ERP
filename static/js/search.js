@@ -268,7 +268,7 @@ function update_container_from_the_server(inputsId, fieldId, divHtml, searchUrl,
 
     // Función para obtener valores de inputs (igual que en tu otra función)
     function get_the_value_of_the_input(input) {
-        if (input.tagName.toLowerCase() === 'plus-select') return window.get_value_plus_select(input);
+        if (input.tagName.toLowerCase() === 'plus-select') return input.getValue();
         if (input.tagName.toLowerCase() === 'plus-switch') return window.get_status_plus_switch(input);
         if (input.tagName.toLowerCase() === 'plus-date') return input.value.trim();
         if (input.tagName.toLowerCase() === 'plus-time') return input.value.trim();
