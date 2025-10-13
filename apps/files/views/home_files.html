@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+  <style>
+    .search-upload {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .search-upload input {
+      padding: 8px 14px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      width: 240px;
+      transition: 0.3s;
+    }
+
+    .search-upload input:focus {
+      border-color: #3a7bd5;
+      outline: none;
+      box-shadow: 0 0 4px #a2c2f0;
+    }
+
+    .search-upload button {
+      background-color: #3a7bd5;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .search-upload button:hover {
+      background-color: #2c5fa5;
+    }
+
+    main {
+      flex: 1;
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    nav {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 20px;
+    }
+
+    nav span {
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    nav span:hover {
+      color: #3a7bd5;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #2c3e50;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .folders {
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      margin-bottom: 40px;
+    }
+
+    .files {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .card svg {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 15px;
+      color: #333;
+      font-weight: 500;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .file-info {
+      font-size: 13px;
+      color: #999;
+      margin-top: 3px;
+    }
+
+    footer {
+      background: #fff;
+      border-top: 1px solid #ddd;
+      text-align: center;
+      padding: 12px;
+      font-size: 13px;
+      color: #888;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .search-upload input {
+        width: 100%;
+      }
+
+      main {
+        padding: 20px;
+      }
+    }
+  </style>
+  <main>
+    <nav>
+      <span>Inicio</span> / <span>Carpeta actual</span>
+    </nav>
+
+    <h2>Carpetas</h2>
+    <div class="grid folders">
+      <div class="card">
+        <svg fill="none" stroke="#3a7bd5" stroke-width="1.8" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h5l2 2h7a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
+        </svg>
+        <p>Pacientes</p>
+      </div>
+      <div class="card">
+        <svg fill="none" stroke="#3a7bd5" stroke-width="1.8" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h5l2 2h7a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
+        </svg>
+        <p>Radiografías</p>
+      </div>
+      <div class="card">
+        <svg fill="none" stroke="#3a7bd5" stroke-width="1.8" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h5l2 2h7a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
+        </svg>
+        <p>Documentos</p>
+      </div>
+    </div>
+
+    <h2>Archivos recientes</h2>
+    <div class="grid files">
+      <div class="card">
+        <svg fill="none" stroke="#777" stroke-width="1.8" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+        <p>resultado_analisis.pdf</p>
+        <div class="file-info">1.2 MB</div>
+      </div>
+      <div class="card">
+        <svg fill="none" stroke="#777" stroke-width="1.8" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+        <p>foto_paciente1.jpg</p>
+        <div class="file-info">850 KB</div>
+      </div>
+    </div>
+  </main>
+
