@@ -271,7 +271,8 @@
       const backend=await send_form_to_the_server('form-employee','employees/add_employee/');
       if(backend.success){
         restart_form('form-employee');
-        window.show_alert('success', 'employees.title.the-employee-was-added-with-success', 'employees.message.the-employee-was-added-with-success')
+        window.show_alert('success', 'employees.title.the-employee-was-added-with-success', 'employees.message.the-employee-was-added-with-success');
+        window.nextWeb('employees/employees/');
       }else{
         window.show_alert('alert', 'employees.message.error-in-the-form', backend.message, backend.error)
       }
@@ -283,7 +284,8 @@
     if(all_the_information_of_the_form_is_success()){
       const backend=await send_form_to_the_server('form-employee',`employees/edit_employee/${employee_id}/`);
       if(backend.success){
-        window.show_alert('success', 'employees.title.the-employee-was-update-with-success', 'employees.message.the-employee-was-update-with-success')
+        window.show_alert('success', 'employees.title.the-employee-was-update-with-success', 'employees.message.the-employee-was-update-with-success');
+        window.nextWeb('employees/employees/');
       }else{
         window.show_alert('alert', 'employees.message.error-in-the-form', backend.message, backend.error)
       }

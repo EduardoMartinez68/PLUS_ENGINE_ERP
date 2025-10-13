@@ -1319,6 +1319,7 @@ class PlusSelect extends HTMLElement {
         popup.classList.remove('active');
         searchInput.value = '';
         filterOptions('');
+        this.dispatchEvent(new Event('change', { bubbles: true }));
       });
     });
 
@@ -1466,7 +1467,7 @@ class PlusSelect extends HTMLElement {
             actionsContainer.appendChild(deleteBtn);
           }
 
-          // Ensamblar la opción
+          // add the option
           if (data.color) {
             contentContainer.appendChild(redSquare);
           }
@@ -1476,13 +1477,14 @@ class PlusSelect extends HTMLElement {
           }
           div.appendChild(contentContainer);
 
-          // Evento de selección de opción
+          // Option selection event
           div.addEventListener('click', () => {
             select.querySelector('.plus-select-selected-text').textContent = data.text;
             hiddenInput.value = data.id;
             popup.classList.remove('active');
             searchInput.value = '';
             filterOptions('');
+            this.dispatchEvent(new Event('change', { bubbles: true }));
           });
 
           options.push(div);

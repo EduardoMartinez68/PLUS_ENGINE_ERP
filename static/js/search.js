@@ -90,7 +90,7 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
     function get_the_value_of_the_input(input){
         //here we will see if the input is a select of plus or a select html normal
         if (input.tagName.toLowerCase() === 'plus-select') {
-            return window.get_value_plus_select(input)
+            return input.getValue();
         } 
 
         if (input.tagName.toLowerCase() === 'plus-switch') {
@@ -104,6 +104,7 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
         if (input.tagName.toLowerCase() === 'plus-time') {
             return input.value.trim();
         } 
+
 
         return input.value.trim();
     }
@@ -207,12 +208,21 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
         for (let i = 1; i < inputsId.length; i++) {
             const filterInput = document.getElementById(inputsId[i]);
             if (filterInput && !filterInput.dataset.initialized) {
-                // Detect changes in selects and dates
-                filterInput.addEventListener('change', send_information_to_the_server);
-                filterInput.dataset.initialized = "true"; //here we activate the input for that not have other event
+                
+                // If it's a PlusSelect, listen for the 'change' event on the element itself
+                if (filterInput.tagName.toLowerCase() === 'plus-select') {
+                    filterInput.addEventListener('change', send_information_to_the_server);
+                } else {
+                    //this is for other label of html
+                    filterInput.addEventListener('change', send_information_to_the_server);
+                }
+                
+                filterInput.dataset.initialized = "true";
             }
         }
     }
+
+
 
     //this script is for load all the information of the server when the input be visible for the user 
     //this is for when the input and his div container be visible for the user, update the container to the information
