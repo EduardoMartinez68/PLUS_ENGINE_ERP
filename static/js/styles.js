@@ -2948,6 +2948,13 @@ class PlusDate extends HTMLElement {
       this.currentDate = new Date(valueAttr);
     }
 
+    //update the input that be hidden
+    if (this.selectedDate) {
+      const formattedValue = this.selectedDate.toISOString().split('T')[0];
+      this.hiddenInput.value = formattedValue;
+    }
+
+
     const style = document.createElement("style");
     style.textContent = `
       .plus-calendar-calendar {

@@ -174,7 +174,8 @@
     "app.products": "Productos",
     "app.medical_history": "Historial Medico",
     "app.services": "Servicios",
-    "app.departament_employee": "Departamentos de empleados",
+    "app.files": "Archivos",
+    "app.departament_employee": "Departamentos",
     "app.exit": "Salir"
 }
 

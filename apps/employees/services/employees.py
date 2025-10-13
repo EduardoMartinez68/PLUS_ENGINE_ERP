@@ -108,7 +108,6 @@ def valid_the_form_of_employee(company, branch, data , employee_id=None):
 
     return {"success":True}
         
-
 def save_employee(company: Company, branch: Branch, data: dict)->list:
     """
     Create a new employee in the company and branch specific.
@@ -217,6 +216,7 @@ def update_employee(company: Company, branch: Branch, employee_id:int ,data: dic
     if not result["success"]:
         return {"success": False, "message":result["message"], "error": result["error"]} 
     
+
     try:
         # --- basic inputs ---
         name = (data.get("name") or "").strip()
@@ -238,6 +238,7 @@ def update_employee(company: Company, branch: Branch, employee_id:int ,data: dic
         employee.cellphone = data.get("cellphone", "")
         employee.date_of_birth = data.get("date_of_birth")
 
+        
         # --- OTHER OPTIONS ---
         employee.language = data.get("language", "es")
         employee.timezone = data.get("timezone", "America/Mexico_City")
@@ -256,27 +257,40 @@ def update_employee(company: Company, branch: Branch, employee_id:int ,data: dic
 
         # --- PROCESAR AVATAR (base64 opcional) ---
         avatar_data = data.get("avatar")
-        if avatar_data and "," in avatar_data:
-            try:
-                fmt, imgstr = avatar_data.split(",", 1)
-                img_data = base64.b64decode(imgstr)
-                img = Image.open(BytesIO(img_data))
-                if img.mode in ("RGBA", "P"):
-                    img = img.convert("RGB")
 
-                # Redimensionar
-                max_size = (400, 400)
-                img.thumbnail(max_size, Image.LANCZOS)
+        if avatar_data:
+            # Si el usuario envía una cadena base64 (nuevo avatar)
+            if "," in avatar_data:
+                try:
+                    fmt, imgstr = avatar_data.split(",", 1)
+                    img_data = base64.b64decode(imgstr)
+                    img = Image.open(BytesIO(img_data))
+                    if img.mode in ("RGBA", "P"):
+                        img = img.convert("RGB")
 
-                # Guardar en WebP
-                buffer = BytesIO()
-                img.save(buffer, format="WEBP", quality=85)
-                buffer.seek(0)
+                    # Redimensionar
+                    max_size = (400, 400)
+                    img.thumbnail(max_size, Image.LANCZOS)
 
-                unique_filename = f"{uuid.uuid4().hex}_avatar.webp"
-                employee.avatar.save(unique_filename, ContentFile(buffer.read()), save=False)
-            except Exception as e:
-                print("Error processing avatar:", e)
+                    # Guardar en WebP
+                    buffer = BytesIO()
+                    img.save(buffer, format="WEBP", quality=85)
+                    buffer.seek(0)
+
+                    # Si ya tenía un avatar previo, eliminarlo
+                    if employee.avatar:
+                        employee.avatar.delete(save=False)
+
+                    unique_filename = f"{uuid.uuid4().hex}_avatar.webp"
+                    employee.avatar.save(unique_filename, ContentFile(buffer.read()), save=False)
+                except Exception as e:
+                    print("Error processing avatar:", e)
+
+            # Si el frontend envía un string vacío => borrar avatar existente
+            elif avatar_data == "":
+                if employee.avatar:
+                    employee.avatar.delete(save=False)
+                    employee.avatar = None
 
         employee.is_active = data.get("is_active", True)
         employee.is_staff = data.get("is_staff", False)

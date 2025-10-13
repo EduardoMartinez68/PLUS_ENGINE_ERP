@@ -102,7 +102,14 @@
 
     <!---here we will see the style of the button that show in the frontend--->
     {% if employee %}
-      <button class="btn btn-edit btn-success" t="btn.update" type="button" onclick="update_employee('{{employee.employee.id}}')"></button>
+      <div class="row">
+        <div class="col-8">
+          <button class="btn btn-edit btn-success" t="btn.update" type="button" onclick="update_employee('{{employee.employee.id}}')"></button>
+        </div>
+        <div class="col-4">
+          <button class="btn btn-delete btn-success" t="btn.delete" type="button" onclick="delete_employee('{{employee.employee.id}}')"></button>
+        </div>
+      </div>
     {% else %}
       <button class="btn btn-add btn-success" t="btn.save" type="button" onclick="save_data_of_the_employee()"></button>
     {% endif %}
@@ -283,6 +290,12 @@
     }
   }
 
+  async function delete_employee(employee_id){
+    //here we will see if the user would like delete this employee
+    
+  }
+
+
   function all_the_information_of_the_form_is_success(){
     //first we will see if the employee have a name 
     const name=document.getElementById('name');
@@ -307,7 +320,6 @@
     //now by last we will see if the password is success and return the value
     return valid_password();
   }
-
 
   function valid_password(){
     const password=document.getElementById('password');
