@@ -62,7 +62,6 @@ def search_employee(request, activated):
 
     all_filters = request.GET.get("allFilters", "")
     values = all_filters.split(",")
-    print(values)
     search=values[0]
     branch_name = values[1].strip() if values[1] and values[1].strip() else request.user.branch
     some_flag = values[2] if values[2] not in (None, "") else True

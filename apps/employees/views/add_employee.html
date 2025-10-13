@@ -102,14 +102,18 @@
 
     <!---here we will see the style of the button that show in the frontend--->
     {% if employee %}
-      <div class="row">
-        <div class="col-8">
-          <button class="btn btn-edit btn-success" t="btn.update" type="button" onclick="update_employee('{{employee.employee.id}}')"></button>
+    {% if employee.employee.is_active %}
+        <div class="row">
+            <div class="col-8">
+                <button class="btn btn-edit btn-success" t="btn.update" type="button" onclick="update_employee('{{employee.employee.id}}')"></button>
+            </div>
+            <div class="col-4">
+                <button class="btn btn-delete btn-success" t="btn.delete" type="button" onclick="delete_employee('{{employee.employee.id}}')"></button>
+            </div>
         </div>
-        <div class="col-4">
-          <button class="btn btn-delete btn-success" t="btn.delete" type="button" onclick="delete_employee('{{employee.employee.id}}')"></button>
-        </div>
-      </div>
+    {% else %}
+        <button class="btn btn-delete-tr btn-success" t="btn.recover" type="button" onclick="recover_employee('{{employee.employee.id}}')"></button>
+    {% endif %}
     {% else %}
       <button class="btn btn-add btn-success" t="btn.save" type="button" onclick="save_data_of_the_employee()"></button>
     {% endif %}
@@ -303,6 +307,21 @@
         window.nextWeb('employees/employees/');
       }else{
         window.show_alert('alert', 'employees.message.delete-employee-error', backend.message, backend.error);
+      }
+    }
+  }
+
+  async function recover_employee(employee_id) {
+    //here we will see if the user would like delete this employee
+    if(await show_message_question('employees.title.recover-employee', 'employees.message.recover-employee')){
+      //if the user would like delete this customer we will send this information to the backend
+      const backend=await send_message_to_the_server(`employees/change_status/${employee_id}/`,{status:true});
+      if(backend.success){
+        //if can delete this employee, now we will to rederict to the user to the dashboard of employees
+        window.show_alert('success', 'employees.title.recover-employee-success', 'employees.message.recover-employee-success')
+        window.nextWeb('employees/employees/');
+      }else{
+        window.show_alert('alert', 'employees.error.recover-employee', backend.message, backend.error);
       }
     }
   }

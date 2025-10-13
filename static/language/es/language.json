@@ -27,6 +27,7 @@
     "btn.delete": "Eliminar",
     "btn.cancel": "Cancelar",
     "btn.see": "Ver",
+    "btn.recover":"Restaurar",
 
     
     "message.title": "Confirmación",

@@ -62,5 +62,11 @@
     "message.error.not-can-change-the-status-of-your-self":"No puedes eliminarte a ti mismo",
 
     "employees.title.delete-employee-success":"Empleado Eliminado",
-    "employees.message.delete-employee-success":"El empleado fue eliminado con exito de tu empresa. Puedes restaurarlo en cualquier momento si lo necesitas."
+    "employees.message.delete-employee-success":"El empleado fue eliminado con exito de tu empresa. Puedes restaurarlo en cualquier momento si lo necesitas.",
+
+    "employees.title.recover-employee":"Restaurar Empleado",
+    "employees.message.recover-employee":"Quieres restaurar a este empleado?",
+    "employees.title.recover-employee-success":"Empleado Recuperado",
+    "employees.message.recover-employee-success":"El empleado fue recuperado con exito. Ya puede volver a sus funciones noramales.",
+    "employees.error.recover-employee":"Sucedio un error al recuperar al empleado"
 }
