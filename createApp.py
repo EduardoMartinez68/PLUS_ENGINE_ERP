@@ -23,12 +23,12 @@ def create_app(app_name):
 
     # Crear config.yaml
     config_content = f"""
-    name: "{app_name}"
-    appName: "{app_name}"
-    icon: "{app_name}/icon.webp"
-    path: "/{app_name}"
-    dbInit: true
-    permissionsFile: 'permissions.json'
+name: "{app_name}"
+appName: "{app_name}"
+icon: "{app_name}/icon.webp"
+path: "/{app_name}"
+dbInit: true
+permissionsFile: 'permissions.json'
     """
     with open(os.path.join(base_path, 'config.yaml'), 'w', encoding='utf-8') as f:
         f.write(config_content)

@@ -1,0 +1,225 @@
+<style>
+    .file-drop {
+        border: 2px dashed var(--primary);
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        color: #aaa;
+        transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .file-drop:hover {
+        border-color: var(--primary-dark);
+        color: #aaaaaa;
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .file-drop.dragover {
+        border-color: var(--primary-dark);
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    #upload-file {
+        position: absolute;
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        z-index: -1;
+    }
+
+    .file-info {
+        margin-top: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--primary);
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #797979;
+        font-size: 0.9rem;
+    }
+
+    .file-info strong {
+        display: block;
+        color: var(--primary);
+        margin-bottom: 4px;
+    }
+
+    .remove-file {
+        background: transparent;
+        border: none;
+        color: #ff6b6b;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .remove-file:hover {
+        color: #ff4444;
+    }
+</style>
+
+<message-pop name="upload-files" title="files.title.upload-files">
+    <div class="upload-card">
+        <form id="uploadForm" enctype="multipart/form-data" action="files/upload_file/">
+            <div class="section">
+                <input-field label="files.label.name-file" placeholder="files.placeholder.name-file"
+                    name="name"></input-field>
+            </div>
+
+            <div class="mb-3 section">
+                <label t="files.label.description"></label>
+                <textarea name="description"></textarea>
+            </div>
+
+            <plus-switch name="anchored" text="files.label.anchored"></plus-switch>
+
+            <div id="container-upload-file">
+                <label for="file" class="form-label" t="files.label.file"></label>
+                <div class="file-drop" id="dropZone">
+                    <p t="files.label.message-info-upload"></p>
+                    <input type="file" id="upload-file" name="file" accept=".pdf,.jpg,.png,.jpeg,.doc,.docx,.xls,.xlsx"
+                        required>
+                </div>
+            </div>
+
+            <!-- here is where  we will to show the information of the file-->
+            <div id="fileInfoContainer"></div>
+
+            <br>
+            <button type="button" class="btn btn-edit btn-success" t="files.btn.upload"
+                onclick="upload_file_to_the_backend()">Upload File</button>
+        </form>
+    </div>
+</message-pop>
+
+<script>
+    (() => {
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('upload-file');
+        const fileInfoContainer = document.getElementById('fileInfoContainer');
+        const dropText = dropZone.querySelector('p');
+        const container = document.getElementById('container-upload-file');
+        fileInput.disabled = false;
+
+        //function for format the size of the file
+        const formatBytes = (bytes) => {
+            if (bytes === 0) return '0 Bytes';
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(1024));
+            return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
+        };
+
+        //show the information of the file
+        const showFileInfo = (file) => {
+            container.style.display = "none";
+            const fileSize = formatBytes(file.size);
+            fileInfoContainer.innerHTML = `
+            <div class="file-info">
+                <div>
+                    <strong>${file.name}</strong>
+                    <span>${fileSize}</span>
+                </div>
+                <button type="button" class="remove-file">✕</button>
+            </div>
+        `;
+
+            //here we will see if exist a name for this file in the input <name> if not exist a name still,
+            //we will use the name of the file for default
+            const inputName = document.getElementById('name');
+            if (!inputName.value.trim()) {
+                inputName.value = file.name;
+            }
+
+            dropZone.classList.add('disabled');
+            //fileInput.disabled = true;
+
+            //button for delete the file that the user upload
+            const removeBtn = fileInfoContainer.querySelector('.remove-file');
+            removeBtn.addEventListener('click', () => {
+                container.style.display = "block";
+                fileInput.value = ''; // clear the input
+                fileInfoContainer.innerHTML = '';
+                dropZone.classList.remove('disabled');
+                dropZone.style.opacity = "1";
+                fileInput.disabled = false;
+            });
+        };
+
+        dropZone.addEventListener('click', () => {
+            if (!fileInput.disabled) fileInput.click();
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (!fileInput.disabled) dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (fileInput.disabled) return;
+
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                fileInput.files = e.dataTransfer.files;
+                showFileInfo(file);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) showFileInfo(file);
+        });
+    })();
+
+
+    function getCSRFToken() {
+        const name = "csrftoken";
+        const cookieValue = document.cookie.split("; ").find(row => row.startsWith(name + "="));
+        return cookieValue ? decodeURIComponent(cookieValue.split("=")[1]) : "";
+    }
+
+    async function upload_file_to_the_backend() {
+        document.getElementById('container-upload-file').disabled = false;
+        const form = document.getElementById('uploadForm');
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(form.action || window.location.href, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest", 
+                    "X-CSRFToken": getCSRFToken()
+                }
+            });
+
+            if (!response.ok) throw new Error("Error al subir el archivo");
+
+            const data = await response.json();
+            console.log("Respuesta del servidor:", data);
+
+            alert("✅ Archivo subido correctamente");
+
+            //clear the form
+            form.reset();
+            document.getElementById('container-upload-file').disabled = false;
+            document.getElementById("fileInfoContainer").innerHTML = '';
+            document.getElementById("container-upload-file").style.display = "block";
+        } catch (error) {
+            console.error("Error:", error);
+            alert("❌ No se pudo subir el archivo.");
+            document.getElementById('container-upload-file').disabled = true;
+        }
+    }
+</script>

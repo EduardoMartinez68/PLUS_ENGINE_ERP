@@ -73,6 +73,7 @@ class File(models.Model):
             )
         ]
     )
+    
     url = models.URLField(max_length=500, blank=True, null=True)
     anchored = models.BooleanField(default=False)
     size = models.PositiveIntegerField(default=0)  # En bytes

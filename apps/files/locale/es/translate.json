@@ -1,0 +1,19 @@
+{
+    "files.title.upload-files":"Subir Archivos",
+
+
+    "files.label.name-file":"Nombre del Archivo *",
+    "files.placeholder.name-file":"Escribe el Nombre del archivo",
+    "files.label.description":"Descripcion",
+    "files.label.anchored":"Anclar Archivo",
+    "files.label.file":"Archivo",
+    "files.label.message-info-upload":"Arrastra y suelta tu archivo aquí o haz clic para seleccionarlo",
+    "files.btn.upload":"Subir Archivo",
+
+
+
+    "files.message.file-upload-with-success":"Archivo subido correctamente",
+    "files.message.not-exist-file":"No subiste ningun archivo",
+    "file.message.not-can-upload-the-file-because-very-big":"",
+    "file.message.not-can-upload-the-file-because-not-have-memory":"Archivo demasiado grande. Ya alcanzaste tu limite maximo de almacenamiento. Conatcta con atencion al clientes para mejorar tu plan."
+}
