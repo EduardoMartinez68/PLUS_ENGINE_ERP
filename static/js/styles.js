@@ -1,8 +1,8 @@
 let currentPopZIndex = 5000;
 const colors = {
-  color_company: '#075EAC',
-  color_company_hover: '#075192ff',
-  color_second: '#4c9ce6ff'
+  color_company: '#085DA9',
+  color_company_hover: '#064985',
+  color_second: '#4288C6'
 }
 
 //this functions is for create a id unique for that not exist a error when create a new element
@@ -4661,6 +4661,111 @@ class PlusSwitchColumn extends HTMLElement {
   }
 }
 
+class ListButton extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          position: relative;
+          display: inline-block;
+          font-family: system-ui, sans-serif;
+        }
+
+        .main-btn {
+          background-color: #2d8659;
+          display: inline-block;
+          padding: 10px 18px;
+          font-size: 0.95rem;
+          border: none;
+          border-radius: var(--radius);
+          cursor: pointer;
+          transition: background 0.3s;
+          color: white;
+          margin-right: 0.5rem;
+        }
+
+        .main-btn:hover {
+          background-color: #24704a;
+        }
+
+        .menu {
+          position: absolute;
+          top: 58px;
+          left: 0;
+          display: none;
+          flex-direction: column;
+          background: #ffffff;
+          border-radius: 10px;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+          padding: 6px;
+          min-width: 180px;
+          max-width: 200px;
+          animation: fadeIn 0.2s ease;
+          z-index: 10;
+        }
+
+        :host([open]) .menu {
+          display: flex;
+        }
+
+        ::slotted(button) {
+          all: unset;
+          display: block;
+          padding: 10px 12px;
+          font-size: 14px;
+          color: #333;
+          cursor: pointer;
+          border-radius: 6px;
+          transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        ::slotted(button:hover) {
+          background: #f2f2f2;
+          color: #111;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      </style>
+
+      <button class="main-btn" title="Más opciones">+</button>
+      <div class="menu">
+        <slot></slot>
+      </div>
+    `;
+  }
+
+  connectedCallback() {
+    const mainBtn = this.shadowRoot.querySelector(".main-btn");
+
+    mainBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.toggleAttribute("open");
+    });
+
+    // close the pop when the user do click outside of the div
+    document.addEventListener("click", this._outsideHandler = (e) => {
+      const path = e.composedPath();
+      if (!path.includes(this)) this.removeAttribute("open");
+    });
+
+    // close when the user choose a option
+    const slot = this.shadowRoot.querySelector("slot");
+    slot.addEventListener("click", (e) => {
+      if (e.target.nodeName === "BUTTON") this.removeAttribute("open");
+    });
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener("click", this._outsideHandler);
+  }
+}
+
 // Registrar componente
 customElements.define("plus-switch-column", PlusSwitchColumn);
 
@@ -5329,6 +5434,10 @@ function transform_my_labels_erp() {
 
   if (!customElements.get("plus-search")) {
     customElements.define('plus-search', PlusSearch);
+  }
+
+  if(!customElements.get("list-button")){
+    customElements.define('list-button', ListButton);
   }
 }
 

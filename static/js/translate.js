@@ -151,8 +151,23 @@ function get_base_path_from_lang_url(langUrl) {
 function apply_translation_to_the_web(translations) {
   //get all the elements that have the attribute t 
   document.querySelectorAll('[t]').forEach(el => {
-    const key = el.getAttribute('t'); //get the key of the translation
-    el.textContent=translate_text(key) //translate the text of the element
+    const key = el.getAttribute('t');         // key for translate
+    const iconClass = el.getAttribute('icon'); // example: 'fi fi-rr-upload'
+    const text = translate_text(key);          // text translate
+
+    // clear the container of the element
+    el.textContent = ''; 
+
+    // if exist a icon, we will to create the label <i> 
+    if (iconClass) {
+      const iconEl = document.createElement('i');
+      iconEl.className = iconClass;
+      iconEl.style.marginRight = '6px'; // littler space in the text
+      el.appendChild(iconEl);
+    }
+
+    // add the text with his translate
+    el.appendChild(document.createTextNode(text));
   });
 
   //get all the elements that have the attribute t-placeholder, normally this attribute is used for input, textarea, etc.
@@ -220,8 +235,23 @@ get_language_ERP().then(languages => {
 //this function is for translate the new container that the user load in the app, when serach in a table, get information from the server, etc.
 function translate_dynamic_content(container) {
   container.querySelectorAll('[t]').forEach(el => {
-    const key = el.getAttribute('t');
-    el.textContent=translate_text(key);
+    const key = el.getAttribute('t');         // key for translate
+    const iconClass = el.getAttribute('icon'); // example: 'fi fi-rr-upload'
+    const text = translate_text(key);          // text translate
+
+    // clear the container of the element
+    el.textContent = ''; 
+
+    // if exist a icon, we will to create the label <i> 
+    if (iconClass) {
+      const iconEl = document.createElement('i');
+      iconEl.className = iconClass;
+      iconEl.style.marginRight = '6px'; // littler space in the text
+      el.appendChild(iconEl);
+    }
+
+    // add the text with his translate
+    el.appendChild(document.createTextNode(text));
   });
 
   container.querySelectorAll('[t-placeholder]').forEach(el => {

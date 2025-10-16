@@ -20,9 +20,6 @@ def upload_file(request):
     
             print(name)
             print(file)
-            # Aquí puedes guardar el archivo o procesarlo
-            # ejemplo:
-            # MyModel.objects.create(name=name, description=description, file=file, anchored=anchored)
     
             return JsonResponse({'success': True, 'message': 'Archivo subido correctamente'})
         return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
@@ -35,9 +32,6 @@ def upload_file(request):
     
             print(name)
             print(file)
-            # Aquí puedes guardar el archivo o procesarlo
-            # ejemplo:
-            # MyModel.objects.create(name=name, description=description, file=file, anchored=anchored)
     
             return JsonResponse({'success': True, 'message': 'Archivo subido correctamente'})
         return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)

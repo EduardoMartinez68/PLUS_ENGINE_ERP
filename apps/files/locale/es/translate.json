@@ -9,7 +9,7 @@
     "files.label.file":"Archivo",
     "files.label.message-info-upload":"Arrastra y suelta tu archivo aquí o haz clic para seleccionarlo",
     "files.btn.upload":"Subir Archivo",
-
+    "files.btn.create-folder":"Crear Carpeta",
 
 
     "files.message.file-upload-with-success":"Archivo subido correctamente",

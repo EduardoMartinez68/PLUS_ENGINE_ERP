@@ -1,9 +1,9 @@
 :root {
-  /* Primary brand */
+  /* Primary brand*/
   --primary: #085DA9;
-  --secondary: #4c9ce6ff;
-  --primary-light: #1C3C60;
-  --primary-dark: #05396B;
+  --secondary: #4288C6;
+  --primary-light: #064985;
+  --primary-dark: #064985;
 
   /* Base UI */
   --background: #F5F7FA;
