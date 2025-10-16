@@ -7,3 +7,4 @@ pip install python-decouple
 pip install google-auth
 pip install google-auth-oauthlib
 pip install google-api-python-client google-auth-httplib2 
+pip install Pillow pymupdf

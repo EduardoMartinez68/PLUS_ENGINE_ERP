@@ -44,9 +44,21 @@ class FolderPermission(models.Model):
     #this is for that only the user that be save here can watch the information of the folders
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name='permissions')
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+    
+    #character of the folder
     can_read = models.BooleanField(default=True)
+    can_copy = models.BooleanField(default=True)
     can_write = models.BooleanField(default=False)
     can_delete = models.BooleanField(default=False)
+
+    can_upload_file = models.BooleanField(default=False)
+    can_update_file = models.BooleanField(default=False)
+    can_copy_file = models.BooleanField(default=False)
+    can_delete_file = models.BooleanField(default=False)
+
+    can_change_the_permission = models.BooleanField(default=False)
+    can_add_members = models.BooleanField(default=False)
+    can_delete_members = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('folder', 'user')
@@ -60,7 +72,6 @@ class File(models.Model):
         related_name='files'
     )
 
-    key = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
 
@@ -77,7 +88,7 @@ class File(models.Model):
     url = models.URLField(max_length=500, blank=True, null=True)
     anchored = models.BooleanField(default=False)
     size = models.PositiveIntegerField(default=0)  # En bytes
-
+    thumbnail = models.ImageField(upload_to='thumbnails/%Y/%m/%d/', null=True, blank=True) #this is for show the miniature
 
     uploaded_at = models.DateTimeField(default=timezone.now)
     upload_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, db_column='employee')
