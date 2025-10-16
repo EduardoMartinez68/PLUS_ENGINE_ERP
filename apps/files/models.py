@@ -52,6 +52,7 @@ class FolderPermission(models.Model):
     can_delete = models.BooleanField(default=False)
 
     can_upload_file = models.BooleanField(default=False)
+    can_move_file = models.BooleanField(default=False)
     can_update_file = models.BooleanField(default=False)
     can_copy_file = models.BooleanField(default=False)
     can_delete_file = models.BooleanField(default=False)

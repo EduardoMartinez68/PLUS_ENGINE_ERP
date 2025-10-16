@@ -99,13 +99,26 @@ h2 {
 
 }
 </style>
+{% load static %}
 
-hola amigos mios jajajaja
 <list-button>
   <button onclick="window.show_pop('upload-files')" icon="fi fi-rr-upload" t="files.btn.upload">Upload file</button>
   <button onclick="alert('Opción 2')" t="files.btn.create-folder" icon="fi fi-rr-folder-open">Create folder</button>
 </list-button>
 
+<div class="container-section">
+    <plus-file
+        name="Informe Médico Octubre"
+        description="Resultados de laboratorio"
+        miniature="{% static 'img/file_default.webp' %}"
+        u-name="Dr. Juan Pérez"
+        u-avatar="{% static 'img/file_default.webp' %}"
+        uploaded-at="2025-10-15"
+        updated-at="2025-10-16"
+        anchored="true"
+        >
+    </plus-file>
+</div>
 
 <div class="container-section">
     <div class="skeleton skeleton-rect" style="width: 20%;"></div>
@@ -220,8 +233,261 @@ hola amigos mios jajajaja
 
 </div>
 
+<script>
+class PlusFile extends HTMLElement {
+  constructor() {
+    super();
 
-<list-button>
-    <button onclick="funcion1()"></button>
-    <button onclick="funcion2()"></button>
-</list-button>
+    const shadow = this.attachShadow({ mode: 'open' });
+
+    const container = document.createElement('div');
+    container.classList.add('container');
+
+    const thumb = document.createElement('img');
+    thumb.classList.add('thumbnail');
+
+    // ⭐ estrella anclada
+    const anchoredStar = document.createElement('span');
+    anchoredStar.classList.add('anchored-star');
+    anchoredStar.textContent = '★';  // estrella
+    anchoredStar.style.display = 'none'; // por defecto no visible
+
+    const info = document.createElement('div');
+    info.classList.add('info');
+
+    const title = document.createElement('h4');
+    const desc = document.createElement('p');
+
+    info.appendChild(title);
+    info.appendChild(desc);
+
+    // sección del usuario
+    const userSection = document.createElement('div');
+    userSection.classList.add('user-section');
+
+    const userAvatar = document.createElement('img');
+    userAvatar.classList.add('user-avatar');
+
+    const userInfo = document.createElement('div');
+    userInfo.classList.add('user-info');
+
+    const userName = document.createElement('span');
+    userName.classList.add('user-name');
+
+    const dates = document.createElement('span');
+    dates.classList.add('dates');
+
+    userInfo.appendChild(userName);
+    userInfo.appendChild(dates);
+    userSection.appendChild(userAvatar);
+    userSection.appendChild(userInfo);
+
+    const menuBtn = document.createElement('button');
+    menuBtn.classList.add('menu-btn');
+    menuBtn.innerHTML = '&#x22EE;';
+
+    const menu = document.createElement('div');
+    menu.classList.add('menu');
+
+    const openBtn = document.createElement('button');
+    openBtn.textContent = 'Abrir';
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = 'Copiar';
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Eliminar';
+
+    menu.appendChild(openBtn);
+    menu.appendChild(copyBtn);
+    menu.appendChild(deleteBtn);
+
+    container.appendChild(thumb);
+    container.appendChild(anchoredStar);
+    container.appendChild(menuBtn);
+    container.appendChild(menu);
+    container.appendChild(info);
+    container.appendChild(userSection);
+
+    shadow.appendChild(container);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .container {
+        position: relative;
+        width: 300px;
+        border: 1px solid #E0E0E0;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #FAFAFA;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .thumbnail {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        background: #EDEDED;
+      }
+
+      .anchored-star {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        font-size: 28px;
+        color: #FFD700; /* dorado */
+      }
+
+      .info {
+        padding: 12px 14px 6px 14px;
+      }
+
+      .info h4 {
+        margin: 0 0 4px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2E3A59;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .info p {
+        margin: 0;
+        font-size: 13px;
+        color: #4B5563;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .user-section {
+        display: flex;
+        align-items: center;
+        padding: 6px 14px 12px 14px;
+        font-size: 12px;
+        color: #4B5563;
+      }
+
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 8px;
+        background: #ccc;
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .user-name {
+        font-weight: 500;
+        color: #2E3A59;
+      }
+
+      .dates {
+        font-size: 11px;
+        color: #6B7280;
+      }
+
+      .menu-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: transparent;
+        border: none;
+        font-size: 22px;
+        cursor: pointer;
+        color: #4B5563;
+      }
+
+      .menu {
+        position: absolute;
+        top: 30px;
+        right: 8px;
+        background: #fff;
+        border: 1px solid #E0E0E0;
+        border-radius: 6px;
+        display: none;
+        flex-direction: column;
+        min-width: 140px;
+        z-index: 100;
+      }
+
+      .menu button {
+        border: none;
+        background: none;
+        padding: 10px 14px;
+        text-align: left;
+        cursor: pointer;
+        font-size: 14px;
+        color: #2E3A59;
+      }
+
+      .menu button:hover {
+        background-color: #F0F0F0;
+      }
+    `;
+    shadow.appendChild(style);
+
+    // Toggle menu
+    menuBtn.addEventListener('click', () => {
+      menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    // Menú acciones
+    openBtn.addEventListener('click', () => {
+      const url = this.getAttribute('miniature');
+      if(url) window.open(url, '_blank');
+    });
+
+    copyBtn.addEventListener('click', () => {
+      const name = this.getAttribute('name');
+      if(name) navigator.clipboard.writeText(name);
+      alert('Nombre copiado al portapapeles');
+    });
+
+    deleteBtn.addEventListener('click', () => {
+      const name = this.getAttribute('name');
+      alert('Aquí iría la acción para eliminar: ' + name);
+    });
+
+    this._thumb = thumb;
+    this._title = title;
+    this._desc = desc;
+    this._userAvatar = userAvatar;
+    this._userName = userName;
+    this._dates = dates;
+    this._anchoredStar = anchoredStar;
+  }
+
+  static get observedAttributes() {
+    return ['name', 'description', 'miniature', 'u-name', 'u-avatar', 'uploaded-at', 'updated-at', 'anchored'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if(name === 'name') this._title.textContent = newValue;
+    if(name === 'description') this._desc.textContent = newValue;
+    if(name === 'miniature') {
+      this._thumb.src = newValue && newValue.trim() !== '' 
+                        ? newValue 
+                        : '/img/file_default.webp';
+    }
+    if(name === 'u-name') this._userName.textContent = newValue;
+    if(name === 'u-avatar') this._userAvatar.src = newValue && newValue.trim() !== '' 
+                                               ? newValue 
+                                               : '/img/avatar_default.png';
+    if(name === 'uploaded-at' || name === 'updated-at') {
+      const uploaded = this.getAttribute('uploaded-at');
+      const updated = this.getAttribute('updated-at');
+      this._dates.textContent = `Subido: ${uploaded || '-'} | Actualizado: ${updated || '-'}`;
+    }
+    if(name === 'anchored') {
+      this._anchoredStar.style.display = newValue === 'true' ? 'inline-block' : 'none';
+    }
+  }
+}
+
+customElements.define('plus-file', PlusFile);
+</script>

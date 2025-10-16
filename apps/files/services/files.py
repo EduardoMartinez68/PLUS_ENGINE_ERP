@@ -19,15 +19,59 @@ TYPE_VERSION = os.environ.get('TYPE_VERSION')
 FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY').encode()
 f = Fernet(FIELD_ENCRYPTION_KEY)
 
+def has_folder_permission(user, folder, action: str) -> bool:
+    """
+    Checks if the user has permission on a folder to perform a specific action.
+    :param user: CustomUser
+    :param folder: Folder o ID
+    :param action: string like 'read', 'write', 'delete', 'upload_file', etc.
+    :return: bool
+    """
+    if not user or not folder:
+        return False
 
-def user_storage_used(user):
+    #if the programmer send a id we will to get the object folder 
+    if isinstance(folder, int):
+        try:
+            folder = Folder.objects.get(id=folder)
+        except Folder.DoesNotExist:
+            return False
+
+    # If the user is the creator of the folder, he has all permissions
+    if folder.creator_user == user:
+        return True
+
+    # Attempt to obtain the registered permission for the user
+    try:
+        permission = FolderPermission.objects.get(folder=folder, user=user)
+    except FolderPermission.DoesNotExist:
+        return False
+
+    # Mapping actions to boolean fields
+    action_map = {
+        "read": permission.can_read,
+        "copy": permission.can_copy,
+        "write": permission.can_write,
+        "delete": permission.can_delete,
+        "upload_file": permission.can_upload_file,
+        "update_file": permission.can_update_file,
+        "copy_file": permission.can_copy_file,
+        "delete_file": permission.can_delete_file,
+        "change_permission": permission.can_change_the_permission,
+        "add_members": permission.can_add_members,
+        "delete_members": permission.can_delete_members,
+    }
+
+    return action_map.get(action, False)
+
+def user_storage_used(user)->bool:
     return File.objects.filter(upload_user=user).aggregate(total=Sum('size'))['total'] or 0
 
-def can_upload(user, filesize):
+def can_upload(user, filesize)->bool:
     limit = get_limit_of_the_user() * 1024 * 1024 * 1024  # 1 GiB
     return user_storage_used(user) + filesize <= limit
 
-def get_limit_of_the_user():
+def get_limit_of_the_user()->int:
     if TYPE_VERSION=='DESKTOP':
         return True
     
@@ -37,7 +81,7 @@ def get_limit_of_the_user():
     #pack 2==5 GiB
     return 1
 
-def upload_file(user, dataFile):
+def upload_file(user, dataFile)->list:
     #get the basic information of the file
     file = dataFile.get("file")
     name = dataFile.get("name")
@@ -95,7 +139,7 @@ def upload_file(user, dataFile):
     return {"success": True, "message": "files.message.file-upload-with-success", "file_id": file_instance.id}
 
 
-def get_user_accessible_files(user):
+def get_user_accessible_files(user)->list:
     # Carpetas a las que tiene permiso directo
     permitted_folders = Folder.objects.filter(
         models.Q(permissions__user=user) | models.Q(permissions__role=user.role)
@@ -105,7 +149,7 @@ def get_user_accessible_files(user):
     files = File.objects.filter(folder__in=permitted_folders)
     return files
 
-def get_folder_tree_accessible(user, folder):
+def get_folder_tree_accessible(user, folder)->list:
     # Carpetas hijo que hereden permisos
     permitted_folders = Folder.objects.filter(
         models.Q(permissions__user=user) | models.Q(permissions__role=user.role)
@@ -113,15 +157,22 @@ def get_folder_tree_accessible(user, folder):
 
     return folder.get_descendants().filter(id__in=permitted_folders)
 
-def get_folder_files(folder, page=1, per_page=10):
+def get_folder_files(user, folder, page=1, per_page=10)->list:
     """
     get the files of a folder with a pagination.
     return the data of the page with his data 
     """
+
     # If folder is an ID, we convert it to an object
     if isinstance(folder, int):
         folder = Folder.objects.get(id=folder)
 
+
+    #now before of get the files of the folder we need see if the user have the permission for this
+    if not has_folder_permission(user, folder, "read"):
+        return {"success": False, "message": "file.message.not-can-upload-the-file-because-not-have-memory", "error": "insufficient memory"}
+
+    #if the user have the permission for see the files of this folder now we will get the files
     files_qs = File.objects.filter(folder=folder).order_by('-uploaded_at')
 
     paginator = Paginator(files_qs, per_page)

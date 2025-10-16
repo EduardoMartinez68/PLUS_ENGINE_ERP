@@ -7,7 +7,7 @@ def files_home(request):
 
 
 
-from ..services.files import upload_file
+from ..services.files import upload_file, get_folder_files
 def upload_file(request):
     if request.method == 'POST':
         file = request.FILES.get('file')
@@ -34,3 +34,8 @@ def upload_file(request):
 
         return JsonResponse(result, status=200 if result["success"] else 400)
     return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
+
+
+def view_files_of_the_folder(request, folder_id):
+    if request.method == 'GET':
+        result=get_folder_files(folder_id) 
