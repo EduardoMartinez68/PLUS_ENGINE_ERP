@@ -21,6 +21,12 @@
     "home.error.the-cellphone-no-exist":"El número de celular no es válido.",
     "home.error.the-email-no-is-valid":"El email no es válido.",
 
+
+    "home.tilte.do-you-help":"¿Necesitas ayuda? 🤔",
+    "home.text.visit-our-channel-of-youtube":"Visita nuestro canal de YouTube",
+    "home.text.go-channel":"Ir al canal",
+    "home.text.send-a-message-for-whatsapp":"Mándanos un mensaje por WhatsApp",
+
     "btn.update": "Actualizar",
     "btn.edit": "Editar",
     "btn.save": "Guardar",
