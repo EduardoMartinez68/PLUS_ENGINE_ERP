@@ -99,8 +99,8 @@ class File(models.Model):
         verbose_name_plural = 'files'
         constraints = [
             models.UniqueConstraint(
-                fields=['folder', 'key'],
-                name='unique_key_per_folder'
+                fields=['folder', 'name'],
+                name='unique_name_per_folder'
             )
         ]
         ordering = ['-uploaded_at']  # Newest first

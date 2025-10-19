@@ -15,5 +15,12 @@
     "files.message.file-upload-with-success":"Archivo subido correctamente",
     "files.message.not-exist-file":"No subiste ningun archivo",
     "file.message.not-can-upload-the-file-because-very-big":"",
-    "file.message.not-can-upload-the-file-because-not-have-memory":"Archivo demasiado grande. Ya alcanzaste tu limite maximo de almacenamiento. Conatcta con atencion al clientes para mejorar tu plan."
+    "file.message.not-can-upload-the-file-because-not-have-memory":"Archivo demasiado grande. Ya alcanzaste tu limite maximo de almacenamiento. Conatcta con atencion al clientes para mejorar tu plan.",
+
+    "files.title.folder":"Carpeta",
+    "files.label.name-folder":"Nombre de la carpeta *",
+    "files.placeholder.name-folder": "Expedientes/PDF/Imagenes",
+    "files.label.folder-color": "Color"
+
+
 }

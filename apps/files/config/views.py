@@ -1,6 +1,6 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
-from ..services.files import upload_file, get_folder_files
+from ..services.files import upload_file, get_folder_files, get_root_folders
 from ..plus_wrapper import Plus
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -67,11 +67,23 @@ def upload_file(request):
         return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
 
 @login_required(login_url='login')
-def view_files_of_the_folder(request, folder_id):
+def view_files_of_the_folder(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        if request.method == 'GET':
-            result=get_folder_files(folder_id) 
+        if request.method != 'GET':
+            return JsonResponse({"success": False, "message": "Método no permitido"}, status=405)
+    
+        user = request.user
+        result = get_root_folders(user, user.company, user.branch)
+        print(result)
+    
+        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
     else:
-        if request.method == 'GET':
-            result=get_folder_files(folder_id) 
+        if request.method != 'GET':
+            return JsonResponse({"success": False, "message": "Método no permitido"}, status=405)
+    
+        user = request.user
+        result = get_root_folders(user, user.company, user.branch)
+        print(result)
+    
+        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
 

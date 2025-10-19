@@ -101,11 +101,7 @@ h2 {
 </style>
 {% load static %}
 
-<list-button>
-  <button onclick="window.show_pop('upload-files')" icon="fi fi-rr-upload" t="files.btn.upload">Upload file</button>
-  <button onclick="alert('Opción 2')" t="files.btn.create-folder" icon="fi fi-rr-folder-open">Create folder</button>
-</list-button>
-
+<!--
 <div class="container-section">
     <plus-file
         name="Informe Médico Octubre"
@@ -119,8 +115,27 @@ h2 {
         >
     </plus-file>
 </div>
+--->
 
 <div class="container-section">
+  <!---seeker---->
+  <div class="row">
+      <div class="col-9">
+          
+      </div>
+      <div class="col-3 p-3">
+          <plus-search input_id="search-files">
+              <search-option>
+                <list-button>
+                  <button onclick="window.show_pop('upload-files')" icon="fi fi-rr-upload" t="files.btn.upload">Upload file</button>
+                  <button onclick="window.show_pop('form-folder')" t="files.btn.create-folder" icon="fi fi-rr-folder-open">Create folder</button>
+                </list-button>
+              </search-option>
+          </plus-search>
+      </div>
+  </div>
+
+  <div id="container-file">
     <div class="skeleton skeleton-rect" style="width: 20%;"></div>
     <br>
     <div class="grid folders">
@@ -197,43 +212,14 @@ h2 {
             </div>
         </div>
     </div>
+  </div>
 </div>
 
 {% include 'partials_files/upload_files.html' %}
-
-
-<div class="container-section">
-
-    <nav>
-      <span>Inicio</span> / <span>Carpeta actual</span>
-    </nav>
-
-    <h2>Carpetas</h2>
-    <div class="grid folders">
-      <div class="card">
-        <svg fill="none" stroke="#3a7bd5" stroke-width="1.8" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h5l2 2h7a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
-        </svg>
-        <p>Pacientes</p>
-      </div>
-      <div class="card">
-        <svg fill="none" stroke="#3a7bd5" stroke-width="1.8" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h5l2 2h7a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
-        </svg>
-        <p>Radiografías</p>
-      </div>
-      <div class="card">
-        <svg fill="none" stroke="#3a7bd5" stroke-width="1.8" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h5l2 2h7a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
-        </svg>
-        <p>Documentos</p>
-      </div>
-    </div>
-
-
-</div>
+{% include 'partials_files/create_folder.html' %}
 
 <script>
+
 class PlusFile extends HTMLElement {
   constructor() {
     super();
@@ -490,4 +476,32 @@ class PlusFile extends HTMLElement {
 }
 
 customElements.define('plus-file', PlusFile);
+</script>
+
+<script>
+  function get_div_files(){
+    return `
+      <plus-file
+          name="Informe Médico Octubre"
+          description="Resultados de laboratorio"
+          miniature="{% static 'img/file_default.webp' %}"
+          u-name="Dr. Juan Pérez"
+          u-avatar="{% static 'img/file_default.webp' %}"
+          uploaded-at="2025-10-15"
+          updated-at="2025-10-16"
+          anchored="true"
+          >
+      </plus-file>
+    `
+  }
+
+  (()=>{
+    window.update_container_with_seeker(
+      'search-files', 
+      'container-file', 
+      get_div_files(), 
+      'files/view_files_of_the_folder/', 
+      'GET'
+    )
+  })();
 </script>

@@ -4711,6 +4711,11 @@ class ListButton extends HTMLElement {
           display: flex;
         }
 
+        :host([flip]) .menu {
+          left: auto;
+          right: 0;
+        }
+
         ::slotted(button) {
           all: unset;
           display: block;
@@ -4742,19 +4747,32 @@ class ListButton extends HTMLElement {
 
   connectedCallback() {
     const mainBtn = this.shadowRoot.querySelector(".main-btn");
+    const menu = this.shadowRoot.querySelector(".menu");
 
     mainBtn.addEventListener("click", (e) => {
       e.stopPropagation();
+
+      // Abrimos el menú
       this.toggleAttribute("open");
+
+      // Calculamos si debemos voltear el menú
+      const rect = menu.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+
+      if (rect.right > viewportWidth) {
+        this.setAttribute("flip", "");
+      } else {
+        this.removeAttribute("flip");
+      }
     });
 
-    // close the pop when the user do click outside of the div
+    // Close when clicking outside
     document.addEventListener("click", this._outsideHandler = (e) => {
       const path = e.composedPath();
       if (!path.includes(this)) this.removeAttribute("open");
     });
 
-    // close when the user choose a option
+    // Close when choosing an option
     const slot = this.shadowRoot.querySelector("slot");
     slot.addEventListener("click", (e) => {
       if (e.target.nodeName === "BUTTON") this.removeAttribute("open");

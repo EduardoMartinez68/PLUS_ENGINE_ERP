@@ -199,3 +199,33 @@ def get_folder_files(user, folder, page=1, per_page=10)->list:
     }
 
     return data
+
+def get_root_folders(user, company=None, branch=None):
+    """
+    return all the folder that the user have permission of see in the room and that not have parent 
+    """
+    folders_qs = Folder.objects.filter(parent=None)
+
+    if company:
+        folders_qs = folders_qs.filter(company=company)
+    if branch:
+        folders_qs = folders_qs.filter(branch=branch)
+
+    # filter by permission of the user
+    accessible_folders = [
+        folder for folder in folders_qs
+        if has_folder_permission(user, folder, "read")
+    ]
+
+    data = [
+        {
+            "id": f.id,
+            "name": f.name,
+            "color": f.color,
+            "created_at": f.created_at,
+            "creator": f.creator_user.username if f.creator_user else None
+        }
+        for f in accessible_folders
+    ]
+
+    return {"success": True, "message": "file.message.not-can-upload-the-file-because-not-have-memory", "answer": data, "error": "insufficient memory"}
