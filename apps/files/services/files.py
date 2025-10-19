@@ -159,24 +159,35 @@ def get_folder_tree_accessible(user, folder)->list:
 
     return folder.get_descendants().filter(id__in=permitted_folders)
 
-def get_folder_files(user, folder, page=1, per_page=10)->list:
+def get_folder_files(user, folder, query=None, page=1, per_page=10) -> dict:
     """
-    get the files of a folder with a pagination.
-    return the data of the page with his data 
+    Get the files of a folder with pagination.
+    Optionally filter files by name using 'query'.
     """
-
-    # If folder is an ID, we convert it to an object
+    # Convert folder ID to object if necessary
     if isinstance(folder, int):
         folder = Folder.objects.get(id=folder)
 
-
-    #now before of get the files of the folder we need see if the user have the permission for this
+    # Check user permission
     if not has_folder_permission(user, folder, "read"):
-        return {"success": False, "message": "file.message.not-can-upload-the-file-because-not-have-memory", "error": "insufficient memory"}
+        return {
+            "success": False,
+            "message": "error.unauthorized",
+            "answer": [], 
+            "error": "the user not have the permissions"
+        }
 
-    #if the user have the permission for see the files of this folder now we will get the files
-    files_qs = File.objects.filter(folder=folder).order_by('-uploaded_at')
+    # Base queryset
+    files_qs = File.objects.filter(folder=folder)
 
+    # Apply query filter if provided and not empty
+    if query and query.strip():
+        files_qs = files_qs.filter(name__icontains=query.strip())
+
+    # Order by newest first
+    files_qs = files_qs.order_by('-uploaded_at')
+
+    # Pagination
     paginator = Paginator(files_qs, per_page)
     page_obj = paginator.get_page(page)
 
@@ -200,37 +211,59 @@ def get_folder_files(user, folder, page=1, per_page=10)->list:
         "has_previous": page_obj.has_previous(),
     }
 
-    return data
+    return {"success": True, "message": "", "answer": data, "error": ""}
 
-def get_root_folders(user, company=None, branch=None):
+def get_folders(user, folder=None, query=None):
     """
-    return all the folder that the user have permission of see in the room and that not have parent 
+    Get folders accessible by the user.
+    
+    - If 'folder' is provided, get its immediate subfolders.
+    - If 'folder' is None, get root folders (no parent).
+    - Optionally filter by 'query' in the folder name.
     """
-    folders_qs = Folder.objects.filter(parent=None)
-
+    # Base queryset
+    if folder:
+        # If folder is an ID, convert to object
+        if isinstance(folder, int):
+            folder = Folder.objects.get(id=folder)
+        folders_qs = Folder.objects.filter(parent=folder)
+    else:
+        folders_qs = Folder.objects.filter(parent=None)
+    
+    # Filter by company and branch if provided
+    company=user.company
+    branch=user.branch
     if company:
         folders_qs = folders_qs.filter(company=company)
     if branch:
         folders_qs = folders_qs.filter(branch=branch)
-
-    # filter by permission of the user
+    
+    # Apply query filter if provided
+    if query and query.strip():
+        folders_qs = folders_qs.filter(name__icontains=query.strip())
+    
+    # Filter by user permissions
     accessible_folders = [
-        folder for folder in folders_qs
-        if has_folder_permission(user, folder, "read")
+        f for f in folders_qs
+        if has_folder_permission(user, f, "read")
     ]
-
+    
+    # Prepare response
     data = [
         {
             "id": f.id,
             "name": f.name,
             "color": f.color,
-            "created_at": Plus.format_date_to_text(Plus.convert_from_utc(f.created_at, user.timezone), user.language, 2),
-            "creator": f.creator_user.username if f.creator_user else None
+            "created_at": Plus.format_date_to_text(
+                Plus.convert_from_utc(f.created_at, user.timezone),
+                user.language,
+                2
+            ),
         }
         for f in accessible_folders
     ]
-
-    return {"success": True, "message": "", "answer": data, "error": "insufficient memory"}
+    
+    return {"success": True, "message": "", "answer": data, "error": ""}
 
 def get_folder_detail(user, folder_id):
     """

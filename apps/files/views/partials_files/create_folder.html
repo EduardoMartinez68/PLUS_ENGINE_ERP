@@ -7,7 +7,7 @@
                     name="name" id="folder_name"></input-field>
             </div>
             <label t="files.label.folder-color"></label>
-            <input-color id="folder_color"></input-color>
+            <input-color id="folder_color" name="color"></input-color>
             <br>
             <button type="button" class="btn btn-edit btn-success" t="btn.save" onclick="send_form_of_the_folder()"></button>
         </form>
@@ -17,11 +17,11 @@
 <script>
     function update_container_folder(){
         //this functions is for update the container of the folders and files when the user is in the home
-        if (typeof get_div_files === "function"){
+        if (typeof get_div_folders === "function"){
             window.update_container_from_the_server(
                 'search-files', 
-                'container-file', 
-                get_div_files(), 
+                'container-folders', 
+                get_div_folders(), 
                 'files/view_files_of_the_folder/', 
                 'GET'
             )

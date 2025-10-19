@@ -9,7 +9,7 @@ def files_home(request):
 
 
 
-from ..services.files import upload_file, get_folder_files, get_root_folders, get_folder_detail, create_folder
+from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder
 def upload_file(request):
     if request.method == 'POST':
         file = request.FILES.get('file')
@@ -37,14 +37,45 @@ def upload_file(request):
         return JsonResponse(result, status=200 if result["success"] else 400)
     return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
 
+
+
+
 def view_files_of_the_folder(request):
     if request.method != 'GET':
         return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
 
+    
+    #get the filters of the folder
+    all_filters = request.GET.get("allFilters", "") 
+    values = all_filters.split(",")
+    search=values[0] #query
+    folder_id=values[1] #id folder
+    
     user = request.user
-    result = get_root_folders(user, user.company, user.branch)
-    print(result)
+    result = get_folder_files(user, folder_id, search)
     return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
+
+def view_folders_of_the_folder(request):
+    if request.method != 'GET':
+        return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+
+    
+    #get the filters of the folder
+    all_filters = request.GET.get("allFilters", "") 
+    values = all_filters.split(",")
+    search=values[0] #query
+    folder_id=values[1] #id folder
+
+    user = request.user
+    result = get_folders(user, folder_id, search)
+    return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
+
+
+
+
+
+
+
 
 def get_information_folder(request, folder_id):
     if request.method != 'GET':

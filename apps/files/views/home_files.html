@@ -282,7 +282,8 @@ h2 {
           
       </div>
       <div class="col-3 p-3">
-          <plus-search input_id="search-files">
+          <input type="hidden" id="path_folder_id1">
+          <plus-search input_id="search-folders">
               <search-option>
                 <list-button>
                   <button onclick="window.show_pop('upload-files')" icon="fi fi-rr-upload" t="files.btn.upload">Upload file</button>
@@ -310,6 +311,18 @@ h2 {
     </div>
   </div>
   <br><br>
+
+  <div class="row">
+      <div class="col-9">
+          
+      </div>
+      <div class="col-3 p-3">
+          <input type="hidden" id="path_folder_id2">
+          <plus-search input_id="search-files">
+          </plus-search>
+      </div>
+  </div>
+
   <div id="container-file">
     <div class="section">
         <br>
@@ -793,23 +806,23 @@ customElements.define('plus-folder', PlusFolder);
   }
 
   (()=>{
-    //this is for update the container of the files in the folder
-
+    //this is for update the container of the folders in the folder father
     window.update_container_with_seeker(
-      'search-files', 
+      ['search-folders', 'path_folder_id1'], 
+      'container-folders', 
+      get_div_folders(), 
+      'files/view_folders_of_the_folder/', 
+      'GET'
+    )
+
+    //this is for update the container of the files in the folder
+    window.update_container_with_seeker(
+      ['search-files', 'path_folder_id2'], 
       'container-file', 
       get_div_files(), 
       'files/view_files_of_the_folder/', 
       'GET'
     )
 
-    //this is for update the container of the folders in the folder father
-    window.update_container_with_seeker(
-      'search-files', 
-      'container-folders', 
-      get_div_folders(), 
-      'files/view_files_of_the_folder/', 
-      'GET'
-    )
   })();
 </script>
