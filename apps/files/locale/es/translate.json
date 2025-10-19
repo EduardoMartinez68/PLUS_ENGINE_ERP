@@ -20,7 +20,11 @@
     "files.title.folder":"Carpeta",
     "files.label.name-folder":"Nombre de la carpeta *",
     "files.placeholder.name-folder": "Expedientes/PDF/Imagenes",
-    "files.label.folder-color": "Color"
+    "files.label.folder-color": "Color",
 
-
+    "files.message.create-folder-error":"Error al crear la carpeta",
+    "files.message.folder-create":"La carpeta fue creada con exito en tu base de datos.",
+    "files.title.folder-create":"Carpeta Creada",
+    "files.title.the-folder-was-update":"Carpeta actualizada",
+    "files.message.the-folder-was-update":"La carpeta fue actualizada con exito."
 }

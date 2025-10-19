@@ -61,6 +61,7 @@
     "error.unauthorized": "No autorizado",
     "error.required_fields": "Todos los campos son obligatorios",
     "error.general": "Ocurrió un error",
+    "error.general-description": "Ocurrió un error en el servidor. Intentalo mas tarde.",
     "error.to_delete": "Ocurrió un error al intentar eliminar",
 
     "warning.unsaved_changes": "Tienes cambios sin guardar",
