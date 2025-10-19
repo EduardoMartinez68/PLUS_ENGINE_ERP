@@ -2,6 +2,7 @@ import os
 import importlib.util
 from typing import Tuple
 from django.contrib.auth import authenticate
+from datetime import datetime
 
 class Plus:
     functions_path = os.path.abspath(
@@ -41,8 +42,21 @@ class Plus:
     @staticmethod
     def convert_from_utc(utc_datetime, timezone_str):
         #this funtions converts a UTC datetime to a specific timezone
+    
+        # if is a string, try convert to datetime first
+        if isinstance(utc_datetime, str):
+            try:
+                utc_datetime = datetime.fromisoformat(utc_datetime)
+            except ValueError:
+                #If it fails, we return the rope as is
+                return utc_datetime
         module = Plus._load_module('converDate')
-        return module.convert_from_utc(utc_datetime, timezone_str)
+        converted = module.convert_from_utc(utc_datetime, timezone_str)
+        if isinstance(converted, datetime):
+            return converted.isoformat()
+        
+        return converted  # If it is already a rope, we return it as is
+
     
     @staticmethod
     def format_date_to_text(date, language="es",  type=1):

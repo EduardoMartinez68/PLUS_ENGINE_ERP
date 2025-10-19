@@ -4,44 +4,62 @@
             <input type="hidden" id="folder_id">
             <div class="section">
                 <input-field label="files.label.name-folder" placeholder="files.placeholder.name-folder"
-                    name="name"></input-field>
+                    name="name" id="folder_name"></input-field>
             </div>
             <label t="files.label.folder-color"></label>
-            <input-color></input-color>
+            <input-color id="folder_color"></input-color>
             <br>
             <button type="button" class="btn btn-edit btn-success" t="btn.save" onclick="send_form_of_the_folder()"></button>
         </form>
     </div>
 </message-pop>
 
-
 <script>
+    function update_container_folder(){
+        //this functions is for update the container of the folders and files when the user is in the home
+        if (typeof get_div_files === "function"){
+            window.update_container_from_the_server(
+                'search-files', 
+                'container-file', 
+                get_div_files(), 
+                'files/view_files_of_the_folder/', 
+                'GET'
+            )
+        }
+    }
+
+    function open_pop_create_new_folder(){
+        window.restart_form('folderForm'); //clear the form
+        window.show_pop('form-folder')
+    }
+
     async function save_new_folder(){
         //we will send the form to the server for save the new folder
         const backend=await window.send_form_to_the_server('folderForm', 'files/create_new_folder/');
         if(!backend.success){
-            window.show_alert('alert', 'error.general', backend.message || 'error.general-description', backend.error || '');
+            window.show_alert('error', 'error.general', backend.message || 'error.general-description', backend.error || '');
             return;
         }
 
         //if we can added the new folder now restart the form and show a message of confirm
         window.restart_form('folderForm');
         window.hide_pop('form-folder');
-        window.show_alert('alert', 'files.title.folder-create','files.message.folder-create', backend.error || '');
+        window.show_alert('success', 'files.title.folder-create','files.message.folder-create', backend.error || '');
     }
 
     async function update_folder(){
         //we will send the form to the server for save the new folder
         const backend=await window.send_form_to_the_server('folderForm', 'files/create_new_folder/');
         if(!backend.success){
-            window.show_alert('alert', 'error.general', backend.message || 'error.general-description', backend.error || '');
+            window.show_alert('error', 'error.general', backend.message || 'error.general-description', backend.error || '');
             return;
         }
 
         //if we can added the new folder now restart the form and show a message of confirm
         window.restart_form('folderForm');
         window.hide_pop('form-folder')
-        window.show_alert('alert', 'files.title.the-folder-was-update', 'files.message.the-folder-was-update', backend.error || '');
+        window.show_alert('success', 'files.title.the-folder-was-update', 'files.message.the-folder-was-update', backend.error || '');
+        update_container_folder();
     }
 
     async function send_form_of_the_folder(){
@@ -54,8 +72,19 @@
         }
     }
 
-    async function get_information_of_the_folder(folder_id){
+    async function open_pop_edit_folder(folder_id){
         //this functions is for get the information of a folder by his id from the database
-        
+        const backend=await window.send_message_to_the_server(`files/get_information_folder/${folder_id}/`, {}, true, 'GET');
+        if(!backend.success){
+            window.show_alert('error', 'error.general', backend.message || 'files.message.not-can-get-the-information-of-the-folder', backend.error || '');
+        }
+
+
+        //if can get the information of the folder now we will to show in screen
+        const answer=backend.answer;
+        document.getElementById('folder_id').value=answer.id;
+        document.getElementById('folder_name').value=answer.name;
+        document.getElementById('folder_color').updateColor(answer.color || '#1649FF');
+        window.show_pop('form-folder');
     }
 </script>

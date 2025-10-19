@@ -51,9 +51,9 @@
     "success.sent": "Correo enviado",
     "success.added": "Agregado correctamente",
 
-    "description.saved": "Tu dato fue guardado con éxito",
-    "description.updated": "Tu dato fue actualizado correctamente",
-    "description.deleted": "Tu dato fue eliminado con éxito",
+    "description.saved": "Tu información fue guardado con éxito",
+    "description.updated": "Tu información fue actualizado correctamente",
+    "description.deleted": "Tu información fue eliminado con éxito",
 
     "error.failed_delete": "No se pudo eliminar",
     "error.failed_save": "No se pudo guardar",
@@ -63,6 +63,7 @@
     "error.general": "Ocurrió un error",
     "error.general-description": "Ocurrió un error en el servidor. Intentalo mas tarde.",
     "error.to_delete": "Ocurrió un error al intentar eliminar",
+    "error.not-send-information-to-the-server": "No enviaste informacion al servidor",
 
     "warning.unsaved_changes": "Tienes cambios sin guardar",
     "warning.permanent_action": "Esta acción es permanente",
@@ -71,7 +72,7 @@
     "info.loading": "Cargando...",
     "info.read_most": "Leer más",
     "info.sending": "Enviando...",
-    "info.confirm_delete": "¿Estás seguro de que deseas eliminar este dato?",
+    "info.confirm_delete": "¿Estás seguro de que deseas eliminar esta información?",
     "info.description_delete": "Esta información será eliminado permanentemente y no se podrá recuperar",
     "info.welcome": "Bienvenido",
     "info.logout": "Cerrar sesión",

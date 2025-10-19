@@ -98,6 +98,164 @@ h2 {
     }
 
 }
+
+
+
+/* Contenedor principal */
+#container-folders {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* Estilo general de cada folder */
+.folder-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #FAFAFA;
+  border: 1px solid #E0E0E0;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+/* Efecto hover */
+.folder-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+/* Icono de folder */
+.folder-card i.fi-fi-sr-folder {
+  font-size: 48px;
+  margin-bottom: 12px;
+  transition: color 0.2s;
+}
+
+/* Nombre del folder */
+.folder-card .folder-name {
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 6px;
+  word-break: break-word;
+  color: #2E3A59;
+}
+
+/* Fecha de creación */
+.folder-card .folder-date {
+  font-size: 12px;
+  color: #6B7280;
+  margin-bottom: 8px;
+}
+
+/* Botones de acción */
+.folder-card .folder-menu {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.folder-card .folder-menu button {
+  font-size: 12px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #F0F0F0;
+  color: #2E3A59;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.folder-card .folder-menu button:hover {
+  background-color: #D9D9D9;
+}
+
+/* Responsive ajustes pequeños */
+@media (max-width: 768px) {
+  #container-folders {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .folder-card i.fi-fi-sr-folder {
+    font-size: 40px;
+  }
+
+  .folder-card .folder-name {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  #container-folders {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .folder-card i.fi-fi-sr-folder {
+    font-size: 36px;
+  }
+
+  .folder-card .folder-name {
+    font-size: 13px;
+  }
+
+  .folder-card .folder-menu button {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
+
+
+#container-folders, #container-file{
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); 
+  grid-auto-rows: auto; 
+  grid-auto-flow: row; 
+  gap: 24px; 
+  padding: 24px;
+  box-sizing: border-box;
+  justify-items: start; 
+}
+
+@media (max-width: 1200px) {
+  #container-folders {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  #container-folders {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  #container-folders {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  #container-folders {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 12px;
+    padding: 12px;
+  }
+}
 </style>
 {% load static %}
 
@@ -128,89 +286,66 @@ h2 {
               <search-option>
                 <list-button>
                   <button onclick="window.show_pop('upload-files')" icon="fi fi-rr-upload" t="files.btn.upload">Upload file</button>
-                  <button onclick="window.show_pop('form-folder')" t="files.btn.create-folder" icon="fi fi-rr-folder-open">Create folder</button>
+                  <button onclick="open_pop_create_new_folder()" t="files.btn.create-folder" icon="fi fi-rr-folder-open">Create folder</button>
                 </list-button>
               </search-option>
           </plus-search>
       </div>
   </div>
-
-  <div id="container-file">
-    <div class="skeleton skeleton-rect" style="width: 20%;"></div>
-    <br>
-    <div class="grid folders">
-      <div class="card">
-        <center>
-            <div class="skeleton skeleton-circle"></div>
-        </center>
-        <br>
-        <div class="skeleton skeleton-rect" style="width: 80%;"></div>
-        <br>
-        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
-      </div>
-      <div class="card">
-        <center>
-            <div class="skeleton skeleton-circle"></div>
-        </center>
-        <br>
-        <div class="skeleton skeleton-rect" style="width: 80%;"></div>
-        <br>
-        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
-      </div>
-      <div class="card">
-        <center>
-            <div class="skeleton skeleton-circle"></div>
-        </center>
-        <br>
-        <div class="skeleton skeleton-rect" style="width: 80%;"></div>
-        <br>
-        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
-      </div>
+  <div id="container-folders">
+    <div class="section">
+      <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+      <br>
+      <div class="skeleton skeleton-rect" style="width: 50%;"></div>
     </div>
-    <br><br>
-    <hr>
-    <div class="skeleton skeleton-rect" style="width: 20%;"></div>
-    <br>
-    <div class="row">
-        <div class="col">
-            <div class="card">
-                <div class="skeleton skeleton-rect" style="width: 80%;"></div>
-                <br>
-                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
-                <br>
-                <div class="skeleton skeleton-rect" style="width: 20%;"></div>
-                <br>
-                <div class="skeleton skeleton-rect" style="width: 100%;"></div>
-                <br>
-                <div class="skeleton skeleton-rect" style="width: 90%;"></div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card">
-                <div class="skeleton skeleton-rect" style="width: 80%;"></div>
-                <br>
-                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
-                <br>
-                <div class="skeleton skeleton-rect" style="width: 20%;"></div>
-                <br>
-                <div class="skeleton skeleton-rect" style="width: 100%;"></div>
-                <br>
-                <div class="skeleton skeleton-rect" style="width: 90%;"></div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card">
-                <div class="skeleton skeleton-rect" style="width: 80%;"></div>
-                <br>
-                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
-                <br>
-                <div class="skeleton skeleton-rect" style="width: 20%;"></div>
-                <br>
-                <div class="skeleton skeleton-rect" style="width: 100%;"></div>
-                <br>
-                <div class="skeleton skeleton-rect" style="width: 90%;"></div>
-            </div>
-        </div>
+    <div class="section">
+      <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+      <br>
+      <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+    </div>
+    <div class="section">
+      <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+      <br>
+      <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+    </div>
+  </div>
+  <br><br>
+  <div id="container-file">
+    <div class="section">
+        <br>
+        <center><div class="skeleton skeleton-circle"></div></center>
+        <br><br>
+        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 20%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 90%;"></div>
+    </div>
+    <div class="section">
+        <br>
+        <center><div class="skeleton skeleton-circle"></div></center>
+        <br><br>
+        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 20%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 90%;"></div>
+    </div>
+    <div class="section">
+        <br>
+        <center><div class="skeleton skeleton-circle"></div></center>
+        <br><br>
+        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 20%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 90%;"></div>
     </div>
   </div>
 </div>
@@ -476,6 +611,157 @@ class PlusFile extends HTMLElement {
 }
 
 customElements.define('plus-file', PlusFile);
+
+class PlusFolder extends HTMLElement {
+  constructor() {
+    super();
+
+    const shadow = this.attachShadow({ mode: 'open' });
+
+    // 🔗 Flaticon CSS
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', 'https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css');
+    shadow.appendChild(link);
+
+    // --- container ---
+    const wrapper = document.createElement('article');
+    wrapper.classList.add('pf-wrapper');
+
+    // --- top row: icon + title + menu ---
+    const topRow = document.createElement('div');
+    topRow.classList.add('pf-top');
+
+    const iconContainer = document.createElement('div');
+    iconContainer.classList.add('pf-icon-wrap');
+
+    const icon = document.createElement('i');
+    icon.className = 'fi fi-sr-folder pf-icon';
+    icon.setAttribute('aria-hidden', 'true');
+
+    iconContainer.appendChild(icon);
+
+    const title = document.createElement('h3');
+    title.classList.add('pf-title');
+
+    const date = document.createElement('time');
+    date.classList.add('pf-date');
+
+    const titleSection = document.createElement('div');
+    titleSection.classList.add('pf-title-wrap');
+    titleSection.appendChild(title);
+    titleSection.appendChild(date);
+
+    const menuBtn = document.createElement('button');
+    menuBtn.classList.add('pf-menu-btn');
+    menuBtn.innerHTML = '&#x22EE;';
+    menuBtn.setAttribute('aria-label', 'Abrir menú de carpeta');
+
+    topRow.appendChild(iconContainer);
+    topRow.appendChild(titleSection);
+    topRow.appendChild(menuBtn);
+
+    // --- menu panel ---
+    const menu = document.createElement('div');
+    menu.classList.add('pf-menu');
+
+    const verBtn = document.createElement('button'); verBtn.textContent = 'Ver';
+    const editarBtn = document.createElement('button'); editarBtn.textContent = 'Editar';
+    const eliminarBtn = document.createElement('button'); eliminarBtn.textContent = 'Eliminar';
+    const descargarBtn = document.createElement('button'); descargarBtn.textContent = 'Descargar';
+
+    [verBtn, editarBtn, eliminarBtn, descargarBtn].forEach(btn => {
+      btn.classList.add('pf-menu-item');
+      menu.appendChild(btn);
+    });
+
+    // --- assemble ---
+    wrapper.appendChild(topRow);
+    wrapper.appendChild(menu);
+    shadow.appendChild(wrapper);
+
+    // --- styles ---
+    const style = document.createElement('style');
+    style.textContent = `
+      :host { display: inline-block; font-family: "Inter", "Segoe UI", Roboto, sans-serif; }
+      .pf-wrapper {
+        width: 280px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 14px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+        position: relative;
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+      }
+      .pf-wrapper:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+      .pf-top { display:flex; align-items:center; gap:12px; }
+      .pf-icon-wrap { width:48px; height:48px; display:flex; align-items:center; justify-content:center; border-radius:8px; background: #f0f4f8; }
+      .pf-icon { font-size:30px; color: var(--folder-color, #3A7BD5); }
+      .pf-title-wrap { flex:1; min-width:0; display:flex; flex-direction:column; }
+      .pf-title { margin:0; font-size:16px; font-weight:600; color:#1f2937; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .pf-date { font-size:12px; color:#6b7280; margin-top:2px; }
+      .pf-menu-btn { background:transparent; border:none; font-size:20px; color:#6b7280; cursor:pointer; padding:4px; border-radius:6px; }
+      .pf-menu-btn:hover { background: rgba(99,102,241,0.04); }
+      .pf-menu { position:absolute; top:50px; right:12px; display:none; flex-direction:column; background:#fff; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.08); padding:8px; min-width:140px; z-index:10; }
+      .pf-menu-item { background:transparent; border:none; padding:10px 12px; text-align:left; font-size:14px; color:#1f2937; cursor:pointer; border-radius:6px; }
+      .pf-menu-item:hover { background:#f3f4f6; }
+    `;
+    shadow.appendChild(style);
+
+    // --- references ---
+    this._icon = icon;
+    this._title = title;
+    this._date = date;
+    this._menu = menu;
+    this._menuBtn = menuBtn;
+
+    // --- menu toggle ---
+    this._menuVisible = false;
+    menuBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      this._toggleMenu();
+    });
+
+    document.addEventListener('click', e => {
+      if (!shadow.contains(e.target)) this._hideMenu();
+    });
+
+    // menu actions dispatch custom events
+    verBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-view',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
+    editarBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-edit',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
+    eliminarBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-delete',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
+    descargarBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-download',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
+  }
+
+  static get observedAttributes() {
+    return ['name','created-at','color','folder-id'];
+  }
+
+  attributeChangedCallback(attrName, oldVal, newVal) {
+    if(attrName==='name') this._title.textContent = newVal || '';
+    if(attrName==='created-at') this._date.textContent = newVal ? `Creado: ${newVal}` : '';
+    if(attrName==='color') {
+      const color = newVal || '#3A7BD5';
+      this._icon.style.color = color;
+      this.style.setProperty('--folder-color', color);
+    }
+  }
+
+  _toggleMenu() {
+    this._menuVisible = !this._menuVisible;
+    this._menu.style.display = this._menuVisible ? 'flex' : 'none';
+  }
+
+  _hideMenu() {
+    if(this._menuVisible){
+      this._menuVisible = false;
+      this._menu.style.display = 'none';
+    }
+  }
+}
+
+customElements.define('plus-folder', PlusFolder);
+
 </script>
 
 <script>
@@ -495,11 +781,33 @@ customElements.define('plus-file', PlusFile);
     `
   }
 
+  function get_div_folders(){
+    return `
+      <plus-folder
+        folder-id="{ id }"
+        name="{ name }"
+        created-at="{ created_at }"
+        color="{ color }">
+      </plus-folder>
+    `
+  }
+
   (()=>{
+    //this is for update the container of the files in the folder
+
     window.update_container_with_seeker(
       'search-files', 
       'container-file', 
       get_div_files(), 
+      'files/view_files_of_the_folder/', 
+      'GET'
+    )
+
+    //this is for update the container of the folders in the folder father
+    window.update_container_with_seeker(
+      'search-files', 
+      'container-folders', 
+      get_div_folders(), 
       'files/view_files_of_the_folder/', 
       'GET'
     )

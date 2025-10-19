@@ -26,5 +26,7 @@
     "files.message.folder-create":"La carpeta fue creada con exito en tu base de datos.",
     "files.title.folder-create":"Carpeta Creada",
     "files.title.the-folder-was-update":"Carpeta actualizada",
-    "files.message.the-folder-was-update":"La carpeta fue actualizada con exito."
+    "files.message.the-folder-was-update":"La carpeta fue actualizada con exito.",
+
+    "files.message.not-can-get-the-information-of-the-folder":"No pudimos encontrar la informacion de la carpeta."
 }
