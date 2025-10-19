@@ -159,25 +159,33 @@ def get_folder_tree_accessible(user, folder)->list:
 
     return folder.get_descendants().filter(id__in=permitted_folders)
 
-def get_folder_files(user, folder, query=None, page=1, per_page=10) -> dict:
+def get_folder_files(user, folder=None, query=None, page=1, per_page=10) -> dict:
     """
     Get the files of a folder with pagination.
     Optionally filter files by name using 'query'.
+    
+    - If 'folder' is None or empty string, get files in the root (no folder assigned).
+    - Permission check only applies if a folder is provided.
     """
     # Convert folder ID to object if necessary
-    if isinstance(folder, int):
-        folder = Folder.objects.get(id=folder)
+    if folder == "" or folder is None:
+        folder = None
+    elif isinstance(folder, int) or (isinstance(folder, str) and folder.isdigit()):
+        folder = Folder.objects.get(id=int(folder))
+    else:
+        # Si no es válido, fallback a None
+        folder = None
 
-    # Check user permission
-    if not has_folder_permission(user, folder, "read"):
+    # Check user permission only if folder exists
+    if folder and not has_folder_permission(user, folder, "read"):
         return {
             "success": False,
             "message": "error.unauthorized",
             "answer": [], 
-            "error": "the user not have the permissions"
+            "error": "the user does not have permission to access this folder"
         }
 
-    # Base queryset
+    # Base queryset: filter by folder (None means root)
     files_qs = File.objects.filter(folder=folder)
 
     # Apply query filter if provided and not empty

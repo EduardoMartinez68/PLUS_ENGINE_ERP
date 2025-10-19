@@ -111,7 +111,7 @@ def view_folders_of_the_folder(request):
         values = all_filters.split(",")
         search=values[0] #query
         folder_id=values[1] #id folder
-        print(search)
+    
         user = request.user
         result = get_folders(user, folder_id, search)
         return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
@@ -125,7 +125,7 @@ def view_folders_of_the_folder(request):
         values = all_filters.split(",")
         search=values[0] #query
         folder_id=values[1] #id folder
-        print(search)
+    
         user = request.user
         result = get_folders(user, folder_id, search)
         return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
