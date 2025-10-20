@@ -1,6 +1,6 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
-from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder
+from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder
 from ..models import Folder, FolderPermission
 from ..plus_wrapper import Plus
 from django.http import JsonResponse
@@ -170,5 +170,32 @@ def create_new_folder(request):
             return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
         
         result=create_folder(request.user, None, data)
+        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
+
+@login_required(login_url='login')
+def edit_folder(request, folder_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+    
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
+        
+        result=update_folder(request.user, folder_id, data)
+        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
+    else:
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+    
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
+        
+        result=update_folder(request.user, folder_id, data)
         return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
 

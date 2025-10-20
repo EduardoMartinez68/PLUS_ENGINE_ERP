@@ -19,10 +19,10 @@
         //this functions is for update the container of the folders and files when the user is in the home
         if (typeof get_div_folders === "function"){
             window.update_container_from_the_server(
-                'search-files', 
+                ['search-folders', 'path_folder_id1'], 
                 'container-folders', 
                 get_div_folders(), 
-                'files/view_files_of_the_folder/', 
+                'files/view_folders_of_the_folder/', 
                 'GET'
             )
         }
@@ -48,8 +48,13 @@
     }
 
     async function update_folder(){
+        const folder_id=document.getElementById('folder_id');
+        if(!folder_id || folder_id.value.trim() == ''){
+            window.show_alert('alert', 'error.general', 'files.message.folder-id-not-exit', backend.error || '');
+        }
+
         //we will send the form to the server for save the new folder
-        const backend=await window.send_form_to_the_server('folderForm', 'files/create_new_folder/');
+        const backend=await window.send_form_to_the_server('folderForm', `files/edit_folder/${folder_id.value}/`);
         if(!backend.success){
             window.show_alert('error', 'error.general', backend.message || 'error.general-description', backend.error || '');
             return;
@@ -57,7 +62,7 @@
 
         //if we can added the new folder now restart the form and show a message of confirm
         window.restart_form('folderForm');
-        window.hide_pop('form-folder')
+        window.hide_pop('form-folder');
         window.show_alert('success', 'files.title.the-folder-was-update', 'files.message.the-folder-was-update', backend.error || '');
         update_container_folder();
     }
@@ -65,7 +70,7 @@
     async function send_form_of_the_folder(){
         //first we will see if exist a folder for edit
         const folderInput=document.getElementById('folder_id');
-        if(folderInput && folderInput.value.trim() !== ''){
+        if(folderInput && folderInput.value.trim() == ''){
             await save_new_folder();
         }else{
             await update_folder();

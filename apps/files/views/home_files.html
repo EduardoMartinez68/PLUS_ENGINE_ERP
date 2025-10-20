@@ -654,6 +654,8 @@ class PlusFolder extends HTMLElement {
 
     iconContainer.appendChild(icon);
 
+    const folder_id = this.getAttribute('folder-id');
+
     const title = document.createElement('h3');
     title.classList.add('pf-title');
 
@@ -668,7 +670,7 @@ class PlusFolder extends HTMLElement {
     const menuBtn = document.createElement('button');
     menuBtn.classList.add('pf-menu-btn');
     menuBtn.innerHTML = '&#x22EE;';
-    menuBtn.setAttribute('aria-label', 'Abrir menú de carpeta');
+    menuBtn.setAttribute('aria-label', 'open menu of folder.');
 
     topRow.appendChild(iconContainer);
     topRow.appendChild(titleSection);
@@ -678,10 +680,10 @@ class PlusFolder extends HTMLElement {
     const menu = document.createElement('div');
     menu.classList.add('pf-menu');
 
-    const verBtn = document.createElement('button'); verBtn.textContent = 'Ver';
-    const editarBtn = document.createElement('button'); editarBtn.textContent = 'Editar';
-    const eliminarBtn = document.createElement('button'); eliminarBtn.textContent = 'Eliminar';
-    const descargarBtn = document.createElement('button'); descargarBtn.textContent = 'Descargar';
+    const verBtn = document.createElement('button'); verBtn.textContent = window.translate_text('btn.see');
+    const editarBtn = document.createElement('button'); editarBtn.textContent = window.translate_text('btn.edit');
+    const eliminarBtn = document.createElement('button'); eliminarBtn.textContent = window.translate_text('btn.delete');
+    const descargarBtn = document.createElement('button'); descargarBtn.textContent = window.translate_text('btn.download');
 
     [verBtn, editarBtn, eliminarBtn, descargarBtn].forEach(btn => {
       btn.classList.add('pf-menu-item');
@@ -706,7 +708,6 @@ class PlusFolder extends HTMLElement {
         position: relative;
         transition: transform 0.18s ease, box-shadow 0.18s ease;
       }
-      .pf-wrapper:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
       .pf-top { display:flex; align-items:center; gap:12px; }
       .pf-icon-wrap { width:48px; height:48px; display:flex; align-items:center; justify-content:center; border-radius:8px; background: #f0f4f8; }
       .pf-icon { font-size:30px; color: var(--folder-color, #3A7BD5); }
@@ -741,7 +742,14 @@ class PlusFolder extends HTMLElement {
 
     // menu actions dispatch custom events
     verBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-view',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
-    editarBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-edit',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
+
+    editarBtn.addEventListener('click', () => {
+      this.dispatchEvent(new CustomEvent('folder-edit', {
+        detail: { id: this.getAttribute('folder-id') },
+        bubbles: true
+      }));
+    });
+
     eliminarBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-delete',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
     descargarBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-download',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
   }
@@ -804,6 +812,11 @@ customElements.define('plus-folder', PlusFolder);
       </plus-folder>
     `
   }
+
+  document.addEventListener('folder-edit', async (event) => {
+    const folderId = event.detail.id;
+    await open_pop_edit_folder(folderId);
+  });
 
   (()=>{
     //this is for update the container of the folders in the folder father

@@ -304,8 +304,8 @@ def get_folder_detail(user, folder_id):
         "id": folder.id,
         "name": folder.name,
         "color": folder.color,
-        "company": folder.company.name if folder.company else None,
-        "branch": folder.branch.name if folder.branch else None,
+        "company": folder.company.company_name if folder.company else None,
+        "branch": folder.branch.name_branch if folder.branch else None,
         "created_at": folder.created_at,
         "creator": folder.creator_user.username if folder.creator_user else None,
         "parent": folder.parent.id if folder.parent else None,
@@ -404,4 +404,64 @@ def create_folder(user, parent_folder=None, data=None):
             "creator": user.username,
         },
         "error": 'the folder was create with success',
+    }
+
+
+
+def update_folder(user, folder_id, data=None):
+    """
+    Update an existing folder if the user has permissions to edit it.
+
+    Parameters:
+        - user: User requesting the update.
+        - folder_id: ID of the folder to update.
+        - data: dict with updated fields. Example: {"name": "Updated folder", "color": "#FFAA00"}
+    """
+
+    if not folder_id:
+        return {"success": False, "answer": "", "message": "error.folder-not-provided", "error": "Folder ID was not provided"}
+
+    if data is None or not isinstance(data, dict):
+        return {"success": False, "answer": "", "message": "error.invalid-data", "error": "The provided data is invalid or empty"}
+
+    # --- Get the folder instance ---
+    try:
+        folder = Folder.objects.get(id=folder_id)
+    except Folder.DoesNotExist:
+        return {"success": False, "answer": "", "message": "error.not-found", "error": f"The folder with id {folder_id} does not exist"}
+
+    # --- Verify permissions ---
+    try:
+        permission = FolderPermission.objects.get(folder=folder, user=user)
+    except FolderPermission.DoesNotExist:
+        return {"success": False, "answer": "", "message": "error.unauthorized", "error": "The user does not have permissions for this folder"}
+
+    if not permission.can_write:
+        return {"success": False, "answer": "", "message": "error.unauthorized", "error": "The user does not have edit permissions on this folder"}
+
+    # --- Update folder fields ---
+    try:
+        folder.name = data["name"]
+        folder.color = data["color"]
+        folder.save()
+
+
+    except Exception as e:
+        return {"success": False, "answer": "", "message": "error.failed_update", "error": str(e)}
+
+    # --- Response ---
+    return {
+        "success": True,
+        "message": "success.folder-updated",
+        "answer": {
+            "id": folder.id,
+            "name": folder.name,
+            "color": folder.color,
+            "company": folder.company.company_name if folder.company else None,
+            "branch": folder.branch.name_branch if folder.branch else None,
+            "parent": folder.parent.id if folder.parent else None,
+            "creator": folder.creator_user.username if folder.creator_user else None,
+            "updated_at": timezone.now(),
+        },
+        "error": None,
     }

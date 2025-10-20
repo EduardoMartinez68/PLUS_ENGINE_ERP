@@ -28,5 +28,6 @@
     "files.title.the-folder-was-update":"Carpeta actualizada",
     "files.message.the-folder-was-update":"La carpeta fue actualizada con exito.",
 
-    "files.message.not-can-get-the-information-of-the-folder":"No pudimos encontrar la informacion de la carpeta."
+    "files.message.not-can-get-the-information-of-the-folder":"No pudimos encontrar la informacion de la carpeta.",
+    "files.message.folder-id-not-exit":"No existe el folder"
 }
