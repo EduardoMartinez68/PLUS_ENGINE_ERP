@@ -1,0 +1,1044 @@
+<style>
+.search-upload {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-upload input {
+    padding: 8px 14px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    width: 240px;
+    transition: 0.3s;
+}
+
+.search-upload input:focus {
+    border-color: #3a7bd5;
+    outline: none;
+    box-shadow: 0 0 4px #a2c2f0;
+}
+
+.search-upload button {
+    background-color: #3a7bd5;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.search-upload button:hover {
+    background-color: #2c5fa5;
+}
+
+h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.grid {
+    display: grid;
+    gap: 20px;
+}
+
+.folders {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    margin-bottom: 40px;
+}
+
+.files {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.card svg {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+}
+
+.card p {
+    font-size: 15px;
+    color: #333;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.file-info {
+    font-size: 13px;
+    color: #999;
+    margin-top: 3px;
+}
+
+
+@media (max-width: 600px) {
+    .search-upload input {
+    width: 100%;
+    }
+
+}
+
+
+
+/* Contenedor principal */
+#container-folders {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* Estilo general de cada folder */
+.folder-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #FAFAFA;
+  border: 1px solid #E0E0E0;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+/* Efecto hover */
+.folder-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+/* Icono de folder */
+.folder-card i.fi-fi-sr-folder {
+  font-size: 48px;
+  margin-bottom: 12px;
+  transition: color 0.2s;
+}
+
+/* Nombre del folder */
+.folder-card .folder-name {
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 6px;
+  word-break: break-word;
+  color: #2E3A59;
+}
+
+/* Fecha de creación */
+.folder-card .folder-date {
+  font-size: 12px;
+  color: #6B7280;
+  margin-bottom: 8px;
+}
+
+/* Botones de acción */
+.folder-card .folder-menu {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.folder-card .folder-menu button {
+  font-size: 12px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background-color: #F0F0F0;
+  color: #2E3A59;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.folder-card .folder-menu button:hover {
+  background-color: #D9D9D9;
+}
+
+/* Responsive ajustes pequeños */
+@media (max-width: 768px) {
+  #container-folders {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .folder-card i.fi-fi-sr-folder {
+    font-size: 40px;
+  }
+
+  .folder-card .folder-name {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  #container-folders {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .folder-card i.fi-fi-sr-folder {
+    font-size: 36px;
+  }
+
+  .folder-card .folder-name {
+    font-size: 13px;
+  }
+
+  .folder-card .folder-menu button {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
+
+
+
+#container-folders, #container-file{
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); 
+  grid-auto-rows: auto; 
+  grid-auto-flow: row; 
+  gap: 24px; 
+  padding: 24px;
+  box-sizing: border-box;
+  justify-items: start; 
+}
+
+@media (max-width: 1200px) {
+  #container-folders {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  #container-folders {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  #container-folders {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  #container-folders {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 12px;
+    padding: 12px;
+  }
+}
+
+
+/***-------------------paths folders-------------------------*/
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.breadcrumb .crumb {
+  cursor: pointer;
+  color: #007bff;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb .crumb:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.breadcrumb .separator {
+  color: #888;
+  user-select: none;
+}
+</style>
+{% load static %}
+
+<div class="container-section">
+  <!---seeker---->
+    <div id="path_folders" class="breadcrumb">
+        <span class="crumb" data-id="root" t="files.title.home">Home</span>
+    </div>
+
+  <div class="row">
+      <div class="col-9">
+          
+      </div>
+      <div class="col-3 p-3">
+          <input type="hidden" id="path_folder_id1">
+          <plus-search input_id="search-folders">
+              <search-option>
+                <list-button>
+                  <button onclick="window.show_pop('upload-files')" icon="fi fi-rr-upload" t="files.btn.upload">Upload file</button>
+                  <button onclick="open_pop_create_new_folder()" t="files.btn.create-folder" icon="fi fi-rr-folder-open">Create folder</button>
+                </list-button>
+              </search-option>
+          </plus-search>
+      </div>
+  </div>
+  <div id="container-folders">
+    <div class="section">
+      <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+      <br>
+      <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+    </div>
+    <div class="section">
+      <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+      <br>
+      <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+    </div>
+    <div class="section">
+      <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+      <br>
+      <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+    </div>
+  </div>
+  <br><br>
+
+  <div class="row">
+      <div class="col-9">
+          
+      </div>
+      <div class="col-3 p-3">
+          <input type="hidden" id="path_folder_id2">
+          <plus-search input_id="search-files">
+          </plus-search>
+      </div>
+  </div>
+
+  <div id="container-file">
+    <div class="section">
+        <br>
+        <center><div class="skeleton skeleton-circle"></div></center>
+        <br><br>
+        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 20%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 90%;"></div>
+    </div>
+    <div class="section">
+        <br>
+        <center><div class="skeleton skeleton-circle"></div></center>
+        <br><br>
+        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 20%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 90%;"></div>
+    </div>
+    <div class="section">
+        <br>
+        <center><div class="skeleton skeleton-circle"></div></center>
+        <br><br>
+        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 20%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 90%;"></div>
+    </div>
+  </div>
+</div>
+
+{% include 'partials_files/upload_files.html' %}
+{% include 'partials_files/create_folder.html' %}
+
+<script>
+
+class PlusFile extends HTMLElement {
+  constructor() {
+    super();
+
+    const shadow = this.attachShadow({ mode: 'open' });
+
+    const container = document.createElement('div');
+    container.classList.add('container');
+
+    const thumb = document.createElement('img');
+    thumb.classList.add('thumbnail');
+
+    // ⭐ estrella anclada
+    const anchoredStar = document.createElement('span');
+    anchoredStar.classList.add('anchored-star');
+    anchoredStar.textContent = '★';  // estrella
+    anchoredStar.style.display = 'none'; // por defecto no visible
+
+    const info = document.createElement('div');
+    info.classList.add('info');
+
+    const title = document.createElement('h4');
+    const desc = document.createElement('p');
+
+    info.appendChild(title);
+    info.appendChild(desc);
+
+    // sección del usuario
+    const userSection = document.createElement('div');
+    userSection.classList.add('user-section');
+
+    const userAvatar = document.createElement('img');
+    userAvatar.classList.add('user-avatar');
+
+    const userInfo = document.createElement('div');
+    userInfo.classList.add('user-info');
+
+    const userName = document.createElement('span');
+    userName.classList.add('user-name');
+
+    const dates = document.createElement('span');
+    dates.classList.add('dates');
+
+    userInfo.appendChild(userName);
+    userInfo.appendChild(dates);
+    userSection.appendChild(userAvatar);
+    userSection.appendChild(userInfo);
+
+    const menuBtn = document.createElement('button');
+    menuBtn.classList.add('menu-btn');
+    menuBtn.innerHTML = '&#x22EE;';
+
+    const menu = document.createElement('div');
+    menu.classList.add('menu');
+
+    const openBtn = document.createElement('button');
+    openBtn.textContent = 'Abrir';
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = 'Copiar';
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Eliminar';
+
+    menu.appendChild(openBtn);
+    menu.appendChild(copyBtn);
+    menu.appendChild(deleteBtn);
+
+    container.appendChild(thumb);
+    container.appendChild(anchoredStar);
+    container.appendChild(menuBtn);
+    container.appendChild(menu);
+    container.appendChild(info);
+    container.appendChild(userSection);
+
+    shadow.appendChild(container);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .container {
+        position: relative;
+        width: 300px;
+        border: 1px solid #E0E0E0;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #FAFAFA;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .thumbnail {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        background: #EDEDED;
+      }
+
+      .anchored-star {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        font-size: 28px;
+        color: #FFD700; /* dorado */
+      }
+
+      .info {
+        padding: 12px 14px 6px 14px;
+      }
+
+      .info h4 {
+        margin: 0 0 4px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2E3A59;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .info p {
+        margin: 0;
+        font-size: 13px;
+        color: #4B5563;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .user-section {
+        display: flex;
+        align-items: center;
+        padding: 6px 14px 12px 14px;
+        font-size: 12px;
+        color: #4B5563;
+      }
+
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 8px;
+        background: #ccc;
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .user-name {
+        font-weight: 500;
+        color: #2E3A59;
+      }
+
+      .dates {
+        font-size: 11px;
+        color: #6B7280;
+      }
+
+      .menu-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: transparent;
+        border: none;
+        font-size: 22px;
+        cursor: pointer;
+        color: #4B5563;
+      }
+
+      .menu {
+        position: absolute;
+        top: 30px;
+        right: 8px;
+        background: #fff;
+        border: 1px solid #E0E0E0;
+        border-radius: 6px;
+        display: none;
+        flex-direction: column;
+        min-width: 140px;
+        z-index: 100;
+      }
+
+      .menu button {
+        border: none;
+        background: none;
+        padding: 10px 14px;
+        text-align: left;
+        cursor: pointer;
+        font-size: 14px;
+        color: #2E3A59;
+      }
+
+      .menu button:hover {
+        background-color: #F0F0F0;
+      }
+    `;
+    shadow.appendChild(style);
+
+    // Toggle menu
+    menuBtn.addEventListener('click', () => {
+      menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    // Menú acciones
+    openBtn.addEventListener('click', () => {
+      const url = this.getAttribute('miniature');
+      if(url) window.open(url, '_blank');
+    });
+
+    copyBtn.addEventListener('click', () => {
+      const name = this.getAttribute('name');
+      if(name) navigator.clipboard.writeText(name);
+      alert('Nombre copiado al portapapeles');
+    });
+
+    deleteBtn.addEventListener('click', () => {
+      const name = this.getAttribute('name');
+      alert('Aquí iría la acción para eliminar: ' + name);
+    });
+
+    this._thumb = thumb;
+    this._title = title;
+    this._desc = desc;
+    this._userAvatar = userAvatar;
+    this._userName = userName;
+    this._dates = dates;
+    this._anchoredStar = anchoredStar;
+  }
+
+  static get observedAttributes() {
+    return ['name', 'description', 'miniature', 'u-name', 'u-avatar', 'uploaded-at', 'updated-at', 'anchored'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if(name === 'name') this._title.textContent = newValue;
+    if(name === 'description') this._desc.textContent = newValue;
+    if(name === 'miniature') {
+      this._thumb.src = newValue && newValue.trim() !== '' 
+                        ? newValue 
+                        : '/img/file_default.webp';
+    }
+    if(name === 'u-name') this._userName.textContent = newValue;
+    if(name === 'u-avatar') this._userAvatar.src = newValue && newValue.trim() !== '' 
+                                               ? newValue 
+                                               : '/img/avatar_default.png';
+    if(name === 'uploaded-at' || name === 'updated-at') {
+      const uploaded = this.getAttribute('uploaded-at');
+      const updated = this.getAttribute('updated-at');
+      this._dates.textContent = `Subido: ${uploaded || '-'} | Actualizado: ${updated || '-'}`;
+    }
+    if(name === 'anchored') {
+      this._anchoredStar.style.display = newValue === 'true' ? 'inline-block' : 'none';
+    }
+  }
+}
+
+customElements.define('plus-file', PlusFile);
+
+class PlusFolder extends HTMLElement {
+  constructor() {
+    super();
+
+    const shadow = this.attachShadow({ mode: 'open' });
+
+    // 🔗 Flaticon CSS
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', 'https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css');
+    shadow.appendChild(link);
+
+    // --- container ---
+    const wrapper = document.createElement('article');
+    wrapper.classList.add('pf-wrapper');
+
+    // --- top row: icon + title + menu ---
+    const topRow = document.createElement('div');
+    topRow.classList.add('pf-top');
+
+    const iconContainer = document.createElement('div');
+    iconContainer.classList.add('pf-icon-wrap');
+
+    const icon = document.createElement('i');
+    icon.className = 'fi fi-sr-folder pf-icon';
+    icon.setAttribute('aria-hidden', 'true');
+
+    iconContainer.appendChild(icon);
+
+    const folder_id = this.getAttribute('folder-id');
+
+    const title = document.createElement('h3');
+    title.classList.add('pf-title');
+
+    const date = document.createElement('time');
+    date.classList.add('pf-date');
+
+    const titleSection = document.createElement('div');
+    titleSection.classList.add('pf-title-wrap');
+    titleSection.appendChild(title);
+    titleSection.appendChild(date);
+
+    const menuBtn = document.createElement('button');
+    menuBtn.classList.add('pf-menu-btn');
+    menuBtn.innerHTML = '&#x22EE;';
+    menuBtn.setAttribute('aria-label', 'open menu of folder.');
+
+    topRow.appendChild(iconContainer);
+    topRow.appendChild(titleSection);
+    topRow.appendChild(menuBtn);
+
+    // --- menu panel ---
+    const menu = document.createElement('div');
+    menu.classList.add('pf-menu');
+
+    const verBtn = document.createElement('button'); verBtn.textContent = window.translate_text('btn.see');
+    const editarBtn = document.createElement('button'); editarBtn.textContent = window.translate_text('btn.edit');
+    const eliminarBtn = document.createElement('button'); eliminarBtn.textContent = window.translate_text('btn.delete');
+    const descargarBtn = document.createElement('button'); descargarBtn.textContent = window.translate_text('btn.download');
+
+    [verBtn, editarBtn, eliminarBtn, descargarBtn].forEach(btn => {
+      btn.classList.add('pf-menu-item');
+      menu.appendChild(btn);
+    });
+
+    // --- assemble ---
+    wrapper.appendChild(topRow);
+    wrapper.appendChild(menu);
+    shadow.appendChild(wrapper);
+
+    // --- styles ---
+    const style = document.createElement('style');
+    style.textContent = `
+      :host { display: inline-block; font-family: "Inter", "Segoe UI", Roboto, sans-serif; }
+      .pf-wrapper {
+        width: 280px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 14px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+        position: relative;
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+      }
+      .pf-top { display:flex; align-items:center; gap:12px; }
+      .pf-icon-wrap { width:48px; height:48px; display:flex; align-items:center; justify-content:center; border-radius:8px; background: #f0f4f8; }
+      .pf-icon { font-size:30px; color: var(--folder-color, #3A7BD5); }
+      .pf-title-wrap { flex:1; min-width:0; display:flex; flex-direction:column; }
+      .pf-title { margin:0; font-size:16px; font-weight:600; color:#1f2937; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .pf-date { font-size:12px; color:#6b7280; margin-top:2px; }
+      .pf-menu-btn { background:transparent; border:none; font-size:20px; color:#6b7280; cursor:pointer; padding:4px; border-radius:6px; }
+      .pf-menu-btn:hover { background: rgba(99,102,241,0.04); }
+      .pf-menu { position:absolute; top:50px; right:12px; display:none; flex-direction:column; background:#fff; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.08); padding:8px; min-width:140px; z-index:10; }
+      .pf-menu-item { background:transparent; border:none; padding:10px 12px; text-align:left; font-size:14px; color:#1f2937; cursor:pointer; border-radius:6px; }
+      .pf-menu-item:hover { background:#f3f4f6; }
+    `;
+    shadow.appendChild(style);
+
+    // --- references ---
+    this._icon = icon;
+    this._title = title;
+    this._date = date;
+    this._menu = menu;
+    this._menuBtn = menuBtn;
+
+    // --- menu toggle ---
+    this._menuVisible = false;
+    menuBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      this._toggleMenu();
+    });
+
+    document.addEventListener('click', e => {
+      if (!shadow.contains(e.target)) this._hideMenu();
+    });
+
+    // menu actions dispatch custom events
+    verBtn.addEventListener('click', () => {
+      this.dispatchEvent(new CustomEvent('folder-view', {
+        detail: { id: this.getAttribute('folder-id'), name:  this.getAttribute('name')},
+        bubbles: true
+      }));
+    });
+
+    editarBtn.addEventListener('click', () => {
+      this.dispatchEvent(new CustomEvent('folder-edit', {
+        detail: { id: this.getAttribute('folder-id') },
+        bubbles: true
+      }));
+    });
+
+    eliminarBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-delete',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
+    descargarBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-download',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
+  }
+
+  static get observedAttributes() {
+    return ['name','created-at','color','folder-id'];
+  }
+
+  attributeChangedCallback(attrName, oldVal, newVal) {
+    if(attrName==='name') this._title.textContent = newVal || '';
+    if(attrName==='created-at') this._date.textContent = newVal ? `Creado: ${newVal}` : '';
+    if(attrName==='color') {
+      const color = newVal || '#3A7BD5';
+      this._icon.style.color = color;
+      this.style.setProperty('--folder-color', color);
+    }
+  }
+
+  _toggleMenu() {
+    this._menuVisible = !this._menuVisible;
+    this._menu.style.display = this._menuVisible ? 'flex' : 'none';
+  }
+
+  _hideMenu() {
+    if(this._menuVisible){
+      this._menuVisible = false;
+      this._menu.style.display = 'none';
+    }
+  }
+}
+
+customElements.define('plus-folder', PlusFolder);
+
+</script>
+
+<script>
+  function get_div_files(){
+    return `
+      <plus-file
+          name="Informe Médico Octubre"
+          description="Resultados de laboratorio"
+          miniature="{% static 'img/file_default.webp' %}"
+          u-name="Dr. Juan Pérez"
+          u-avatar="{% static 'img/file_default.webp' %}"
+          uploaded-at="2025-10-15"
+          updated-at="2025-10-16"
+          anchored="true"
+          >
+      </plus-file>
+    `
+  }
+
+  function get_div_folders(){
+    return `
+      <plus-folder
+        folder-id="{ id }"
+        name="{ name }"
+        created-at="{ created_at }"
+        color="{ color }">
+      </plus-folder>
+    `
+  }
+
+  document.addEventListener('folder-edit', async (event) => {
+    const folderId = event.detail.id;
+    await open_pop_edit_folder(folderId);
+  });
+
+  document.addEventListener('folder-delete', async (event) => {
+    const folderId = event.detail.id;
+    await delete_folder(folderId);
+  });
+
+  async function delete_folder(id){
+    if(await window.plus_delete_with_help_button(
+    id, 
+    `files/delete_folder_and_his_files/`, 
+    'files.title.delete-folder', 
+    'files.message.delete-folder', 
+    'files.title.the-folder-was-delete', 
+    'files.message.the-folder-was-delete')){
+      
+      //this functions is for update the container of the folders and files when the user is in the home
+      if (typeof update_container_folder === "function"){
+        update_container_folder();
+      }
+    
+    }
+  }
+
+
+  document.addEventListener('folder-view', async (event) => {
+    const folderId = event.detail.id;
+    const folderName = event.detail.name;
+    await change_folder(folderId, folderName);
+  });
+  
+  async function change_folder(folderId, folderName){
+    //show a loading page 
+    show_loading_page_home_folder();
+
+    //update the input of the path
+    document.getElementById('path_folder_id1').value=folderId;
+    document.getElementById('path_folder_id2').value=folderId;
+
+    const oldPath=document.getElementById('path_folders').textContent;
+    document.getElementById('path_folders').textContent=`${oldPath}/${folderName}`;
+
+
+    //this functions is for update the container of the folders and files when the user is in the home
+    if (typeof update_container_folder === "function"){
+        update_container_folder();
+    }
+
+    if (typeof update_container_files === "function"){
+        update_container_files();
+    }
+  }
+
+  function show_loading_page_home_folder(){
+    document.getElementById('container-folders').innerHTML=`
+        <div class="section">
+        <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+        </div>
+        <div class="section">
+        <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+        </div>
+        <div class="section">
+        <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+        <br>
+        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+        </div>
+    `
+
+    document.getElementById('container-file').innerHTML=`
+        <div class="section">
+            <br>
+            <center><div class="skeleton skeleton-circle"></div></center>
+            <br><br>
+            <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            <br>
+            <div class="skeleton skeleton-rect" style="width: 20%;"></div>
+            <br>
+            <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+            <br>
+            <div class="skeleton skeleton-rect" style="width: 90%;"></div>
+        </div>
+        <div class="section">
+            <br>
+            <center><div class="skeleton skeleton-circle"></div></center>
+            <br><br>
+            <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            <br>
+            <div class="skeleton skeleton-rect" style="width: 20%;"></div>
+            <br>
+            <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+            <br>
+            <div class="skeleton skeleton-rect" style="width: 90%;"></div>
+        </div>
+        <div class="section">
+            <br>
+            <center><div class="skeleton skeleton-circle"></div></center>
+            <br><br>
+            <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            <br>
+            <div class="skeleton skeleton-rect" style="width: 20%;"></div>
+            <br>
+            <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+            <br>
+            <div class="skeleton skeleton-rect" style="width: 90%;"></div>
+        </div>
+    `
+  }
+
+  (()=>{
+    //this is for update the container of the folders in the folder father
+    window.update_container_with_seeker(
+      ['search-folders', 'path_folder_id1'], 
+      'container-folders', 
+      get_div_folders(), 
+      'files/view_folders_of_the_folder/', 
+      'GET'
+    )
+
+    //this is for update the container of the files in the folder
+    window.update_container_with_seeker(
+      ['search-files', 'path_folder_id2'], 
+      'container-file', 
+      get_div_files(), 
+      'files/view_files_of_the_folder/', 
+      'GET'
+    )
+
+  })();
+
+
+
+
+///--------------------
+(()=>{
+const pathContainer = document.getElementById("path_folders");
+let folderPath = [{ id: "root", name: "Home" }]; // lista de carpetas abiertas
+
+function renderBreadcrumb() {
+  pathContainer.innerHTML = ""; // limpiamos
+
+  folderPath.forEach((folder, index) => {
+    const crumb = document.createElement("span");
+    crumb.classList.add("crumb");
+    crumb.textContent = folder.name;
+    crumb.dataset.id = folder.id;
+
+    crumb.addEventListener("click", () => {
+      // si da clic, ir hasta esa carpeta
+      goToFolderLevel(index);
+    });
+
+    pathContainer.appendChild(crumb);
+
+    // añadir separador si no es el último
+    if (index < folderPath.length - 1) {
+      const sep = document.createElement("span");
+      sep.textContent = "/";
+      sep.classList.add("separator");
+      pathContainer.appendChild(sep);
+    }
+  });
+}
+
+function goToFolderLevel(index) {
+  // corta el path desde esa posición
+  folderPath = folderPath.slice(0, index + 1);
+  renderBreadcrumb();
+
+  const folderId = folderPath[index].id;
+  const folderName = folderPath[index].name;
+
+  // Actualiza inputs y contenedores
+  document.getElementById("path_folder_id1").value = folderId;
+  document.getElementById("path_folder_id2").value = folderId;
+
+  if (typeof update_container_folder === "function") update_container_folder();
+  if (typeof update_container_files === "function") update_container_files();
+}
+
+async function change_folder(folderId, folderName) {
+  show_loading_page_home_folder();
+
+  // Agregar nueva carpeta al path
+  folderPath.push({ id: folderId, name: folderName });
+  renderBreadcrumb();
+
+  // Actualizar los inputs ocultos
+  document.getElementById("path_folder_id1").value = folderId;
+  document.getElementById("path_folder_id2").value = folderId;
+
+  if (typeof update_container_folder === "function") update_container_folder();
+  if (typeof update_container_files === "function") update_container_files();
+}
+
+window.change_folder=change_folder;
+window.goToFolderLevel=goToFolderLevel;
+window.renderBreadcrumb=renderBreadcrumb;
+})();
+
+
+</script>

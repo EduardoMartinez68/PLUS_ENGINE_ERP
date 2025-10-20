@@ -28,6 +28,19 @@
         }
     }
 
+    function update_container_files(){
+        //this functions is for update the container of the folders and files when the user is in the home
+        if (typeof get_div_files === "function"){
+            window.update_container_from_the_server(
+                ['search-files', 'path_folder_id2'], 
+                'container-file', 
+                get_div_files(), 
+                'files/view_files_of_the_folder/', 
+                'GET'
+            )
+        }
+    }
+
     function open_pop_create_new_folder(){
         window.restart_form('folderForm'); //clear the form
         document.getElementById('folder_color').updateColor('#085DA9');

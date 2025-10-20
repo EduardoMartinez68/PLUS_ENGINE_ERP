@@ -1,7 +1,7 @@
 {
+    "files.title.home":"Inicio",
+
     "files.title.upload-files":"Subir Archivos",
-
-
     "files.label.name-file":"Nombre del Archivo *",
     "files.placeholder.name-file":"Escribe el Nombre del archivo",
     "files.label.description":"Descripcion",

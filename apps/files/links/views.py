@@ -40,6 +40,8 @@ def upload_file(request):
 
 
 
+
+#---------------------------------------get information of the folder--------------------------
 def view_files_of_the_folder(request):
     if request.method != 'GET':
         return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
@@ -77,6 +79,10 @@ def view_folders_of_the_folder(request):
 
 
 
+
+
+
+#--------------------views for view, create, edit and delete folders--------------------
 def get_information_folder(request, folder_id):
     if request.method != 'GET':
         return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
@@ -97,7 +103,6 @@ def create_new_folder(request):
     result=create_folder(request.user, None, data)
     return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
 
-
 def edit_folder(request, folder_id):
     if request.method != 'POST':
         return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
@@ -110,7 +115,6 @@ def edit_folder(request, folder_id):
     
     result=update_folder(request.user, folder_id, data)
     return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
-
 
 def delete_folder_and_his_files(request):
     if request.method != 'POST':
