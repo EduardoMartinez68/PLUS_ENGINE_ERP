@@ -818,6 +818,29 @@ customElements.define('plus-folder', PlusFolder);
     await open_pop_edit_folder(folderId);
   });
 
+  document.addEventListener('folder-delete', async (event) => {
+    const folderId = event.detail.id;
+    await delete_folder(folderId);
+  });
+
+  async function delete_folder(id){
+    if(await window.plus_delete_with_help_button(
+    id, 
+    `files/delete_folder_and_his_files/`, 
+    'files.title.delete-folder', 
+    'files.message.delete-folder', 
+    'files.title.the-folder-was-delete', 
+    'files.message.the-folder-was-delete')){
+      
+      //this functions is for update the container of the folders and files when the user is in the home
+      if (typeof update_container_folder === "function"){
+        update_container_folder();
+      }
+    
+    }
+  }
+
+
   (()=>{
     //this is for update the container of the folders in the folder father
     window.update_container_with_seeker(

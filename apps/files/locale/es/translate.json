@@ -29,5 +29,11 @@
     "files.message.the-folder-was-update":"La carpeta fue actualizada con exito.",
 
     "files.message.not-can-get-the-information-of-the-folder":"No pudimos encontrar la informacion de la carpeta.",
-    "files.message.folder-id-not-exit":"No existe el folder"
+    "files.message.folder-id-not-exit":"No existe el folder",
+
+
+    "files.title.delete-folder":"Eliminar Carpeta",
+    "files.message.delete-folder":"Deseas eliminar esta Carpeta? Todas sus subcarpetas y archivos se eliminaran por completo.",
+    "files.title.the-folder-was-delete":"carpeta eliminada",
+    "files.message.the-folder-was-delete":"La carpeta y su contenido fue eliminado con exito de tu base de datos."
 }

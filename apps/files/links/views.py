@@ -9,7 +9,7 @@ def files_home(request):
 
 
 
-from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder
+from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder
 def upload_file(request):
     if request.method == 'POST':
         file = request.FILES.get('file')
@@ -109,4 +109,17 @@ def edit_folder(request, folder_id):
         return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
     
     result=update_folder(request.user, folder_id, data)
+    return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
+
+
+def delete_folder_and_his_files(request):
+    if request.method != 'POST':
+        return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
+    
+    result=delete_folder(request.user, data["id"])
     return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  

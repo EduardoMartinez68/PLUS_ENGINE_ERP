@@ -465,3 +465,96 @@ def update_folder(user, folder_id, data=None):
         },
         "error": None,
     }
+
+
+
+from django.db import transaction
+def delete_folder(user, folder_id):
+    """
+    Delete a folder and all its subfolders and files recursively.
+    Requires that the user has permission to delete the folder.
+    """
+
+    if not folder_id:
+        return {
+            "success": False,
+            "message": "error.folder-not-provided",
+            "error": "Folder ID was not provided"
+        }
+
+    # --- Get folder ---
+    try:
+        folder = Folder.objects.get(id=folder_id)
+    except Folder.DoesNotExist:
+        return {
+            "success": False,
+            "message": "error.not-found",
+            "error": f"The folder with id {folder_id} does not exist"
+        }
+
+    # --- Check permissions ---
+    try:
+        permission = FolderPermission.objects.get(folder=folder, user=user)
+    except FolderPermission.DoesNotExist:
+        return {
+            "success": False,
+            "message": "error.unauthorized",
+            "error": "The user does not have permissions for this folder"
+        }
+
+    if not (permission.can_write or permission.can_delete):
+        return {
+            "success": False,
+            "message": "error.unauthorized",
+            "error": "The user does not have permission to delete this folder"
+        }
+
+    # --- Recursive deletion ---
+    try:
+        with transaction.atomic():
+            deleted_count = _delete_folder_recursive(folder)
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "error.failed-deletion",
+            "error": str(e)
+        }
+
+    # --- Response ---
+    return {
+        "success": True,
+        "message": "success.folder-deleted",
+        "answer": {
+            "deleted_folders": deleted_count["folders"],
+            "deleted_files": deleted_count["files"],
+            "deleted_at": timezone.now(),
+        },
+        "error": None,
+    }
+
+
+def _delete_folder_recursive(folder):
+    """
+    Recursively delete all subfolders and files in a folder.
+    Returns a dict with the count of deleted folders and files.
+    """
+
+    folders_deleted = 0
+    files_deleted = 0
+
+    # Eliminar los archivos dentro de esta carpeta
+    files = folder.files.all()
+    files_deleted += files.count()
+    files.delete()
+
+    # Eliminar las subcarpetas de manera recursiva
+    for subfolder in folder.subfolders.all():
+        result = _delete_folder_recursive(subfolder)
+        folders_deleted += result["folders"]
+        files_deleted += result["files"]
+
+    # Finalmente eliminar la carpeta actual
+    folder.delete()
+    folders_deleted += 1
+
+    return {"folders": folders_deleted, "files": files_deleted}

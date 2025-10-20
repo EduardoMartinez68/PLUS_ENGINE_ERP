@@ -9,4 +9,5 @@ urlpatterns = [
     path('get_information_folder/<int:folder_id>/', views.get_information_folder, name='get_information_folder'),
     path('create_new_folder/', views.create_new_folder, name='create_new_folder'),
     path('edit_folder/<int:folder_id>/', views.edit_folder, name='edit_folder'),
+    path('delete_folder_and_his_files/', views.delete_folder_and_his_files, name='delete_folder_and_his_files'),
 ]
