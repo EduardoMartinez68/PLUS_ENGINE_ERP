@@ -8,6 +8,7 @@ from ..models import Folder, FolderPermission, File
 from cryptography.fernet import Fernet #this is for encrypt the file
 from django.core.files.base import ContentFile
 from django.core.paginator import Paginator
+from django.conf import settings
 from django.utils.crypto import get_random_string
 import os
 from ..plus_wrapper import Plus
@@ -83,63 +84,143 @@ def get_limit_of_the_user()->int:
     #pack 2==5 GiB
     return 1
 
-def upload_file(user, dataFile)->list:
-    #get the basic information of the file
+def get_the_object_folder(user, folder_id):
+    #if the proggramer send information of the parent, we will to get the object folder
+    parent_folder=None
+    if isinstance(folder_id, (int, str)):
+        # if parent_folder is send as empty, None, or text type "null" → that is equal to treat as without parent
+        if not folder_id or str(folder_id).strip() == "" or str(folder_id).lower() == "null":
+            folder_id = None
+        else:
+            try:
+                parent_folder = Folder.objects.get(id=folder_id)
+            except Folder.DoesNotExist:
+                parent_folder = None
+
+    #we will see if the user have the permissions for create a new folder in the root or in the folder
+    if parent_folder:
+        try:
+            permission = FolderPermission.objects.get(folder=parent_folder, user=user)
+        except FolderPermission.DoesNotExist:
+            return {"success": False, "message": "error.unauthorized", "error": "User does not have permission to create in this folder"}
+
+        if not (permission.can_write or permission.can_add_members):
+            return {"success": False, "message": "error.unauthorized", "error": "User cannot create subfolders"}
+        else:
+            return {"success": True, "message": "", "error":"", "answer": parent_folder}
+        
+
+    return {"success": True, "message": "", "error":"", "answer": parent_folder}
+
+def upload_file(user, parent_folder, dataFile) -> dict:
     file = dataFile.get("file")
     name = dataFile.get("name")
 
-    #now we will see if the file have all the information that need for save in the database else return a message for show in the frontend
     if not file:
         return {"success": False, "message": "files.message.not-exist-file", "error": "You need upload a file"}
     
     if not name or not name.strip():
-        if file:
-            name = file.name
-        else:
-            return {"success": False, "message": "files.message.not-exist-file", "error": "You need upload a file"}
+        name = file.name
 
     if not can_upload(user, file.size):
         return {"success": False, "message": "file.message.not-can-upload-the-file-because-not-have-memory", "error": "insufficient memory"}
 
-    #Now first we save a temporary version of the file to be able to create the thumbnail
-    key = get_random_string(12)
+    parent_folder_obj = get_the_object_folder(user, parent_folder)
+    if not parent_folder_obj.get("success", False):
+        return {"success": False, "message": parent_folder_obj.get("message"), "error": parent_folder_obj.get("error")}
+
+    parent_folder = parent_folder_obj.get("answer")
+
+    # Evitar duplicados
+    original_name = name
+    counter = 1
+    while File.objects.filter(folder=parent_folder, name=name).exists():
+        if '.' in original_name:
+            base, ext = original_name.rsplit('.', 1)
+            name = f"{base} ({counter}).{ext}"
+        else:
+            name = f"{original_name} ({counter})"
+        counter += 1
 
     file_instance = File(
-        company=getattr(user, 'company', None), 
-        branch=getattr(user, 'branch', None), 
-        folder=dataFile.get("folder"),
-        key=key,
+        company=getattr(user, 'company', None),
+        branch=getattr(user, 'branch', None),
+        folder=parent_folder,
         name=name,
         description=dataFile.get("description", ""),
         anchored=dataFile.get("anchored", False),
         upload_user=user
     )
 
-    # We assign the file temporarily (still unencrypted beacuse we required to have an ID before creating the thumbnail) 
-    file_instance.file.save(file.name, file, save=False)
-    file_instance.save()  
+    # Guardar archivo temporal en memoria para generar miniatura
+    temp_file_content = file.read()
+    temp_file = ContentFile(temp_file_content)
+    temp_file.name = file.name
+    file_instance.file.save(file.name, temp_file, save=False)
+    file_instance.save()
 
-    #now make the miniature before of encrypt the file
+    # Generar miniatura
     from .utils import generate_thumbnail_for_file
     thumb_url = generate_thumbnail_for_file(file_instance)
     if thumb_url:
-        # Convert URL to relative path and assign it
         rel_path = thumb_url.replace(settings.MEDIA_URL, "")
         file_instance.thumbnail.name = rel_path
         file_instance.save(update_fields=["thumbnail"])
 
-    #Now we read and encrypt the original file
-    file.seek(0)
-    container = file.read()
-    container_encrypt = f.encrypt(container)
+    # Guardar ruta del archivo temporal antes de encriptar
+    temp_file_path = file_instance.file.path
 
-    # We replace the file with the encrypted version
+    # Encriptar archivo
+    container_encrypt = f.encrypt(temp_file_content)
     encrypted_file = ContentFile(container_encrypt)
     encrypted_file.name = file.name
-    file_instance.file.save(file.name, encrypted_file, save=True)
+    file_instance.file.save(file.name, encrypted_file, save=True)  # Sobrescribe el temporal
 
-    return {"success": True, "message": "files.message.file-upload-with-success", "file_id": file_instance.id}
+    # Borrar archivo temporal original
+    if os.path.exists(temp_file_path):
+        try:
+            os.remove(temp_file_path)
+        except Exception:
+            pass
 
+    # Generar ruta completa
+    def get_full_folder_path(folder):
+        path = []
+        while folder:
+            path.insert(0, folder.name)
+            folder = folder.parent
+        return "/" + "/".join(path)
+
+    file_path = get_full_folder_path(file_instance.folder) + "/" + file_instance.name
+
+    return {
+        "success": True,
+        "message": "files.message.file-upload-with-success",
+        "file_id": file_instance.id,
+        "file_path": file_path
+    }
+
+def download_file(user, file_id):
+    try:
+        file_instance = File.objects.get(id=file_id)
+    except File.DoesNotExist:
+        return None, None
+    
+    # Verificar permisos
+    if not has_folder_permission(user, file_instance.folder, "read"):
+        return None, None
+
+    # Ruta al archivo encriptado
+    file_path = file_instance.file.path
+    if not os.path.exists(file_path):
+        return None, None
+
+    # Leer y desencriptar
+    with open(file_path, "rb") as f_encrypted:
+        encrypted_content = f_encrypted.read()
+    decrypted_content = f.decrypt(encrypted_content)
+
+    return decrypted_content, file_instance
 
 def get_user_accessible_files(user)->list:
     # Carpetas a las que tiene permiso directo
@@ -206,7 +287,11 @@ def get_folder_files(user, folder=None, query=None, page=1, per_page=10) -> dict
                 "name": f.name,
                 "description": f.description,
                 "size": f.size,
-                "uploaded_at": f.uploaded_at,
+                "uploaded_at":  Plus.format_date_to_text(
+                    Plus.convert_from_utc(f.uploaded_at, user.timezone),
+                    user.language,
+                    2
+                    ),
                 "thumbnail": f.thumbnail.url if f.thumbnail else None,
                 "file_url": f.file.url if f.file else None,
             }
@@ -348,26 +433,14 @@ def create_folder(user, parent_folder=None, data=None):
     if data is None:
         return {"success": False, "message": "error.not-send-information-to-the-server", "error": "Not exist the data"}
 
-    #if the proggramer send information of the parent, we will to get the object folder
-    if isinstance(parent_folder, (int, str)):
-        # if parent_folder is send as empty, None, or text type "null" → that is equal to treat as without parent
-        if not parent_folder or str(parent_folder).strip() == "" or str(parent_folder).lower() == "null":
-            parent_folder = None
-        else:
-            try:
-                parent_folder = Folder.objects.get(id=parent_folder)
-            except Folder.DoesNotExist:
-                parent_folder = None
+    #if the proggramer send information of the parent, we will to get the object folder and 
+    # we will see if the user have the permissions for create a new folder in the root or in the folder
+    parent_folder_obj = get_the_object_folder(user, parent_folder)
+    if not parent_folder_obj.get("success", False):
+        return {"success": parent_folder_obj.get("success"), "message": parent_folder_obj.get("message"), "error": parent_folder_obj.get("error")}
 
-    #we will see if the user have the permissions for create a new folder in the root or in the folder
-    if parent_folder:
-        try:
-            permission = FolderPermission.objects.get(folder=parent_folder, user=user)
-        except FolderPermission.DoesNotExist:
-            return {"success": False, "message": "error.unauthorized", "error": "User does not have permission to create in this folder"}
+    parent_folder=parent_folder_obj.get("answer", None) #get the object folder
 
-        if not (permission.can_write or permission.can_add_members):
-            return {"success": False, "message": "error.unauthorized", "error": "User cannot create subfolders"}
 
 
     #if the user have all the permissions for this, now we will to create the new folder

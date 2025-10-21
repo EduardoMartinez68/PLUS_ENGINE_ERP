@@ -64,6 +64,27 @@ class FolderPermission(models.Model):
     class Meta:
         unique_together = ('folder', 'user')
 
+
+#this function is for save the files dinamically in folders
+def file_upload_path(instance, filename):
+    """
+    Ruta: uploads/<company_id>/<branch_id>/<folder_id>/<filename>
+    """
+    company_id = instance.company.id if instance.company else "0"
+    branch_id = instance.branch.id if instance.branch else "0"
+    folder_id = instance.folder.id if instance.folder else "0"
+    return f"uploads/{company_id}/{branch_id}/{folder_id}/{filename}"
+
+#this is for get the path of the thumbnail
+def thumbnail_upload_path(instance, filename):
+    """
+    Ruta para miniaturas: thumbnails/<company_id>/<branch_id>/<folder_id>/<filename>
+    """
+    company_id = instance.company.id if instance.company else "0"
+    branch_id = instance.branch.id if instance.branch else "0"
+    folder_id = instance.folder.id if instance.folder else "0"
+    return f"thumbnails/{company_id}/{branch_id}/{folder_id}/{filename}"
+
 class File(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, db_column='company')
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, null=True, db_column='branch')
@@ -78,7 +99,7 @@ class File(models.Model):
 
     #character of the files
     file = models.FileField(
-        upload_to='uploads/%Y/%m/%d/',
+        upload_to=file_upload_path,
         validators=[
             FileExtensionValidator(
                 allowed_extensions=['pdf', 'jpg', 'png', 'jpeg', 'doc', 'docx', 'xls', 'xlsx']
@@ -89,7 +110,7 @@ class File(models.Model):
     url = models.URLField(max_length=500, blank=True, null=True)
     anchored = models.BooleanField(default=False)
     size = models.PositiveIntegerField(default=0)  # En bytes
-    thumbnail = models.ImageField(upload_to='thumbnails/%Y/%m/%d/', null=True, blank=True) #this is for show the miniature
+    thumbnail = models.ImageField(upload_to=thumbnail_upload_path, null=True, blank=True) #this is for show the miniature
 
     uploaded_at = models.DateTimeField(default=timezone.now)
     upload_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, db_column='employee')

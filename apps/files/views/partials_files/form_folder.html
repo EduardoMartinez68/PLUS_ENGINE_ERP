@@ -1,7 +1,7 @@
 <message-pop name="form-folder" title="files.title.folder">
     <div class="upload-card">
         <form id="folderForm">
-            <input type="hidden" name="folder_father_id" id="folder_father_id">
+            <input type="hidden" name="folder_father_id" id="folder_father_id_folder">
             <input type="hidden" id="folder_id">
             <div class="section">
                 <input-field label="files.label.name-folder" placeholder="files.placeholder.name-folder"
@@ -50,8 +50,8 @@
 
     async function save_new_folder(){
         //we will send the form to the server for save the new folder
-        const folder_father_id=document.getElementById('path_folder_id1').value || '';
-        document.getElementById('folder_father_id').value=folder_father_id;
+        const folderFatherElement = document.getElementById('path_folder_id1');
+        document.getElementById('folder_father_id_folder').value = folderFatherElement?.value || '';
 
         const backend=await window.send_form_to_the_server('folderForm', `files/create_new_folder/`);
         if(!backend.success){

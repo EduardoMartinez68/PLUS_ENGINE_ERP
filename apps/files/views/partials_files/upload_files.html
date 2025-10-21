@@ -66,7 +66,8 @@
 
 <message-pop name="upload-files" title="files.title.upload-files">
     <div class="upload-card">
-        <form id="uploadForm" enctype="multipart/form-data" action="files/upload_file/">
+        <form id="uploadForm" enctype="multipart/form-data" action="files/view_upload_file/">
+            <input type="hidden" name="folder_father_id" id="folder_father_id_file">
             <div class="section">
                 <input-field label="files.label.name-file" placeholder="files.placeholder.name-file"
                     name="name"></input-field>
@@ -191,6 +192,10 @@
 
     async function upload_file_to_the_backend() {
         document.getElementById('container-upload-file').disabled = false;
+
+        const folderFatherElement = document.getElementById('path_folder_id1');
+        document.getElementById('folder_father_id_file').value = folderFatherElement?.value || '';
+
         const form = document.getElementById('uploadForm');
         const formData = new FormData(form);
 
@@ -207,18 +212,23 @@
             if (!response.ok) throw new Error("Error al subir el archivo");
 
             const data = await response.json();
-            console.log("Respuesta del servidor:", data);
-
-            alert("✅ Archivo subido correctamente");
-
+            
             //clear the form
             form.reset();
             document.getElementById('container-upload-file').disabled = false;
             document.getElementById("fileInfoContainer").innerHTML = '';
             document.getElementById("container-upload-file").style.display = "block";
+
+            window.hide_pop('upload-files');
+            window.show_alert('success', 'files.title.file-upload', 'files.message.file-upload');
+
+            if (typeof update_container_files === "function"){
+                update_container_files();
+            }
+            
         } catch (error) {
             console.error("Error:", error);
-            alert("❌ No se pudo subir el archivo.");
+            window.show_alert('error', 'error.general', error.message || 'error.general-description', error.error || '');
             document.getElementById('container-upload-file').disabled = true;
         }
     }

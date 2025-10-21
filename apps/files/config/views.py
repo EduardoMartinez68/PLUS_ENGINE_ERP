@@ -1,9 +1,9 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
-from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder
+from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder, download_file
 from ..models import Folder, FolderPermission
 from ..plus_wrapper import Plus
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse, HttpResponse
 import json
 from django.shortcuts import render
 @login_required(login_url='login')
@@ -14,9 +14,10 @@ def files_home(request):
         return render(request, 'home_files.html')
 
 @login_required(login_url='login')
-def upload_file(request, folder_id):
+def view_upload_file(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == 'POST':
+            folder_father_id = request.POST.get('folder_father_id')
             file = request.FILES.get('file')
             name = request.POST.get('name')
             description = request.POST.get('description')
@@ -37,12 +38,13 @@ def upload_file(request, folder_id):
             }
     
       
-            result = upload_file(request.user, dataFile)
+            result = upload_file(request.user, folder_father_id, dataFile)
     
             return JsonResponse(result, status=200 if result["success"] else 400)
         return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
     else:
         if request.method == 'POST':
+            folder_father_id = request.POST.get('folder_father_id')
             file = request.FILES.get('file')
             name = request.POST.get('name')
             description = request.POST.get('description')
@@ -63,7 +65,7 @@ def upload_file(request, folder_id):
             }
     
       
-            result = upload_file(request.user, dataFile)
+            result = upload_file(request.user, folder_father_id, dataFile)
     
             return JsonResponse(result, status=200 if result["success"] else 400)
         return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
@@ -83,7 +85,12 @@ def view_files_of_the_folder(request):
         
         user = request.user
         result = get_folder_files(user, folder_id, search)
-        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
+        files=[]
+        
+        if result["success"]:
+            files = result["answer"]["files"] 
+    
+        return JsonResponse({"success": result["success"], "answer": files, 'error':result["error"]}, status=200) 
     else:
         if request.method != 'GET':
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
@@ -97,7 +104,12 @@ def view_files_of_the_folder(request):
         
         user = request.user
         result = get_folder_files(user, folder_id, search)
-        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
+        files=[]
+        
+        if result["success"]:
+            files = result["answer"]["files"] 
+    
+        return JsonResponse({"success": result["success"], "answer": files, 'error':result["error"]}, status=200) 
 
 @login_required(login_url='login')
 def view_folders_of_the_folder(request):
@@ -129,6 +141,31 @@ def view_folders_of_the_folder(request):
         user = request.user
         result = get_folders(user, folder_id, search)
         return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
+
+@login_required(login_url='login')
+def view_download_file(request, file_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'GET':
+            raise Http404("File does not exist")
+    
+        decrypted_content, file_instance = download_file(request.user, file_id)
+        if not decrypted_content:
+            raise Http404("File does not exist")
+    
+        response = HttpResponse(decrypted_content, content_type='application/octet-stream')
+        response['Content-Disposition'] = f'attachment; filename="{file_instance.name}"'
+        return response
+    else:
+        if request.method != 'GET':
+            raise Http404("File does not exist")
+    
+        decrypted_content, file_instance = download_file(request.user, file_id)
+        if not decrypted_content:
+            raise Http404("File does not exist")
+    
+        response = HttpResponse(decrypted_content, content_type='application/octet-stream')
+        response['Content-Disposition'] = f'attachment; filename="{file_instance.name}"'
+        return response
 
 @login_required(login_url='login')
 def get_information_folder(request, folder_id):

@@ -626,7 +626,8 @@ class PlusFile extends HTMLElement {
 
     // Menú acciones
     openBtn.addEventListener('click', () => {
-      const url = this.getAttribute('miniature');
+      const id = this.getAttribute('id').trim().replace(/\s+/g, '');
+      const url = `files/view_download_file/${id}/`;
       if(url) window.open(url, '_blank');
     });
 
@@ -848,14 +849,15 @@ customElements.define('plus-folder', PlusFolder);
   function get_div_files(){
     return `
       <plus-file
-          name="Informe Médico Octubre"
-          description="Resultados de laboratorio"
-          miniature="{% static 'img/file_default.webp' %}"
+          id=" { id } "
+          name=" { name}"
+          description="{ description}"
+          miniature=" { thumbnail } "
           u-name="Dr. Juan Pérez"
           u-avatar="{% static 'img/file_default.webp' %}"
-          uploaded-at="2025-10-15"
-          updated-at="2025-10-16"
-          anchored="true"
+          uploaded-at="{ uploaded_at }"
+          updated-at="{ updated_at }"
+          anchored=" { anchored }"
           >
       </plus-file>
     `
