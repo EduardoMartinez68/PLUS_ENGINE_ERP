@@ -348,15 +348,27 @@ def create_folder(user, parent_folder=None, data=None):
     if data is None:
         return {"success": False, "message": "error.not-send-information-to-the-server", "error": "Not exist the data"}
 
+    #if the proggramer send information of the parent, we will to get the object folder
+    if isinstance(parent_folder, (int, str)):
+        # if parent_folder is send as empty, None, or text type "null" → that is equal to treat as without parent
+        if not parent_folder or str(parent_folder).strip() == "" or str(parent_folder).lower() == "null":
+            parent_folder = None
+        else:
+            try:
+                parent_folder = Folder.objects.get(id=parent_folder)
+            except Folder.DoesNotExist:
+                parent_folder = None
+
     #we will see if the user have the permissions for create a new folder in the root or in the folder
     if parent_folder:
         try:
             permission = FolderPermission.objects.get(folder=parent_folder, user=user)
         except FolderPermission.DoesNotExist:
-            return {"success": False, "message": "error.unauthorized", "error": "The user not have the permissions for create a new folder in the path of the father"}
+            return {"success": False, "message": "error.unauthorized", "error": "User does not have permission to create in this folder"}
 
         if not (permission.can_write or permission.can_add_members):
-            return {"success": False, "message": "error.unauthorized", "error": "The user not have permissions for create subfolders"}
+            return {"success": False, "message": "error.unauthorized", "error": "User cannot create subfolders"}
+
 
     #if the user have all the permissions for this, now we will to create the new folder
     try:
@@ -370,7 +382,7 @@ def create_folder(user, parent_folder=None, data=None):
             creator_user=user
         )
     except Exception as e:
-        return {"success": False, "message": "error.failed_save", "error": f"Error when we create the folder {str(e)}"}
+        return {"success": False, "message": "error.failed_save", "answer":"", "error": f"Error when we create the folder {str(e)}"}
 
     #now we will to create the permissions for the creator
     FolderPermission.objects.create(

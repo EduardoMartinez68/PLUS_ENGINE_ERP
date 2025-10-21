@@ -1,5 +1,7 @@
 {
     "files.title.home":"Inicio",
+    "files.title.subfolders":"Subcarpetas",
+    "files.title.files":"Archivos de la carpeta",
 
     "files.title.upload-files":"Subir Archivos",
     "files.label.name-file":"Nombre del Archivo *",

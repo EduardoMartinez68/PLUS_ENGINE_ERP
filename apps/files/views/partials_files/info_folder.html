@@ -100,7 +100,7 @@ h2 {
 
 
 
-/* Contenedor principal */
+/* container of folders */
 #container-folders {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -109,7 +109,7 @@ h2 {
   box-sizing: border-box;
 }
 
-/* Estilo general de cada folder */
+/* styles for the folders */
 .folder-card {
   display: flex;
   flex-direction: column;
@@ -123,7 +123,7 @@ h2 {
   cursor: pointer;
 }
 
-/* Efecto hover */
+/* effect hover */
 .folder-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 12px rgba(0,0,0,0.1);
@@ -146,14 +146,14 @@ h2 {
   color: #2E3A59;
 }
 
-/* Fecha de creación */
+/* creation date */
 .folder-card .folder-date {
   font-size: 12px;
   color: #6B7280;
   margin-bottom: 8px;
 }
 
-/* Botones de acción */
+/* buttons of actions */
 .folder-card .folder-menu {
   display: flex;
   gap: 6px;
@@ -176,7 +176,7 @@ h2 {
   background-color: #D9D9D9;
 }
 
-/* Responsive ajustes pequeños */
+/* responsive */
 @media (max-width: 768px) {
   #container-folders {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -262,27 +262,65 @@ h2 {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   font-size: 15px;
   font-weight: 500;
-  color: #333;
-  margin-bottom: 10px;
+  color: #444;
+  padding: 10px 14px;
 }
 
 .breadcrumb .crumb {
+  position: relative;
   cursor: pointer;
-  color: #007bff;
-  transition: color 0.2s ease;
+  color: #0066ff;
+  background: rgba(0, 102, 255, 0.06);
+  padding: 6px 12px;
+  border-radius: 8px;
 }
 
 .breadcrumb .crumb:hover {
-  color: #0056b3;
-  text-decoration: underline;
+  color: #0044cc;
+  background: rgba(2, 89, 219, 0.63);
+}
+
+.breadcrumb .crumb.active {
+  color: #222;
+  cursor: default;
+  font-weight: 600;
 }
 
 .breadcrumb .separator {
-  color: #888;
+  color: #aaa;
+  font-size: 14px;
   user-select: none;
+  opacity: 0.6;
+}
+
+
+/* Optional: dark mode support */
+@media (prefers-color-scheme: dark) {
+  .breadcrumb {
+    color: #ddd;
+  }
+
+  .breadcrumb .crumb {
+    color: #70a5ff;
+    background: rgba(112,165,255,0.08);
+  }
+
+  .breadcrumb .crumb:hover {
+    color: #70a5ff;
+    background: rgba(112,165,255,0.15);
+  }
+
+  .breadcrumb .crumb.active {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+  }
+
+  .breadcrumb .separator {
+    color: #999;
+  }
 }
 </style>
 {% load static %}
@@ -290,12 +328,12 @@ h2 {
 <div class="container-section">
   <!---seeker---->
     <div id="path_folders" class="breadcrumb">
-        <span class="crumb" data-id="root" t="files.title.home">Home</span>
+        <span class="crumb" data-id="root" t="files.title.home"><label t="files.title.home"></label></span>
     </div>
 
   <div class="row">
       <div class="col-9">
-          
+       <h5 t="files.title.subfolders"></h5>   
       </div>
       <div class="col-3 p-3">
           <input type="hidden" id="path_folder_id1">
@@ -330,7 +368,7 @@ h2 {
 
   <div class="row">
       <div class="col-9">
-          
+          <h5 t="files.title.files"></h5>   
       </div>
       <div class="col-3 p-3">
           <input type="hidden" id="path_folder_id2">
@@ -380,7 +418,7 @@ h2 {
 </div>
 
 {% include 'partials_files/upload_files.html' %}
-{% include 'partials_files/create_folder.html' %}
+{% include 'partials_files/form_folder.html' %}
 
 <script>
 
@@ -976,7 +1014,7 @@ customElements.define('plus-folder', PlusFolder);
 ///--------------------
 (()=>{
 const pathContainer = document.getElementById("path_folders");
-let folderPath = [{ id: "root", name: "Home" }]; // lista de carpetas abiertas
+let folderPath = [{ id: "", name: window.translate_text('files.title.home') }]; // list of folder that be open
 
 function renderBreadcrumb() {
   pathContainer.innerHTML = ""; // limpiamos

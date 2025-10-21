@@ -10,7 +10,7 @@ def files_home(request):
 
 
 from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder
-def upload_file(request):
+def upload_file(request, folder_id=None):
     if request.method == 'POST':
         file = request.FILES.get('file')
         name = request.POST.get('name')
@@ -100,7 +100,7 @@ def create_new_folder(request):
     except json.JSONDecodeError:
         return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
     
-    result=create_folder(request.user, None, data)
+    result=create_folder(request.user, data['folder_father_id'], data)
     return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
 
 def edit_folder(request, folder_id):

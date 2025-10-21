@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     path('files/', views.files_home, name='files_home'),
-    path('upload_file/', views.upload_file, name='upload_file'),
+    path('upload_file/<int:folder_id>/', views.upload_file, name='upload_file'),
     path('view_files_of_the_folder/', views.view_files_of_the_folder, name='view_files_of_the_folder'),
     path('view_folders_of_the_folder/', views.view_folders_of_the_folder, name='view_folders_of_the_folder'),
     path('get_information_folder/<int:folder_id>/', views.get_information_folder, name='get_information_folder'),

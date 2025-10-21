@@ -14,7 +14,7 @@ def files_home(request):
         return render(request, 'home_files.html')
 
 @login_required(login_url='login')
-def upload_file(request):
+def upload_file(request, folder_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method == 'POST':
             file = request.FILES.get('file')
@@ -157,7 +157,7 @@ def create_new_folder(request):
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
         
-        result=create_folder(request.user, None, data)
+        result=create_folder(request.user, data['folder_father_id'], data)
         return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
     else:
         if request.method != 'POST':
@@ -169,7 +169,7 @@ def create_new_folder(request):
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
         
-        result=create_folder(request.user, None, data)
+        result=create_folder(request.user, data['folder_father_id'], data)
         return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
 
 @login_required(login_url='login')
