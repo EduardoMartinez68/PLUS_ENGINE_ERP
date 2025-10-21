@@ -39,6 +39,7 @@
     "files.title.the-folder-was-delete":"carpeta eliminada",
     "files.message.the-folder-was-delete":"La carpeta y su contenido fue eliminado con exito de tu base de datos.",
 
+    "files.title.preview-file":"Visualizacion del archivo",
     "files.title.file-upload":"Subir Archivo",
     "files.message.file-upload":"Tu archivo fue subido con exito a la base de datos.",
     "files.message.file-delete":"¿Estás seguro de que deseas eliminar este archivo? Esta acción no se puede deshacer.",

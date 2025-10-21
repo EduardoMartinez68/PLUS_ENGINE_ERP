@@ -2,7 +2,7 @@ from django.shortcuts import render
 import json
 from django.http import Http404, JsonResponse, HttpResponse
 from ..plus_wrapper import Plus
-from ..models import Folder, FolderPermission
+from ..models import Folder, FolderPermission, File
 
 def files_home(request):
     return render(request, 'home_files.html')
@@ -91,6 +91,30 @@ def view_download_file(request, file_id):
     response['Content-Disposition'] = f'attachment; filename="{file_instance.name}"'
     return response
 
+def view_preview_file(request, file_id):
+    if request.method != 'GET':
+        raise Http404("File does not exist")
+
+    # Obtener y desencriptar
+    decrypted_content = download_file(request.user, file_id)
+    if not decrypted_content:
+        raise Http404("File does not exist")
+
+    # Obtener instancia para conocer tipo de archivo
+    try:
+        file_instance = File.objects.get(id=file_id)
+    except File.DoesNotExist:
+        raise Http404("File does not exist")
+
+    # Determinar tipo MIME según extensión
+    import mimetypes
+    mime_type, _ = mimetypes.guess_type(file_instance.name)
+    if not mime_type:
+        mime_type = "application/octet-stream"
+
+    response = HttpResponse(decrypted_content, content_type=mime_type)
+
+    return response
 
 
 
