@@ -222,6 +222,10 @@ def download_file(user, file_id):
 
     return decrypted_content, file_instance
 
+
+
+
+
 def get_user_accessible_files(user)->list:
     # Carpetas a las que tiene permiso directo
     permitted_folders = Folder.objects.filter(
@@ -254,7 +258,6 @@ def get_folder_files(user, folder=None, query=None, page=1, per_page=10) -> dict
     elif isinstance(folder, int) or (isinstance(folder, str) and folder.isdigit()):
         folder = Folder.objects.get(id=int(folder))
     else:
-        # Si no es válido, fallback a None
         folder = None
 
     # Check user permission only if folder exists
@@ -291,9 +294,12 @@ def get_folder_files(user, folder=None, query=None, page=1, per_page=10) -> dict
                     Plus.convert_from_utc(f.uploaded_at, user.timezone),
                     user.language,
                     2
-                    ),
+                ),
                 "thumbnail": f.thumbnail.url if f.thumbnail else None,
                 "file_url": f.file.url if f.file else None,
+
+                "username": f.upload_user.username if f.upload_user else None,
+                "avatar": f.upload_user.avatar.url if f.upload_user and f.upload_user.avatar else '/static/img/employees-select.webp'
             }
             for f in page_obj.object_list
         ],
@@ -419,6 +425,11 @@ def get_folder_detail(user, folder_id):
         "error": None,
     }
 
+
+
+
+
+
 def create_folder(user, parent_folder=None, data=None):
     """
     Make a new folder if the user have the permissions for this.
@@ -490,8 +501,6 @@ def create_folder(user, parent_folder=None, data=None):
         },
         "error": 'the folder was create with success',
     }
-
-
 
 def update_folder(user, folder_id, data=None):
     """
@@ -621,6 +630,7 @@ def delete_folder(user, folder_id):
 def _delete_folder_recursive(folder):
     """
     Recursively delete all subfolders and files in a folder.
+    Deletes both database records and physical files.
     Returns a dict with the count of deleted folders and files.
     """
 
@@ -628,9 +638,24 @@ def _delete_folder_recursive(folder):
     files_deleted = 0
 
     # Eliminar los archivos dentro de esta carpeta
-    files = folder.files.all()
-    files_deleted += files.count()
-    files.delete()
+    for f in folder.files.all():
+        # Eliminar archivo físico
+        if f.file and os.path.exists(f.file.path):
+            try:
+                os.remove(f.file.path)
+            except Exception:
+                pass
+
+        # Eliminar miniatura física
+        if f.thumbnail and os.path.exists(f.thumbnail.path):
+            try:
+                os.remove(f.thumbnail.path)
+            except Exception:
+                pass
+
+        # Finalmente eliminar el registro de la base de datos
+        f.delete()
+        files_deleted += 1
 
     # Eliminar las subcarpetas de manera recursiva
     for subfolder in folder.subfolders.all():

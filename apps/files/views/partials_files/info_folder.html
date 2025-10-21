@@ -365,7 +365,7 @@ h2 {
     </div>
   </div>
   <br><br>
-
+  <hr>
   <div class="row">
       <div class="col-9">
           <h5 t="files.title.files"></h5>   
@@ -867,8 +867,8 @@ customElements.define('plus-folder', PlusFolder);
           name=" { name}"
           description="{ description}"
           miniature=" { thumbnail } "
-          u-name="Dr. Juan Pérez"
-          u-avatar="{% static 'img/file_default.webp' %}"
+          u-name="{ username }"
+          u-avatar=" { avatar } "
           uploaded-at="{ uploaded_at }"
           updated-at="{ updated_at }"
           anchored=" { anchored }"

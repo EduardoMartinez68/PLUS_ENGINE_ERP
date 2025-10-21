@@ -4,4 +4,6 @@ icon: "files/icon.webp"
 path: "/files"
 dbInit: true
 permissionsFile: 'permissions.json'
+dependencies:
+  - "employees"
     
