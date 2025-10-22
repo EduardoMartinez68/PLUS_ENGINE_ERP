@@ -2,7 +2,8 @@
     "files.title.home":"Inicio",
     "files.title.subfolders":"Subcarpetas",
     "files.title.files":"Archivos de la carpeta",
-
+    "files.text.upload":"subido",
+    "files.text.updated":"actualizado",
     "files.title.upload-files":"Subir Archivos",
     "files.label.name-file":"Nombre del Archivo *",
     "files.placeholder.name-file":"Escribe el Nombre del archivo",
@@ -43,5 +44,10 @@
     "files.title.file-upload":"Subir Archivo",
     "files.message.file-upload":"Tu archivo fue subido con exito a la base de datos.",
     "files.message.file-delete":"¿Estás seguro de que deseas eliminar este archivo? Esta acción no se puede deshacer.",
-    "files.title.the-file-was-delete":"Archivo eliminado"
+    "files.title.the-file-was-delete":"Archivo eliminado",
+
+    "files.title.error-to-get-information-of-the-file":"Error al obtener la información del archivo",
+    "files.title.update-file":"Actualizar Archivo",
+    "files.text.update-file":"Actualizar",
+    "files.message.the-file-was-update":"El archivo fue actualizado con exito en tu base de datos."
 }

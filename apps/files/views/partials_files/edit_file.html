@@ -1,0 +1,61 @@
+<message-pop name="pop-update-files" title="files.title.update-file">
+
+        <div class="row">
+            <div class="col">
+                <img src="" alt="" id="miniature-edit-file">
+            </div>
+            <div class="col">
+                <form id="updatedFormFile">
+
+                    <div class="section">
+                        <plus-title label="files.label.name-file" placeholder="files.placeholder.name-file" name="name" id="name-edit-file"></plus-title>
+                    </div>
+
+                    <div class="mb-3 section">
+                        <label t="files.label.description"></label>
+                        <textarea name="description" id="description-edit-file"></textarea>
+                    </div>
+
+                    <plus-switch name="anchored" text="files.label.anchored" id="anchored-edit-file"></plus-switch>
+
+                    <br>
+                    <button type="button" class="btn btn-edit btn-success" t="btn.edit"
+                        onclick="upload_file_to_the_backend()"></button>
+                </form>
+            </div>
+        </div>
+
+</message-pop>
+
+
+
+
+<script>
+    (()=>{
+        let file_edit_id=null;
+
+
+        async function update_file(file_id){
+            file_edit_id=null; //clear the previous id 
+
+            //first we will get the information of the file that we will to edit
+            const backend=await send_message_to_the_server(`files/get_information_file/${file_id}/`, {}, true, 'GET');
+            if(backend.success){
+                //update the information of the form with the information of the file
+                const file=backend.answer;
+                document.getElementById('miniature-edit-file').src=file.url_thumbnail;
+                document.getElementById('name-edit-file').value=file.name;
+                document.getElementById('description-edit-file').value=file.description;
+                window.set_status_plus_switch('anchored-edit-file', file.anchored);
+
+                file_edit_id=file_id;
+                window.show_pop('pop-update-files');
+            }else{
+                show_alert('alert', 'files.title.error-to-get-information-of-the-file', backend.message, backend.error || 'error in the server');
+            }
+        }
+
+
+        window.update_file=update_file;
+    })();
+</script>

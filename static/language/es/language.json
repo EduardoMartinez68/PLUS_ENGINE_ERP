@@ -35,6 +35,8 @@
     "btn.see": "Ver",
     "btn.recover":"Restaurar",
     "btn.download":"Descargar",
+    "btn.open":"Abrir",
+    "btn.copy":"Copiar",
 
     
     "message.title": "Confirmación",

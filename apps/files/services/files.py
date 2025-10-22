@@ -8,6 +8,7 @@ from ..models import Folder, FolderPermission, File
 from cryptography.fernet import Fernet #this is for encrypt the file
 from django.core.files.base import ContentFile
 from django.core.paginator import Paginator
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.crypto import get_random_string
 import os
@@ -22,6 +23,8 @@ TYPE_VERSION = os.environ.get('TYPE_VERSION')
 FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY').encode()
 f = Fernet(FIELD_ENCRYPTION_KEY)
 
+
+#-----------------------permissions-----------------------
 def has_folder_permission(user, folder, action: str) -> bool:
     """
     Checks if the user has permission on a folder to perform a specific action.
@@ -112,6 +115,10 @@ def get_the_object_folder(user, folder_id):
 
     return {"success": True, "message": "", "error":"", "answer": parent_folder}
 
+
+
+
+#-----------------------upload and download files-----------------------
 def upload_file(user, parent_folder, dataFile) -> dict:
     file = dataFile.get("file")
     name = dataFile.get("name")
@@ -131,7 +138,7 @@ def upload_file(user, parent_folder, dataFile) -> dict:
 
     parent_folder = parent_folder_obj.get("answer")
 
-    # Evitar duplicados
+    #this is for avoid that exist two files with the same name in the same folder
     original_name = name
     counter = 1
     while File.objects.filter(folder=parent_folder, name=name).exists():
@@ -142,6 +149,7 @@ def upload_file(user, parent_folder, dataFile) -> dict:
             name = f"{original_name} ({counter})"
         counter += 1
 
+    #create the instance of the file
     file_instance = File(
         company=getattr(user, 'company', None),
         branch=getattr(user, 'branch', None),
@@ -152,14 +160,14 @@ def upload_file(user, parent_folder, dataFile) -> dict:
         upload_user=user
     )
 
-    # Guardar archivo temporal en memoria para generar miniatura
+    # save the file temporarily in memory
     temp_file_content = file.read()
     temp_file = ContentFile(temp_file_content)
     temp_file.name = file.name
     file_instance.file.save(file.name, temp_file, save=False)
     file_instance.save()
 
-    # Generar miniatura
+    # create the miniature (thumbnail)
     from .utils import generate_thumbnail_for_file
     thumb_url = generate_thumbnail_for_file(file_instance)
     if thumb_url:
@@ -167,23 +175,23 @@ def upload_file(user, parent_folder, dataFile) -> dict:
         file_instance.thumbnail.name = rel_path
         file_instance.save(update_fields=["thumbnail"])
 
-    # Guardar ruta del archivo temporal antes de encriptar
+    # save the path of the temporary file before encrypting
     temp_file_path = file_instance.file.path
 
-    # Encriptar archivo
+    # encrypt the file and overwrite the saved file
     container_encrypt = f.encrypt(temp_file_content)
     encrypted_file = ContentFile(container_encrypt)
     encrypted_file.name = file.name
-    file_instance.file.save(file.name, encrypted_file, save=True)  # Sobrescribe el temporal
+    file_instance.file.save(file.name, encrypted_file, save=True)  # Overwrite the temporary file
 
-    # Borrar archivo temporal original
+    # Delete original temporary file
     if os.path.exists(temp_file_path):
         try:
             os.remove(temp_file_path)
         except Exception:
             pass
 
-    # Generar ruta completa
+    # Generate full path
     def get_full_folder_path(folder):
         path = []
         while folder:
@@ -225,7 +233,7 @@ def download_file(user, file_id):
 
 
 
-
+#-----------------------get files-----------------------
 def get_user_accessible_files(user)->list:
     # Carpetas a las que tiene permiso directo
     permitted_folders = Folder.objects.filter(
@@ -312,124 +320,79 @@ def get_folder_files(user, folder=None, query=None, page=1, per_page=10) -> dict
 
     return {"success": True, "message": "", "answer": data, "error": ""}
 
-def get_folders(user, folder=None, query=None):
-    """
-    Get folders accessible by the user.
-    
-    - If 'folder' is provided, get its immediate subfolders.
-    - If 'folder' is None, get root folders (no parent).
-    - Optionally filter by 'query' in the folder name.
-    """
-    # Base queryset
-    if folder:
-        # If folder is an ID, convert to object
-        if isinstance(folder, int):
-            folder = Folder.objects.get(id=folder)
-        folders_qs = Folder.objects.filter(parent=folder)
-    else:
-        folders_qs = Folder.objects.filter(parent=None)
-    
-    # Filter by company and branch if provided
-    company=user.company
-    branch=user.branch
-    if company:
-        folders_qs = folders_qs.filter(company=company)
-    if branch:
-        folders_qs = folders_qs.filter(branch=branch)
-    
-    # Apply query filter if provided
-    if query and query.strip():
-        folders_qs = folders_qs.filter(name__icontains=query.strip())
-    
-    # Filter by user permissions
-    accessible_folders = [
-        f for f in folders_qs
-        if has_folder_permission(user, f, "read")
-    ]
-    
-    # Prepare response
-    data = [
-        {
-            "id": f.id,
-            "name": f.name,
-            "color": f.color,
-            "created_at": Plus.format_date_to_text(
-                Plus.convert_from_utc(f.created_at, user.timezone),
-                user.language,
-                2
-            ),
+def get_file_detail(user, file_id):
+    if not file_id:
+        return {
+            "success": False,
+            "message": "error.file-not-provided",
+            "error": "File ID was not provided"
         }
-        for f in accessible_folders
-    ]
-    
-    return {"success": True, "message": "", "answer": data, "error": ""}
-
-def get_folder_detail(user, folder_id):
-    """
-    return all the information of the folder (subfolder, files, permissions)
-    only if the user have the permissions for see his information.
-    """
 
     try:
-        folder = Folder.objects.get(id=folder_id)
-    except Folder.DoesNotExist:
-        return {"success": False, "message": "", "error": "The folder not found."}
+        file_obj = File.objects.select_related(
+            'folder', 'upload_user', 'company', 'branch'
+        ).get(id=file_id)
+    except ObjectDoesNotExist:
+        return {
+            "success": False,
+            "message": "error.file-not-found",
+            "error": f"File with ID {file_id} was not found"
+        }
 
-    #here we will see if the user have the permission of see the information of the folder
-    try:
-        permission = FolderPermission.objects.get(folder=folder, user=user)
-    except FolderPermission.DoesNotExist:
-        return {"success": False, "message": "", "error": "The user not have the permissions"}
+    # ✅ Verificar si el usuario es el dueño del archivo o de la carpeta
+    is_owner = file_obj.upload_user == user or file_obj.folder.creator_user == user
 
+    # ✅ Verificar si tiene permisos de lectura en la carpeta
+    has_permission = FolderPermission.objects.filter(
+        folder=file_obj.folder,
+        user=user,
+        can_read=True
+    ).exists()
 
-    # if the user not can read the information of the folder return a message
-    if not permission.can_write:
-        return {"success": False, "message": "", "error": "The user not have the permissions"}
+    if not is_owner and not has_permission:
+        return {
+            "success": False,
+            "message": "error.permission-denied",
+            "error": "User does not have permission to view this file"
+        }
 
-    #get the total of the subfolders and the files that exist in the folder
-    total_folders = folder.subfolders.count()
-    total_fieles=folder.files.count()
-
-    # Información general del folder
-    folder_data = {
-        "id": folder.id,
-        "name": folder.name,
-        "color": folder.color,
-        "company": folder.company.company_name if folder.company else None,
-        "branch": folder.branch.name_branch if folder.branch else None,
-        "created_at": folder.created_at,
-        "creator": folder.creator_user.username if folder.creator_user else None,
-        "parent": folder.parent.id if folder.parent else None,
-        "permissions": {
-            "can_read": permission.can_read,
-            "can_copy": permission.can_copy,
-            "can_write": permission.can_write,
-            "can_delete": permission.can_delete,
-            "can_upload_file": permission.can_upload_file,
-            "can_move_file": permission.can_move_file,
-            "can_update_file": permission.can_update_file,
-            "can_copy_file": permission.can_copy_file,
-            "can_delete_file": permission.can_delete_file,
-            "can_change_the_permission": permission.can_change_the_permission,
-            "can_add_members": permission.can_add_members,
-            "can_delete_members": permission.can_delete_members,
+    # ✅ Si todo va bien, devolver la información del archivo
+    file_data = {
+        "id": file_obj.id,
+        "name": file_obj.name,
+        "description": file_obj.description or "",
+        "url": file_obj.url,
+        "anchored": file_obj.anchored,
+        "size": file_obj.size,
+        "thumbnail": file_obj.thumbnail.url if file_obj.thumbnail else None,
+        "uploaded_at": file_obj.uploaded_at,
+        "upload_user": {
+            "id": file_obj.upload_user.id if file_obj.upload_user else None,
+            "name": str(file_obj.upload_user) if file_obj.upload_user else None,
         },
-        "total_fieles": total_fieles,
-        "total_folders": total_folders
+        "folder": {
+            "id": file_obj.folder.id,
+            "name": file_obj.folder.name,
+        },
+        "company": {
+            "id": file_obj.company.id if file_obj.company else None,
+            "name": str(file_obj.company) if file_obj.company else None,
+        },
+        "branch": {
+            "id": file_obj.branch.id if file_obj.branch else None,
+            "name": str(file_obj.branch) if file_obj.branch else None,
+        },
     }
 
     return {
         "success": True,
-        "message": "Information get with success",
-        "answer": folder_data,
-        "error": None,
+        "message": "success.file-found",
+        "answer": file_data
     }
 
 
 
-
-
-
+#==================================folders=========================
 def create_folder(user, parent_folder=None, data=None):
     """
     Make a new folder if the user have the permissions for this.
@@ -560,6 +523,119 @@ def update_folder(user, folder_id, data=None):
         "error": None,
     }
 
+def get_folders(user, folder=None, query=None):
+    """
+    Get folders accessible by the user.
+    
+    - If 'folder' is provided, get its immediate subfolders.
+    - If 'folder' is None, get root folders (no parent).
+    - Optionally filter by 'query' in the folder name.
+    """
+    # Base queryset
+    if folder:
+        # If folder is an ID, convert to object
+        if isinstance(folder, int):
+            folder = Folder.objects.get(id=folder)
+        folders_qs = Folder.objects.filter(parent=folder)
+    else:
+        folders_qs = Folder.objects.filter(parent=None)
+    
+    # Filter by company and branch if provided
+    company=user.company
+    branch=user.branch
+    if company:
+        folders_qs = folders_qs.filter(company=company)
+    if branch:
+        folders_qs = folders_qs.filter(branch=branch)
+    
+    # Apply query filter if provided
+    if query and query.strip():
+        folders_qs = folders_qs.filter(name__icontains=query.strip())
+    
+    # Filter by user permissions
+    accessible_folders = [
+        f for f in folders_qs
+        if has_folder_permission(user, f, "read")
+    ]
+    
+    # Prepare response
+    data = [
+        {
+            "id": f.id,
+            "name": f.name,
+            "color": f.color,
+            "created_at": Plus.format_date_to_text(
+                Plus.convert_from_utc(f.created_at, user.timezone),
+                user.language,
+                2
+            ),
+        }
+        for f in accessible_folders
+    ]
+    
+    return {"success": True, "message": "", "answer": data, "error": ""}
+
+def get_folder_detail(user, folder_id):
+    """
+    return all the information of the folder (subfolder, files, permissions)
+    only if the user have the permissions for see his information.
+    """
+
+    try:
+        folder = Folder.objects.get(id=folder_id)
+    except Folder.DoesNotExist:
+        return {"success": False, "message": "", "error": "The folder not found."}
+
+    #here we will see if the user have the permission of see the information of the folder
+    try:
+        permission = FolderPermission.objects.get(folder=folder, user=user)
+    except FolderPermission.DoesNotExist:
+        return {"success": False, "message": "", "error": "The user not have the permissions"}
+
+
+    # if the user not can read the information of the folder return a message
+    if not permission.can_write:
+        return {"success": False, "message": "", "error": "The user not have the permissions"}
+
+    #get the total of the subfolders and the files that exist in the folder
+    total_folders = folder.subfolders.count()
+    total_fieles=folder.files.count()
+
+    # Información general del folder
+    folder_data = {
+        "id": folder.id,
+        "name": folder.name,
+        "color": folder.color,
+        "company": folder.company.company_name if folder.company else None,
+        "branch": folder.branch.name_branch if folder.branch else None,
+        "created_at": folder.created_at,
+        "creator": folder.creator_user.username if folder.creator_user else None,
+        "parent": folder.parent.id if folder.parent else None,
+        "permissions": {
+            "can_read": permission.can_read,
+            "can_copy": permission.can_copy,
+            "can_write": permission.can_write,
+            "can_delete": permission.can_delete,
+            "can_upload_file": permission.can_upload_file,
+            "can_move_file": permission.can_move_file,
+            "can_update_file": permission.can_update_file,
+            "can_copy_file": permission.can_copy_file,
+            "can_delete_file": permission.can_delete_file,
+            "can_change_the_permission": permission.can_change_the_permission,
+            "can_add_members": permission.can_add_members,
+            "can_delete_members": permission.can_delete_members,
+        },
+        "total_fieles": total_fieles,
+        "total_folders": total_folders
+    }
+
+    return {
+        "success": True,
+        "message": "Information get with success",
+        "answer": folder_data,
+        "error": None,
+    }
+
 
 
 from django.db import transaction
@@ -626,7 +702,6 @@ def delete_folder(user, folder_id):
         "error": None,
     }
 
-
 def _delete_folder_recursive(folder):
     """
     Recursively delete all subfolders and files in a folder.
@@ -637,33 +712,33 @@ def _delete_folder_recursive(folder):
     folders_deleted = 0
     files_deleted = 0
 
-    # Eliminar los archivos dentro de esta carpeta
+    # delete the files that exist in this folder
     for f in folder.files.all():
-        # Eliminar archivo físico
+        # delete physical file
         if f.file and os.path.exists(f.file.path):
             try:
                 os.remove(f.file.path)
             except Exception:
                 pass
 
-        # Eliminar miniatura física
+        # delete thumbnail
         if f.thumbnail and os.path.exists(f.thumbnail.path):
             try:
                 os.remove(f.thumbnail.path)
             except Exception:
                 pass
 
-        # Finalmente eliminar el registro de la base de datos
+        # Finally delete the database record
         f.delete()
         files_deleted += 1
 
-    # Eliminar las subcarpetas de manera recursiva
+    # Delete subfolders recursively
     for subfolder in folder.subfolders.all():
         result = _delete_folder_recursive(subfolder)
         folders_deleted += result["folders"]
         files_deleted += result["files"]
 
-    # Finalmente eliminar la carpeta actual
+    # Finally delete the current folder
     folder.delete()
     folders_deleted += 1
 

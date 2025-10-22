@@ -440,11 +440,11 @@ class PlusFile extends HTMLElement {
     const thumb = document.createElement('img');
     thumb.classList.add('thumbnail');
 
-    // ⭐ estrella anclada
+    // ⭐ start symbol
     const anchoredStar = document.createElement('span');
     anchoredStar.classList.add('anchored-star');
-    anchoredStar.textContent = '★';  // estrella
-    anchoredStar.style.display = 'none'; // por defecto no visible
+    anchoredStar.textContent = '★';  // start symbol
+    anchoredStar.style.display = 'none'; // for default is hidden
 
     const info = document.createElement('div');
     info.classList.add('info');
@@ -455,7 +455,7 @@ class PlusFile extends HTMLElement {
     info.appendChild(title);
     info.appendChild(desc);
 
-    // sección del usuario
+    // section of the user
     const userSection = document.createElement('div');
     userSection.classList.add('user-section');
 
@@ -483,17 +483,21 @@ class PlusFile extends HTMLElement {
     const menu = document.createElement('div');
     menu.classList.add('menu');
     const downloadBtn = document.createElement('button');
-    downloadBtn.textContent = 'Descargar';
+    downloadBtn.textContent = window.translate_text('btn.download');
 
     const openBtn = document.createElement('button');
-    openBtn.textContent = 'Abrir';
+    openBtn.textContent = window.translate_text('btn.open');
+    const editBtn = document.createElement('button');
+    editBtn.textContent = window.translate_text('btn.edit');
     const copyBtn = document.createElement('button');
-    copyBtn.textContent = 'Copiar';
+    copyBtn.textContent = window.translate_text('btn.copy');
     const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Eliminar';
+    deleteBtn.textContent = window.translate_text('btn.delete');
+
 
     menu.appendChild(openBtn);
     menu.appendChild(downloadBtn);
+    menu.appendChild(editBtn);
     menu.appendChild(copyBtn);
     menu.appendChild(deleteBtn);
 
@@ -634,7 +638,7 @@ class PlusFile extends HTMLElement {
       menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
     });
 
-    // Menú acciones
+    // Menu actions
     openBtn.addEventListener('click', function() {
       const url = `files/view_preview_file/${file_id}/`;
       if(url) window.open(url, '_blank');
@@ -654,6 +658,12 @@ class PlusFile extends HTMLElement {
     deleteBtn.addEventListener('click', () => {
       const name = this.getAttribute('name');
       alert('Aquí iría la acción para eliminar: ' + name);
+    });
+
+    editBtn.addEventListener('click', async () => {
+      if (typeof window.update_file === 'function') {
+        await window.update_file(file_id);
+      }
     });
 
     this._thumb = thumb;
@@ -684,7 +694,7 @@ class PlusFile extends HTMLElement {
     if(name === 'uploaded-at' || name === 'updated-at') {
       const uploaded = this.getAttribute('uploaded-at');
       const updated = this.getAttribute('updated-at');
-      this._dates.textContent = `Subido: ${uploaded || '-'} | Actualizado: ${updated || '-'}`;
+      this._dates.textContent = `${window.translate_text('files.text.upload')}: ${uploaded || '-'} | ${window.translate_text('files.text.updated')}: ${updated || '-'}`;
     }
     if(name === 'anchored') {
       this._anchoredStar.style.display = newValue === 'true' ? 'inline-block' : 'none';
@@ -700,7 +710,7 @@ class PlusFolder extends HTMLElement {
 
     const shadow = this.attachShadow({ mode: 'open' });
 
-    // 🔗 Flaticon CSS
+    // 🔗 falticon styles CSS
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
     link.setAttribute('href', 'https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css');
