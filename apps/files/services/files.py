@@ -373,21 +373,14 @@ def get_file_detail(user, file_id):
         "folder": {
             "id": file_obj.folder.id,
             "name": file_obj.folder.name,
-        },
-        "company": {
-            "id": file_obj.company.id if file_obj.company else None,
-            "name": str(file_obj.company) if file_obj.company else None,
-        },
-        "branch": {
-            "id": file_obj.branch.id if file_obj.branch else None,
-            "name": str(file_obj.branch) if file_obj.branch else None,
-        },
+        }
     }
 
     return {
         "success": True,
         "message": "success.file-found",
-        "answer": file_data
+        "answer": file_data,
+        "error": '',
     }
 
 

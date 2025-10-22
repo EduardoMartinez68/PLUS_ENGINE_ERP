@@ -1,30 +1,73 @@
+<style>
+.file-links-clean {
+  display: flex;
+  gap: 14px;
+  padding: 6px 10px;
+}
+
+.file-links-clean a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #2c3e50;
+  background-color: #f7f9fb;
+  border: 1px solid #d3dae0;
+  border-radius: 6px;
+  padding: 6px 12px;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.file-links-clean a:hover {
+  background-color: #e9eef2;
+  border-color: #c3cbd4;
+}
+
+</style>
 <message-pop name="pop-update-files" title="files.title.update-file">
-
-        <div class="row">
-            <div class="col">
-                <img src="" alt="" id="miniature-edit-file">
-            </div>
-            <div class="col">
-                <form id="updatedFormFile">
-
-                    <div class="section">
-                        <plus-title label="files.label.name-file" placeholder="files.placeholder.name-file" name="name" id="name-edit-file"></plus-title>
-                    </div>
-
-                    <div class="mb-3 section">
-                        <label t="files.label.description"></label>
-                        <textarea name="description" id="description-edit-file"></textarea>
-                    </div>
-
-                    <plus-switch name="anchored" text="files.label.anchored" id="anchored-edit-file"></plus-switch>
-
-                    <br>
-                    <button type="button" class="btn btn-edit btn-success" t="btn.edit"
-                        onclick="upload_file_to_the_backend()"></button>
-                </form>
-            </div>
+    <form id="updatedFormFile">
+        <div class="file-links-clean">
+            <a id="link-edit-see-file" target="_blank" icon="fi fi-rr-eye" t="btn.see"></a>
+            <a id="link-edit-download-file" icon="fi fi-rr-download" t="btn.download"></a>
         </div>
 
+        <div class="row">
+            <div class="col-2">
+                <center>
+                    <img src="" alt="" id="miniature-edit-file" style="width: 100%; height: auto;">
+                </center>
+            </div>
+            <div class="col-9">
+                <div class="section">
+                    <plus-title label="files.label.name-file" placeholder="files.placeholder.name-file" name="name" id="name-edit-file"></plus-title>
+                </div>
+                <div class="row">
+                    <div class="col-2">
+                        <label for="" id="file-edit-size"></label>
+                    </div>
+                    <div class="col-8">
+                        <label for="" id="uploaded_at"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="mb-3 section">
+                    <label t="files.label.description"></label>
+                    <textarea name="description" id="description-edit-file"></textarea>
+                </div>
+
+                <plus-switch name="anchored" text="files.label.anchored" id="anchored-edit-file"></plus-switch>
+
+                <br>
+                <button type="button" class="btn btn-edit btn-success" t="btn.update"
+                    onclick="upload_file_to_the_backend()"></button>
+            </div>
+        </div>
+    </form>
 </message-pop>
 
 
@@ -43,10 +86,21 @@
             if(backend.success){
                 //update the information of the form with the information of the file
                 const file=backend.answer;
-                document.getElementById('miniature-edit-file').src=file.url_thumbnail;
+                document.getElementById('miniature-edit-file').src=file.thumbnail;
                 document.getElementById('name-edit-file').value=file.name;
                 document.getElementById('description-edit-file').value=file.description;
                 window.set_status_plus_switch('anchored-edit-file', file.anchored);
+
+                //information basic of the file
+                document.getElementById('file-edit-size').textContent=`${file.size} KB`;
+                document.getElementById('uploaded_at').textContent=file.uploaded_at;
+
+                //update the links for see and download
+                const linkSee = document.getElementById('link-edit-see-file');
+                const linkDownload = document.getElementById('link-edit-download-file');
+
+                if (linkSee) linkSee.href = `files/view_preview_file/${file_id}/`;
+                if (linkDownload) linkDownload.href = `files/view_download_file/${file_id}/`;
 
                 file_edit_id=file_id;
                 window.show_pop('pop-update-files');
@@ -55,7 +109,7 @@
             }
         }
 
-
+        
         window.update_file=update_file;
     })();
 </script>

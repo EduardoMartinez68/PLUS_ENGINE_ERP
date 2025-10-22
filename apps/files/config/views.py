@@ -1,6 +1,6 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
-from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder, download_file
+from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder, download_file, get_file_detail
 from ..models import Folder, FolderPermission, File
 from ..plus_wrapper import Plus
 from django.http import Http404, JsonResponse, HttpResponse
@@ -148,10 +148,12 @@ def view_download_file(request, file_id):
         if request.method != 'GET':
             raise Http404("File does not exist")
     
+        #get the file and the decrypt the file
         decrypted_content, file_instance = download_file(request.user, file_id)
         if not decrypted_content:
             raise Http404("File does not exist")
     
+        #set the response to download the file
         response = HttpResponse(decrypted_content, content_type='application/octet-stream')
         response['Content-Disposition'] = f'attachment; filename="{file_instance.name}"'
         return response
@@ -159,10 +161,12 @@ def view_download_file(request, file_id):
         if request.method != 'GET':
             raise Http404("File does not exist")
     
+        #get the file and the decrypt the file
         decrypted_content, file_instance = download_file(request.user, file_id)
         if not decrypted_content:
             raise Http404("File does not exist")
     
+        #set the response to download the file
         response = HttpResponse(decrypted_content, content_type='application/octet-stream')
         response['Content-Disposition'] = f'attachment; filename="{file_instance.name}"'
         return response
@@ -173,18 +177,18 @@ def view_preview_file(request, file_id):
         if request.method != 'GET':
             raise Http404("File does not exist")
     
-        # Obtener y desencriptar
+        # get the file and decrypt the file
         decrypted_content = download_file(request.user, file_id)
         if not decrypted_content:
             raise Http404("File does not exist")
     
-        # Obtener instancia para conocer tipo de archivo
+        # get the instance for know that type of files be 
         try:
             file_instance = File.objects.get(id=file_id)
         except File.DoesNotExist:
             raise Http404("File does not exist")
     
-        # Determinar tipo MIME según extensión
+        # determine type MIME with help of his extension
         import mimetypes
         mime_type, _ = mimetypes.guess_type(file_instance.name)
         if not mime_type:
@@ -197,18 +201,18 @@ def view_preview_file(request, file_id):
         if request.method != 'GET':
             raise Http404("File does not exist")
     
-        # Obtener y desencriptar
+        # get the file and decrypt the file
         decrypted_content = download_file(request.user, file_id)
         if not decrypted_content:
             raise Http404("File does not exist")
     
-        # Obtener instancia para conocer tipo de archivo
+        # get the instance for know that type of files be 
         try:
             file_instance = File.objects.get(id=file_id)
         except File.DoesNotExist:
             raise Http404("File does not exist")
     
-        # Determinar tipo MIME según extensión
+        # determine type MIME with help of his extension
         import mimetypes
         mime_type, _ = mimetypes.guess_type(file_instance.name)
         if not mime_type:
@@ -217,6 +221,21 @@ def view_preview_file(request, file_id):
         response = HttpResponse(decrypted_content, content_type=mime_type)
     
         return response
+
+@login_required(login_url='login')
+def get_information_file(request, file_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'GET':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        result = get_file_detail(request.user, file_id)
+        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)
+    else:
+        if request.method != 'GET':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        result = get_file_detail(request.user, file_id)
+        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)
 
 @login_required(login_url='login')
 def get_information_folder(request, folder_id):
