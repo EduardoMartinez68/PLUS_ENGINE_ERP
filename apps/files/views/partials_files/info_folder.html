@@ -662,8 +662,8 @@ class PlusFile extends HTMLElement {
     });
 
     editBtn.addEventListener('click', async () => {
-      if (typeof window.update_file === 'function') {
-        await window.update_file(file_id);
+      if (typeof window.get_info_file_by_id === 'function') {
+        await window.get_info_file_by_id(file_id);
       }
     });
 
@@ -674,6 +674,11 @@ class PlusFile extends HTMLElement {
     this._userName = userName;
     this._dates = dates;
     this._anchoredStar = anchoredStar;
+  }
+
+  connectedCallback() {
+    const anchored = this.getAttribute('anchored');
+    this._anchoredStar.style.display = window.is_true(anchored) ? 'inline-block' : 'none';
   }
 
   static get observedAttributes() {
@@ -878,6 +883,7 @@ customElements.define('plus-folder', PlusFolder);
           name=" { name}"
           description="{ description}"
           miniature=" { thumbnail } "
+          anchored=" { anchored } "
           u-name="{ username }"
           u-avatar=" { avatar } "
           uploaded-at="{ uploaded_at }"
@@ -930,30 +936,9 @@ customElements.define('plus-folder', PlusFolder);
   document.addEventListener('folder-view', async (event) => {
     const folderId = event.detail.id;
     const folderName = event.detail.name;
-    await change_folder(folderId, folderName);
+    await window.change_folder(folderId, folderName);
   });
   
-  async function change_folder(folderId, folderName){
-    //show a loading page 
-    show_loading_page_home_folder();
-
-    //update the input of the path
-    document.getElementById('path_folder_id1').value=folderId;
-    document.getElementById('path_folder_id2').value=folderId;
-
-    const oldPath=document.getElementById('path_folders').textContent;
-    document.getElementById('path_folders').textContent=`${oldPath}/${folderName}`;
-
-
-    //this functions is for update the container of the folders and files when the user is in the home
-    if (typeof update_container_folder === "function"){
-        update_container_folder();
-    }
-
-    if (typeof update_container_files === "function"){
-        update_container_files();
-    }
-  }
 
   function show_loading_page_home_folder(){
     document.getElementById('container-folders').innerHTML=`
@@ -1038,6 +1023,7 @@ customElements.define('plus-folder', PlusFolder);
 
 
 
+
 ///--------------------
 (()=>{
 const pathContainer = document.getElementById("path_folders");
@@ -1053,7 +1039,7 @@ function renderBreadcrumb() {
     crumb.dataset.id = folder.id;
 
     crumb.addEventListener("click", () => {
-      // si da clic, ir hasta esa carpeta
+      // if the user do a clic, we will to go to this folder
       goToFolderLevel(index);
     });
 
@@ -1068,6 +1054,8 @@ function renderBreadcrumb() {
     }
   });
 }
+
+
 
 function goToFolderLevel(index) {
   // corta el path desde esa posición
@@ -1088,7 +1076,7 @@ function goToFolderLevel(index) {
 async function change_folder(folderId, folderName) {
   show_loading_page_home_folder();
 
-  // Agregar nueva carpeta al path
+  // add new folder to the path
   folderPath.push({ id: folderId, name: folderName });
   renderBreadcrumb();
 
@@ -1100,10 +1088,11 @@ async function change_folder(folderId, folderName) {
   if (typeof update_container_files === "function") update_container_files();
 }
 
+
+renderBreadcrumb(); // render start
 window.change_folder=change_folder;
 window.goToFolderLevel=goToFolderLevel;
 window.renderBreadcrumb=renderBreadcrumb;
 })();
-
 
 </script>

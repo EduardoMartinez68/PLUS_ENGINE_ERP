@@ -49,5 +49,10 @@
     "files.title.error-to-get-information-of-the-file":"Error al obtener la información del archivo",
     "files.title.update-file":"Actualizar Archivo",
     "files.text.update-file":"Actualizar",
-    "files.message.the-file-was-update":"El archivo fue actualizado con exito en tu base de datos."
+    "files.message.the-file-was-update":"El archivo fue actualizado con exito en tu base de datos.",
+
+    "files.message.not-can-get-the-information-of-the-file":"No pudimos encontrar la informacion del archivo.",
+    "files.message.file-id-not-exit":"No existe el archivo",
+    "files.title.update-with-success":"Actualizado con exito",
+    "files.message.update-with-success":"El archivo fue actualizado con exito en la base de datos."
 }

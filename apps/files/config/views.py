@@ -1,6 +1,6 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
-from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder, download_file, get_file_detail
+from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder, download_file, get_file_detail, update_file
 from ..models import Folder, FolderPermission, File
 from ..plus_wrapper import Plus
 from django.http import Http404, JsonResponse, HttpResponse
@@ -85,6 +85,7 @@ def view_files_of_the_folder(request):
         
         user = request.user
         result = get_folder_files(user, folder_id, search)
+        print(result)
         files=[]
         
         if result["success"]:
@@ -104,6 +105,7 @@ def view_files_of_the_folder(request):
         
         user = request.user
         result = get_folder_files(user, folder_id, search)
+        print(result)
         files=[]
         
         if result["success"]:
@@ -236,6 +238,33 @@ def get_information_file(request, file_id):
         
         result = get_file_detail(request.user, file_id)
         return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)
+
+@login_required(login_url='login')
+def view_update_file(request, file_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+    
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
+        
+        result=update_file(request.user, file_id, data)
+        return JsonResponse({"success": result["success"], 'error':result["error"]}, status=200)
+    else:
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+    
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
+        
+        result=update_file(request.user, file_id, data)
+        return JsonResponse({"success": result["success"], 'error':result["error"]}, status=200)
 
 @login_required(login_url='login')
 def get_information_folder(request, folder_id):

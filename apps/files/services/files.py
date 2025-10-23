@@ -156,7 +156,7 @@ def upload_file(user, parent_folder, dataFile) -> dict:
         folder=parent_folder,
         name=name,
         description=dataFile.get("description", ""),
-        anchored=dataFile.get("anchored", False),
+        anchored=Plus.to_bool(dataFile.get("anchored", False)),
         upload_user=user
     )
 
@@ -255,72 +255,96 @@ def get_folder_tree_accessible(user, folder)->list:
 def get_folder_files(user, folder=None, query=None, page=1, per_page=10) -> dict:
     """
     Get the files of a folder with pagination.
-    Optionally filter files by name using 'query'.
-    
-    - If 'folder' is None or empty string, get files in the root (no folder assigned).
-    - Permission check only applies if a folder is provided.
+    If folder is None, get anchored files (True) that the user can read and belong to their company.
     """
-    # Convert folder ID to object if necessary
-    if folder == "" or folder is None:
-        folder = None
-    elif isinstance(folder, int) or (isinstance(folder, str) and folder.isdigit()):
-        folder = Folder.objects.get(id=int(folder))
-    else:
-        folder = None
+    try:
+        # Convert folder ID to object if necessary
+        if folder == "" or folder is None:
+            folder = None
+        elif isinstance(folder, int) or (isinstance(folder, str) and folder.isdigit()):
+            folder = Folder.objects.get(id=int(folder))
+        else:
+            folder = None
 
-    # Check user permission only if folder exists
-    if folder and not has_folder_permission(user, folder, "read"):
-        return {
-            "success": False,
-            "message": "error.unauthorized",
-            "answer": [], 
-            "error": "the user does not have permission to access this folder"
+        # Si se proporcionó una carpeta, verificar permisos
+        if folder and not has_folder_permission(user, folder, "read"):
+            return {
+                "success": False,
+                "message": "error.unauthorized",
+                "answer": [],
+                "error": "the user does not have permission to access this folder"
+            }
+
+        # Si no hay carpeta, obtener los archivos anclados que el usuario puede leer
+        if folder is None:
+            files_qs = File.objects.filter(
+                anchored=True,
+                company=getattr(user, "company", None)
+            )
+
+            # Filtrar por permisos (solo los que el usuario puede leer)
+            readable_files = []
+            for f in files_qs:
+                if f.folder is None or has_folder_permission(user, f.folder, "read"):
+                    readable_files.append(f.id)
+
+            files_qs = File.objects.filter(id__in=readable_files)
+
+        else:
+            # Si hay carpeta, obtener sus archivos normalmente
+            files_qs = File.objects.filter(folder=folder)
+
+        # Aplicar filtro de búsqueda (query)
+        if query and query.strip():
+            files_qs = files_qs.filter(name__icontains=query.strip())
+
+        # Ordenar por fecha descendente
+        files_qs = files_qs.order_by('-uploaded_at')
+
+        # Paginación
+        paginator = Paginator(files_qs, per_page)
+        page_obj = paginator.get_page(page)
+
+        data = {
+            "files": [
+                {
+                    "id": f.id,
+                    "name": f.name,
+                    "description": f.description,
+                    "anchored": f.anchored,
+                    "size": f.size,
+                    "uploaded_at": Plus.format_date_to_text(
+                        Plus.convert_from_utc(f.uploaded_at, user.timezone),
+                        user.language,
+                        2
+                    ),
+                    "thumbnail": f.thumbnail.url if f.thumbnail else None,
+                    "file_url": f.file.url if f.file else None,
+                    "username": f.upload_user.username if f.upload_user else None,
+                    "avatar": (
+                        f.upload_user.avatar.url
+                        if f.upload_user and f.upload_user.avatar
+                        else '/static/img/employees-select.webp'
+                    )
+                }
+                for f in page_obj.object_list
+            ],
+            "page": page_obj.number,
+            "total_pages": paginator.num_pages,
+            "total_files": paginator.count,
+            "has_next": page_obj.has_next(),
+            "has_previous": page_obj.has_previous(),
         }
 
-    # Base queryset: filter by folder (None means root)
-    files_qs = File.objects.filter(folder=folder)
+        return {"success": True, "message": "", "answer": data, "error": ""}
 
-    # Apply query filter if provided and not empty
-    if query and query.strip():
-        files_qs = files_qs.filter(name__icontains=query.strip())
+    except Folder.DoesNotExist:
+        return {"success": False, "message": "error.folder-not-found", "answer": [], "error": "Folder not found"}
+    except Exception as e:
+        return {"success": False, "message": "error.internal-error", "answer": [], "error": str(e)}
 
-    # Order by newest first
-    files_qs = files_qs.order_by('-uploaded_at')
 
-    # Pagination
-    paginator = Paginator(files_qs, per_page)
-    page_obj = paginator.get_page(page)
-
-    data = {
-        "files": [
-            {
-                "id": f.id,
-                "name": f.name,
-                "description": f.description,
-                "size": f.size,
-                "uploaded_at":  Plus.format_date_to_text(
-                    Plus.convert_from_utc(f.uploaded_at, user.timezone),
-                    user.language,
-                    2
-                ),
-                "thumbnail": f.thumbnail.url if f.thumbnail else None,
-                "file_url": f.file.url if f.file else None,
-
-                "username": f.upload_user.username if f.upload_user else None,
-                "avatar": f.upload_user.avatar.url if f.upload_user and f.upload_user.avatar else '/static/img/employees-select.webp'
-            }
-            for f in page_obj.object_list
-        ],
-        "page": page_obj.number,
-        "total_pages": paginator.num_pages,
-        "total_files": paginator.count,
-        "has_next": page_obj.has_next(),
-        "has_previous": page_obj.has_previous(),
-    }
-
-    return {"success": True, "message": "", "answer": data, "error": ""}
-
-def get_file_detail(user, file_id):
+def get_file_detail(user, file_id) -> dict:
     if not file_id:
         return {
             "success": False,
@@ -383,7 +407,62 @@ def get_file_detail(user, file_id):
         "error": '',
     }
 
+def update_file(user, file_id, dataFile) -> dict:
+    """
+    Actualiza los datos básicos de un archivo (nombre, descripción, anchored)
+    """
+    try:
+        # Buscar el archivo
+        file_instance = File.objects.filter(id=file_id).first()
+        if not file_instance:
+            return {"success": False, "message": "files.message.file-not-found", "error": "File not found"}
 
+        # Verificar que el usuario tenga permiso
+        # (Ejemplo básico: debe ser el usuario que lo subió o tener rol administrador)
+        if file_instance.upload_user != user and not user.is_staff:
+            return {"success": False, "message": "files.message.permission-denied", "error": "Permission denied"}
+
+        # Obtener nuevos valores
+        new_name = dataFile.get("name", file_instance.name)
+        new_description = dataFile.get("description", file_instance.description)
+        new_anchored = Plus.to_bool(dataFile.get("anchored", file_instance.anchored))
+
+        # Si el nombre cambió, verificar que no haya duplicados en la misma carpeta
+        if new_name != file_instance.name:
+            original_name = new_name
+            counter = 1
+            while File.objects.filter(folder=file_instance.folder, name=new_name).exclude(id=file_id).exists():
+                if '.' in original_name:
+                    base, ext = original_name.rsplit('.', 1)
+                    new_name = f"{base} ({counter}).{ext}"
+                else:
+                    new_name = f"{original_name} ({counter})"
+                counter += 1
+
+        # Actualizar campos
+        file_instance.name = new_name
+        file_instance.description = new_description
+        file_instance.anchored = new_anchored
+        file_instance.save(update_fields=["name", "description", "anchored"])
+
+        # Generar la nueva ruta completa del archivo
+        def get_full_folder_path(folder):
+            path = []
+            while folder:
+                path.insert(0, folder.name)
+                folder = folder.parent
+            return "/" + "/".join(path)
+
+        file_path = get_full_folder_path(file_instance.folder) + "/" + file_instance.name
+
+        return {
+            "success": True,
+            "message": "files.message.file-updated-successfully",
+            "error": "",
+        }
+
+    except Exception as e:
+        return {"success": False, "message": "files.message.error-updating-file", "error": str(e)} 
 
 #==================================folders=========================
 def create_folder(user, parent_folder=None, data=None):

@@ -9,7 +9,7 @@ def files_home(request):
 
 
 
-from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder, download_file, get_file_detail
+from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder, download_file, get_file_detail, update_file
 def view_upload_file(request):
     if request.method == 'POST':
         folder_father_id = request.POST.get('folder_father_id')
@@ -124,7 +124,18 @@ def get_information_file(request, file_id):
     result = get_file_detail(request.user, file_id)
     return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)
 
+def view_update_file(request, file_id):
+    if request.method != 'POST':
+        return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+    
 
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
+    
+    result=update_file(request.user, file_id, data)
+    return JsonResponse({"success": result["success"], 'error':result["error"]}, status=200)
 
 
 

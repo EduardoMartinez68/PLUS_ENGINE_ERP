@@ -64,7 +64,7 @@
 
                 <br>
                 <button type="button" class="btn btn-edit btn-success" t="btn.update"
-                    onclick="upload_file_to_the_backend()"></button>
+                    onclick="window.update_file()"></button>
             </div>
         </div>
     </form>
@@ -78,7 +78,7 @@
         let file_edit_id=null;
 
 
-        async function update_file(file_id){
+        async function get_info_file_by_id(file_id){
             file_edit_id=null; //clear the previous id 
 
             //first we will get the information of the file that we will to edit
@@ -109,7 +109,25 @@
             }
         }
 
+        async function update_file(){
+            //first we will get the information of the file that we will to edit
+            const backend=await send_form_to_the_server('updatedFormFile', `files/view_update_file/${file_edit_id}/`)
+            if(backend.success){
+                file_edit_id=null; //clear the previous id
+                window.hide_pop('pop-update-files');
+                show_alert('success', 'files.title.update-with-success', 'files.message.update-with-success');
+
+                //we will refresh the information of the folder if is open
+                if(typeof window.update_container_files==='function'){
+                    window.update_container_files();
+                }
+            }else{
+                show_alert('alert', 'files.title.error-to-get-information-of-the-file', backend.message, backend.error || 'error in the server');
+            }
+        }
         
+
+        window.get_info_file_by_id=get_info_file_by_id;
         window.update_file=update_file;
     })();
 </script>

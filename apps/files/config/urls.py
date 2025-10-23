@@ -9,6 +9,7 @@ urlpatterns = [
     path('view_download_file/<int:file_id>/', views.view_download_file, name='view_download_file'),
     path('view_preview_file/<int:file_id>/', views.view_preview_file, name='view_preview_file'),
     path('get_information_file/<int:file_id>/', views.get_information_file, name='get_information_file'),
+    path('view_update_file/<int:file_id>/', views.view_update_file, name='view_update_file'),
     path('get_information_folder/<int:folder_id>/', views.get_information_folder, name='get_information_folder'),
     path('create_new_folder/', views.create_new_folder, name='create_new_folder'),
     path('edit_folder/<int:folder_id>/', views.edit_folder, name='edit_folder'),
