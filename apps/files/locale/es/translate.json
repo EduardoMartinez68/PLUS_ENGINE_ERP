@@ -1,5 +1,7 @@
 {
     "files.title.home":"Inicio",
+    "files.title.folders":"Carpetas",
+    "files.title.files-start":"Archivos Anclados",
     "files.title.subfolders":"Subcarpetas",
     "files.title.files":"Archivos de la carpeta",
     "files.text.upload":"subido",

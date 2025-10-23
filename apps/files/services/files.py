@@ -887,8 +887,24 @@ def _delete_folder_recursive(folder):
         folders_deleted += result["folders"]
         files_deleted += result["files"]
 
-    # Finally delete the current folder
+    # Finally delete the current folder (DB)
+    folder_id = folder.id
+    company_id = folder.company.id if folder.company else "0"
+    branch_id = folder.branch.id if folder.branch else "0"
     folder.delete()
     folders_deleted += 1
+
+    # --- Delete the physical folders if empty ---
+    upload_dir = os.path.join(settings.MEDIA_ROOT, f"uploads/{company_id}/{branch_id}/{folder_id}")
+    thumbnail_dir = os.path.join(settings.MEDIA_ROOT, f"thumbnails/{company_id}/{branch_id}/{folder_id}")
+
+    for directory in [upload_dir, thumbnail_dir]:
+        if os.path.exists(directory):
+            try:
+                # Solo elimina si la carpeta está vacía
+                if not os.listdir(directory):
+                    os.rmdir(directory)
+            except Exception:
+                pass
 
     return {"folders": folders_deleted, "files": files_deleted}

@@ -333,7 +333,7 @@ h2 {
 
   <div class="row">
       <div class="col-9">
-       <h5 t="files.title.subfolders"></h5>   
+       <h5 t="files.title.folders" id="title-subfolder"></h5>   
       </div>
       <div class="col-3 p-3">
           <input type="hidden" id="path_folder_id1">
@@ -368,7 +368,7 @@ h2 {
   <hr>
   <div class="row">
       <div class="col-9">
-          <h5 t="files.title.files"></h5>   
+          <h5 t="files.title.files-start" id="title-files"></h5>   
       </div>
       <div class="col-3 p-3">
           <input type="hidden" id="path_folder_id2">
@@ -768,10 +768,10 @@ class PlusFolder extends HTMLElement {
 
     const verBtn = document.createElement('button'); verBtn.textContent = window.translate_text('btn.see');
     const editarBtn = document.createElement('button'); editarBtn.textContent = window.translate_text('btn.edit');
-    const eliminarBtn = document.createElement('button'); eliminarBtn.textContent = window.translate_text('btn.delete');
     const descargarBtn = document.createElement('button'); descargarBtn.textContent = window.translate_text('btn.download');
+    const eliminarBtn = document.createElement('button'); eliminarBtn.textContent = window.translate_text('btn.delete');
 
-    [verBtn, editarBtn, eliminarBtn, descargarBtn].forEach(btn => {
+    [verBtn, editarBtn, descargarBtn, eliminarBtn].forEach(btn => {
       btn.classList.add('pf-menu-item');
       menu.appendChild(btn);
     });
@@ -935,7 +935,10 @@ customElements.define('plus-folder', PlusFolder);
       if (typeof update_container_folder === "function"){
         update_container_folder();
       }
-    
+
+      if (typeof update_container_files === "function"){
+        update_container_files();
+      }
     }
   }
 
@@ -1038,6 +1041,16 @@ let folderPath = [{ id: "", name: window.translate_text('files.title.home') }]; 
 
 function renderBreadcrumb() {
   pathContainer.innerHTML = ""; // limpiamos
+
+  //we will to check if the folderPath is empty
+  if (folderPath.length == 1){
+    //if the user is in the home, we will to reset the inputs and titles
+    document.getElementById("title-subfolder").textContent = window.translate_text('files.title.folders');
+    document.getElementById("title-files").textContent = window.translate_text('files.title.files-start');
+  }else{
+    document.getElementById("title-subfolder").textContent = window.translate_text('files.title.subfolders');
+    document.getElementById("title-files").textContent = window.translate_text('files.title.files');
+  }
 
   folderPath.forEach((folder, index) => {
     const crumb = document.createElement("span");
