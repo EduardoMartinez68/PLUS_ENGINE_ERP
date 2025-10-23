@@ -65,7 +65,11 @@
     "files.btn.add-member-folder":"Agregar Miembro",
     "files.title.add-member-folder":"Agregar Miembro a la Carpeta",
 
+    "files.btn.see-member":"Ver Miembros",
+    "files.title.member-folder":"Miembros de la Carpeta",
     "files.label.member":"Buscar Miembro",
+    "files.placeholder.search-member-folder":"Escribe el nombre del miembro",
+
 
     "files.permission.activate-all":"Activar todos los permisos",
     "files.permission.view":"Ver contenido de la Carpeta",

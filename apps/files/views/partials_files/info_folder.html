@@ -770,10 +770,11 @@ class PlusFolder extends HTMLElement {
     const verBtn = document.createElement('button'); verBtn.textContent = window.translate_text('btn.see');
     const editarBtn = document.createElement('button'); editarBtn.textContent = window.translate_text('btn.edit');
     const descargarBtn = document.createElement('button'); descargarBtn.textContent = window.translate_text('btn.download');
+    const seeMemberBtn = document.createElement('button'); seeMemberBtn.textContent = window.translate_text('files.btn.see-member');
     const addMemberBtn = document.createElement('button'); addMemberBtn.textContent = window.translate_text('files.btn.add-member');
     const eliminarBtn = document.createElement('button'); eliminarBtn.textContent = window.translate_text('btn.delete');
 
-    [verBtn, editarBtn, descargarBtn, addMemberBtn, eliminarBtn].forEach(btn => {
+    [verBtn, editarBtn, descargarBtn, seeMemberBtn, addMemberBtn, eliminarBtn].forEach(btn => {
       btn.classList.add('pf-menu-item');
       menu.appendChild(btn);
     });
@@ -846,6 +847,7 @@ class PlusFolder extends HTMLElement {
     eliminarBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-delete',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
     descargarBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-download',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
     addMemberBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-add-member',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
+    seeMemberBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-see-member',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
   }
 
   static get observedAttributes() {
@@ -929,6 +931,12 @@ customElements.define('plus-folder', PlusFolder);
     const folderId = event.detail.id;
     //await open_pop_add_member_folder(folderId);
     window.show_pop('pop-add-member-folder');
+  });
+
+  document.addEventListener('folder-see-member', async (event) => {
+    const folderId = event.detail.id;
+    //await open_pop_see_member_folder(folderId);
+    window.show_pop('pop-member-folder');
   });
 
   async function delete_folder(id){
