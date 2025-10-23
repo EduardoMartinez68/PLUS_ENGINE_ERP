@@ -58,5 +58,26 @@
     "files.title.update-with-success":"Actualizado con exito",
     "files.message.update-with-success":"El archivo fue actualizado con exito en la base de datos.",
 
-    "files.notification.clipboard-copy":"fue copiado al portapapeles."
+    "files.notification.clipboard-copy":"fue copiado al portapapeles.",
+    "files.btn.add-member":"Agregar Miembro",
+
+
+    "files.btn.add-member-folder":"Agregar Miembro",
+    "files.title.add-member-folder":"Agregar Miembro a la Carpeta",
+
+    "files.label.member":"Buscar Miembro",
+
+    "files.permission.activate-all":"Activar todos los permisos",
+    "files.permission.view":"Ver contenido de la Carpeta",
+    "files.permission.edit":"Editar información de la Carpeta",
+    "files.permission.delete":"Eliminar Carpeta",
+    "files.permission.download":"Descargar Carpeta",
+
+    "files.permission.add-member":"Agregar Miembro a la Carpeta",
+    "files.permission.add-subfolder":"Agregar Subcarpetas",
+
+    "files.permission.upload-files":"Subir Archivos a la Carpeta",
+    "files.permission.edit-files":"Editar Archivos",
+    "files.permission.download-files":"Descargar Archivos",
+    "files.permission.delete-files":"Eliminar Archivos"
 }

@@ -901,7 +901,7 @@ def _delete_folder_recursive(folder):
     for directory in [upload_dir, thumbnail_dir]:
         if os.path.exists(directory):
             try:
-                # Solo elimina si la carpeta está vacía
+                # only delete the folder if it is empty
                 if not os.listdir(directory):
                     os.rmdir(directory)
             except Exception:
