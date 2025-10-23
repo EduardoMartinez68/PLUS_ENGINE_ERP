@@ -54,5 +54,7 @@
     "files.message.not-can-get-the-information-of-the-file":"No pudimos encontrar la informacion del archivo.",
     "files.message.file-id-not-exit":"No existe el archivo",
     "files.title.update-with-success":"Actualizado con exito",
-    "files.message.update-with-success":"El archivo fue actualizado con exito en la base de datos."
+    "files.message.update-with-success":"El archivo fue actualizado con exito en la base de datos.",
+
+    "files.notification.clipboard-copy":"fue copiado al portapapeles."
 }

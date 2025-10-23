@@ -9,7 +9,8 @@ def files_home(request):
 
 
 
-from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder, download_file, get_file_detail, update_file
+from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder, download_file, get_file_detail, update_file, download_folder
+from django.http import FileResponse
 def view_upload_file(request):
     if request.method == 'POST':
         folder_father_id = request.POST.get('folder_father_id')
@@ -78,20 +79,6 @@ def view_folders_of_the_folder(request):
     result = get_folders(user, folder_id, search)
     return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
 
-def view_download_file(request, file_id):
-    if request.method != 'GET':
-        raise Http404("File does not exist")
-
-    #get the file and the decrypt the file
-    decrypted_content, file_instance = download_file(request.user, file_id)
-    if not decrypted_content:
-        raise Http404("File does not exist")
-
-    #set the response to download the file
-    response = HttpResponse(decrypted_content, content_type='application/octet-stream')
-    response['Content-Disposition'] = f'attachment; filename="{file_instance.name}"'
-    return response
-
 def view_preview_file(request, file_id):
     if request.method != 'GET':
         raise Http404("File does not exist")
@@ -123,6 +110,56 @@ def get_information_file(request, file_id):
     
     result = get_file_detail(request.user, file_id)
     return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)
+
+def view_download_file(request, file_id):
+    if request.method != 'GET':
+        raise Http404("Method not permitted")
+
+    #get the file and the decrypt the file
+    decrypted_content, file_instance = download_file(request.user, file_id)
+    if not decrypted_content:
+        raise Http404("File does not exist")
+
+    #set the response to download the file
+    response = HttpResponse(decrypted_content, content_type='application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename="{file_instance.name}"'
+    return response
+
+def download_folder_as_zip(request, folder_id):
+    import os 
+    if request.method != 'GET':
+        raise Http404("Method not permitted")
+
+    result = download_folder(request.user, folder_id)
+    if not result:
+        raise Http404("Folder not found or permission denied")
+
+    temp_zip, folder_name = result
+    temp_zip.seek(0)
+
+    # Abrimos el archivo temporal para el streaming
+    zip_file = open(temp_zip.name, "rb")
+
+    # Creamos la respuesta de descarga
+    response = FileResponse(zip_file, as_attachment=True)
+    response["Content-Disposition"] = f'attachment; filename="{folder_name}.zip"'
+
+    # 🔹 Limpieza automática al terminar de enviar el archivo
+    def cleanup_file(file_path):
+        try:
+            zip_file.close()
+            os.remove(file_path)
+        except Exception:
+            pass
+
+    # Django llama a 'close' cuando termina la transmisión
+    response.close = lambda *args, **kwargs: (
+        cleanup_file(temp_zip.name),
+        super(FileResponse, response).close(*args, **kwargs)
+    )
+
+    return response
+
 
 def view_update_file(request, file_id):
     if request.method != 'POST':

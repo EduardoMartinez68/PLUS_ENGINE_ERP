@@ -3,6 +3,7 @@ this both functions are for calculate the space that the user have in the server
 files to his count. If the user is use the software in desktop, the can upload all the files that need unlimited.
 '''
 from django.db.models import Sum
+from django.http import FileResponse
 from django.utils import timezone
 from ..models import Folder, FolderPermission, File
 from cryptography.fernet import Fernet #this is for encrypt the file
@@ -724,8 +725,68 @@ def get_folder_detail(user, folder_id):
         "error": None,
     }
 
+#--------------------donwload the folder as zip--------------------
+import os
+import tempfile
+import zipfile
+def download_folder(user, folder_id):
+    import tempfile, zipfile, os
 
+    try:
+        folder = Folder.objects.get(id=folder_id)
+    except Folder.DoesNotExist:
+        return False
 
+    if not has_folder_permission(user, folder, "read"):
+        return False
+
+    temp_zip = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
+    temp_files_to_delete = []  # 👈 aquí guardaremos los archivos temporales
+
+    try:
+        with zipfile.ZipFile(temp_zip, "w", zipfile.ZIP_DEFLATED) as zipf:
+            def add_folder_to_zip(current_folder, current_path=""):
+                files = File.objects.filter(folder=current_folder)
+                for file_instance in files:
+                    file_path = file_instance.file.path
+                    if not os.path.exists(file_path):
+                        continue
+
+                    with open(file_path, "rb") as f_encrypted:
+                        encrypted_content = f_encrypted.read()
+                    decrypted_content = f.decrypt(encrypted_content)
+
+                    zip_path = os.path.join(current_path, file_instance.name)
+
+                    # Guardamos temporalmente el archivo desencriptado
+                    temp_file = tempfile.NamedTemporaryFile(delete=False)
+                    temp_file.write(decrypted_content)
+                    temp_file.flush()
+                    temp_file.close()
+
+                    # Añadir al ZIP
+                    zipf.write(temp_file.name, arcname=zip_path)
+                    temp_files_to_delete.append(temp_file.name)
+
+                for subfolder in current_folder.subfolders.all():
+                    sub_path = os.path.join(current_path, subfolder.name)
+                    add_folder_to_zip(subfolder, sub_path)
+
+            add_folder_to_zip(folder)
+
+        # ✅ Ahora que el ZIP está cerrado, ya podemos borrar los archivos temporales
+        for fpath in temp_files_to_delete:
+            try:
+                os.remove(fpath)
+            except Exception:
+                pass
+
+        return temp_zip, folder.name
+
+    finally:
+        pass
+
+#--------------------delete the folder and all his content--------------------
 from django.db import transaction
 def delete_folder(user, folder_id):
     """

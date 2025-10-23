@@ -652,8 +652,9 @@ class PlusFile extends HTMLElement {
 
     copyBtn.addEventListener('click', () => {
       const name = this.getAttribute('name');
-      if(name) navigator.clipboard.writeText(name);
-      alert('Nombre copiado al portapapeles');
+      //if(name) navigator.clipboard.writeText(name);
+      const copy=window.translate_text('files.notification.clipboard-copy');
+      show_notification('success', `${name} ${copy}`);
     });
 
     deleteBtn.addEventListener('click', () => {
@@ -913,6 +914,12 @@ customElements.define('plus-folder', PlusFolder);
   document.addEventListener('folder-delete', async (event) => {
     const folderId = event.detail.id;
     await delete_folder(folderId);
+  });
+
+  document.addEventListener('folder-download', async (event) => {
+    const folderId = event.detail.id;
+    const url = `files/download_folder_as_zip/${folderId}/`;
+    if(url) window.open(url, '_blank');
   });
 
   async function delete_folder(id){
