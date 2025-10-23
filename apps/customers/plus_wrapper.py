@@ -67,7 +67,7 @@ class Plus:
     
 
     def to_bool(value):
-        return str(value).lower() in ("true", "on", "1")
+        return str(value).lower() in ("True","true", "on", "1")
     
 
     @staticmethod

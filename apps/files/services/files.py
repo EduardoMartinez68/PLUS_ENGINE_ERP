@@ -87,6 +87,17 @@ def get_limit_of_the_user()->int:
     #pack 2==5 GiB
     return 1
 
+def format_size(size_bytes):
+    #this functions is for format the size of the files in B, KB, MB, GB, TB
+    if size_bytes == 0:
+        return "0 B"
+    units = ["B", "KB", "MB", "GB", "TB"]
+    i = 0
+    while size_bytes >= 1024 and i < len(units) - 1:
+        size_bytes /= 1024.0
+        i += 1
+    return f"{size_bytes:.2f} {units[i]}"
+
 def get_the_object_folder(user, folder_id):
     #if the proggramer send information of the parent, we will to get the object folder
     parent_folder=None
@@ -387,9 +398,14 @@ def get_file_detail(user, file_id) -> dict:
         "description": file_obj.description or "",
         "url": file_obj.url,
         "anchored": file_obj.anchored,
-        "size": file_obj.size,
+        "size": format_size(file_obj.size),
         "thumbnail": file_obj.thumbnail.url if file_obj.thumbnail else None,
-        "uploaded_at": file_obj.uploaded_at,
+        #"uploaded_at": Plus.format_date_to_text(Plus.convert_to_utc(file_obj.uploaded_at, user.timezone), user.language, 2),
+        "uploaded_at": Plus.format_date_to_text(
+            Plus.convert_from_utc(file_obj.uploaded_at, user.timezone),
+            user.language,
+            1
+        ),
         "upload_user": {
             "id": file_obj.upload_user.id if file_obj.upload_user else None,
             "name": str(file_obj.upload_user) if file_obj.upload_user else None,
@@ -425,7 +441,7 @@ def update_file(user, file_id, dataFile) -> dict:
         # Obtener nuevos valores
         new_name = dataFile.get("name", file_instance.name)
         new_description = dataFile.get("description", file_instance.description)
-        new_anchored = Plus.to_bool(dataFile.get("anchored", file_instance.anchored))
+        new_anchored = Plus.to_bool(dataFile.get("anchored", False))
 
         # Si el nombre cambió, verificar que no haya duplicados en la misma carpeta
         if new_name != file_instance.name:

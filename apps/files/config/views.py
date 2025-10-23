@@ -85,7 +85,6 @@ def view_files_of_the_folder(request):
         
         user = request.user
         result = get_folder_files(user, folder_id, search)
-        print(result)
         files=[]
         
         if result["success"]:
@@ -105,7 +104,6 @@ def view_files_of_the_folder(request):
         
         user = request.user
         result = get_folder_files(user, folder_id, search)
-        print(result)
         files=[]
         
         if result["success"]:
