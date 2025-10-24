@@ -34,7 +34,7 @@
     "files.message.the-folder-was-update":"La carpeta fue actualizada con exito.",
 
     "files.message.not-can-get-the-information-of-the-folder":"No pudimos encontrar la informacion de la carpeta.",
-    "files.message.folder-id-not-exit":"No existe el folder",
+    "files.message.folder-id-not-exit":"No existe la carpeta",
 
 
     "files.title.delete-folder":"Eliminar Carpeta",
@@ -68,7 +68,7 @@
     "files.btn.see-member":"Ver Miembros",
     "files.title.member-folder":"Miembros de la Carpeta",
     "files.label.member":"Buscar Miembro",
-    "files.placeholder.search-member-folder":"Escribe el usuario o el email del miembro",
+    "files.placeholder.search-member-folder":"Escribe el nombre del usuario o el email del miembro",
 
 
     "files.permission.activate-all":"Activar todos los permisos",
@@ -78,6 +78,8 @@
     "files.permission.download":"Descargar Carpeta",
 
     "files.permission.add-member":"Agregar Miembro a la Carpeta",
+    "files.permission.edit-member":"Editar Permisos de miembros",
+    "files.permission.delete-member":"Eliminar miembros",
     "files.permission.add-subfolder":"Agregar Subcarpetas",
 
     "files.permission.upload-files":"Subir Archivos a la Carpeta",
@@ -96,5 +98,12 @@
     "files.title.member-folder-deleted":"Miembro eliminado",
     "files.message.no-permission-view-members":"No tienes permiso para ver los miembros de esta carpeta.",
     "files.message.folder-not-found":"Carpeta no encontrada.",
-    "files.message.folder-id-invalid":"ID de carpeta inválido."
+    "files.message.folder-id-invalid":"ID de carpeta inválido.",
+    "files.error.error-to-delete-member":"Error al intentar eliminar un miembro",
+    "files.error.cannot-delete-creator-folder":"No puedes eliminar al creador de la carpeta.",
+    "files.error.not-exist-member":"No existe el miembro en la carpeta.",
+    "files.message.no-permission-manage-members":"No tienes permiso para gestionar los miembros de esta carpeta.",
+    "files.title.member-folder-added":"Nuevo miembro agregado",
+    "files.message.member-folder-added":"El usuario fue agregado con exito a la carpeta. Ahora ya podra ver los archivos que existen en ella.",
+    "files.error.need-add-the-member":"Necesitas seleccionar al nuevo miembro."
 }

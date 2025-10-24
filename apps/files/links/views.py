@@ -225,7 +225,7 @@ def delete_folder_and_his_files(request):
 
 
 #---------------------------------------get member of the folder--------------------------
-from ..services.members import get_members_of_folder
+from ..services.members import get_members_of_folder, delete_member_of_folder, add_member_to_folder
 def members_of_folder(request):
     if request.method != 'GET':
         return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
@@ -237,3 +237,33 @@ def members_of_folder(request):
     folder_id=values[1] #id folder
     result = get_members_of_folder(request.user, folder_id, search)
     return JsonResponse({"success": result.get("success", False), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
+
+
+def view_delete_member_folder(request, folder_id):
+    if request.method != 'POST':
+        return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
+    
+    member_id=data.get("id")
+
+    result=delete_member_of_folder(request.user, folder_id, member_id)
+    return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)
+
+def view_add_member_folder(request):
+    if request.method != 'POST':
+        return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
+
+    member_id=data.get("member_id")
+    folder_id=data.get("folder_id")
+
+    result=add_member_to_folder(request.user, folder_id, member_id, data)
+    return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)

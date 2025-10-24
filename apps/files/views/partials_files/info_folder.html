@@ -846,8 +846,8 @@ class PlusFolder extends HTMLElement {
 
     eliminarBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-delete',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
     descargarBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-download',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
-    addMemberBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-add-member',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
-    seeMemberBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-see-member',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
+    addMemberBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-add-member',{detail:{id:this.getAttribute('folder-id'), creator_id:this.getAttribute('creator-id')},bubbles:true})));
+    seeMemberBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-see-member',{detail:{id:this.getAttribute('folder-id'), creator_id:this.getAttribute('creator-id')},bubbles:true})));
   }
 
   static get observedAttributes() {
@@ -906,7 +906,9 @@ customElements.define('plus-folder', PlusFolder);
         folder-id="{ id }"
         name="{ name }"
         created-at="{ created_at }"
-        color="{ color }">
+        color="{ color }"
+        creator-id="{ creator_id }"
+        >
       </plus-folder>
     `
   }
@@ -929,21 +931,25 @@ customElements.define('plus-folder', PlusFolder);
 
 
 
-  function update_input_of_folder_member(folderId){
+  function update_input_of_folder_member(folderId, creatorId){
     //here we will get the id of the folder and if exist the input we will to update his value
     const input_folder_id = document.getElementById('folder-id-member-folder');
     if(input_folder_id) input_folder_id.value = folderId;
+
+    const creator_input_id = document.getElementById('folder-id-creator-folder');
+    if(creator_input_id) creator_input_id.value = creatorId;
   } 
   
   document.addEventListener('folder-add-member', async (event) => {
-    const folderId = event.detail.id;
-    update_input_of_folder_member(folderId);
-    window.show_pop('pop-add-member-folder'); //show the pop of add members to the folder
+    const folderId = event.detail.id; 
+    const creatorId = event.detail.creator_id;
+    open_pop_add_new_member_folder(folderId, creatorId);
   });
 
   document.addEventListener('folder-see-member', async (event) => {
     const folderId = event.detail.id;
-    update_input_of_folder_member(folderId);
+    const creatorId = event.detail.creator_id;
+    update_input_of_folder_member(folderId, creatorId);
     window.show_pop('pop-member-folder'); //show the pop of the members
   });
 

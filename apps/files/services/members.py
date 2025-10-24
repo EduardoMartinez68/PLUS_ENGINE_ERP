@@ -1,11 +1,13 @@
 from ..models import Folder, FolderPermission, File
 from ..plus_wrapper import Plus
 from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
+from core.models import CustomUser 
 
 def get_members_of_folder(user, folder_id, search=None):
     """
-    Obtiene todos los miembros con permisos en una carpeta específica.
-    Si se proporciona 'search', filtra los resultados por nombre o username.
+    get all the member of a folder with his permissions.
+    If 'search' is provided, filter the results by name, email or username.
     """
     if not folder_id or str(folder_id).strip() == "":
         return {
@@ -14,7 +16,7 @@ def get_members_of_folder(user, folder_id, search=None):
             "error": "Folder ID is empty or invalid"
         }
 
-    # 1️⃣ Verificar que la carpeta exista
+    # 1️⃣ we will see that the folder exist 
     try:
         folder = Folder.objects.get(id=folder_id)
     except Folder.DoesNotExist:
@@ -24,7 +26,7 @@ def get_members_of_folder(user, folder_id, search=None):
             "error": f"The folder with id {folder_id} does not exist"
         }
 
-    # 2️⃣ Verificar permisos del usuario actual
+    # 2️⃣ we will see if the user have permission to view members of the folder
     if not Plus.this_user_have_this_permission(user, folder, 'view_members'):
         return {
             "success": False,
@@ -32,10 +34,10 @@ def get_members_of_folder(user, folder_id, search=None):
             "error": "User does not have permission to view members of this folder"
         }
 
-    # 3️⃣ Obtener permisos de usuarios con acceso a la carpeta
+    # 3️⃣ we will see the permissions of users with access to the folder
     permissions = FolderPermission.objects.filter(folder=folder).select_related('user')
 
-    # 4️⃣ Filtrar por búsqueda (si se proporciona)
+    # 4️⃣ Filter by search (if provided)
     if search:
         search = search.strip().lower()
         permissions = permissions.filter(
@@ -44,27 +46,21 @@ def get_members_of_folder(user, folder_id, search=None):
             Q(user__email__icontains=search)
         )
 
-    # 5️⃣ Armar lista de miembros
+    # 5️⃣ Build members list
     members_list = []
     for perm in permissions:
         member = perm.user
         if not member:
-            continue  # seguridad extra
+            continue  # Skip if user does not exist
+        
 
+        #construct the member dict with permissions
         members_list.append({
             "id": member.id,
             "username": member.username,
             "member_name": member.name,
             "email": member.email,
             "avatar": member.avatar.url if member.avatar else None,
-            "permissions": {
-                "can_read": perm.can_read,
-                "can_write": perm.can_write,
-                "can_delete": perm.can_delete,
-                "can_upload_file": perm.can_upload_file,
-                "can_update_file": perm.can_update_file,
-                "can_delete_file": perm.can_delete_file,
-            }
         })
 
     return {
@@ -72,4 +68,135 @@ def get_members_of_folder(user, folder_id, search=None):
         "answer": members_list,
         "message": "files.message.members-retrieved",
         "error": None
+    }
+
+
+def delete_member_of_folder(user, folder_id, member_id):
+    """
+    Delete a member from a folder.
+    """
+    if not folder_id or str(folder_id).strip() == "":
+        return {
+            "success": False,
+            "message": "files.error.not-exist-member",
+            "error": "Folder ID is empty or invalid"
+        }
+
+    # 1️⃣ we will see that the folder exist 
+    try:
+        folder = Folder.objects.get(id=folder_id)
+    except Folder.DoesNotExist:
+        return {
+            "success": False,
+            "message": "files.message.folder-id-not-exit",
+            "error": f"The folder with id {folder_id} does not exist"
+        }
+
+    # 2️⃣ we will see if the user have permission to delete members of the folder
+    if not Plus.this_user_have_this_permission(user, folder, 'manage_members'):
+        return {
+            "success": False,
+            "message": "files.message.no-permission-manage-members",
+            "error": "User does not have permission to manage members of this folder"
+        }
+
+    # 3️⃣ we will try to delete the member
+    try:
+        permission = FolderPermission.objects.get(folder=folder, user__id=member_id)
+        permission.delete()
+        return {
+            "success": True,
+            "answer": "",
+            "message": "files.title.member-folder-deleted",
+            "error": f"Member with id {member_id} deleted from folder {folder_id}"
+        }
+    except FolderPermission.DoesNotExist:
+        return {
+            "success": False,
+            "message": "files.message.member-not-found",
+            "error": f"Member with id {member_id} does not exist in folder {folder_id}"
+        }
+    
+
+
+def add_member_to_folder(user, folder_id, member_id, data):
+    try:
+        folder = Folder.objects.get(id=folder_id)
+    except ObjectDoesNotExist:
+        return {
+            "success": False,
+            "answer": "",
+            "message": "files.error.folder-not-found",
+            "error": f"Folder with id {folder_id} not found."
+        }
+
+    # ✅ if the user not is the creator of the folder we will see if the user have the permissions that need
+    if folder.creator_user != user:
+        permission = FolderPermission.objects.filter(folder=folder, user=user).first()
+        if not permission or not permission.can_add_members:
+            return {
+                "success": False,
+                "answer": "",
+                "message": "files.error.permission-denied",
+                "error": f"User {user.id} has no permission to add members to folder {folder_id}."
+            }
+
+    # ✅ we will see if the new member exist
+    try:
+        member = CustomUser.objects.get(id=member_id)
+    except ObjectDoesNotExist:
+        return {
+            "success": False,
+            "answer": "",
+            "message": "files.error.member-not-found",
+            "error": f"Member with id {member_id} not found."
+        }
+
+    # ✅ check that the new member is in the same company
+    if member.company_id != folder.company_id:
+        return {
+            "success": False,
+            "answer": "",
+            "message": "files.error.member-not-in-company",
+            "error": f"Member {member_id} does not belong to company {folder.company_id}."
+        }
+
+    # ✅ we will see if already exists this user in the folder
+    if FolderPermission.objects.filter(folder=folder, user=member).exists():
+        return {
+            "success": False,
+            "answer": "",
+            "message": "files.error.member-already-added",
+            "error": f"Member {member_id} is already in folder {folder_id}."
+        }
+
+    # ✅ add a new member with the permissions that the user send from the frontend
+    FolderPermission.objects.create(
+        folder=folder,
+        user=member,
+
+        can_edit_folder=Plus.to_bool(data.get("can_edit_folder", False)),
+        can_delete_folder=Plus.to_bool(data.get("can_delete_folder", False)),
+        can_download_folder=Plus.to_bool(data.get("can_download_folder", False)),
+        can_add_subfolder=Plus.to_bool(data.get("can_add_subfolder", False)),
+
+        can_see_the_files=Plus.to_bool(data.get("can_see_the_files", True)),
+        can_upload_file=Plus.to_bool(data.get("can_upload_file", False)),
+        can_move_file=Plus.to_bool(data.get("can_move_file", False)),
+        can_update_file=Plus.to_bool(data.get("can_update_file", False)),
+        can_copy_file=Plus.to_bool(data.get("can_copy_file", False)),
+        can_delete_file=Plus.to_bool(data.get("can_delete_file", False)),
+        can_see_file=Plus.to_bool(data.get("can_see_file", True)),
+        can_download_file=Plus.to_bool(data.get("can_download_file", False)),
+
+        can_change_the_permission=Plus.to_bool(data.get("can_change_the_permission", False)),
+        can_add_members=Plus.to_bool(data.get("can_add_members", False)),
+        can_delete_members=Plus.to_bool(data.get("can_delete_members", False)),
+    )
+
+    return {
+        "success": True,
+        "answer": "",
+        "message": "files.title.member-folder-added",
+        "error": f"Member with id {member_id} added to folder {folder_id}"
     }

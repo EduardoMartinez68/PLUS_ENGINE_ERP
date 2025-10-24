@@ -6,4 +6,5 @@ dbInit: true
 permissionsFile: 'permissions.json'
 dependencies:
   - "employees"
+  - "departament_employee"
     

@@ -4,8 +4,9 @@
     height: 40px;
 }
 </style>
+
+
 <message-pop name="pop-member-folder" title="files.title.member-folder">
-    <input type="hidden" id="folder-id-member-folder">
     <plus-search input_id="search-member-folder" label="files.label.member" placeholder="files.placeholder.search-member-folder">
         <search-option>
             <button class="btn btn-add" onclick="window.show_pop('pop-add-member-folder')">+</button>
@@ -29,32 +30,40 @@
 </message-pop>
 
 <message-pop name="pop-add-member-folder" title="files.title.add-member-folder">
-    <div class="row">
-        <div class="col">
-            <plus-select label="files.label.member">
-            </plus-select>
+    <form id="form-member-folder">
+        <input type="hidden" id="folder-id-member-folder" name="folder_id">
+        <input type="hidden" id="folder-id-creator-folder">
+        <div class="row">
+            <div class="col">
+                <plus-select name="member_id" id="member_id" label="files.label.member" 
+                link="/departament_employee/search_employee/" method="GET"
+                ></plus-select>
+            </div>
         </div>
-    </div>
-    <plus-switch text="files.permission.activate-all"></plus-switch>
-    <div class="row">
-        <div class="col">
-            <plus-switch text="files.permission.view"></plus-switch>
-            <plus-switch text="files.permission.edit"></plus-switch>
-            <plus-switch text="files.permission.delete"></plus-switch>
-            <plus-switch text="files.permission.download"></plus-switch>
+        <plus-switch text="files.permission.activate-all" onclick="activate_all_permittions_of_the_folder"></plus-switch>
+        <div class="row">
+            <div class="col">
+                <plus-switch text="files.permission.view" name="can_see_the_files"></plus-switch>
+                <plus-switch text="files.permission.edit" name="can_edit_folder"></plus-switch>
+                <plus-switch text="files.permission.delete" name="can_delete_folder"></plus-switch>
+                <plus-switch text="files.permission.download" name="can_download_folder"></plus-switch>
 
-            <plus-switch text="files.permission.add-member"></plus-switch>
-        </div>
-        <div class="col">
-            <plus-switch text="files.permission.upload-files"></plus-switch>
-            <plus-switch text="files.permission.edit-files"></plus-switch>
-            <plus-switch text="files.permission.download-files"></plus-switch>
-            <plus-switch text="files.permission.delete-files"></plus-switch>
+                <plus-switch text="files.permission.add-member" name="can_add_members"></plus-switch>
+                <plus-switch text="files.permission.edit-member" name="can_change_the_permission"></plus-switch>
+                
+            </div>
+            <div class="col">
+                <plus-switch text="files.permission.upload-files" name="can_upload_file"></plus-switch>
+                <plus-switch text="files.permission.edit-files" name="can_update_file"></plus-switch>
+                <plus-switch text="files.permission.download-files" name="can_download_file"></plus-switch>
+                <plus-switch text="files.permission.delete-files" name="can_delete_file"></plus-switch>
 
-            <plus-switch text="files.permission.add-subfolder"></plus-switch>
+                <plus-switch text="files.permission.add-subfolder" name="can_add_subfolder"></plus-switch>
+                <plus-switch text="files.permission.delete-member" name="can_delete_members"></plus-switch>
+            </div>
         </div>
-    </div>
-    <button class="btn btn-edit" t="files.btn.add-member-folder"></button>
+        <button class="btn btn-edit btn-success" t="files.btn.add-member-folder" onclick="add_new_member_to_the_folder()" type="button"></button>
+    </form>
 </message-pop>
 
 
@@ -73,15 +82,93 @@
                 { member_name }
             </td>
             <td>
-                <button class="btn btn-transparent" onclick='delete_member_folder( {member_id} )'><i class="fi fi-sr-user-pen"></i></button>
+                <button class="btn btn-transparent" onclick='delete_member_folder( { id } )'><i class="fi fi-sr-user-pen"></i></button>
             </td>
             <td>
-                <button class="btn btn-transparent" onclick='delete_member_folder( {member_id} )'><i class="fi fi-sr-trash"></i></button>
+                <button class="btn btn-transparent" onclick='delete_member_folder( { id } )'><i class="fi fi-sr-trash"></i></button>
             </td>
         `;
     }
 
+
+    function activate_all_permittions_of_the_folder(value) {
+        const pop=document.getElementById('pop-add-member-folder');
+        const switches=pop.querySelectorAll('plus-switch');
+        switches.forEach((sw)=>{
+            sw.setChecked(value);
+        });
+    }
+
+    function open_pop_add_new_member_folder(folder_id, creator_id){
+        //we will update the inputs hidden with the folder id and the creator id
+        document.getElementById('folder-id-member-folder').value=folder_id;
+        document.getElementById('folder-id-creator-folder').value=creator_id;
+
+        //now we will open the pop
+        activate_all_permittions_of_the_folder(false); //we will deactivate all the permissions by default
+        window.show_pop('pop-add-member-folder');
+    }
+
+    function open_pop_edit_member_folder(folder_id, creator_id){
+        //we will update the inputs hidden with the folder id and the creator id
+        document.getElementById('folder-id-member-folder').value=folder_id;
+        document.getElementById('folder-id-creator-folder').value=creator_id;
+
+        //now we will open the pop
+        activate_all_permittions_of_the_folder(false); //we will deactivate all the permissions by default
+        window.show_pop('pop-add-member-folder');
+    }   
+
+    async function add_new_member_to_the_folder(){
+        const new_member_id=window.get_value_plus_select('member_id');
+        const creator_id=document.getElementById('folder-id-creator-folder').value;
+
+        //first we will to check if exist the id for the new member
+        if(new_member_id==''){
+            window.show_alert('alert', 'files.error.error-to-add-member', 'files.error.need-add-the-member', 'Need add the new member');
+            return;    
+        }
+
+
+        //second we will see if the id of the new member not is equal to the id of the creator
+        if(new_member_id==creator_id){
+            window.show_alert('alert', 'files.error.error-to-add-member', 'files.error.cannot-add-creator-folder', 'the user not can add to the creator of the folder');
+            return;
+        }
+
+        //now we will to send the form to the server and get the response
+        const backend=await send_form_to_the_server('form-member-folder', '/files/view_add_member_folder/');
+        if(backend.success){
+            //if the response is successful, we will refresh the container and close the pop 
+            window.refresh_container_from_the_server(
+                ['search-member-folder', 'folder-id-member-folder'],
+                'container-table-member-folder',
+                get_div_container_member_folder(),
+                '/files/members_of_folder/',
+                'GET'
+            );
+
+            window.hide_pop('pop-add-member-folder');
+            window.show_alert('success', 'files.title.member-folder-added', 'files.message.member-folder-added');
+            return;
+        }
+
+        //if not can add the new member we will show a alert
+        window.show_alert('alert', 'files.error.error-to-add-member', backend.message || '', backend.error || '');
+    }
+
     async function delete_member_folder(member_id) {
+        //first we will see if the id of the member not is null also that not is the id of the user
+        if(member_id==null || member_id==''){
+            window.show_alert('alert', 'files.error.error-to-delete-member', 'files.error.not-exist-member', 'the user not exist in this folder. The id is null or empty')
+            return;
+        }
+
+        if(document.getElementById('folder-id-creator-folder').value==member_id){
+            window.show_alert('alert', 'files.error.error-to-delete-member', 'files.error.cannot-delete-creator-folder', 'the user not can delete to the creator of the folder')
+            return;
+        }
+
         //now we will to do a question to the user if would like to delete the member
         const folder_id=document.getElementById('folder-id-member-folder').value;
         if(await plus_delete_with_help_button(
@@ -97,9 +184,11 @@
                 ['search-member-folder', 'folder-id-member-folder'],
                 'container-table-member-folder',
                 get_div_container_member_folder(),
-                '/files/members/folder/seeker',
+                '/files/members_of_folder/',
                 'GET'
             );
+
+            window.show_alert('success', 'files.title.member-delete-of-the-folder', 'files.message.member-delete-of-the-folder')
         }
     }
 

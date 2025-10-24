@@ -658,6 +658,8 @@ def get_folders(user, folder=None, query=None):
                 user.language,
                 2
             ),
+            "creator_id": f.creator_user.id if f.creator_user else None,
+            "creator_username": f.creator_user.username if f.creator_user else None,
         }
         for f in accessible_folders
     ]

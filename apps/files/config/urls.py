@@ -16,4 +16,6 @@ urlpatterns = [
     path('edit_folder/<int:folder_id>/', views.edit_folder, name='edit_folder'),
     path('delete_folder_and_his_files/', views.delete_folder_and_his_files, name='delete_folder_and_his_files'),
     path('members_of_folder/', views.members_of_folder, name='members_of_folder'),
+    path('view_delete_member_folder/<int:folder_id>/', views.view_delete_member_folder, name='view_delete_member_folder'),
+    path('view_add_member_folder/', views.view_add_member_folder, name='view_add_member_folder'),
 ]

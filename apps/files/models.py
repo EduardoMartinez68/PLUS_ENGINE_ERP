@@ -41,28 +41,38 @@ class Folder(models.Model):
         return self.name
 
 class FolderPermission(models.Model):
-    #this is for that only the user that be save here can watch the information of the folders
+    # this is for that only the user that be save here can watch the information of the folders
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name='permissions')
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
-    
-    #character of the folder
-    can_read = models.BooleanField(default=True)
-    can_copy = models.BooleanField(default=True)
-    can_write = models.BooleanField(default=False)
-    can_delete = models.BooleanField(default=False)
 
+    # 🔹 Permisos sobre la carpeta
+    can_edit_folder = models.BooleanField(default=False)
+    can_delete_folder = models.BooleanField(default=False)
+    can_download_folder = models.BooleanField(default=False)
+    can_add_subfolder = models.BooleanField(default=False)
+
+    # 🔹 Permisos sobre archivos
+    can_see_the_files = models.BooleanField(default=True)
     can_upload_file = models.BooleanField(default=False)
     can_move_file = models.BooleanField(default=False)
     can_update_file = models.BooleanField(default=False)
     can_copy_file = models.BooleanField(default=False)
     can_delete_file = models.BooleanField(default=False)
+    can_see_file = models.BooleanField(default=True)
+    can_download_file = models.BooleanField(default=False)
 
+    # 🔹 Permisos de gestión
     can_change_the_permission = models.BooleanField(default=False)
     can_add_members = models.BooleanField(default=False)
     can_delete_members = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('folder', 'user')
+        verbose_name = "Folder Permission"
+        verbose_name_plural = "Folder Permissions"
+
+    def __str__(self):
+        return f"{self.user} → {self.folder}"
 
 
 #this function is for save the files dinamically in folders
