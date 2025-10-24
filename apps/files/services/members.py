@@ -100,7 +100,15 @@ def delete_member_of_folder(user, folder_id, member_id):
             "error": "User does not have permission to manage members of this folder"
         }
 
-    # 3️⃣ we will try to delete the member
+    # 3️⃣ avoid delete to the creator of the folder
+    if str(folder.creator_user.id) == str(member_id):
+        return {
+            "success": False,
+            "message": "files.error.cannot-delete-creator-folder",
+            "error": "You cannot delete the creator of this folder"
+        }
+    
+    # 4️⃣ we will try to delete the member
     try:
         permission = FolderPermission.objects.get(folder=folder, user__id=member_id)
         permission.delete()
