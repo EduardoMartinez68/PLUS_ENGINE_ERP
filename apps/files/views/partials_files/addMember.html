@@ -9,7 +9,7 @@
 <message-pop name="pop-member-folder" title="files.title.member-folder">
     <plus-search input_id="search-member-folder" label="files.label.member" placeholder="files.placeholder.search-member-folder">
         <search-option>
-            <button class="btn btn-add" onclick="window.show_pop('pop-add-member-folder')">+</button>
+            <button class="btn btn-add" onclick="open_pop_add_new_member_folder()">+</button>
         </search-option>
     </plus-search>
 
@@ -99,13 +99,10 @@
         });
     }
 
-    function open_pop_add_new_member_folder(folder_id, creator_id){
-        //we will update the inputs hidden with the folder id and the creator id
-        document.getElementById('folder-id-member-folder').value=folder_id;
-        document.getElementById('folder-id-creator-folder').value=creator_id;
-
+    function open_pop_add_new_member_folder(){
         //now we will open the pop
         activate_all_permittions_of_the_folder(false); //we will deactivate all the permissions by default
+        document.getElementById('member_id').reset();
         window.show_pop('pop-add-member-folder');
     }
 

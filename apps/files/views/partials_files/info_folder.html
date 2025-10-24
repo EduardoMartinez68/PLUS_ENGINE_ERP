@@ -328,7 +328,7 @@ h2 {
 <div class="container-section">
   <!---seeker---->
     <div id="path_folders" class="breadcrumb">
-        <span class="crumb" data-id="root" t="files.title.home"><label t="files.title.home"></label></span>
+        <span class="crumb" data-id="root">Home</span>
     </div>
 
   <div class="row">
@@ -943,7 +943,9 @@ customElements.define('plus-folder', PlusFolder);
   document.addEventListener('folder-add-member', async (event) => {
     const folderId = event.detail.id; 
     const creatorId = event.detail.creator_id;
-    open_pop_add_new_member_folder(folderId, creatorId);
+    update_input_of_folder_member(folderId, creatorId);
+
+    open_pop_add_new_member_folder();
   });
 
   document.addEventListener('folder-see-member', async (event) => {
