@@ -221,3 +221,19 @@ def delete_folder_and_his_files(request):
     
     result=delete_folder(request.user, data["id"])
     return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
+
+
+
+#---------------------------------------get member of the folder--------------------------
+from ..services.members import get_members_of_folder
+def members_of_folder(request):
+    if request.method != 'GET':
+        return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+    
+    #get the filters of the folder
+    all_filters = request.GET.get("allFilters", "") 
+    values = all_filters.split(",")
+    search=values[0] #query
+    folder_id=values[1] #id folder
+    result = get_members_of_folder(request.user, folder_id, search)
+    return JsonResponse({"success": result.get("success", False), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)

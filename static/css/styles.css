@@ -603,12 +603,15 @@ table {
   display: block;       
   overflow-x: auto;   
   -webkit-overflow-scrolling: touch; 
+  table-layout: fixed; 
 }
 
 th,
 td {
   padding: 14px 16px;
   text-align: left;
+  vertical-align: middle;
+  word-wrap: break-word;
 }
 
 thead {

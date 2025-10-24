@@ -1,9 +1,31 @@
+<style>
+.avatar-member{
+    width: 40px;
+    height: 40px;
+}
+</style>
 <message-pop name="pop-member-folder" title="files.title.member-folder">
+    <input type="hidden" id="folder-id-member-folder">
     <plus-search input_id="search-member-folder" label="files.label.member" placeholder="files.placeholder.search-member-folder">
         <search-option>
             <button class="btn btn-add" onclick="window.show_pop('pop-add-member-folder')">+</button>
         </search-option>
     </plus-search>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:10%;"></th>
+                    <th style="width:20%;" t="files.th.username"></th>
+                    <th style="width:25%;" t="files.th.email"></th>
+                    <th style="width:25%;" t="files.th.member"></th>
+                    <th style="width:10%;"></th>
+                    <th style="width:10%;"></th>
+                </tr>
+            </thead>
+            <tbody id="container-table-member-folder">
+            </tbody>
+        </table>
 </message-pop>
 
 <message-pop name="pop-add-member-folder" title="files.title.add-member-folder">
@@ -34,3 +56,60 @@
     </div>
     <button class="btn btn-edit" t="files.btn.add-member-folder"></button>
 </message-pop>
+
+
+
+<script>
+    function get_div_container_member_folder() {
+        return `
+            <td> <img class='avatar-member' src="{ avatar }" alt="{ username }'s avatar"> </td>
+            <td>
+                { username }
+            </td>
+            <td>
+                { email }
+            </td>
+            <td>
+                { member_name }
+            </td>
+            <td>
+                <button class="btn btn-transparent" onclick='delete_member_folder( {member_id} )'><i class="fi fi-sr-user-pen"></i></button>
+            </td>
+            <td>
+                <button class="btn btn-transparent" onclick='delete_member_folder( {member_id} )'><i class="fi fi-sr-trash"></i></button>
+            </td>
+        `;
+    }
+
+    async function delete_member_folder(member_id) {
+        //now we will to do a question to the user if would like to delete the member
+        const folder_id=document.getElementById('folder-id-member-folder').value;
+        if(await plus_delete_with_help_button(
+            member_id, 
+            `files/view_delete_member_folder/${folder_id}/`, 
+            'files.question.delete-member-folder', 
+            'files.message.delete-member-folder' ,
+            'files.title.member-delete-of-the-folder', 
+            'files.message.member-delete-of-the-folder')
+        ){
+            //if the user confirm the deletion, we will refresh the container
+            window.refresh_container_from_the_server(
+                ['search-member-folder', 'folder-id-member-folder'],
+                'container-table-member-folder',
+                get_div_container_member_folder(),
+                '/files/members/folder/seeker',
+                'GET'
+            );
+        }
+    }
+
+
+    //when the user open the pop of the member we will to load the container
+    window.update_container_with_seeker(
+        ['search-member-folder', 'folder-id-member-folder'],
+        'container-table-member-folder',
+        get_div_container_member_folder(),
+        '/files/members_of_folder/',
+        'GET'
+    )
+</script>

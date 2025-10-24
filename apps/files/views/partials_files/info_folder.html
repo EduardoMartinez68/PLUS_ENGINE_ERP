@@ -927,16 +927,24 @@ customElements.define('plus-folder', PlusFolder);
     if(url) window.open(url, '_blank');
   });
 
+
+
+  function update_input_of_folder_member(folderId){
+    //here we will get the id of the folder and if exist the input we will to update his value
+    const input_folder_id = document.getElementById('folder-id-member-folder');
+    if(input_folder_id) input_folder_id.value = folderId;
+  } 
+  
   document.addEventListener('folder-add-member', async (event) => {
     const folderId = event.detail.id;
-    //await open_pop_add_member_folder(folderId);
-    window.show_pop('pop-add-member-folder');
+    update_input_of_folder_member(folderId);
+    window.show_pop('pop-add-member-folder'); //show the pop of add members to the folder
   });
 
   document.addEventListener('folder-see-member', async (event) => {
     const folderId = event.detail.id;
-    //await open_pop_see_member_folder(folderId);
-    window.show_pop('pop-member-folder');
+    update_input_of_folder_member(folderId);
+    window.show_pop('pop-member-folder'); //show the pop of the members
   });
 
   async function delete_folder(id){
@@ -1092,7 +1100,14 @@ function renderBreadcrumb() {
   });
 }
 
-
+function update_inputs_folder_id(folderId) {
+  // change the value of all the inputs that need in other partials or in the views for filter the container
+  const inputs = ["path_folder_id1", "path_folder_id2"];
+  inputs.forEach(id => {
+    const input = document.getElementById(id);
+    if (input) input.value = folderId;
+  });
+}
 
 function goToFolderLevel(index) {
   // corta el path desde esa posición
@@ -1102,9 +1117,8 @@ function goToFolderLevel(index) {
   const folderId = folderPath[index].id;
   const folderName = folderPath[index].name;
 
-  // Actualiza inputs y contenedores
-  document.getElementById("path_folder_id1").value = folderId;
-  document.getElementById("path_folder_id2").value = folderId;
+  // update all the inputs that need in this view and his containers
+  update_inputs_folder_id(folderId);
 
   if (typeof update_container_folder === "function") update_container_folder();
   if (typeof update_container_files === "function") update_container_files();

@@ -1,5 +1,6 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
+from ..services.members import get_members_of_folder
 from django.http import FileResponse
 from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder, download_file, get_file_detail, update_file, download_folder
 from ..models import Folder, FolderPermission, File
@@ -429,4 +430,29 @@ def delete_folder_and_his_files(request):
         
         result=delete_folder(request.user, data["id"])
         return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
+
+@login_required(login_url='login')
+def members_of_folder(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'GET':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        #get the filters of the folder
+        all_filters = request.GET.get("allFilters", "") 
+        values = all_filters.split(",")
+        search=values[0] #query
+        folder_id=values[1] #id folder
+        result = get_members_of_folder(request.user, folder_id, search)
+        return JsonResponse({"success": result.get("success", False), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
+    else:
+        if request.method != 'GET':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        #get the filters of the folder
+        all_filters = request.GET.get("allFilters", "") 
+        values = all_filters.split(",")
+        search=values[0] #query
+        folder_id=values[1] #id folder
+        result = get_members_of_folder(request.user, folder_id, search)
+        return JsonResponse({"success": result.get("success", False), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
 

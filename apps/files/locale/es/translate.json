@@ -68,7 +68,7 @@
     "files.btn.see-member":"Ver Miembros",
     "files.title.member-folder":"Miembros de la Carpeta",
     "files.label.member":"Buscar Miembro",
-    "files.placeholder.search-member-folder":"Escribe el nombre del miembro",
+    "files.placeholder.search-member-folder":"Escribe el usuario o el email del miembro",
 
 
     "files.permission.activate-all":"Activar todos los permisos",
@@ -83,5 +83,18 @@
     "files.permission.upload-files":"Subir Archivos a la Carpeta",
     "files.permission.edit-files":"Editar Archivos",
     "files.permission.download-files":"Descargar Archivos",
-    "files.permission.delete-files":"Eliminar Archivos"
+    "files.permission.delete-files":"Eliminar Archivos",
+
+    "files.th.member":"Nombre del miembro",
+    "files.th.username":"Nombre de usuario",
+    "files.th.email":"Correo electrónico",
+
+    "files.question.delete-member-folder":"¿Estás seguro de que deseas eliminar este miembro de la carpeta?",
+    "files.message.delete-member-folder":"Este miembro ya no tendrá acceso a esta carpeta ni a sus archivos.",
+    "files.title.member-delete-of-the-folder":"Miembro eliminado",
+    "files.message.member-delete-of-the-folder":"El miembro fue eliminado de la carpeta con exito.",
+    "files.title.member-folder-deleted":"Miembro eliminado",
+    "files.message.no-permission-view-members":"No tienes permiso para ver los miembros de esta carpeta.",
+    "files.message.folder-not-found":"Carpeta no encontrada.",
+    "files.message.folder-id-invalid":"ID de carpeta inválido."
 }

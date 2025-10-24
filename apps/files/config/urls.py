@@ -15,4 +15,5 @@ urlpatterns = [
     path('create_new_folder/', views.create_new_folder, name='create_new_folder'),
     path('edit_folder/<int:folder_id>/', views.edit_folder, name='edit_folder'),
     path('delete_folder_and_his_files/', views.delete_folder_and_his_files, name='delete_folder_and_his_files'),
+    path('members_of_folder/', views.members_of_folder, name='members_of_folder'),
 ]

@@ -321,6 +321,11 @@ function update_container_from_the_server(inputsId, fieldId, divHtml, searchUrl,
     setTimeout(send_information_to_the_server, delay);
 }
 
+function refresh_container_from_the_server(inputsId, fieldId, divHtml, searchUrl, method = 'POST', delay = 100, type = 'tr') {
+    update_container_from_the_server(inputsId, fieldId, divHtml, searchUrl, method, delay, type);
+}
+
+
 //this function is for remplace the template with the data
 // it will replace the {key} in the template with the value from data[key]
 function renderTemplate(template, data) {
