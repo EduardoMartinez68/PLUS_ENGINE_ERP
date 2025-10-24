@@ -3,6 +3,7 @@ from ..plus_wrapper import Plus
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from core.models import CustomUser 
+from .permissions import has_folder_permission
 
 def get_members_of_folder(user, folder_id, search=None):
     """

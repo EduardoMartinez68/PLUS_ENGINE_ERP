@@ -24,52 +24,7 @@ TYPE_VERSION = os.environ.get('TYPE_VERSION')
 FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY').encode()
 f = Fernet(FIELD_ENCRYPTION_KEY)
 
-
-#-----------------------permissions-----------------------
-def has_folder_permission(user, folder, action: str) -> bool:
-    """
-    Checks if the user has permission on a folder to perform a specific action.
-    :param user: CustomUser
-    :param folder: Folder o ID
-    :param action: string like 'read', 'write', 'delete', 'upload_file', etc.
-    :return: bool
-    """
-    if not user or not folder:
-        return False
-
-    #if the programmer send a id we will to get the object folder 
-    if isinstance(folder, int):
-        try:
-            folder = Folder.objects.get(id=folder)
-        except Folder.DoesNotExist:
-            return False
-
-    # If the user is the creator of the folder, he has all permissions
-    if folder.creator_user == user:
-        return True
-
-    # Attempt to obtain the registered permission for the user
-    try:
-        permission = FolderPermission.objects.get(folder=folder, user=user)
-    except FolderPermission.DoesNotExist:
-        return False
-
-    # Mapping actions to boolean fields
-    action_map = {
-        "read": permission.can_read,
-        "copy": permission.can_copy,
-        "write": permission.can_write,
-        "delete": permission.can_delete,
-        "upload_file": permission.can_upload_file,
-        "update_file": permission.can_update_file,
-        "copy_file": permission.can_copy_file,
-        "delete_file": permission.can_delete_file,
-        "change_permission": permission.can_change_the_permission,
-        "add_members": permission.can_add_members,
-        "delete_members": permission.can_delete_members,
-    }
-
-    return action_map.get(action, False)
+from .permissions import has_folder_permission
 
 def user_storage_used(user)->bool:
     return File.objects.filter(upload_user=user).aggregate(total=Sum('size'))['total'] or 0
@@ -132,6 +87,9 @@ def get_the_object_folder(user, folder_id):
 
 #-----------------------upload and download files-----------------------
 def upload_file(user, parent_folder, dataFile) -> dict:
+    if not has_folder_permission(user, parent_folder, 'upload_file'):
+        return {"success": False, "message": "files.message.no-permission-view-members", "error": "The user not have the permissions" , "answer":""} 
+
     file = dataFile.get("file")
     name = dataFile.get("name")
 
@@ -221,15 +179,17 @@ def upload_file(user, parent_folder, dataFile) -> dict:
     }
 
 def download_file(user, file_id):
+
+
     try:
         file_instance = File.objects.get(id=file_id)
     except File.DoesNotExist:
         return None, None
     
     # Verificar permisos
-    if not has_folder_permission(user, file_instance.folder, "read"):
-        return None, None
-
+    if not has_folder_permission(user, file_instance.folder, 'download_file'):
+        return None, None 
+    
     # Ruta al archivo encriptado
     file_path = file_instance.file.path
     if not os.path.exists(file_path):
@@ -524,15 +484,24 @@ def create_folder(user, parent_folder=None, data=None):
     FolderPermission.objects.create(
         folder=new_folder,
         user=user,
-        can_read=True,
-        can_copy=True,
-        can_write=True,
-        can_delete=True,
+
+        # 📂 Permisos sobre la carpeta
+        can_edit_folder=True,
+        can_delete_folder=True,
+        can_download_folder=True,
+        can_add_subfolder=True,
+
+        # 📄 Permisos sobre archivos
+        can_see_the_files=True,
         can_upload_file=True,
         can_move_file=True,
         can_update_file=True,
         can_copy_file=True,
         can_delete_file=True,
+        can_see_file=True,
+        can_download_file=True,
+
+        # 👥 Permisos de gestión
         can_change_the_permission=True,
         can_add_members=True,
         can_delete_members=True,
@@ -576,13 +545,8 @@ def update_folder(user, folder_id, data=None):
     except Folder.DoesNotExist:
         return {"success": False, "answer": "", "message": "error.not-found", "error": f"The folder with id {folder_id} does not exist"}
 
-    # --- Verify permissions ---
-    try:
-        permission = FolderPermission.objects.get(folder=folder, user=user)
-    except FolderPermission.DoesNotExist:
-        return {"success": False, "answer": "", "message": "error.unauthorized", "error": "The user does not have permissions for this folder"}
 
-    if not permission.can_write:
+    if not has_folder_permission(user, folder , "edit_folder"):
         return {"success": False, "answer": "", "message": "error.unauthorized", "error": "The user does not have edit permissions on this folder"}
 
     # --- Update folder fields ---
@@ -677,16 +641,9 @@ def get_folder_detail(user, folder_id):
     except Folder.DoesNotExist:
         return {"success": False, "message": "", "error": "The folder not found."}
 
-    #here we will see if the user have the permission of see the information of the folder
-    try:
-        permission = FolderPermission.objects.get(folder=folder, user=user)
-    except FolderPermission.DoesNotExist:
-        return {"success": False, "message": "", "error": "The user not have the permissions"}
-
-
     # if the user not can read the information of the folder return a message
-    if not permission.can_write:
-        return {"success": False, "message": "", "error": "The user not have the permissions"}
+    if not has_folder_permission(user, folder , "edit_folder"):
+        return {"success": False, "message": "files.message.no-permission-view-members", "error": "The user not have the permissions" , "answer":""} 
 
     #get the total of the subfolders and the files that exist in the folder
     total_folders = folder.subfolders.count()
@@ -702,20 +659,6 @@ def get_folder_detail(user, folder_id):
         "created_at": folder.created_at,
         "creator": folder.creator_user.username if folder.creator_user else None,
         "parent": folder.parent.id if folder.parent else None,
-        "permissions": {
-            "can_read": permission.can_read,
-            "can_copy": permission.can_copy,
-            "can_write": permission.can_write,
-            "can_delete": permission.can_delete,
-            "can_upload_file": permission.can_upload_file,
-            "can_move_file": permission.can_move_file,
-            "can_update_file": permission.can_update_file,
-            "can_copy_file": permission.can_copy_file,
-            "can_delete_file": permission.can_delete_file,
-            "can_change_the_permission": permission.can_change_the_permission,
-            "can_add_members": permission.can_add_members,
-            "can_delete_members": permission.can_delete_members,
-        },
         "total_fieles": total_fieles,
         "total_folders": total_folders
     }
