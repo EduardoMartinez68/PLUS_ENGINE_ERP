@@ -430,465 +430,474 @@ h2 {
 
 <script>
 
-class PlusFile extends HTMLElement {
-  constructor() {
-    super();
+if (!customElements.get("plus-file")) {
+  class PlusFile extends HTMLElement {
+    constructor() {
+      super();
 
-    const shadow = this.attachShadow({ mode: 'open' });
+      const shadow = this.attachShadow({ mode: 'open' });
 
-    const container = document.createElement('div');
-    container.classList.add('container');
+      const container = document.createElement('div');
+      container.classList.add('container');
 
-    const thumb = document.createElement('img');
-    thumb.classList.add('thumbnail');
+      const thumb = document.createElement('img');
+      thumb.classList.add('thumbnail');
 
-    // ⭐ start symbol
-    const anchoredStar = document.createElement('span');
-    anchoredStar.classList.add('anchored-star');
-    anchoredStar.textContent = '★';  // start symbol
-    anchoredStar.style.display = 'none'; // for default is hidden
+      // ⭐ start symbol
+      const anchoredStar = document.createElement('span');
+      anchoredStar.classList.add('anchored-star');
+      anchoredStar.textContent = '★';  // start symbol
+      anchoredStar.style.display = 'none'; // for default is hidden
 
-    const info = document.createElement('div');
-    info.classList.add('info');
+      const info = document.createElement('div');
+      info.classList.add('info');
 
-    const title = document.createElement('h4');
-    const desc = document.createElement('p');
+      const title = document.createElement('h4');
+      const desc = document.createElement('p');
 
-    info.appendChild(title);
-    info.appendChild(desc);
+      info.appendChild(title);
+      info.appendChild(desc);
 
-    // section of the user
-    const userSection = document.createElement('div');
-    userSection.classList.add('user-section');
+      // section of the user
+      const userSection = document.createElement('div');
+      userSection.classList.add('user-section');
 
-    const userAvatar = document.createElement('img');
-    userAvatar.classList.add('user-avatar');
+      const userAvatar = document.createElement('img');
+      userAvatar.classList.add('user-avatar');
 
-    const userInfo = document.createElement('div');
-    userInfo.classList.add('user-info');
+      const userInfo = document.createElement('div');
+      userInfo.classList.add('user-info');
 
-    const userName = document.createElement('span');
-    userName.classList.add('user-name');
+      const userName = document.createElement('span');
+      userName.classList.add('user-name');
 
-    const dates = document.createElement('span');
-    dates.classList.add('dates');
+      const dates = document.createElement('span');
+      dates.classList.add('dates');
 
-    userInfo.appendChild(userName);
-    userInfo.appendChild(dates);
-    userSection.appendChild(userAvatar);
-    userSection.appendChild(userInfo);
+      userInfo.appendChild(userName);
+      userInfo.appendChild(dates);
+      userSection.appendChild(userAvatar);
+      userSection.appendChild(userInfo);
 
-    const menuBtn = document.createElement('button');
-    menuBtn.classList.add('menu-btn');
-    menuBtn.innerHTML = '&#x22EE;';
+      const menuBtn = document.createElement('button');
+      menuBtn.classList.add('menu-btn');
+      menuBtn.innerHTML = '&#x22EE;';
 
-    const menu = document.createElement('div');
-    menu.classList.add('menu');
-    const downloadBtn = document.createElement('button');
-    downloadBtn.textContent = window.translate_text('btn.download');
+      const menu = document.createElement('div');
+      menu.classList.add('menu');
+      const downloadBtn = document.createElement('button');
+      downloadBtn.textContent = window.translate_text('btn.download');
 
-    const openBtn = document.createElement('button');
-    openBtn.textContent = window.translate_text('btn.open');
-    const editBtn = document.createElement('button');
-    editBtn.textContent = window.translate_text('btn.edit');
-    const copyBtn = document.createElement('button');
-    copyBtn.textContent = window.translate_text('btn.copy');
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = window.translate_text('btn.delete');
+      const openBtn = document.createElement('button');
+      openBtn.textContent = window.translate_text('btn.open');
+      const editBtn = document.createElement('button');
+      editBtn.textContent = window.translate_text('btn.edit');
+      const copyBtn = document.createElement('button');
+      copyBtn.textContent = window.translate_text('btn.copy');
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = window.translate_text('btn.delete');
 
 
-    menu.appendChild(openBtn);
-    menu.appendChild(downloadBtn);
-    menu.appendChild(editBtn);
-    menu.appendChild(copyBtn);
-    menu.appendChild(deleteBtn);
+      menu.appendChild(openBtn);
+      menu.appendChild(downloadBtn);
+      menu.appendChild(editBtn);
+      menu.appendChild(copyBtn);
+      menu.appendChild(deleteBtn);
 
-    container.appendChild(thumb);
-    container.appendChild(anchoredStar);
-    container.appendChild(menuBtn);
-    container.appendChild(menu);
-    container.appendChild(info);
-    container.appendChild(userSection);
+      container.appendChild(thumb);
+      container.appendChild(anchoredStar);
+      container.appendChild(menuBtn);
+      container.appendChild(menu);
+      container.appendChild(info);
+      container.appendChild(userSection);
 
-    shadow.appendChild(container);
+      shadow.appendChild(container);
 
-    const style = document.createElement('style');
-    style.textContent = `
-      .container {
-        position: relative;
-        width: 300px;
-        border: 1px solid #E0E0E0;
-        border-radius: 8px;
-        overflow: hidden;
-        background: #FAFAFA;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      }
-
-      .thumbnail {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-        background: #EDEDED;
-      }
-
-      .anchored-star {
-        position: absolute;
-        top: 8px;
-        left: 8px;
-        font-size: 28px;
-        color: #FFD700; /* dorado */
-      }
-
-      .info {
-        padding: 12px 14px 6px 14px;
-      }
-
-      .info h4 {
-        margin: 0 0 4px;
-        font-size: 16px;
-        font-weight: 600;
-        color: #2E3A59;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .info p {
-        margin: 0;
-        font-size: 13px;
-        color: #4B5563;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .user-section {
-        display: flex;
-        align-items: center;
-        padding: 6px 14px 12px 14px;
-        font-size: 12px;
-        color: #4B5563;
-      }
-
-      .user-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-right: 8px;
-        background: #ccc;
-      }
-
-      .user-info {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .user-name {
-        font-weight: 500;
-        color: #2E3A59;
-      }
-
-      .dates {
-        font-size: 11px;
-        color: #6B7280;
-      }
-
-      .menu-btn {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        background: transparent;
-        border: none;
-        font-size: 22px;
-        cursor: pointer;
-        color: #4B5563;
-      }
-
-      .menu {
-        position: absolute;
-        top: 30px;
-        right: 8px;
-        background: #fff;
-        border: 1px solid #E0E0E0;
-        border-radius: 6px;
-        display: none;
-        flex-direction: column;
-        min-width: 140px;
-        z-index: 100;
-      }
-
-      .menu button {
-        border: none;
-        background: none;
-        padding: 10px 14px;
-        text-align: left;
-        cursor: pointer;
-        font-size: 14px;
-        color: #2E3A59;
-      }
-
-      .menu button:hover {
-        background-color: #F0F0F0;
-      }
-    `;
-    shadow.appendChild(style);
-
-    // Toggle menu
-    const file_id = this.getAttribute('file-id').trim().replace(/\s+/g, '');
-    menuBtn.addEventListener('click', () => {
-      menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
-    });
-
-    // Menu actions
-    openBtn.addEventListener('click', function() {
-      const url = `files/view_preview_file/${file_id}/`;
-      if(url) window.open(url, '_blank');
-    });
-
-    downloadBtn.addEventListener('click', () => {
-      const url = `files/view_download_file/${file_id}/`;
-      if(url) window.open(url, '_blank');
-    });
-
-    copyBtn.addEventListener('click', () => {
-      const name = this.getAttribute('name');
-      //if(name) navigator.clipboard.writeText(name);
-      const copy=window.translate_text('files.notification.clipboard-copy');
-      show_notification('success', `${name} ${copy}`);
-    });
-
-    deleteBtn.addEventListener('click', async () => {
-      if(await window.plus_delete_with_help_button(
-      file_id, 
-      `files/view_delete_file/`, 
-      'files.title.file-delete', 
-      'files.message.file-delete', 
-      'files.title.the-file-was-delete', 
-      'files.message.the-file-was-delete')){
-        
-        //this functions is for update the container of the folders and files when the user is in the home
-        if (typeof update_container_files === "function"){
-          update_container_files();
+      const style = document.createElement('style');
+      style.textContent = `
+        .container {
+          position: relative;
+          width: 300px;
+          border: 1px solid #E0E0E0;
+          border-radius: 8px;
+          overflow: hidden;
+          background: #FAFAFA;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
+        .thumbnail {
+          width: 100%;
+          height: 180px;
+          object-fit: cover;
+          background: #EDEDED;
+        }
+
+        .anchored-star {
+          position: absolute;
+          top: 8px;
+          left: 8px;
+          font-size: 28px;
+          color: #FFD700; /* dorado */
+        }
+
+        .info {
+          padding: 12px 14px 6px 14px;
+        }
+
+        .info h4 {
+          margin: 0 0 4px;
+          font-size: 16px;
+          font-weight: 600;
+          color: #2E3A59;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .info p {
+          margin: 0;
+          font-size: 13px;
+          color: #4B5563;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .user-section {
+          display: flex;
+          align-items: center;
+          padding: 6px 14px 12px 14px;
+          font-size: 12px;
+          color: #4B5563;
+        }
+
+        .user-avatar {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          object-fit: cover;
+          margin-right: 8px;
+          background: #ccc;
+        }
+
+        .user-info {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .user-name {
+          font-weight: 500;
+          color: #2E3A59;
+        }
+
+        .dates {
+          font-size: 11px;
+          color: #6B7280;
+        }
+
+        .menu-btn {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          background: transparent;
+          border: none;
+          font-size: 22px;
+          cursor: pointer;
+          color: #4B5563;
+        }
+
+        .menu {
+          position: absolute;
+          top: 30px;
+          right: 8px;
+          background: #fff;
+          border: 1px solid #E0E0E0;
+          border-radius: 6px;
+          display: none;
+          flex-direction: column;
+          min-width: 140px;
+          z-index: 100;
+        }
+
+        .menu button {
+          border: none;
+          background: none;
+          padding: 10px 14px;
+          text-align: left;
+          cursor: pointer;
+          font-size: 14px;
+          color: #2E3A59;
+        }
+
+        .menu button:hover {
+          background-color: #F0F0F0;
+        }
+      `;
+      shadow.appendChild(style);
+
+      // Toggle menu
+      const file_id = this.getAttribute('file-id').trim().replace(/\s+/g, '');
+      menuBtn.addEventListener('click', () => {
+        menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+      });
+
+      // Menu actions
+      openBtn.addEventListener('click', function() {
+        const url = `files/view_preview_file/${file_id}/`;
+        if(url) window.open(url, '_blank');
+      });
+
+      downloadBtn.addEventListener('click', () => {
+        const url = `files/view_download_file/${file_id}/`;
+        if(url) window.open(url, '_blank');
+      });
+
+      copyBtn.addEventListener('click', () => {
+        const name = this.getAttribute('name');
+        //if(name) navigator.clipboard.writeText(name);
+        const copy=window.translate_text('files.notification.clipboard-copy');
+        show_notification('success', `${name} ${copy}`);
+      });
+
+      deleteBtn.addEventListener('click', async () => {
+        if(await window.plus_delete_with_help_button(
+        file_id, 
+        `files/view_delete_file/`, 
+        'files.title.file-delete', 
+        'files.message.file-delete', 
+        'files.title.the-file-was-delete', 
+        'files.message.the-file-was-delete')){
+          
+          //this functions is for update the container of the folders and files when the user is in the home
+          if (typeof update_container_files === "function"){
+            update_container_files();
+          }
+        }
+      });
+
+      editBtn.addEventListener('click', async () => {
+        if (typeof window.get_info_file_by_id === 'function') {
+          await window.get_info_file_by_id(file_id);
+        }
+      });
+
+      this._thumb = thumb;
+      this._title = title;
+      this._desc = desc;
+      this._userAvatar = userAvatar;
+      this._userName = userName;
+      this._dates = dates;
+      this._anchoredStar = anchoredStar;
+    }
+
+    connectedCallback() {
+      const anchored = this.getAttribute('anchored');
+      this._anchoredStar.style.display = window.is_true(anchored) ? 'inline-block' : 'none';
+    }
+
+    static get observedAttributes() {
+      return ['name', 'description', 'miniature', 'u-name', 'u-avatar', 'uploaded-at', 'updated-at', 'anchored'];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+      if(name === 'name') this._title.textContent = newValue;
+      if(name === 'description') this._desc.textContent = newValue;
+      if(name === 'miniature') {
+        this._thumb.src = newValue && newValue.trim() !== '' 
+                          ? newValue 
+                          : '/img/file_default.webp';
       }
-    });
-
-    editBtn.addEventListener('click', async () => {
-      if (typeof window.get_info_file_by_id === 'function') {
-        await window.get_info_file_by_id(file_id);
+      if(name === 'u-name') this._userName.textContent = newValue;
+      if(name === 'u-avatar') this._userAvatar.src = newValue && newValue.trim() !== '' 
+                                                ? newValue 
+                                                : '/img/avatar_default.png';
+      if(name === 'uploaded-at' || name === 'updated-at') {
+        const uploaded = this.getAttribute('uploaded-at');
+        const updated = this.getAttribute('updated-at');
+        this._dates.textContent = `${window.translate_text('files.text.upload')}: ${uploaded || '-'} | ${window.translate_text('files.text.updated')}: ${updated || '-'}`;
       }
-    });
-
-    this._thumb = thumb;
-    this._title = title;
-    this._desc = desc;
-    this._userAvatar = userAvatar;
-    this._userName = userName;
-    this._dates = dates;
-    this._anchoredStar = anchoredStar;
-  }
-
-  connectedCallback() {
-    const anchored = this.getAttribute('anchored');
-    this._anchoredStar.style.display = window.is_true(anchored) ? 'inline-block' : 'none';
-  }
-
-  static get observedAttributes() {
-    return ['name', 'description', 'miniature', 'u-name', 'u-avatar', 'uploaded-at', 'updated-at', 'anchored'];
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    if(name === 'name') this._title.textContent = newValue;
-    if(name === 'description') this._desc.textContent = newValue;
-    if(name === 'miniature') {
-      this._thumb.src = newValue && newValue.trim() !== '' 
-                        ? newValue 
-                        : '/img/file_default.webp';
-    }
-    if(name === 'u-name') this._userName.textContent = newValue;
-    if(name === 'u-avatar') this._userAvatar.src = newValue && newValue.trim() !== '' 
-                                               ? newValue 
-                                               : '/img/avatar_default.png';
-    if(name === 'uploaded-at' || name === 'updated-at') {
-      const uploaded = this.getAttribute('uploaded-at');
-      const updated = this.getAttribute('updated-at');
-      this._dates.textContent = `${window.translate_text('files.text.upload')}: ${uploaded || '-'} | ${window.translate_text('files.text.updated')}: ${updated || '-'}`;
-    }
-    if(name === 'anchored') {
-      this._anchoredStar.style.display = newValue === 'true' ? 'inline-block' : 'none';
+      if(name === 'anchored') {
+        this._anchoredStar.style.display = newValue === 'true' ? 'inline-block' : 'none';
+      }
     }
   }
+
+  customElements.define("plus-file", PlusFile);
 }
 
-customElements.define('plus-file', PlusFile);
+if (!customElements.get("plus-folder")) {
 
-class PlusFolder extends HTMLElement {
-  constructor() {
-    super();
+  class PlusFolder extends HTMLElement {
+    constructor() {
+      super();
 
-    const shadow = this.attachShadow({ mode: 'open' });
+      const shadow = this.attachShadow({ mode: 'open' });
 
-    // 🔗 falticon styles CSS
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', 'https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css');
-    shadow.appendChild(link);
+      // 🔗 falticon styles CSS
+      const link = document.createElement('link');
+      link.setAttribute('rel', 'stylesheet');
+      link.setAttribute('href', 'https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css');
+      shadow.appendChild(link);
 
-    // --- container ---
-    const wrapper = document.createElement('article');
-    wrapper.classList.add('pf-wrapper');
+      // --- container ---
+      const wrapper = document.createElement('article');
+      wrapper.classList.add('pf-wrapper');
 
-    // --- top row: icon + title + menu ---
-    const topRow = document.createElement('div');
-    topRow.classList.add('pf-top');
+      // --- top row: icon + title + menu ---
+      const topRow = document.createElement('div');
+      topRow.classList.add('pf-top');
 
-    const iconContainer = document.createElement('div');
-    iconContainer.classList.add('pf-icon-wrap');
+      const iconContainer = document.createElement('div');
+      iconContainer.classList.add('pf-icon-wrap');
 
-    const icon = document.createElement('i');
-    icon.className = 'fi fi-sr-folder pf-icon';
-    icon.setAttribute('aria-hidden', 'true');
+      const icon = document.createElement('i');
+      icon.className = 'fi fi-sr-folder pf-icon';
+      icon.setAttribute('aria-hidden', 'true');
 
-    iconContainer.appendChild(icon);
+      iconContainer.appendChild(icon);
 
-    const folder_id = this.getAttribute('folder-id');
+      const folder_id = this.getAttribute('folder-id');
 
-    const title = document.createElement('h3');
-    title.classList.add('pf-title');
+      const title = document.createElement('h3');
+      title.classList.add('pf-title');
 
-    const date = document.createElement('time');
-    date.classList.add('pf-date');
+      const date = document.createElement('time');
+      date.classList.add('pf-date');
 
-    const titleSection = document.createElement('div');
-    titleSection.classList.add('pf-title-wrap');
-    titleSection.appendChild(title);
-    titleSection.appendChild(date);
+      const titleSection = document.createElement('div');
+      titleSection.classList.add('pf-title-wrap');
+      titleSection.appendChild(title);
+      titleSection.appendChild(date);
 
-    const menuBtn = document.createElement('button');
-    menuBtn.classList.add('pf-menu-btn');
-    menuBtn.innerHTML = '&#x22EE;';
-    menuBtn.setAttribute('aria-label', 'open menu of folder.');
+      const menuBtn = document.createElement('button');
+      menuBtn.classList.add('pf-menu-btn');
+      menuBtn.innerHTML = '&#x22EE;';
+      menuBtn.setAttribute('aria-label', 'open menu of folder.');
 
-    topRow.appendChild(iconContainer);
-    topRow.appendChild(titleSection);
-    topRow.appendChild(menuBtn);
+      topRow.appendChild(iconContainer);
+      topRow.appendChild(titleSection);
+      topRow.appendChild(menuBtn);
 
-    // --- menu panel ---
-    const menu = document.createElement('div');
-    menu.classList.add('pf-menu');
+      // --- menu panel ---
+      const menu = document.createElement('div');
+      menu.classList.add('pf-menu');
 
-    const verBtn = document.createElement('button'); verBtn.textContent = window.translate_text('btn.see');
-    const editarBtn = document.createElement('button'); editarBtn.textContent = window.translate_text('btn.edit');
-    const descargarBtn = document.createElement('button'); descargarBtn.textContent = window.translate_text('btn.download');
-    const seeMemberBtn = document.createElement('button'); seeMemberBtn.textContent = window.translate_text('files.btn.see-member');
-    const addMemberBtn = document.createElement('button'); addMemberBtn.textContent = window.translate_text('files.btn.add-member');
-    const eliminarBtn = document.createElement('button'); eliminarBtn.textContent = window.translate_text('btn.delete');
+      const verBtn = document.createElement('button'); verBtn.textContent = window.translate_text('btn.see');
+      const editarBtn = document.createElement('button'); editarBtn.textContent = window.translate_text('btn.edit');
+      const descargarBtn = document.createElement('button'); descargarBtn.textContent = window.translate_text('btn.download');
+      const seeMemberBtn = document.createElement('button'); seeMemberBtn.textContent = window.translate_text('files.btn.see-member');
+      const addMemberBtn = document.createElement('button'); addMemberBtn.textContent = window.translate_text('files.btn.add-member');
+      const eliminarBtn = document.createElement('button'); eliminarBtn.textContent = window.translate_text('btn.delete');
 
-    [verBtn, editarBtn, descargarBtn, seeMemberBtn, addMemberBtn, eliminarBtn].forEach(btn => {
-      btn.classList.add('pf-menu-item');
-      menu.appendChild(btn);
-    });
+      [verBtn, editarBtn, descargarBtn, seeMemberBtn, addMemberBtn, eliminarBtn].forEach(btn => {
+        btn.classList.add('pf-menu-item');
+        menu.appendChild(btn);
+      });
 
-    // --- assemble ---
-    wrapper.appendChild(topRow);
-    wrapper.appendChild(menu);
-    shadow.appendChild(wrapper);
+      // --- assemble ---
+      wrapper.appendChild(topRow);
+      wrapper.appendChild(menu);
+      shadow.appendChild(wrapper);
 
-    // --- styles ---
-    const style = document.createElement('style');
-    style.textContent = `
-      :host { display: inline-block; font-family: "Inter", "Segoe UI", Roboto, sans-serif; }
-      .pf-wrapper {
-        width: 280px;
-        background: #fff;
-        border-radius: 12px;
-        padding: 14px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.05);
-        position: relative;
-        transition: transform 0.18s ease, box-shadow 0.18s ease;
-      }
-      .pf-top { display:flex; align-items:center; gap:12px; }
-      .pf-icon-wrap { width:48px; height:48px; display:flex; align-items:center; justify-content:center; border-radius:8px; background: #f0f4f8; }
-      .pf-icon { font-size:30px; color: var(--folder-color, #3A7BD5); }
-      .pf-title-wrap { flex:1; min-width:0; display:flex; flex-direction:column; }
-      .pf-title { margin:0; font-size:16px; font-weight:600; color:#1f2937; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-      .pf-date { font-size:12px; color:#6b7280; margin-top:2px; }
-      .pf-menu-btn { background:transparent; border:none; font-size:20px; color:#6b7280; cursor:pointer; padding:4px; border-radius:6px; }
-      .pf-menu-btn:hover { background: rgba(99,102,241,0.04); }
-      .pf-menu { position:absolute; top:50px; right:12px; display:none; flex-direction:column; background:#fff; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.08); padding:8px; min-width:140px; z-index:10; }
-      .pf-menu-item { background:transparent; border:none; padding:10px 12px; text-align:left; font-size:14px; color:#1f2937; cursor:pointer; border-radius:6px; }
-      .pf-menu-item:hover { background:#f3f4f6; }
-    `;
-    shadow.appendChild(style);
+      // --- styles ---
+      const style = document.createElement('style');
+      style.textContent = `
+        :host { display: inline-block; font-family: "Inter", "Segoe UI", Roboto, sans-serif; }
+        .pf-wrapper {
+          width: 280px;
+          background: #fff;
+          border-radius: 12px;
+          padding: 14px;
+          box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+          position: relative;
+          transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+        .pf-top { display:flex; align-items:center; gap:12px; }
+        .pf-icon-wrap { width:48px; height:48px; display:flex; align-items:center; justify-content:center; border-radius:8px; background: #f0f4f8; }
+        .pf-icon { font-size:30px; color: var(--folder-color, #3A7BD5); }
+        .pf-title-wrap { flex:1; min-width:0; display:flex; flex-direction:column; }
+        .pf-title { margin:0; font-size:16px; font-weight:600; color:#1f2937; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .pf-date { font-size:12px; color:#6b7280; margin-top:2px; }
+        .pf-menu-btn { background:transparent; border:none; font-size:20px; color:#6b7280; cursor:pointer; padding:4px; border-radius:6px; }
+        .pf-menu-btn:hover { background: rgba(99,102,241,0.04); }
+        .pf-menu { position:absolute; top:50px; right:12px; display:none; flex-direction:column; background:#fff; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.08); padding:8px; min-width:140px; z-index:10; }
+        .pf-menu-item { background:transparent; border:none; padding:10px 12px; text-align:left; font-size:14px; color:#1f2937; cursor:pointer; border-radius:6px; }
+        .pf-menu-item:hover { background:#f3f4f6; }
+      `;
+      shadow.appendChild(style);
 
-    // --- references ---
-    this._icon = icon;
-    this._title = title;
-    this._date = date;
-    this._menu = menu;
-    this._menuBtn = menuBtn;
+      // --- references ---
+      this._icon = icon;
+      this._title = title;
+      this._date = date;
+      this._menu = menu;
+      this._menuBtn = menuBtn;
 
-    // --- menu toggle ---
-    this._menuVisible = false;
-    menuBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      this._toggleMenu();
-    });
-
-    document.addEventListener('click', e => {
-      if (!shadow.contains(e.target)) this._hideMenu();
-    });
-
-    // menu actions dispatch custom events
-    verBtn.addEventListener('click', () => {
-      this.dispatchEvent(new CustomEvent('folder-view', {
-        detail: { id: this.getAttribute('folder-id'), name:  this.getAttribute('name')},
-        bubbles: true
-      }));
-    });
-
-    editarBtn.addEventListener('click', () => {
-      this.dispatchEvent(new CustomEvent('folder-edit', {
-        detail: { id: this.getAttribute('folder-id') },
-        bubbles: true
-      }));
-    });
-
-    eliminarBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-delete',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
-    descargarBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-download',{detail:{id:this.getAttribute('folder-id')},bubbles:true})));
-    addMemberBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-add-member',{detail:{id:this.getAttribute('folder-id'), creator_id:this.getAttribute('creator-id')},bubbles:true})));
-    seeMemberBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-see-member',{detail:{id:this.getAttribute('folder-id'), creator_id:this.getAttribute('creator-id')},bubbles:true})));
-  }
-
-  static get observedAttributes() {
-    return ['name','created-at','color','folder-id'];
-  }
-
-  attributeChangedCallback(attrName, oldVal, newVal) {
-    if(attrName==='name') this._title.textContent = newVal || '';
-    if(attrName==='created-at') this._date.textContent = newVal ? `Creado: ${newVal}` : '';
-    if(attrName==='color') {
-      const color = newVal || '#3A7BD5';
-      this._icon.style.color = color;
-      this.style.setProperty('--folder-color', color);
-    }
-  }
-
-  _toggleMenu() {
-    this._menuVisible = !this._menuVisible;
-    this._menu.style.display = this._menuVisible ? 'flex' : 'none';
-  }
-
-  _hideMenu() {
-    if(this._menuVisible){
+      // --- menu toggle ---
       this._menuVisible = false;
-      this._menu.style.display = 'none';
+      menuBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        this._toggleMenu();
+      });
+
+      document.addEventListener('click', e => {
+        if (!shadow.contains(e.target)) this._hideMenu();
+      });
+
+      // menu actions dispatch custom events
+      const folderId=this.getAttribute('folder-id');
+      const folderName=this.getAttribute('name');
+      verBtn.addEventListener('click', async function() {
+        await window.change_folder(folderId, folderName);
+      });
+
+      editarBtn.addEventListener('click', async function() {
+        await open_pop_edit_folder(folderId);
+      });
+
+      eliminarBtn.addEventListener('click', async function() {
+        await delete_folder(folderId);
+      });
+
+      descargarBtn.addEventListener('click', async function() {
+        const url = `files/download_folder_as_zip/${folderId}/`;
+        if(url) window.open(url, '_blank');
+      });
+
+      addMemberBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-add-member',{detail:{id:this.getAttribute('folder-id'), creator_id:this.getAttribute('creator-id')},bubbles:true})));
+      seeMemberBtn.addEventListener('click', () => this.dispatchEvent(new CustomEvent('folder-see-member',{detail:{id:this.getAttribute('folder-id'), creator_id:this.getAttribute('creator-id')},bubbles:true})));
+      
+    }
+
+    static get observedAttributes() {
+      return ['name','created-at','color','folder-id'];
+    }
+
+    attributeChangedCallback(attrName, oldVal, newVal) {
+      if(attrName==='name') this._title.textContent = newVal || '';
+      if(attrName==='created-at') this._date.textContent = newVal ? `Creado: ${newVal}` : '';
+      if(attrName==='color') {
+        const color = newVal || '#3A7BD5';
+        this._icon.style.color = color;
+        this.style.setProperty('--folder-color', color);
+      }
+    }
+
+    _toggleMenu() {
+      this._menuVisible = !this._menuVisible;
+      this._menu.style.display = this._menuVisible ? 'flex' : 'none';
+    }
+
+    _hideMenu() {
+      if(this._menuVisible){
+        this._menuVisible = false;
+        this._menu.style.display = 'none';
+      }
     }
   }
-}
 
-customElements.define('plus-folder', PlusFolder);
+  customElements.define("plus-folder", PlusFolder);
+}
 
 </script>
 
@@ -923,23 +932,6 @@ customElements.define('plus-folder', PlusFolder);
       </plus-folder>
     `
   }
-
-  document.addEventListener('folder-edit', async (event) => {
-    const folderId = event.detail.id;
-    await open_pop_edit_folder(folderId);
-  });
-
-  document.addEventListener('folder-delete', async (event) => {
-    const folderId = event.detail.id;
-    await delete_folder(folderId);
-  });
-
-  document.addEventListener('folder-download', async (event) => {
-    const folderId = event.detail.id;
-    const url = `files/download_folder_as_zip/${folderId}/`;
-    if(url) window.open(url, '_blank');
-  });
-
 
 
   function update_input_of_folder_member(folderId, creatorId){
@@ -987,11 +979,6 @@ customElements.define('plus-folder', PlusFolder);
   }
 
 
-  document.addEventListener('folder-view', async (event) => {
-    const folderId = event.detail.id;
-    const folderName = event.detail.name;
-    await window.change_folder(folderId, folderName);
-  });
   
 
   function show_loading_page_home_folder(){
