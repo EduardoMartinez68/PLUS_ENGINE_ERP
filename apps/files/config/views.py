@@ -2,7 +2,7 @@
 from django.contrib.auth.decorators import login_required
 from ..services.members import get_members_of_folder, delete_member_of_folder, add_member_to_folder
 from django.http import FileResponse
-from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder, download_file, get_file_detail, update_file, download_folder
+from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder, download_file, get_file_detail, update_file, download_folder, delete_file
 from ..models import Folder, FolderPermission, File
 from ..plus_wrapper import Plus
 from django.http import Http404, JsonResponse, HttpResponse
@@ -338,19 +338,44 @@ def view_update_file(request, file_id):
         return JsonResponse({"success": result["success"], 'error':result["error"]}, status=200)
 
 @login_required(login_url='login')
+def view_delete_file(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
+        
+        result=delete_file(request.user, data["id"])
+        return JsonResponse({"success": result["success"], "message": result["message"], "answer": result["answer"], 'error':result["error"]}, status=200)   
+    else:
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
+        
+        result=delete_file(request.user, data["id"])
+        return JsonResponse({"success": result["success"], "message": result["message"], "answer": result["answer"], 'error':result["error"]}, status=200)   
+
+@login_required(login_url='login')
 def get_information_folder(request, folder_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method != 'GET':
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
         
         result = get_folder_detail(request.user, folder_id)
-        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
+        return JsonResponse({"success": result["success"], "message": result["message"], "answer": result["answer"], 'error':result["error"]}, status=200)  
     else:
         if request.method != 'GET':
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
         
         result = get_folder_detail(request.user, folder_id)
-        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
+        return JsonResponse({"success": result["success"], "message": result["message"], "answer": result["answer"], 'error':result["error"]}, status=200)  
 
 @login_required(login_url='login')
 def create_new_folder(request):
@@ -418,7 +443,7 @@ def delete_folder_and_his_files(request):
             return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
         
         result=delete_folder(request.user, data["id"])
-        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
+        return JsonResponse({"success": result["success"], "message": result["message"], "answer": result["answer"], 'error':result["error"]}, status=200)  
     else:
         if request.method != 'POST':
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
@@ -429,7 +454,7 @@ def delete_folder_and_his_files(request):
             return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
         
         result=delete_folder(request.user, data["id"])
-        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)  
+        return JsonResponse({"success": result["success"], "message": result["message"], "answer": result["answer"], 'error':result["error"]}, status=200)  
 
 @login_required(login_url='login')
 def members_of_folder(request):
@@ -443,7 +468,7 @@ def members_of_folder(request):
         search=values[0] #query
         folder_id=values[1] #id folder
         result = get_members_of_folder(request.user, folder_id, search)
-        return JsonResponse({"success": result.get("success", False), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
     else:
         if request.method != 'GET':
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
@@ -454,7 +479,7 @@ def members_of_folder(request):
         search=values[0] #query
         folder_id=values[1] #id folder
         result = get_members_of_folder(request.user, folder_id, search)
-        return JsonResponse({"success": result.get("success", False), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
 
 @login_required(login_url='login')
 def view_delete_member_folder(request, folder_id):
@@ -470,7 +495,7 @@ def view_delete_member_folder(request, folder_id):
         member_id=data.get("id")
     
         result=delete_member_of_folder(request.user, folder_id, member_id)
-        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)
+        return JsonResponse({"success": result["success"], "message": result["message"], 'error':result["error"]}, status=200)
     else:
         if request.method != 'POST':
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
@@ -483,7 +508,7 @@ def view_delete_member_folder(request, folder_id):
         member_id=data.get("id")
     
         result=delete_member_of_folder(request.user, folder_id, member_id)
-        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)
+        return JsonResponse({"success": result["success"], "message": result["message"], 'error':result["error"]}, status=200)
 
 @login_required(login_url='login')
 def view_add_member_folder(request):
@@ -500,7 +525,7 @@ def view_add_member_folder(request):
         folder_id=data.get("folder_id")
     
         result=add_member_to_folder(request.user, folder_id, member_id, data)
-        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)
+        return JsonResponse({"success": result["success"], "message": result["message"], 'error':result["error"]}, status=200)
     else:
         if request.method != 'POST':
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
@@ -514,5 +539,5 @@ def view_add_member_folder(request):
         folder_id=data.get("folder_id")
     
         result=add_member_to_folder(request.user, folder_id, member_id, data)
-        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200)
+        return JsonResponse({"success": result["success"], "message": result["message"], 'error':result["error"]}, status=200)
 

@@ -658,9 +658,20 @@ class PlusFile extends HTMLElement {
       show_notification('success', `${name} ${copy}`);
     });
 
-    deleteBtn.addEventListener('click', () => {
-      const name = this.getAttribute('name');
-      alert('Aquí iría la acción para eliminar: ' + name);
+    deleteBtn.addEventListener('click', async () => {
+      if(await window.plus_delete_with_help_button(
+      file_id, 
+      `files/view_delete_file/`, 
+      'files.title.file-delete', 
+      'files.message.file-delete', 
+      'files.title.the-file-was-delete', 
+      'files.message.the-file-was-delete')){
+        
+        //this functions is for update the container of the folders and files when the user is in the home
+        if (typeof update_container_files === "function"){
+          update_container_files();
+        }
+      }
     });
 
     editBtn.addEventListener('click', async () => {

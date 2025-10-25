@@ -11,6 +11,7 @@ urlpatterns = [
     path('view_download_file/<int:file_id>/', views.view_download_file, name='view_download_file'),
     path('download_folder_as_zip/<int:folder_id>/', views.download_folder_as_zip, name='download_folder_as_zip'),
     path('view_update_file/<int:file_id>/', views.view_update_file, name='view_update_file'),
+    path('view_delete_file/', views.view_delete_file, name='view_delete_file'),
     path('get_information_folder/<int:folder_id>/', views.get_information_folder, name='get_information_folder'),
     path('create_new_folder/', views.create_new_folder, name='create_new_folder'),
     path('edit_folder/<int:folder_id>/', views.edit_folder, name='edit_folder'),

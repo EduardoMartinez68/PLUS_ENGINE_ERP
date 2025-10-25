@@ -28,10 +28,11 @@ def get_members_of_folder(user, folder_id, search=None):
         }
 
     # 2️⃣ we will see if the user have permission to view members of the folder
-    if not Plus.this_user_have_this_permission(user, folder, 'view_members'):
+    if not has_folder_permission(user, folder, 'can_see_members'):
         return {
             "success": False,
             "message": "files.message.no-permission-view-members",
+            "answer":[],
             "error": "User does not have permission to view members of this folder"
         }
 
@@ -94,11 +95,12 @@ def delete_member_of_folder(user, folder_id, member_id):
         }
 
     # 2️⃣ we will see if the user have permission to delete members of the folder
-    if not Plus.this_user_have_this_permission(user, folder, 'manage_members'):
+    if not has_folder_permission(user, folder, "delete_members"):
         return {
             "success": False,
-            "message": "files.message.no-permission-manage-members",
-            "error": "User does not have permission to manage members of this folder"
+            "answer": "",
+            "message": "files.error.permission-denied",
+            "error": f"User {user.name} has no permission to add members to folder {folder_id}."
         }
 
     # 3️⃣ avoid delete to the creator of the folder
@@ -126,8 +128,6 @@ def delete_member_of_folder(user, folder_id, member_id):
             "error": f"Member with id {member_id} does not exist in folder {folder_id}"
         }
     
-
-
 def add_member_to_folder(user, folder_id, member_id, data):
     try:
         folder = Folder.objects.get(id=folder_id)
@@ -140,15 +140,13 @@ def add_member_to_folder(user, folder_id, member_id, data):
         }
 
     # ✅ if the user not is the creator of the folder we will see if the user have the permissions that need
-    if folder.creator_user != user:
-        permission = FolderPermission.objects.filter(folder=folder, user=user).first()
-        if not permission or not permission.can_add_members:
-            return {
-                "success": False,
-                "answer": "",
-                "message": "files.error.permission-denied",
-                "error": f"User {user.id} has no permission to add members to folder {folder_id}."
-            }
+    if not has_folder_permission(user, folder, "add_members"):
+        return {
+            "success": False,
+            "answer": "",
+            "message": "files.error.permission-denied",
+            "error": f"User {user.name} has no permission to add members to folder {folder_id}."
+        }
 
     # ✅ we will see if the new member exist
     try:
@@ -179,11 +177,14 @@ def add_member_to_folder(user, folder_id, member_id, data):
             "error": f"Member {member_id} is already in folder {folder_id}."
         }
 
+
+
     # ✅ add a new member with the permissions that the user send from the frontend
     FolderPermission.objects.create(
         folder=folder,
         user=member,
 
+        can_see_folder=True,
         can_edit_folder=Plus.to_bool(data.get("can_edit_folder", False)),
         can_delete_folder=Plus.to_bool(data.get("can_delete_folder", False)),
         can_download_folder=Plus.to_bool(data.get("can_download_folder", False)),
@@ -201,6 +202,7 @@ def add_member_to_folder(user, folder_id, member_id, data):
         can_change_the_permission=Plus.to_bool(data.get("can_change_the_permission", False)),
         can_add_members=Plus.to_bool(data.get("can_add_members", False)),
         can_delete_members=Plus.to_bool(data.get("can_delete_members", False)),
+        can_see_members=Plus.to_bool(data.get("can_see_members", False))
     )
 
     return {

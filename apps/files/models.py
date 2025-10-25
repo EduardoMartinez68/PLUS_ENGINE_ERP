@@ -46,6 +46,7 @@ class FolderPermission(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
 
     # 🔹 Permisos sobre la carpeta
+    can_see_folder = models.BooleanField(default=False)
     can_edit_folder = models.BooleanField(default=False)
     can_delete_folder = models.BooleanField(default=False)
     can_download_folder = models.BooleanField(default=False)
@@ -63,6 +64,7 @@ class FolderPermission(models.Model):
 
     # 🔹 Permisos de gestión
     can_change_the_permission = models.BooleanField(default=False)
+    can_see_members  = models.BooleanField(default=False)
     can_add_members = models.BooleanField(default=False)
     can_delete_members = models.BooleanField(default=False)
 

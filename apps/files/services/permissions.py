@@ -16,10 +16,10 @@ def has_folder_permission(user, folder, action: str) -> bool:
         return False
 
     # 📁 Si se pasa un ID en lugar del objeto Folder
-    if isinstance(folder, int):
+    if isinstance(folder, (int, str)):
         try:
-            folder = Folder.objects.get(id=folder)
-        except Folder.DoesNotExist:
+            folder = Folder.objects.get(id=int(folder))
+        except (Folder.DoesNotExist, ValueError, TypeError):
             return False
 
     # 👑 Si el usuario es el creador de la carpeta → acceso total
@@ -35,6 +35,7 @@ def has_folder_permission(user, folder, action: str) -> bool:
     # 🔹 Mapeo de acciones a campos del modelo
     action_map = {
         # --- Permisos sobre la carpeta ---
+        "see_folder": permission.can_see_folder,
         "edit_folder": permission.can_edit_folder,
         "delete_folder": permission.can_delete_folder,
         "download_folder": permission.can_download_folder,
@@ -47,10 +48,11 @@ def has_folder_permission(user, folder, action: str) -> bool:
         "update_file": permission.can_update_file,
         "copy_file": permission.can_copy_file,
         "delete_file": permission.can_delete_file,
-        "see_file": permission.can_see_file,
+        "edit_file": permission.can_see_file,
         "download_file": permission.can_download_file,
 
         # --- Permisos de gestión ---
+        "can_see_members": permission.can_see_members,
         "change_permission": permission.can_change_the_permission,
         "add_members": permission.can_add_members,
         "delete_members": permission.can_delete_members,

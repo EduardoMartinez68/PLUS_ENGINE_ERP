@@ -101,6 +101,7 @@
         const backend=await window.send_message_to_the_server(`files/get_information_folder/${folder_id}/`, {}, true, 'GET');
         if(!backend.success){
             window.show_alert('error', 'error.general', backend.message || 'files.message.not-can-get-the-information-of-the-folder', backend.error || '');
+            return;
         }
 
 

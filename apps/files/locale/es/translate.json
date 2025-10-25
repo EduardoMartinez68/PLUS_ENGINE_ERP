@@ -42,11 +42,17 @@
     "files.title.the-folder-was-delete":"carpeta eliminada",
     "files.message.the-folder-was-delete":"La carpeta y su contenido fue eliminado con exito de tu base de datos.",
 
+
     "files.title.preview-file":"Visualizacion del archivo",
     "files.title.file-upload":"Subir Archivo",
     "files.message.file-upload":"Tu archivo fue subido con exito a la base de datos.",
+
+    "files.title.file-delete":"Eliminar Archivo",
     "files.message.file-delete":"¿Estás seguro de que deseas eliminar este archivo? Esta acción no se puede deshacer.",
     "files.title.the-file-was-delete":"Archivo eliminado",
+    "files.message.the-file-was-delete":"El archivo fue eliminado exitosamente de la base de datos de la empresa.",
+    "files.error.the-file-not-exit":"Este archivo no existe",
+    "error.file-deletion-failed":"Error en el servidor al intentar eliminar el archivo",
 
     "files.title.error-to-get-information-of-the-file":"Error al obtener la información del archivo",
     "files.title.update-file":"Actualizar Archivo",
@@ -77,6 +83,7 @@
     "files.permission.delete":"Eliminar Carpeta",
     "files.permission.download":"Descargar Carpeta",
 
+    "files.permission.see-member":"Ver a los miembros de la carpeta",
     "files.permission.add-member":"Agregar Miembro a la Carpeta",
     "files.permission.edit-member":"Editar Permisos de miembros",
     "files.permission.delete-member":"Eliminar miembros",
@@ -97,6 +104,8 @@
     "files.message.member-delete-of-the-folder":"El miembro fue eliminado de la carpeta con exito.",
     "files.title.member-folder-deleted":"Miembro eliminado",
     "files.message.no-permission-view-members":"No tienes permiso para ver los miembros de esta carpeta.",
+    "files.message.not-have-the-permissions":"No tienes los permisos necesarios para esta accion.",
+    "files.error.permission-denied":"No tienes los permisos necesarios para esta accion.",
     "files.message.folder-not-found":"Carpeta no encontrada.",
     "files.message.folder-id-invalid":"ID de carpeta inválido.",
     "files.error.error-to-delete-member":"Error al intentar eliminar un miembro",

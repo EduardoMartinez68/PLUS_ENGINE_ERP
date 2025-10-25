@@ -69,16 +69,9 @@ def get_the_object_folder(user, folder_id):
 
     #we will see if the user have the permissions for create a new folder in the root or in the folder
     if parent_folder:
-        try:
-            permission = FolderPermission.objects.get(folder=parent_folder, user=user)
-        except FolderPermission.DoesNotExist:
-            return {"success": False, "message": "error.unauthorized", "error": "User does not have permission to create in this folder"}
-
-        if not (permission.can_write or permission.can_add_members):
-            return {"success": False, "message": "error.unauthorized", "error": "User cannot create subfolders"}
-        else:
-            return {"success": True, "message": "", "error":"", "answer": parent_folder}
-        
+        if not has_folder_permission(user, parent_folder, 'see_files'):
+            return {"success": False, "message": "files.message.no-permission-view-members", "error": "The user not have the permissions" , "answer":""} 
+            
 
     return {"success": True, "message": "", "error":"", "answer": parent_folder}
 
@@ -88,7 +81,7 @@ def get_the_object_folder(user, folder_id):
 #-----------------------upload and download files-----------------------
 def upload_file(user, parent_folder, dataFile) -> dict:
     if not has_folder_permission(user, parent_folder, 'upload_file'):
-        return {"success": False, "message": "files.message.no-permission-view-members", "error": "The user not have the permissions" , "answer":""} 
+        return {"success": False, "message": "files.message.not-have-the-permissions", "error": "The user not have the permissions" , "answer":""} 
 
     file = dataFile.get("file")
     name = dataFile.get("name")
@@ -239,7 +232,7 @@ def get_folder_files(user, folder=None, query=None, page=1, per_page=10) -> dict
             folder = None
 
         # Si se proporcionó una carpeta, verificar permisos
-        if folder and not has_folder_permission(user, folder, "read"):
+        if folder and not has_folder_permission(user, folder, "see_folder"):
             return {
                 "success": False,
                 "message": "error.unauthorized",
@@ -257,7 +250,7 @@ def get_folder_files(user, folder=None, query=None, page=1, per_page=10) -> dict
             # Filtrar por permisos (solo los que el usuario puede leer)
             readable_files = []
             for f in files_qs:
-                if f.folder is None or has_folder_permission(user, f.folder, "read"):
+                if f.folder is None or has_folder_permission(user, f.folder, "see_folder"):
                     readable_files.append(f.id)
 
             files_qs = File.objects.filter(id__in=readable_files)
@@ -339,17 +332,12 @@ def get_file_detail(user, file_id) -> dict:
     is_owner = file_obj.upload_user == user or file_obj.folder.creator_user == user
 
     # ✅ Verificar si tiene permisos de lectura en la carpeta
-    has_permission = FolderPermission.objects.filter(
-        folder=file_obj.folder,
-        user=user,
-        can_read=True
-    ).exists()
-
-    if not is_owner and not has_permission:
+    if not has_folder_permission(user, file_obj.folder, 'update_file'):
         return {
             "success": False,
-            "message": "error.permission-denied",
-            "error": "User does not have permission to view this file"
+            "message": "files.message.not-have-the-permissions",
+            "answer":[],
+            "error": "User does not have permission to view members of this folder"
         }
 
     # ✅ Si todo va bien, devolver la información del archivo
@@ -396,8 +384,13 @@ def update_file(user, file_id, dataFile) -> dict:
 
         # Verificar que el usuario tenga permiso
         # (Ejemplo básico: debe ser el usuario que lo subió o tener rol administrador)
-        if file_instance.upload_user != user and not user.is_staff:
-            return {"success": False, "message": "files.message.permission-denied", "error": "Permission denied"}
+        if not has_folder_permission(user, file_instance.folder, 'update_file'):
+            return {
+                "success": False,
+                "message": "files.message.not-have-the-permissions",
+                "answer":[],
+                "error": "User does not have permission to view members of this folder"
+            }
 
         # Obtener nuevos valores
         new_name = dataFile.get("name", file_instance.name)
@@ -464,7 +457,9 @@ def create_folder(user, parent_folder=None, data=None):
 
     parent_folder=parent_folder_obj.get("answer", None) #get the object folder
 
-
+    if parent_folder:
+        if not has_folder_permission(user, parent_folder, 'add_subfolder'):
+            return {"success": False, "message": "files.message.not-have-the-permissions", "error": "The user not have the permissions" , "answer":""} 
 
     #if the user have all the permissions for this, now we will to create the new folder
     try:
@@ -608,7 +603,7 @@ def get_folders(user, folder=None, query=None):
     # Filter by user permissions
     accessible_folders = [
         f for f in folders_qs
-        if has_folder_permission(user, f, "read")
+        if has_folder_permission(user, f, "see_folder")
     ]
     
     # Prepare response
@@ -643,7 +638,7 @@ def get_folder_detail(user, folder_id):
 
     # if the user not can read the information of the folder return a message
     if not has_folder_permission(user, folder , "edit_folder"):
-        return {"success": False, "message": "files.message.no-permission-view-members", "error": "The user not have the permissions" , "answer":""} 
+        return {"success": False, "message": "files.error.permission-denied", "error": "The user not have the permissions" , "answer":""} 
 
     #get the total of the subfolders and the files that exist in the folder
     total_folders = folder.subfolders.count()
@@ -682,7 +677,7 @@ def download_folder(user, folder_id):
     except Folder.DoesNotExist:
         return False
 
-    if not has_folder_permission(user, folder, "read"):
+    if not has_folder_permission(user, folder, "download_folder"):
         return False
 
     temp_zip = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
@@ -733,6 +728,90 @@ def download_folder(user, folder_id):
 
 #--------------------delete the folder and all his content--------------------
 from django.db import transaction
+
+def delete_file(user, file_id):
+    """
+    Delete a single file, including its thumbnail, database record, 
+    and physical file. Requires 'delete_file' permission.
+    """
+
+    if not file_id:
+        return {
+            "success": False,
+            "message": "files.error.the-file-not-exit",
+            "answer":"",
+            "error": "File ID was not provided"
+        }
+
+    # --- Get file object ---
+    try:
+        file_obj = File.objects.get(id=file_id)
+    except File.DoesNotExist:
+        return {
+            "success": False,
+            "message": "files.error.the-file-not-exit",
+            "answer":"",
+            "error": f"The file with id {file_id} does not exist"
+        }
+
+    # --- Check folder permission ---
+    folder = file_obj.folder
+    if not has_folder_permission(user, folder, "delete_file"):
+        return {
+            "success": False,
+            "message": "files.message.not-have-the-permissions",
+            "answer":"",
+            "error": "The user does not have permission to delete this file"
+        }
+
+    # --- Delete physical files ---
+    try:
+        # 🗑️ Delete main file
+        if file_obj.file and os.path.exists(file_obj.file.path):
+            os.remove(file_obj.file.path)
+
+        # 🖼️ Delete thumbnail
+        if file_obj.thumbnail and os.path.exists(file_obj.thumbnail.path):
+            os.remove(file_obj.thumbnail.path)
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "error.file-deletion-failed",
+            "answer":"",
+            "error": str(e)
+        }
+
+    # --- Delete database record ---
+    try:
+        file_obj.delete()
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "error.file-deletion-failed",
+            "answer":"",
+            "error": str(e)
+        }
+
+    # --- Clean up empty directories ---
+    try:
+        folder_path = os.path.dirname(file_obj.file.path)
+        if os.path.exists(folder_path) and not os.listdir(folder_path):
+            os.rmdir(folder_path)
+    except Exception:
+        pass  # no romper flujo si no se puede eliminar
+
+    # --- Success response ---
+    return {
+        "success": True,
+        "message": "files.message.the-file-was-delete",
+        "answer": {
+            "file_id": file_id,
+            "folder_id": folder.id if folder else None,
+            "deleted_at": timezone.now(),
+        },
+        "error": None,
+    }
+
 def delete_folder(user, folder_id):
     """
     Delete a folder and all its subfolders and files recursively.
@@ -757,21 +836,8 @@ def delete_folder(user, folder_id):
         }
 
     # --- Check permissions ---
-    try:
-        permission = FolderPermission.objects.get(folder=folder, user=user)
-    except FolderPermission.DoesNotExist:
-        return {
-            "success": False,
-            "message": "error.unauthorized",
-            "error": "The user does not have permissions for this folder"
-        }
-
-    if not (permission.can_write or permission.can_delete):
-        return {
-            "success": False,
-            "message": "error.unauthorized",
-            "error": "The user does not have permission to delete this folder"
-        }
+    if not has_folder_permission(user, folder , "delete_folder"):
+        return {"success": False, "message": "files.error.permission-denied", "error": "The user not have the permissions" , "answer":""} 
 
     # --- Recursive deletion ---
     try:
