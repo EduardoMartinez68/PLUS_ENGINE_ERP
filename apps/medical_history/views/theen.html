@@ -366,7 +366,10 @@ function get_svg_activity(activity, x=64, y=181, r=15){
                 fill="rgba(135,206,235,0.4)" stroke="#87CEEB" stroke-width="1"/>
         `,
 
-
+        "dienteAusente": `
+            <line x1="${x - r/2}" y1="${y - r/2}" x2="${x + r/2}" y2="${y + r/2}" stroke="#FF5656" stroke-width="2"/>
+            <line x1="${x + r/2}" y1="${y - r/2}" x2="${x - r/2}" y2="${y + r/2}" stroke="#FF5656" stroke-width="2"/>
+        `,
         "otro":`
             <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#999" stroke-width="2" stroke-dasharray="4,2"/>
             <text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" fill="#999" font-size="12" font-weight="bold">¿?</text>
@@ -450,7 +453,7 @@ const svgsDientesPruebas = {
         d="M235.687 208.384C232.522 206.374 229.862 200.861 230.412 195.648C230.67 193.205 232.887 186.64 236.741 184.276C238.09 183.449 241.953 182.381 244.944 185.085C248.564 188.359 250.937 193.288 251.687 198.522C251.954 200.383 251.734 204.278 248.872 207.02C244.444 211.264 239.483 210.794 235.687 208.384Z"
         fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
 
-    ${get_svg_activity("endodoncia", 241, 194, 15)}
+    ${get_svg_activity("dienteAusente", 241, 194, 15)}
 </svg>`,
   6: `
 <svg viewBox="263 125 45 89" xmlns="http://www.w3.org/2000/svg">
