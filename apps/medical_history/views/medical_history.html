@@ -215,14 +215,8 @@
 </style>
 
 <message-pop title="medical-history.title.dental-information" name="pop-teeth-chart">
-<!--here exist the information of the teeth-->
-<div class="container-pop">
-  <div class="section">
-    <div class="teeth-chart" id="teethChart"></div>
-  </div>
-</div>
-
-<button class="btn btn-edit btn-success" t="message.success" onclick="window.close_my_pop('pop-teeth-chart')">Success</button>
+{% include 'partials_medical_history/theen.html' %}
+<button class="btn btn-edit btn-success" t="btn.success" onclick="window.close_my_pop('pop-teeth-chart')">Success</button>
 </message-pop>
 
 <script>

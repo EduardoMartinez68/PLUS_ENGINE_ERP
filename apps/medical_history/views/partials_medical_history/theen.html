@@ -1,0 +1,555 @@
+<style>
+/* ===== CONTENEDORES PRINCIPALES ===== */
+.container-theen {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  height: 100vh;
+  background: #f7fafc;
+}
+
+.odontograma {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 30px;
+  padding: 20px;
+  background: white;
+  border-right: 2px solid #ddd;
+}
+
+.arcada {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 8px;
+  padding-bottom: 10px;
+  justify-content: center;
+}
+
+.arcada-inferior {
+  transform: rotate(180deg);
+}
+
+/* ===== DIENTE ===== */
+.diente {
+  min-width: 65px;
+  min-height: 95px;
+  background: #e2e8f0;
+  border: 2px solid #718096;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  padding-top: 5px;
+  position: relative;
+}
+
+.diente:hover {
+  background: #bee3f8;
+}
+
+.diente.activo {
+  background: #63b3ed;
+  color: white;
+  border-color: #2b6cb0;
+}
+
+/* ===== NÚMERO DE DIENTE ===== */
+.numero-diente {
+  position: absolute;
+  top: 3px;
+  font-size: 0.9rem;
+  color: #757575;
+  font-weight: bold;
+}
+
+.arcada-inferior .numero-diente {
+  transform: rotate(180deg);
+}
+
+/* ===== PANEL INFO ===== */
+.panel-info {
+  flex: 1;
+  padding: 20px;
+  background: #edf2f7;
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+  width: 500px;
+}
+
+.panel-info h2 { margin-top: 0; }
+.panel-info.hidden { display: none; }
+
+/* ===== DIBUJOS DE DIENTES ===== */
+.diente-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+/* Encías y dientes */
+.encia-fangs, .encia-molar, .encia-second-molar, .encia-three-molar,
+.encia-incisive, .encia-premolar, .encia-second-premolar, .encia-canines {
+  background: #f7a8a8;
+  border-radius: 10px 10px 0 0;
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.1);
+  z-index: 11;
+}
+
+.fangs, .molar, .second-molar, .three-molar,
+.incisive-central, .incisive-lateral, .premolar,
+.second-premolar, .canines {
+  background: #ffffff;
+  border: 2px solid #718096;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+/* Tipos de diente */
+.encia-incisive { width: 18px; height: 25px; margin-bottom: -9px;}
+.incisive-central { width: 18px; height: 45px; border-radius: 5% 5% 10% 10%; }
+.incisive-lateral { width: 16px; height: 40px; border-radius: 5% 5% 10% 10%; }
+
+.encia-canines { width: 18px; height: 30px; margin-bottom: -15px;}
+.canines { width: 19px; height: 50px; border-radius: 100%; }
+
+.encia-premolar { width: 22px; height: 25px; margin-bottom: -5px;}
+.premolar { width: 22px; height: 40px; border-radius: 10% 10% 15% 15%; }
+
+.encia-second-premolar { width: 22px; height: 25px; margin-bottom: -5px;}
+.second-premolar { width: 22px; height: 40px; border-radius: 10% 10% 15% 15%; }
+
+.encia-molar { width: 50px; height: 30px; margin-bottom: -5px;}
+.molar { width: 50px; height: 40px; border-radius: 0% 0% 15% 15% / 30% 30% 20% 20%; }
+
+.encia-second-molar { width: 40px; height: 30px; margin-bottom: -5px;}
+.second-molar { width: 40px; height: 40px; border-radius: 0% 0% 15% 15% / 30% 30% 20% 20%; }
+
+.encia-three-molar { width: 34px; height: 30px; margin-bottom: -5px;}
+.three-molar { width: 34px; height: 40px; border-radius: 0% 0% 15% 15% / 30% 30% 20% 20%; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .container-theen { flex-direction: column; }
+  .odontograma { border-right: none; align-items: center; }
+  .panel-info {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background: white;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+  .panel-info.visible { transform: translateY(0); }
+}
+
+
+
+
+/*------------------------------info theen-----------------------------*/
+.info-diente {
+  padding: 1rem;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+.titulo-info {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  color: #2d2d2d;
+}
+
+/* ======== ESQUEMA DENTAL CIRCULAR ======== */
+.esquema-diente-circular {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 1.2rem;
+  border-radius: 50%;
+  background: #f8f8f8;
+  border: 3px solid #ccc;
+  overflow: hidden;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Cuadrantes (4 partes) */
+.cuadrante {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  transition: background 0.3s, transform 0.2s;
+}
+
+/* Posiciones */
+[data-cara="superior-izq"] {
+  top: 0; left: 0;
+  border-top-left-radius: 100%;
+}
+[data-cara="superior-der"] {
+  top: 0; right: 0;
+  border-top-right-radius: 100%;
+}
+[data-cara="inferior-izq"] {
+  bottom: 0; left: 0;
+  border-bottom-left-radius: 100%;
+}
+[data-cara="inferior-der"] {
+  bottom: 0; right: 0;
+  border-bottom-right-radius: 100%;
+}
+
+/* Centro (oclusal) */
+.centro {
+  width: 40%;
+  height: 40%;
+  background: #fff;
+  border: 2px solid #bbb;
+  border-radius: 50%;
+  z-index: 2;
+  transition: background 0.3s, transform 0.2s;
+}
+
+/* Interacción visual */
+.cara:hover {
+  background: #e6f0ff;
+  cursor: pointer;
+  transform: scale(1.03);
+}
+.cara.activa {
+  background: #63a4ff;
+  border-color: #4a90e2;
+}
+
+/* ====== Estado general y observaciones ====== */
+.estado-general, .info-detallada {
+  margin-top: 1rem;
+}
+
+.select-estado {
+  width: 100%;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/**--------------------------------------------------------------------------caries----------------------------------------------------------**/
+.esquema-caries-rect {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.caries-barra {
+  display: flex;
+  flex-direction: column-reverse;
+  width: 50px;
+  height: 220px;
+  border: 2px solid #cbd5e1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8fafc;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+}
+
+.caries-nivel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Colores por profundidad: de blanco (superficial) a negro (pulpar) */
+.caries-nivel[data-nivel="superficial"] { 
+  background: #ffffff;
+  color: #000; /* texto visible */
+}
+.caries-nivel[data-nivel="media"] { 
+  background: #d3d3d3;
+}
+.caries-nivel[data-nivel="profunda"] { 
+  background: #a0a0a0;
+}
+.caries-nivel[data-nivel="pulpar"] { 
+  background: #8b8b8b;
+}
+
+/* Nivel seleccionado */
+.caries-nivel.activa {
+  background: #f56565; /* Color de la capa seleccionada */
+  color: #fff;
+}
+
+/* Capas por debajo de la seleccionadas (infectadas) */
+.caries-nivel.infectada {
+  background: #a0aec0; /* Gris simulando daño / hueso afectado */
+  color: #fff;
+}
+</style>
+
+<div class="container-theen">
+  <div class="odontograma" id="odontograma">
+    <div class="arcada" id="arcada-superior"></div>
+    <div class="arcada arcada-inferior" id="arcada-inferior"></div>
+  </div>
+  <div class="panel-info" id="panel-info">
+    <h2 id="titulo-diente">Selecciona un diente</h2>
+    <p id="descripcion-diente">Haz clic en un diente para ver la información.</p>
+    <img src="https://i.pinimg.com/736x/74/96/52/7496520e03291819644f698a032fbb39.jpg" alt="" style="width: 100%; height: auto;">
+  </div>
+</div>
+
+<script>
+// ===== DATOS =====
+const dientes = Array.from({ length: 32 }, (_, i) => ({
+  id: i + 1,
+  nombre: `Diente ${i + 1}`,
+  descripcion: `Descripción del diente ${i + 1}. Aquí puedes agregar información sobre su estado clínico, observaciones o tratamientos.`
+}));
+
+const arcadaSuperior = document.getElementById('arcada-superior');
+const arcadaInferior = document.getElementById('arcada-inferior');
+const panelInfo = document.getElementById('panel-info');
+const tituloDiente = document.getElementById('titulo-diente');
+const descripcionDiente = document.getElementById('descripcion-diente');
+
+// ===== FUNCIONES =====
+function crearDibujoDiente(id) {
+  const container = document.createElement('div');
+  container.classList.add('diente-container');
+  let html = '';
+
+  if ([1,2,15,16,17,18,31,32].includes(id)) {
+    html = `<div class="encia-three-molar"></div><div class="three-molar"></div>`;
+  } else if ([3,14,19,30].includes(id)) {
+    html = `<div class="encia-second-molar"></div><div class="second-molar"></div>`;
+  } else if ([4,13,20,29].includes(id)) {
+    html = `<div class="encia-molar"></div><div class="molar"></div>`;
+  } else if ([5,12,21,28].includes(id)) {
+    html = `<div class="encia-second-premolar"></div><div class="second-premolar"></div>`;
+  } else if ([6,11,22,27].includes(id)) {
+    html = `<div class="encia-premolar"></div><div class="premolar"></div>`;
+  } else if ([7,10,23,26].includes(id)) {
+    html = `<div class="encia-canines"></div><div class="canines"></div>`;
+  } else if ([8,9,24,25].includes(id)) {
+    html = `<div class="encia-incisive"></div><div class="incisive-central"></div>`;
+  }
+
+  container.innerHTML = html;
+  return container;
+}
+
+function mostrarInfo(diente, div) {
+  document.querySelectorAll('.diente').forEach(d => d.classList.remove('activo'));
+  div.classList.add('activo');
+
+  // Limpiar y obtener nueva información
+  get_data_theen(diente.id);
+  panelInfo.classList.remove('hidden');
+  if(window.innerWidth <= 768) panelInfo.classList.add('visible');
+}
+
+// ===== NUEVA FUNCIÓN =====
+function get_data_theen(dienteId) {
+  const panel = document.getElementById('panel-info');
+
+  panel.innerHTML = `
+<div class="info-diente">
+  <center><h2>Diente ${dienteId}</h2></center>
+
+  
+  <div class="row">
+    <div class="col">
+        <!-- ESQUEMA CIRCULAR -->
+        <div class="esquema-diente-circular">
+            <div class="cara cuadrante" data-cara="superior-izq" title="Mesial"></div>
+            <div class="cara cuadrante" data-cara="superior-der" title="Distal"></div>
+            <div class="cara cuadrante" data-cara="inferior-izq" title="Vestibular"></div>
+            <div class="cara cuadrante" data-cara="inferior-der" title="Lingual"></div>
+            <div class="cara centro" data-cara="oclusal" title="Oclusal"></div>
+        </div>
+    </div>
+    <div class="col">
+        <!-- profundidad caries -->
+        <div class="esquema-caries-rect">
+            <div class="caries-barra">
+                <div class="caries-nivel" data-nivel="pulpar" title="Pulpar">4</div>
+                <div class="caries-nivel" data-nivel="profunda" title="Profunda">3</div>
+                <div class="caries-nivel" data-nivel="media" title="Media">2</div>
+                <div class="caries-nivel" data-nivel="superficial" title="Superficial">1</div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+
+
+
+
+  <!-- Estado general -->
+  <div class="estado-general">
+    <h3>Estado del diente</h3>
+    <select id="estado-${dienteId}">
+      <option value="sano">Sano</option>
+      <option value="caries">Caries</option>
+      <option value="restaurado">Restaurado</option>
+      <option value="endodoncia">Endodoncia</option>
+      <option value="extraido">Extraído</option>
+    </select>
+  </div>
+
+  <!-- Detalle por cara -->
+  <div class="detalle-caras">
+    <h3>Detalle por cara</h3>
+    <div class="cara-detalle">
+      <label>Mesial</label>
+      <select id="cara-mesial-${dienteId}">
+        <option value="sano">Sano</option>
+        <option value="caries">Caries</option>
+        <option value="restaurado">Restaurado</option>
+        <option value="fractura">Fractura</option>
+      </select>
+    </div>
+    <div class="cara-detalle">
+      <label>Distal</label>
+      <select id="cara-distal-${dienteId}">
+        <option value="sano">Sano</option>
+        <option value="caries">Caries</option>
+        <option value="restaurado">Restaurado</option>
+        <option value="fractura">Fractura</option>
+      </select>
+    </div>
+    <!-- Repetir Vestibular, Lingual, Oclusal -->
+  </div>
+
+  <!-- Encía / tejido -->
+  <div class="tejido">
+    <h3>Encía / tejido</h3>
+    <label>Encía:</label>
+    <select id="encia-${dienteId}">
+      <option value="normal">Normal</option>
+      <option value="inflamada">Inflamada</option>
+      <option value="sangrado">Sangrado</option>
+    </select>
+    <label>Placa / sarro:</label>
+    <select id="placa-${dienteId}">
+      <option value="no">No</option>
+      <option value="si">Sí</option>
+    </select>
+    <label>Movilidad:</label>
+    <select id="movilidad-${dienteId}">
+      <option value="0">0</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+    </select>
+  </div>
+
+  <!-- Observaciones -->
+  <div class="observaciones">
+    <h3>Observaciones</h3>
+    <textarea id="obs-${dienteId}" placeholder="Notas adicionales..."></textarea>
+  </div>
+</div>
+  `;
+
+  // Añadir interacción visual (clic para resaltar zonas)
+  panel.querySelectorAll('.cara').forEach(cara => {
+    cara.addEventListener('click', () => {
+      cara.classList.toggle('activa');
+    });
+  });
+
+document.querySelectorAll('.caries-nivel').forEach(nivel => {
+  nivel.addEventListener('click', () => {
+    const niveles = Array.from(document.querySelectorAll('.caries-nivel'));
+    const index = niveles.indexOf(nivel);
+
+    // Si la capa ya estaba activa → deseleccionamos todo
+    if (nivel.classList.contains('activa')) {
+      niveles.forEach(n => {
+        n.classList.remove('activa');
+        n.classList.remove('infectada');
+      });
+      return;
+    }
+
+    // Limpiar estados previos
+    niveles.forEach(n => {
+      n.classList.remove('activa');
+      n.classList.remove('infectada');
+    });
+
+    // Activar la capa clickeada
+    nivel.classList.add('activa');
+
+    // Marcar capas por debajo como infectadas
+    for (let i = index + 1; i < niveles.length; i++) {
+      niveles[i].classList.add('infectada');
+    }
+
+    // Las capas por encima vuelven a normal
+    for (let i = 0; i < index; i++) {
+      niveles[i].classList.remove('infectada');
+      niveles[i].classList.remove('activa');
+    }
+  });
+});
+}
+
+// ===== CREAR DIENTES =====
+dientes.forEach(diente => {
+  const div = document.createElement('div');
+  div.classList.add('diente');
+  div.title = diente.nombre;
+
+  const numero = document.createElement('div');
+  numero.classList.add('numero-diente');
+  numero.textContent = diente.id;
+  div.appendChild(numero);
+
+  const dibujo = crearDibujoDiente(diente.id);
+  div.appendChild(dibujo);
+
+  div.addEventListener('click', () => mostrarInfo(diente, div));
+
+  if (diente.id <= 16) arcadaSuperior.appendChild(div);
+  else arcadaInferior.appendChild(div);
+});
+
+// Ocultar panel si toca fuera en móvil
+window.addEventListener('click', e => {
+  if(window.innerWidth <= 768 &&
+     !panelInfo.contains(e.target) &&
+     !e.target.classList.contains('diente')) {
+    panelInfo.classList.remove('visible');
+  }
+});
+</script>

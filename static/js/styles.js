@@ -1,8 +1,8 @@
 let currentPopZIndex = 5000;
 const colors = {
-  color_company: '#085DAA',
+  color_company: '#2b6cb0',
   color_company_hover: '#064985',
-  color_second: '#1C74C2'
+  color_second: '#1d7dd1ff'
 }
 
 //this functions is for create a id unique for that not exist a error when create a new element
