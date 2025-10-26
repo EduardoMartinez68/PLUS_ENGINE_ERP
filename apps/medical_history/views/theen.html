@@ -288,6 +288,90 @@ var colorsTheens={
 }
 
 
+
+function get_svg_activity(activity, x=64, y=181, r=15){
+    const activityTheenh={
+        "corona":`
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#8BB0D1" stroke-width="2"/>
+            <circle cx="${x}" cy="${y}" r="${r}" fill="rgba(80,134,214,0.3)" stroke="#8BB0D1" stroke-width="2"/>
+        `,
+        "coronaProvisional":`
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#8BB0D1" stroke-width="2"/>
+            <circle cx="${x}" cy="${y}" r="${r}" fill="rgba(80,134,214,0.3)" stroke="#8BB0D1" stroke-width="2"/>
+            <text cx="${x}" cy="${y}" text-anchor="middle" dominant-baseline="middle" fill="#085DA8" font-size="12" font-weight="bold">X</text>
+        `,
+        "coronaMalEstado":`
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#FF5656" stroke-width="2"/>
+            <circle cx="${x}" cy="${y}" r="${r}" fill="rgba(255,86,86,0.3)" stroke="#FF5656" stroke-width="2"/>
+        `,
+        "coronaMalEstadoProvisional":`
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#FF5656" stroke-width="2"/>
+            <circle cx="${x}" cy="${y}" r="${r}" fill="rgba(255,86,86,0.3)" stroke="#FF5656" stroke-width="2"/>
+            <text cx="${x}" cy="${y}" text-anchor="middle" dominant-baseline="middle" fill="#FF5656" font-size="12" font-weight="bold">X</text>
+        `,
+
+
+        "restauracion":`
+            <circle cx="${x}" cy="${y+3}" r="5" fill="#8BB0D1" stroke="#8BB0D1" stroke-width="2"/>
+        `,
+        "restauracionMalEstado":`
+            <circle cx="${x}" cy="${y+3}" r="5" fill="#FF5656" stroke="#FF5656" stroke-width="2"/>
+        `,
+
+        "endodoncia":`
+            <line x1="${x}" y1="${y}" x2="${x}" y2="${y+30}" stroke="#8BB0D1" stroke-width="2"/>
+        `,
+        "endodonciaMalEstado":`
+            <line x1="${x}" y1="${y}" x2="${x}" y2="${y+30}" stroke="#8BB0D1" stroke-width="2"/>
+            <circle cx="${x}" cy="${y-5}" r="12" fill="none" stroke="#FF5656" stroke-width="2" stroke-dasharray="4,4"/>
+        `,
+
+
+        "implante":`
+            <circle cx="${x}" cy="${y}" r="5" fill="#8BB0D1" stroke="#8BB0D1" stroke-width="2"/>
+            <line x1="${x}" y1="${y}" x2="${x}" y2="${y-21}" stroke="#8BB0D1" stroke-width="2"/>
+        `,
+
+        "implanteMalEstado":`
+            <text cx="${x}" cy="${y}" text-anchor="middle" dominant-baseline="middle" fill="#FF5656" font-size="12" font-weight="bold">X</text>
+            <circle cx="${x}" cy="${y}" r="5" fill="#8BB0D1" stroke="#8BB0D1" stroke-width="2"/>
+            <line x1="${x}" y1="${y}" x2="${x}" y2="${y-21}" stroke="#8BB0D1" stroke-width="2"/>
+            <circle cx="${x}" cy="${y-5}" r="12" fill="none" stroke="#FF5656" stroke-width="2" stroke-dasharray="4,4"/>
+        `,
+
+        "perno":`
+            <circle cx="${x}" cy="${y+3}" r="5" fill="#8BB0D1" stroke="#8BB0D1" stroke-width="2"/>
+            <line x1="${x}" y1="${y+3-14}" x2="${x}" y2="${y+10}" stroke="gray" stroke-width="4"/>
+        `,
+        "pernoMalEstado":`
+            <circle cx="${x}" cy="${y+3}" r="5" fill="#FF5656" stroke="#FF5656" stroke-width="2"/>
+            <line x1="${x}" y1="${y+3-14}" x2="${x}" y2="${y+10}" stroke="gray" stroke-width="4"/>
+        `,
+
+        "protesisRemovible":`
+            <circle cx="${x}" cy="${y+4}" r="15" fill="none" stroke="#FFA500" stroke-width="2" stroke-dasharray="4,4"/>
+            <text x="${x}" y="${y+4}" text-anchor="middle" dominant-baseline="middle" fill="#FFA500" font-size="12" font-weight="bold">X</text>
+        `,
+
+        "amalgama":`
+            <rect x="${x-3}" y="${y-10}" width="8" height="6" rx="1" ry="1" fill="#666" stroke="#444" stroke-width="0.5"/>
+        `,
+        "amalgamaMalEstado":`
+            <circle cx="${x}" cy="${y-5}" r="12" fill="none" stroke="#FF5656" stroke-width="2" stroke-dasharray="4,4"/>
+            <rect x="${x-3}" y="${y-10}" width="8" height="6" rx="1" ry="1" fill="#666" stroke="#444" stroke-width="0.5"/>
+        `,
+
+        "sellante": `
+        <!-- Sellante: rectángulo translúcido sobre superficie -->
+        <rect x="${x-9}" y="${y}" width="19" height="9" rx="1" ry="2"
+                fill="rgba(135,206,235,0.4)" stroke="#87CEEB" stroke-width="1"/>
+        `
+    }
+
+
+    return activityTheenh[activity] || "";
+}
+
 //this is the format basic of the first 9 theen of the pacient
 //this theens are use for create all the patient's jaw
 const svgsDientesPruebas = {
@@ -302,6 +386,9 @@ const svgsDientesPruebas = {
   <path fill-rule="evenodd" clip-rule="evenodd"
         d="M57.1449 173.704C60.9228 171.63 65.6902 170.717 70.5069 173.704C75.3237 176.691 77.6012 181.331 78.0033 184.465C78.1894 185.916 78.8645 190.748 74.2745 193.275C71.4811 194.812 67.6431 192.727 66.4252 191.74C65.2073 190.753 63.1025 189.242 60.7782 191.74C58.4539 194.237 55.4549 192.252 54.445 191.352C53.4352 190.453 50.8711 188.224 50.8711 184.22C50.8711 180.215 52.1565 176.444 57.1449 173.704Z"
         fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
+
+    ${get_svg_activity("endodonciaMalEstado")}
+
 </svg>`,
 
   2: `
@@ -315,6 +402,8 @@ const svgsDientesPruebas = {
   <path fill-rule="evenodd" clip-rule="evenodd"
         d="M123.944 186.594C124.135 188.07 124.021 194.834 119.32 197.405C116.459 198.97 112.126 196.848 110.878 195.843C109.631 194.839 108.303 193.477 104.289 195.228C101.369 196.502 98.0319 193.492 96.9978 192.577C96.483 192.122 94.1719 188.087 94.9157 184.116C95.6661 180.109 99.4844 176.163 101.893 175.325C104.869 174.289 105.963 175.863 110.367 176.081C113.201 176.221 115.256 175.59 117.625 176.551C123.01 178.736 123.893 186.195 123.944 186.594Z"
         fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
+
+
 </svg>`,
 
   3: `

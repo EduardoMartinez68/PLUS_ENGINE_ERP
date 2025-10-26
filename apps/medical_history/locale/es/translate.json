@@ -86,5 +86,7 @@
 
     "medical-history.title.advanced-information":"Información Avanzada",
     "medical-history.title.dental-information":"Información Dental",
-    "medical-history.title.emergency-information":"Contacto de Emergencia"
+    "medical-history.title.emergency-information":"Contacto de Emergencia",
+
+    "medical-history.label.select-a-tooth":"Haz clic en un diente para ver la información."
 }

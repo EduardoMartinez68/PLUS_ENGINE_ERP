@@ -90,9 +90,13 @@ def get_form_medical_history(request, customer_id):
 @login_required(login_url='login')
 def form_history_medical(request, customer_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'theen.html')
+    
         result = {"customer_id": customer_id} 
         return render(request, 'form_medical_history.html', result) 
     else:
+        return render(request, 'theen.html')
+    
         result = {"customer_id": customer_id} 
         return render(request, 'form_medical_history.html', result) 
 

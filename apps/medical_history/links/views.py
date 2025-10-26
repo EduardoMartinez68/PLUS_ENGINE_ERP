@@ -48,5 +48,7 @@ def get_form_medical_history(request, customer_id):
         return JsonResponse({"success": False, "error": answer.get("error", "Unknown error")})
     
 def form_history_medical(request, customer_id):
+    return render(request, 'theen.html')
+
     result = {"customer_id": customer_id} 
     return render(request, 'form_medical_history.html', result) 
