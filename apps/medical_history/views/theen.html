@@ -362,9 +362,14 @@ function get_svg_activity(activity, x=64, y=181, r=15){
         `,
 
         "sellante": `
-        <!-- Sellante: rectángulo translúcido sobre superficie -->
         <rect x="${x-9}" y="${y}" width="19" height="9" rx="1" ry="2"
                 fill="rgba(135,206,235,0.4)" stroke="#87CEEB" stroke-width="1"/>
+        `,
+
+
+        "otro":`
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#999" stroke-width="2" stroke-dasharray="4,2"/>
+            <text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" fill="#999" font-size="12" font-weight="bold">¿?</text>
         `
     }
 
@@ -387,7 +392,7 @@ const svgsDientesPruebas = {
         d="M57.1449 173.704C60.9228 171.63 65.6902 170.717 70.5069 173.704C75.3237 176.691 77.6012 181.331 78.0033 184.465C78.1894 185.916 78.8645 190.748 74.2745 193.275C71.4811 194.812 67.6431 192.727 66.4252 191.74C65.2073 190.753 63.1025 189.242 60.7782 191.74C58.4539 194.237 55.4549 192.252 54.445 191.352C53.4352 190.453 50.8711 188.224 50.8711 184.22C50.8711 180.215 52.1565 176.444 57.1449 173.704Z"
         fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
 
-    ${get_svg_activity("endodonciaMalEstado")}
+    ${get_svg_activity("corona",64, 181, 15)}
 
 </svg>`,
 
@@ -403,7 +408,7 @@ const svgsDientesPruebas = {
         d="M123.944 186.594C124.135 188.07 124.021 194.834 119.32 197.405C116.459 198.97 112.126 196.848 110.878 195.843C109.631 194.839 108.303 193.477 104.289 195.228C101.369 196.502 98.0319 193.492 96.9978 192.577C96.483 192.122 94.1719 188.087 94.9157 184.116C95.6661 180.109 99.4844 176.163 101.893 175.325C104.869 174.289 105.963 175.863 110.367 176.081C113.201 176.221 115.256 175.59 117.625 176.551C123.01 178.736 123.893 186.195 123.944 186.594Z"
         fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
 
-
+    ${get_svg_activity("sellante", 110, 181, 15)}
 </svg>`,
 
   3: `
@@ -420,6 +425,8 @@ const svgsDientesPruebas = {
         <path fill-rule="evenodd" clip-rule="evenodd"
             d="M150.969 200.092C147.952 203.338 139.764 201.09 138.111 197.529C136.73 194.434 137.544 187.091 140.359 183.202C143.549 178.796 148.073 179.322 149.111 179.337C153.121 179.928 154.646 180.017 159.546 178.831C164.446 177.646 168.429 184.8 168.923 186.124C169.417 187.448 171.177 196.384 167.091 199.89C164.771 201.88 159.077 202.356 156.768 200.251C154.426 198.117 152.511 198.433 150.969 200.092Z"
             fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
+
+        ${get_svg_activity("amalgamaMalEstado", 155, 187, 15)}
 </svg>`,
 
   4: `
@@ -430,6 +437,8 @@ const svgsDientesPruebas = {
   <path fill-rule="evenodd" clip-rule="evenodd"
         d="M192.229 203.346C185.151 200.247 185.921 195.732 186.674 191.483C187.428 187.233 188.5 183.073 191.216 180.418C193.932 177.763 197.907 176.347 201.905 180.418C204.058 182.611 206.715 188.037 207.449 192.949C207.725 194.798 208.133 199.876 205.024 202.218C201.106 205.168 196.196 205.084 192.229 203.346Z"
         fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
+
+    ${get_svg_activity("pernoMalEstado", 197, 187, 15)}
 </svg>`,
 
   5: `
@@ -440,6 +449,8 @@ const svgsDientesPruebas = {
   <path fill-rule="evenodd" clip-rule="evenodd"
         d="M235.687 208.384C232.522 206.374 229.862 200.861 230.412 195.648C230.67 193.205 232.887 186.64 236.741 184.276C238.09 183.449 241.953 182.381 244.944 185.085C248.564 188.359 250.937 193.288 251.687 198.522C251.954 200.383 251.734 204.278 248.872 207.02C244.444 211.264 239.483 210.794 235.687 208.384Z"
         fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
+
+    ${get_svg_activity("endodoncia", 241, 194, 15)}
 </svg>`,
   6: `
 <svg viewBox="263 125 45 89" xmlns="http://www.w3.org/2000/svg">
@@ -449,6 +460,8 @@ const svgsDientesPruebas = {
   <path fill-rule="evenodd" clip-rule="evenodd"
       d="M280.916 183.623C282.272 182.796 285.813 181.412 288.954 183.812C292.696 186.671 296.214 192.923 296.723 199.316C297.382 207.584 295.975 210.711 292.497 213.207C291.646 213.817 287.999 215.809 283.817 214.756C280.702 213.972 274.779 209.875 274.075 207.537C272.336 201.765 275.004 193.241 275.985 190.782C277.56 186.833 279.704 184.362 280.916 183.623Z"
       fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
+
+    ${get_svg_activity("endodonciaMalEstado", 285, 197, 15)}
 </svg>`,
   7: `
 <svg viewBox="311 130 40 80" xmlns="http://www.w3.org/2000/svg">
@@ -458,6 +471,8 @@ const svgsDientesPruebas = {
   <path fill-rule="evenodd" clip-rule="evenodd"
       d="M332.497 182.373C335.937 185.543 338.254 191.54 338.759 197.829C338.881 199.341 339.789 204.593 337.789 207.106C336.017 209.333 331.432 208.93 329.839 208.969C327.106 209.035 324.009 208.688 322.105 206.8C318.522 203.248 319.369 191.924 320.928 188.018C321.55 186.459 323.296 182.868 325.849 181.498C328.264 180.202 331.056 181.045 332.497 182.373Z"
       fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
+
+    ${get_svg_activity("restauracion", 330, 194, 15)}
 </svg>`,
   8: `
 <svg viewBox="354 130 40 85" xmlns="http://www.w3.org/2000/svg">
@@ -467,6 +482,8 @@ const svgsDientesPruebas = {
     <path fill-rule="evenodd" clip-rule="evenodd"
         d="M368.357 182.985C369.663 182.167 373.673 180.798 376.698 183.172C377.403 183.724 381.49 186.961 382.868 192.752C384.032 197.639 386.34 211.066 384.424 212.424C381.984 214.154 366.661 214.073 363.703 211.827C362.513 210.924 361.665 206.324 361.789 201.577C361.928 196.266 363.133 190.771 363.408 190.064C364.925 186.159 367.19 183.716 368.357 182.985Z"
         fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
+
+    ${get_svg_activity("otro", 373, 198, 15)}
 </svg>`
 };
 
