@@ -180,13 +180,13 @@
     "app.cases": "Casos",
     "app.contracts": "Contratos",
     "app.customers": "Clientes",
-    "app.settings": "Configuraciones",
     "app.rolesAndPermissions": "Roles y permisos",
     "app.employees":"Empleados",
     "app.products": "Productos",
     "app.medical_history": "Historial Medico",
     "app.services": "Servicios",
     "app.files": "Archivos",
+    "app.setting": "Configuraciones",
     "app.departament_employee": "Departamentos",
     "app.exit": "Salir"
 }

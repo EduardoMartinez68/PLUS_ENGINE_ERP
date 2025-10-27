@@ -1,0 +1,8 @@
+
+name: "setting"
+appName: "setting"
+icon: "setting/icon.webp"
+path: "/setting"
+dbInit: true
+permissionsFile: 'permissions.json'
+    

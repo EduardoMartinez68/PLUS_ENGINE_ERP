@@ -1,0 +1,20 @@
+{
+    "character":{
+        "icon":"fi fi-ts-settings"
+    },
+    "permissions": [
+        "view_settings",
+        "edit_company",
+        "edit_branch"
+    ], 
+    "translate":{
+        "es": {
+            "app_name": "Ajustes",
+            "description": "Administra las configuraciones de la empresa y sus sucursales, incluyendo datos de facturación, logos, ajustes online, etc.",
+
+            "view_settings": "Permite visualizar todas las configuraciones posibles del sistema",
+            "edit_company": "Permite actualizar la información de la empresa como logo, nombre, etc.",
+            "edit_branch": "Permite actualizar la información de la sucursal en la que trabaja el empleado como logo, nombre, etc."
+        }
+    }
+}
