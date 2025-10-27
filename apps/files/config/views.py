@@ -1,6 +1,6 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
-from ..services.members import get_members_of_folder, delete_member_of_folder, add_member_to_folder, get_member_permissions_in_folder
+from ..services.members import get_members_of_folder, delete_member_of_folder, add_member_to_folder, get_member_permissions_in_folder, update_member_permissions_in_folder
 from django.http import FileResponse
 from ..services.files import upload_file, get_folder_files, get_folders, get_folder_detail, create_folder, update_folder, delete_folder, download_file, get_file_detail, update_file, download_folder, delete_file
 from ..models import Folder, FolderPermission, File
@@ -548,11 +548,38 @@ def get_permitions_member(request, folder_id, member_id):
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
         
         result=get_member_permissions_in_folder(request.user, folder_id, member_id)
+    
         return JsonResponse({"success": result["success"], "message": result["message"], "answer": result["answer"], 'error':result["error"]}, status=200)
     else:
         if request.method != 'GET':
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
         
         result=get_member_permissions_in_folder(request.user, folder_id, member_id)
+    
+        return JsonResponse({"success": result["success"], "message": result["message"], "answer": result["answer"], 'error':result["error"]}, status=200)
+
+@login_required(login_url='login')
+def view_update_member_in_the_folder(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
+        
+        result=update_member_permissions_in_folder(request.user, data.get("folder_id", "") ,data.get("member_id", "") , data) 
+        return JsonResponse({"success": result["success"], "message": result["message"], "answer": result["answer"], 'error':result["error"]}, status=200)
+    else:
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
+        
+        result=update_member_permissions_in_folder(request.user, data.get("folder_id", "") ,data.get("member_id", "") , data) 
         return JsonResponse({"success": result["success"], "message": result["message"], "answer": result["answer"], 'error':result["error"]}, status=200)
 

@@ -235,7 +235,7 @@ def delete_folder_and_his_files(request):
 
 
 #---------------------------------------get member of the folder--------------------------
-from ..services.members import get_members_of_folder, delete_member_of_folder, add_member_to_folder, get_member_permissions_in_folder
+from ..services.members import get_members_of_folder, delete_member_of_folder, add_member_to_folder, get_member_permissions_in_folder, update_member_permissions_in_folder
 def members_of_folder(request):
     if request.method != 'GET':
         return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
@@ -284,4 +284,17 @@ def get_permitions_member(request, folder_id, member_id):
         return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
     
     result=get_member_permissions_in_folder(request.user, folder_id, member_id)
+
+    return JsonResponse({"success": result["success"], "message": result["message"], "answer": result["answer"], 'error':result["error"]}, status=200)
+
+def view_update_member_in_the_folder(request):
+    if request.method != 'POST':
+        return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"success": False, "message":"" , "error": "Format JSON invalid"}, status=400)
+    
+    result=update_member_permissions_in_folder(request.user, data.get("folder_id", "") ,data.get("member_id", "") , data) 
     return JsonResponse({"success": result["success"], "message": result["message"], "answer": result["answer"], 'error':result["error"]}, status=200)

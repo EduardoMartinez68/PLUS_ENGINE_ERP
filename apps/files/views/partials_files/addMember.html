@@ -64,19 +64,20 @@
                 <plus-switch text="files.permission.delete-member" name="can_delete_members"></plus-switch>
             </div>
         </div>
-        <button class="btn btn-edit btn-success" t="files.btn.add-member-folder" onclick="add_new_member_to_the_folder()" type="button"></button>
+        <button class="btn btn-add btn-success" t="files.btn.add-member-folder" onclick="add_new_member_to_the_folder()" type="button"></button>
     </form>
 </message-pop>
 
 <message-pop name="pop-edit-member-folder" title="files.title.edit-member-folder">
     <form id="form-edit-member-folder">
         <input type="hidden" id="member-edit" name="member_id">
+        <input type="hidden" id="folder-id-edit" name="folder_id">
         <div class="row">
             <div class="col">
                 <plus-title value="Jessica" id="name-member-edit" label="files.title.name-member-folder"></plus-title>
             </div>
         </div>
-        <plus-switch text="files.permission.activate-all" onclick="activate_all_permittions_of_the_folder" id="edit-activate-all-the-permissions"></plus-switch>
+        <plus-switch text="files.permission.activate-all" onclick="activate_all_permittions_of_the_folder_edit" id="edit-activate-all-the-permissions"></plus-switch>
         <div class="row">
             <div class="col">
                 <plus-switch text="files.permission.view" name="can_see_the_files"></plus-switch>
@@ -135,6 +136,14 @@
         });
     }
 
+    function activate_all_permittions_of_the_folder_edit(value) {
+        const pop=document.getElementById('pop-edit-member-folder');
+        const switches=pop.querySelectorAll('plus-switch');
+        switches.forEach((sw)=>{
+            sw.setChecked(value);
+        });
+    }
+
     function open_pop_add_new_member_folder(){
         //now we will open the pop
         activate_all_permittions_of_the_folder(false); //we will deactivate all the permissions by default
@@ -183,19 +192,24 @@
             const name = sw.getAttribute("name");
             if (name in permissions) {
                 sw.setChecked(permissions[name]);
+                if(!permissions[name]){
+                    allActive = false;
+                }
             } else {
                 sw.setChecked(false);
                 allActive = false;
             }
         });
+
         //we will activate the switch global for activate all the permissions if this user have all the permissions of the folder
         const activateAll = document.getElementById("edit-activate-all-the-permissions");
         if (activateAll && typeof activateAll.setChecked === "function") {
             activateAll.setChecked(allActive);
         }
-
+        
         document.getElementById('name-member-edit').value=name; //update the name of the member
         document.getElementById('member-edit').value=member_id; //update the id of the member to update
+        document.getElementById('folder-id-edit').value=document.getElementById('folder-id-member-folder').value;
         window.show_pop('pop-edit-member-folder'); 
     }   
 
@@ -239,39 +253,31 @@
 
     async function update_member_in_the_folder(){
         const creator_id=document.getElementById('folder-id-creator-folder').value;
+        const member_id=document.getElementById('member-edit').value;
 
         //first we will to check if exist the id for the new member
-        if(new_member_id==''){
-            window.show_alert('alert', 'files.error.error-to-get-the-permition', 'files.error.the-creator-have-all-the-permissions', 'the user not can get the permissions of the creator for change his permissions')
+        if(member_id==''){
+            window.show_alert('alert', 'files.title.no-can-update-the-member', 'files.error.need-add-the-member', 'the user not can update the permissions of the creator')
             return;    
         }
 
 
         //second we will see if the id of the new member not is equal to the id of the creator
-        if(new_member_id==creator_id){
-            window.show_alert('alert', 'files.error.error-to-get-the-permition', 'files.error.the-creator-have-all-the-permissions', 'the user not can get the permissions of the creator for change his permissions')
+        if(member_id==creator_id){
+            window.show_alert('alert', 'files.title.no-can-update-the-member', 'files.error.the-creator-have-all-the-permissions', 'the user not can update the permissions of the creator')
             return;
         }
 
         //now we will to send the form to the server and get the response
-        const backend=await send_form_to_the_server('form-member-folder', '/files/view_add_member_folder/');
+        const backend=await send_form_to_the_server('form-edit-member-folder', '/files/view_update_member_in_the_folder/');
         if(backend.success){
-            //if the response is successful, we will refresh the container and close the pop 
-            window.refresh_container_from_the_server(
-                ['search-member-folder', 'folder-id-member-folder'],
-                'container-table-member-folder',
-                get_div_container_member_folder(),
-                '/files/members_of_folder/',
-                'GET'
-            );
-
-            window.hide_pop('pop-add-member-folder');
-            window.show_alert('success', 'files.title.member-folder-added', 'files.message.member-folder-added');
+            window.hide_pop('pop-edit-member-folder');
+            window.show_alert('success', 'files.title.the-member-was-update', 'files.message.the-member-was-update');
             return;
         }
 
         //if not can add the new member we will show a alert
-        window.show_alert('alert', 'files.error.error-to-add-member', backend.message || '', backend.error || '');
+        window.show_alert('alert', 'files.title.no-can-update-the-member', backend.message || '', backend.error || '');
     }
 
     async function delete_member_folder(member_id) {

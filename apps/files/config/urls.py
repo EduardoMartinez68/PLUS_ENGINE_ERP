@@ -20,4 +20,5 @@ urlpatterns = [
     path('view_delete_member_folder/<int:folder_id>/', views.view_delete_member_folder, name='view_delete_member_folder'),
     path('view_add_member_folder/', views.view_add_member_folder, name='view_add_member_folder'),
     path('get_permitions_member/<int:folder_id>/<int:member_id>/', views.get_permitions_member, name='get_permitions_member'),
+    path('view_update_member_in_the_folder/', views.view_update_member_in_the_folder, name='view_update_member_in_the_folder'),
 ]

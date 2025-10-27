@@ -308,3 +308,96 @@ def get_member_permissions_in_folder(user, folder_id, member_id):
         "answer": permissions_dict,
         "error": None
     }
+
+def update_member_permissions_in_folder(user, folder_id, member_id, data):
+    """
+    Actualiza los permisos de un miembro en un folder.
+    - user: usuario que realiza la acción
+    - folder_id: ID del folder
+    - member_id: ID del miembro cuyos permisos se actualizarán
+    - data: diccionario con los permisos a actualizar
+    """
+    # ✅ Validar y convertir a enteros
+    try:
+        folder_id = int(folder_id)
+        member_id = int(member_id)
+    except (TypeError, ValueError):
+        return {
+            "success": False,
+            "answer": "",
+            "message": "Invalid ID",
+            "error": f"folder_id and member_id must be valid integers"
+        }
+    
+    # 1️⃣ Verificar que la carpeta exista
+    try:
+        folder = Folder.objects.get(id=folder_id)
+    except Folder.DoesNotExist:
+        return {
+            "success": False,
+            "answer": "",
+            "message": "files.error.folder-not-found",
+            "error": f"Folder with id {folder_id} not found."
+        }
+
+    # 2️⃣ Verificar permisos del usuario para editar miembros
+    if not has_folder_permission(user, folder, "can_change_the_permission"):
+        return {
+            "success": False,
+            "answer": "",
+            "message": "files.error.permission-denied",
+            "error": f"User {user.name} has no permission to edit member permissions in folder {folder_id}."
+        }
+
+    # 3️⃣ Verificar que el miembro exista
+    try:
+        member = CustomUser.objects.get(id=member_id)
+    except CustomUser.DoesNotExist:
+        return {
+            "success": False,
+            "answer": "",
+            "message": "files.error.member-not-found",
+            "error": f"Member with id {member_id} not found."
+        }
+
+    # 4️⃣ Verificar que el miembro tenga permisos existentes
+    try:
+        perm = FolderPermission.objects.get(folder=folder, user=member)
+    except FolderPermission.DoesNotExist:
+        return {
+            "success": False,
+            "answer": "",
+            "message": "files.error.permissions-not-found",
+            "error": f"Member {member_id} does not have permissions in folder {folder_id}."
+        }
+
+    # 5️⃣ Actualizar permisos
+    perm.can_see_folder = Plus.to_bool(data.get("can_see_folder", False))
+    perm.can_edit_folder = Plus.to_bool(data.get("can_edit_folder", False))
+    perm.can_delete_folder = Plus.to_bool(data.get("can_delete_folder", False))
+    perm.can_download_folder = Plus.to_bool(data.get("can_download_folder", False))
+    perm.can_add_subfolder = Plus.to_bool(data.get("can_add_subfolder", False))
+
+    perm.can_see_the_files = Plus.to_bool(data.get("can_see_the_files", False))
+    perm.can_upload_file = Plus.to_bool(data.get("can_upload_file", False))
+    perm.can_move_file = Plus.to_bool(data.get("can_move_file", False))
+    perm.can_update_file = Plus.to_bool(data.get("can_update_file", False))
+    perm.can_copy_file = Plus.to_bool(data.get("can_copy_file", False))
+    perm.can_delete_file = Plus.to_bool(data.get("can_delete_file", False))
+    perm.can_see_file = Plus.to_bool(data.get("can_see_file", False))
+    perm.can_download_file = Plus.to_bool(data.get("can_download_file", False))
+
+    perm.can_change_the_permission = Plus.to_bool(data.get("can_change_the_permission", False))
+    perm.can_add_members = Plus.to_bool(data.get("can_add_members", False))
+    perm.can_delete_members = Plus.to_bool(data.get("can_delete_members", False))
+    perm.can_see_members = Plus.to_bool(data.get("can_see_members", False))
+
+    # 6️⃣ Guardar cambios
+    perm.save()
+
+    return {
+        "success": True,
+        "answer": "",
+        "message": "files.title.member-folder-permissions-updated",
+        "error": f"Permissions for member {member_id} in folder {folder_id} have been updated."
+    }
