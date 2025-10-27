@@ -70,6 +70,11 @@
 
     "files.btn.add-member-folder":"Agregar Miembro",
     "files.title.add-member-folder":"Agregar Miembro a la Carpeta",
+    "files.title.edit-member-folder":"Editar Permisos de Miembro",
+    "files.title.name-member-folder":"Miembro de la carpeta",
+    "files.error.error-to-get-the-permition":"Error al obtener los permisos del miembro",
+    "files.error.not-exit-the-folder-id":"No existe el ID del folder",
+    "files.error.the-creator-have-all-the-permissions":"El creador tiene todos los permisos dentro de la carpeta por lo cual no lo puedes editar.",
 
     "files.btn.see-member":"Ver Miembros",
     "files.title.member-folder":"Miembros de la Carpeta",

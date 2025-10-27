@@ -235,7 +235,7 @@ def delete_folder_and_his_files(request):
 
 
 #---------------------------------------get member of the folder--------------------------
-from ..services.members import get_members_of_folder, delete_member_of_folder, add_member_to_folder
+from ..services.members import get_members_of_folder, delete_member_of_folder, add_member_to_folder, get_member_permissions_in_folder
 def members_of_folder(request):
     if request.method != 'GET':
         return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
@@ -277,3 +277,11 @@ def view_add_member_folder(request):
 
     result=add_member_to_folder(request.user, folder_id, member_id, data)
     return JsonResponse({"success": result["success"], "message": result["message"], 'error':result["error"]}, status=200)
+
+
+def get_permitions_member(request, folder_id, member_id):
+    if request.method != 'GET':
+        return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+    
+    result=get_member_permissions_in_folder(request.user, folder_id, member_id)
+    return JsonResponse({"success": result["success"], "message": result["message"], "answer": result["answer"], 'error':result["error"]}, status=200)

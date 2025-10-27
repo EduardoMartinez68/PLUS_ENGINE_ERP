@@ -211,3 +211,100 @@ def add_member_to_folder(user, folder_id, member_id, data):
         "message": "files.title.member-folder-added",
         "error": f"Member with id {member_id} added to folder {folder_id}"
     }
+
+
+def get_member_permissions_in_folder(user, folder_id, member_id):
+    """
+    Obtiene todos los permisos de un miembro dentro de una carpeta específica.
+    - user: usuario que realiza la consulta (se usa para validar permisos).
+    - folder_id: ID de la carpeta donde se buscan los permisos.
+    - member_id: ID del miembro cuyos permisos queremos obtener.
+    """
+
+    # 1️⃣ Validar que el folder_id sea válido
+    if not folder_id or str(folder_id).strip() == "":
+        return {
+            "success": False,
+            "message": "files.message.folder-id-invalid",
+            "error": "Folder ID is empty or invalid"
+        }
+
+    # 2️⃣ Validar que el member_id sea válido
+    if not member_id or str(member_id).strip() == "":
+        return {
+            "success": False,
+            "message": "files.message.member-id-invalid",
+            "error": "Member ID is empty or invalid"
+        }
+
+    # 3️⃣ Verificar que la carpeta exista
+    try:
+        folder = Folder.objects.get(id=folder_id)
+    except Folder.DoesNotExist:
+        return {
+            "success": False,
+            "message": "files.message.folder-not-found",
+            "error": f"The folder with id {folder_id} does not exist"
+        }
+
+    # 4️⃣ Verificar que el usuario tenga permiso para ver los miembros
+    if not has_folder_permission(user, folder, 'can_see_members'):
+        return {
+            "success": False,
+            "message": "files.message.no-permission-view-members",
+            "error": "User does not have permission to view members of this folder"
+        }
+
+    # 5️⃣ Verificar que el miembro exista
+    try:
+        member = CustomUser.objects.get(id=member_id)
+    except CustomUser.DoesNotExist:
+        return {
+            "success": False,
+            "message": "files.message.member-not-found",
+            "error": f"Member with id {member_id} not found"
+        }
+
+    # 6️⃣ Buscar el registro de permisos
+    try:
+        permission = FolderPermission.objects.get(folder=folder, user=member)
+    except FolderPermission.DoesNotExist:
+        return {
+            "success": False,
+            "message": "files.message.permissions-not-found",
+            "error": "This member does not have permissions in the specified folder"
+        }
+
+    # 7️⃣ Construir la respuesta con todos los permisos
+    permissions_dict = {
+        "can_see_folder": permission.can_see_folder,
+        "can_edit_folder": permission.can_edit_folder,
+        "can_delete_folder": permission.can_delete_folder,
+        "can_download_folder": permission.can_download_folder,
+        "can_add_subfolder": permission.can_add_subfolder,
+
+        "can_see_the_files": permission.can_see_the_files,
+        "can_upload_file": permission.can_upload_file,
+        "can_move_file": permission.can_move_file,
+        "can_update_file": permission.can_update_file,
+        "can_copy_file": permission.can_copy_file,
+        "can_delete_file": permission.can_delete_file,
+        "can_see_file": permission.can_see_file,
+        "can_download_file": permission.can_download_file,
+
+        "can_change_the_permission": permission.can_change_the_permission,
+        "can_see_members": permission.can_see_members,
+        "can_add_members": permission.can_add_members,
+        "can_delete_members": permission.can_delete_members,
+    }
+
+    # 8️⃣ Respuesta exitosa
+    return {
+        "success": True,
+        "message": "files.message.member-permissions-retrieved",
+        "username": member.username,
+        "email": member.email,
+        "name": member.name,
+        "answer": permissions_dict,
+        "error": None
+    }
