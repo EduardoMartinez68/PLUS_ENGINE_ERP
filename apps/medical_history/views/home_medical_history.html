@@ -324,21 +324,7 @@
 <script>
   //--------------------------
   async function update_information_div_history_medical(customer_id){
-    const backend=await send_message_to_the_server(`/medical_history/view_history_medical/${customer_id}/`, {}, true, 'GET')
-
-    if(backend.success){
-      const container = document.getElementById('info-customer');
-      container.innerHTML = backend.answer;
-    }else{
-      const t=window.translate_text('medical-history.home.message.no-history-select')
-      document.getElementById('info-customer').innerHTML = `
-        <div class="full-center">
-            <img src="{% static 'img/loading_history_medical.webp' %}" alt="" loading="lazy">
-            <h3 t="medical-history.home.message.no-history-select">${t}</h3>        
-        </div>
-      `;
-    }
-
+    await update_load_container('info-customer', `/medical_history/view_history_medical/${customer_id}/`, "{% static 'img/loading_history_medical.webp' %}")
     window.toggle_switch_column('customers-switch'); //show the div that is hidden if the user is in cellphone
   }
   window.update_information_div_history_medical=update_information_div_history_medical;

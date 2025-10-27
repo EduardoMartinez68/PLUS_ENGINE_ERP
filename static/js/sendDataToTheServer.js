@@ -1,88 +1,88 @@
-async function send_message_to_the_server(url, data = {}, with_load = true, method='POST') {
-    // show the overlay
-    const screenLoad = document.getElementById('loadingOverlay')
-    if (with_load) {
-        screenLoad.style.display = 'flex';
+async function send_message_to_the_server(url, data = {}, with_load = true, method = 'POST') {
+  // show the overlay
+  const screenLoad = document.getElementById('loadingOverlay')
+  if (with_load) {
+    screenLoad.style.display = 'flex';
+  }
+
+
+  try {
+    //here we will to create a fetchOptions for send the information to the server Django
+    let fetchOptions = {
+      method: method.toUpperCase(),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken()
+      }
+    };
+
+    //now we will see the fetch options. If the type is POST we will add the body
+    //else we will to create the new link
+    let fetchUrl = url;
+    if (method.toUpperCase() === 'POST') {
+      fetchOptions.body = JSON.stringify(data);
+    } else if (method.toUpperCase() === 'GET') {
+      // Convert the 'data' object to query params
+      const queryParams = new URLSearchParams(data).toString();
+      if (queryParams) {
+        fetchUrl += (url.includes('?') ? '&' : '?') + queryParams;
+      }
     }
 
 
-    try {
-        //here we will to create a fetchOptions for send the information to the server Django
-        let fetchOptions = {
-            method: method.toUpperCase(),
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken()
-            }
-        };
+    //send the information to the server with the fetch options
+    const response = await fetch(fetchUrl, fetchOptions);
 
-        //now we will see the fetch options. If the type is POST we will add the body
-        //else we will to create the new link
-        let fetchUrl = url;
-        if (method.toUpperCase() === 'POST') {
-            fetchOptions.body = JSON.stringify(data);
-        } else if (method.toUpperCase() === 'GET') {
-            // Convert the 'data' object to query params
-            const queryParams = new URLSearchParams(data).toString();
-            if (queryParams) {
-                fetchUrl += (url.includes('?') ? '&' : '?') + queryParams;
-            }
-        }
-
-
-        //send the information to the server with the fetch options
-        const response = await fetch(fetchUrl, fetchOptions);
-
-        //first we will see if the response is ok
-        if (!response.ok) {
-            console.log(url)
-            console.log(response)
-            //now we will to show the error that send of server and show the information of error that answer the server
-            show_alert('alert', response.status, 'Error to load visit the link '+url, (response.error || response))
-            return  { success: false, error: 'Error to load visit the link \n'+(response.error || '') +' \n status: '+ (response.status || '')};
-        }
-
-        //get the information that send the server and the return 
-        const answer = await response.json();
-        return answer;
-
-    } catch (error) {
-        console.error(url)
-        console.error('Error to load the data:', error);
-        return { success: false, error: error };
-    } finally {
-        screenLoad.style.display = 'none';
+    //first we will see if the response is ok
+    if (!response.ok) {
+      console.log(url)
+      console.log(response)
+      //now we will to show the error that send of server and show the information of error that answer the server
+      show_alert('alert', response.status, 'Error to load visit the link ' + url, (response.error || response))
+      return { success: false, error: 'Error to load visit the link \n' + (response.error || '') + ' \n status: ' + (response.status || '') };
     }
+
+    //get the information that send the server and the return 
+    const answer = await response.json();
+    return answer;
+
+  } catch (error) {
+    console.error(url)
+    console.error('Error to load the data:', error);
+    return { success: false, error: error };
+  } finally {
+    screenLoad.style.display = 'none';
+  }
 }
 
 
 // Function to get CSRF token (Django)
 function getCSRFToken() {
-    const name = 'csrftoken';
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-        const c = cookie.trim();
-        if (c.startsWith(name + '=')) {
-            return decodeURIComponent(c.substring(name.length + 1));
-        }
+  const name = 'csrftoken';
+  const cookies = document.cookie.split(';');
+  for (let cookie of cookies) {
+    const c = cookie.trim();
+    if (c.startsWith(name + '=')) {
+      return decodeURIComponent(c.substring(name.length + 1));
     }
-    return '';
+  }
+  return '';
 }
 
 function formToJSON(form) {
-    const data = {};
-    const formData = new FormData(form);
-    for (let [key, value] of formData.entries()) {
-        if (data[key] !== undefined) { //this is for save multi inputs
-            if (!Array.isArray(data[key])) {
-                data[key] = [data[key]];
-            }
-            data[key].push(value);
-        } else {
-            data[key] = value;
-        }
+  const data = {};
+  const formData = new FormData(form);
+  for (let [key, value] of formData.entries()) {
+    if (data[key] !== undefined) { //this is for save multi inputs
+      if (!Array.isArray(data[key])) {
+        data[key] = [data[key]];
+      }
+      data[key].push(value);
+    } else {
+      data[key] = value;
     }
-    return data;
+  }
+  return data;
 }
 
 //this function is for restart the information of the form when for that the proggramer can restart his form most speed
@@ -143,7 +143,7 @@ function restart_form(formId) {
   //  PlusTag 
   const plusTags = form.querySelector("plus-tags");
   if (plusTags && typeof plusTags.resetTags === "function") {
-      plusTags.resetTags();
+    plusTags.resetTags();
   }
 
   // ===== restart all the ImageUploader =====
@@ -178,36 +178,94 @@ function restart_form(formId) {
 }
 
 async function send_form_to_the_server(formId, url) {
-    const form = document.getElementById(formId);
-    if (!form) {
-        show_alert('alert', 'Error',  'info.error.this-form-not-exit','This form not exist in the Doom: '+formId)
-        return;
-    }
+  const form = document.getElementById(formId);
+  if (!form) {
+    show_alert('alert', 'Error', 'info.error.this-form-not-exit', 'This form not exist in the Doom: ' + formId)
+    return;
+  }
 
-    const data = formToJSON(form);
-    return await send_message_to_the_server(url, data)
+  const data = formToJSON(form);
+  return await send_message_to_the_server(url, data)
 }
 
 //this function is for create a form that send the information to the server
 //it will add an event listener to the form with the id 'id_form' for that the proggramer only add the if of the form and his id for get infrmation 
-async function create_form_for_send_the_server(id_form, url, restart=true) {
-    document.getElementById(id_form).addEventListener('submit', async function (e) {
-        e.preventDefault(); //this is for that the form not load the web
+async function create_form_for_send_the_server(id_form, url, restart = true) {
+  document.getElementById(id_form).addEventListener('submit', async function (e) {
+    e.preventDefault(); //this is for that the form not load the web
 
-        //send the information to the server and get his answer
-        const result = await send_form_to_the_server(id_form, url);
+    //send the information to the server and get his answer
+    const result = await send_form_to_the_server(id_form, url);
 
-        //we will see if we can add the new customer
-        if (result.success) {
-            show_notification('success', result.message || 'info.info-send-with-success');
+    //we will see if we can add the new customer
+    if (result.success) {
+      show_notification('success', result.message || 'info.info-send-with-success');
 
-            if(restart){
-              restart_form(id_form);
-            }
-        } else {
-            show_alert('alert', 'Error', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'))
-        }
-    });
+      if (restart) {
+        restart_form(id_form);
+      }
+    } else {
+      show_alert('alert', 'Error', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'))
+    }
+  });
 }
 
+//this function is for update the container that exist in the UI. This is for load information that send the backend while be a animation of load in the UI
+async function update_load_container(container_id, link, urlImageFail = null) {
+  const containerLoad = document.getElementById(container_id);
 
+  try {
+    const backend = await send_message_to_the_server(link, {}, false, 'GET');
+
+    if (backend.success) {
+      const html = backend.answer;
+
+      // Parse HTML
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // Update container content
+      const mainContent = doc.getElementById(container_id);
+      containerLoad.innerHTML = mainContent ? mainContent.innerHTML : html;
+
+      //this is for load the script of the view
+      const scripts = doc.querySelectorAll("script");
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+        if (oldScript.src) {
+          newScript.src = oldScript.src; // scripts external
+        } else {
+          newScript.textContent = oldScript.textContent; // scripts inline
+        }
+        document.body.appendChild(newScript);
+      });
+
+      // Transform labels
+      let sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || [];
+      let lastUrl = sessionHistory[sessionHistory.length - 1];
+      transform_my_labels_erp();
+      const pathTranslate = get_path_of_the_file_translate_of_the_app(link);
+      await load_language(pathTranslate);
+
+    } else {
+      // Show error message
+      const imageSrc = urlImageFail || 'https://via.placeholder.com/150?text=404';
+      containerLoad.innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
+                        <img src="${imageSrc}" alt="Error 404" style="max-width:200px; margin-bottom:20px;">
+                        <p style="text-align:center; font-size:18px; color:#555;">No can load the container. Error 404</p>
+                    </div>
+                `;
+    }
+
+  } catch (error) {
+    console.error("Error al cargar el contenedor:", error);
+    const imageSrc = urlImageFail || 'https://via.placeholder.com/150?text=404';
+    containerLoad.innerHTML = `
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
+                    <img src="${imageSrc}" alt="Error 404" style="max-width:200px; margin-bottom:20px;">
+                    <p style="text-align:center; font-size:18px; color:#555;">Error to insert the container</p>
+                </div>
+            `;
+  }
+}

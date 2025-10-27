@@ -49,68 +49,6 @@
     //here we will to get the form with the data of the customer
     (async()=>{
         const employee_id=document.getElementById('employee_id').value;
-        await update_load_container('container-load',`employees/view_information_of_the_employee/${employee_id}/`)
+        await window.update_load_container('container-load',`employees/view_information_of_the_employee/${employee_id}/`);
     })();
-
-
-
-    async function update_load_container(container_id, link, urlImageFail = null) {
-        const containerLoad = document.getElementById(container_id);
-
-        try {
-            const backend = await send_message_to_the_server(link, {}, false, 'GET');
-
-            if (backend.success) {
-                const html = backend.answer;
-
-                // Parse HTML
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-
-                // Update container content
-                const mainContent = doc.getElementById(container_id);
-                containerLoad.innerHTML = mainContent ? mainContent.innerHTML : html;
-
-                //this is for load the script of the view
-                const scripts = doc.querySelectorAll("script");
-                scripts.forEach(oldScript => {
-                    const newScript = document.createElement("script");
-                    if (oldScript.src) {
-                    newScript.src = oldScript.src; // scripts external
-                    } else {
-                    newScript.textContent = oldScript.textContent; // scripts inline
-                    }
-                    document.body.appendChild(newScript);
-                });
-
-                // Transform labels
-                let sessionHistory = JSON.parse(localStorage.getItem('sessionHistory')) || [];
-                let lastUrl = sessionHistory[sessionHistory.length - 1];
-                transform_my_labels_erp();
-                const pathTranslate = get_path_of_the_file_translate_of_the_app(link);
-                await load_language(pathTranslate);
-
-            } else {
-                // Show error message
-                const imageSrc = urlImageFail || 'https://via.placeholder.com/150?text=404';
-                containerLoad.innerHTML = `
-                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
-                        <img src="${imageSrc}" alt="Error 404" style="max-width:200px; margin-bottom:20px;">
-                        <p style="text-align:center; font-size:18px; color:#555;">No se pudo cargar el contenido. Error 404</p>
-                    </div>
-                `;
-            }
-
-        } catch (error) {
-            console.error("Error al cargar el contenedor:", error);
-            const imageSrc = urlImageFail || 'https://via.placeholder.com/150?text=404';
-            containerLoad.innerHTML = `
-                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
-                    <img src="${imageSrc}" alt="Error 404" style="max-width:200px; margin-bottom:20px;">
-                    <p style="text-align:center; font-size:18px; color:#555;">Error inesperado al cargar el contenido</p>
-                </div>
-            `;
-        }
-    }
-
 </script>

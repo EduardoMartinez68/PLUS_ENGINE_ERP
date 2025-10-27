@@ -88,7 +88,7 @@
       </div>
 
       <div class="information-date">
-        <button class="btn btn-edit" onclick="window.show_pop('pop-teeth-chart')"><i class="fi fi-sr-tooth"></i></button>
+        <button class="btn btn-edit" onclick="nextWeb('medical_history/view_load_theeth/{{patient.id}}/')"><i class="fi fi-sr-tooth"></i></button>
         <label for="" t="medical-history.form.label.last-physical-exam-date">The last visit</label> <label for="">30/09/2025</label><br>
       </div>
     </div>
@@ -213,96 +213,6 @@
   .state-fractura path { fill: #ffffff; stroke: #e67e22; stroke-width: 3px; }
   .state-ausente path { fill: none; stroke: #B0B7C3; stroke-dasharray: 4; }
 </style>
-
-<message-pop title="medical-history.title.dental-information" name="pop-teeth-chart">
-{% include 'partials_medical_history/theen.html' %}
-<button class="btn btn-edit btn-success" t="btn.success" onclick="window.close_my_pop('pop-teeth-chart')">Success</button>
-</message-pop>
-
-<script>
-(() => {
-  const teethChart = document.getElementById("teethChart");
-
-  // Ejemplo de datos en JSON
-  const teethData = {
-    1: "caries",
-    2: "corona",
-    3: "extraccion",
-    4: "implante",
-    5: "fractura",
-    6: "obturacion",
-    7: "endodoncia",
-    8: "ausente"
-    // ... puedes seguir llenando los demás
-  };
-
-  function createTooth(number, state) {
-    const wrapper = document.createElement("div");
-    wrapper.style.display = "flex";
-    wrapper.style.flexDirection = "column";
-    wrapper.style.alignItems = "center";
-
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("class", `tooth ${state ? "state-" + state : ""}`);
-    svg.setAttribute("viewBox", "0 0 100 120");
-
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute(
-      "d",
-      "M50 10 C30 10, 20 30, 20 50 C20 75, 35 95, 42 115 Q50 125, 58 115 C65 95, 80 75, 80 50 C80 30, 70 10, 50 10Z"
-    );
-    svg.appendChild(path);
-
-    // Estado especial: fractura -> dibujar línea de fractura
-    if (state === "fractura") {
-      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      line.setAttribute("x1", "30");
-      line.setAttribute("y1", "30");
-      line.setAttribute("x2", "70");
-      line.setAttribute("y2", "90");
-      line.setAttribute("stroke", "#e67e22");
-      line.setAttribute("stroke-width", "4");
-      svg.appendChild(line);
-    }
-
-    // Estado especial: extracción -> dibujar X encima
-    if (state === "extraccion") {
-      const line1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      line1.setAttribute("x1", "30");
-      line1.setAttribute("y1", "30");
-      line1.setAttribute("x2", "70");
-      line1.setAttribute("y2", "90");
-      line1.setAttribute("stroke", "#c0392b");
-      line1.setAttribute("stroke-width", "4");
-      svg.appendChild(line1);
-
-      const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      line2.setAttribute("x1", "70");
-      line2.setAttribute("y1", "30");
-      line2.setAttribute("x2", "30");
-      line2.setAttribute("y2", "90");
-      line2.setAttribute("stroke", "#c0392b");
-      line2.setAttribute("stroke-width", "4");
-      svg.appendChild(line2);
-    }
-
-    const label = document.createElement("div");
-    label.classList.add("label");
-    label.textContent = number;
-
-    wrapper.appendChild(svg);
-    wrapper.appendChild(label);
-
-    return wrapper;
-  }
-
-  // Crear 32 dientes
-  for (let i = 1; i <= 32; i++) {
-    const state = teethData[i] || null;
-    teethChart.appendChild(createTooth(i, state));
-  }
-})();
-</script>
 
 
 
