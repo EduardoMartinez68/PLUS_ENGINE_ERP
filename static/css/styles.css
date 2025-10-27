@@ -1743,6 +1743,19 @@ hr {
   /*  width: 100%; Para que se adapte al contenedor */
   margin: 12px 0;
   width: 400px;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .plus-select-wrapper {
+    width: 100%; 
+  }
+}
+
+@media (max-width: 1024px) {
+  .plus-select-wrapper {
+    width: 100%; 
+  }
 }
 
 .plus-select-select {
@@ -2479,8 +2492,17 @@ hr {
   gap: 1rem;            
 }
 
+.full-center img {
+  width: 50%;
+  height: auto;
+}
 
-
+@media (max-width: 1200px) {
+  .full-center img {
+    width: 70%;
+    height: auto;
+  }
+}
 
 /**----------------------------------STYLE LOADING--------------------------------------*/
 /**/

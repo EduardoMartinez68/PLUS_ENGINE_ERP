@@ -1292,7 +1292,7 @@ class PlusSelect extends HTMLElement {
 
         if (left == 0) {
           if (insideMessagePop) {
-            left = rect.left + window.scrollX + 130;//+ 30;
+            left = rect.left + window.scrollX + 130; //130
           } else {
             left = rect.left + window.scrollX + rect.width;
           }
