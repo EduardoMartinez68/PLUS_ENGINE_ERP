@@ -13,197 +13,203 @@
         </div>
     </div>
 
-    <input-field 
-        label="setting.label.nickname" 
-        placeholder="setting.placeholder.nickname" 
-        value="{{ branch.nickname }}" 
-        name="nickname">
-    </input-field>
+    <plus-tabs>
+        <plus-tab text="setting.tag.info-basic">
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.nickname" 
+                        placeholder="setting.placeholder.nickname" 
+                        value="{{ branch.nickname }}" 
+                        name="nickname">
+                    </input-field>
+                </div>
+            </div>
 
-    <input-field 
-        label="setting.label.email_branch" 
-        placeholder="setting.placeholder.email_branch" 
-        value="{{ branch.email_branch }}" 
-        name="email_branch" 
-        type="email">
-    </input-field>
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.email_branch" 
+                        placeholder="setting.placeholder.email_branch" 
+                        value="{{ branch.email_branch }}" 
+                        name="email_branch" 
+                        type="email">
+                    </input-field>
+                </div>
+            </div>
 
-    <input-field 
-        label="setting.label.name_of_the_person_in_charge" 
-        placeholder="setting.placeholder.name_of_the_person_in_charge" 
-        value="{{ branch.name_of_the_person_in_charge }}" 
-        name="name_of_the_person_in_charge">
-    </input-field>
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.name_of_the_person_in_charge" 
+                        placeholder="setting.placeholder.name_of_the_person_in_charge" 
+                        value="{{ branch.name_of_the_person_in_charge }}" 
+                        name="name_of_the_person_in_charge">
+                    </input-field>
+                </div>
+                <div class="col">
+                    <input-field 
+                        label="setting.label.email_of_the_person_in_charge" 
+                        placeholder="setting.placeholder.email_of_the_person_in_charge" 
+                        value="{{ branch.email_of_the_person_in_charge }}" 
+                        name="email_of_the_person_in_charge" 
+                        type="email">
+                    </input-field>
+                </div>
+            </div>
 
-    <input-field 
-        label="setting.label.email_of_the_person_in_charge" 
-        placeholder="setting.placeholder.email_of_the_person_in_charge" 
-        value="{{ branch.email_of_the_person_in_charge }}" 
-        name="email_of_the_person_in_charge" 
-        type="email">
-    </input-field>
+            <plus-switch text="setting.label.enable_online_orders" value="{{ branch.enable_online_orders }}"></plus-switch>
 
-    <input-field 
-        label="setting.label.country" 
-        placeholder="setting.placeholder.country" 
-        value="{{ branch.country }}" 
-        name="country" 
-        type="text">
-    </input-field>
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.notes" 
+                        placeholder="setting.placeholder.notes" 
+                        value="{{ branch.notes }}" 
+                        name="notes">
+                    </input-field>
+                </div>
+            </div>
+        </plus-tab>
+        <plus-tab text="setting.tag.info-contact">
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.phone" 
+                        placeholder="setting.placeholder.phone" 
+                        value="{{ branch.phone }}" 
+                        name="phone" 
+                        type="tel">
+                    </input-field>
+                </div>
+                <div class="col">
+                    <input-field 
+                        label="setting.label.cellphone" 
+                        placeholder="setting.placeholder.cellphone" 
+                        value="{{ branch.cellphone }}" 
+                        name="cellphone" 
+                        type="tel">
+                    </input-field>
+                </div>
+            </div>
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.support_email" 
+                        placeholder="setting.placeholder.support_email" 
+                        value="{{ branch.support_email }}" 
+                        name="support_email" 
+                        type="email">
+                    </input-field>
+                </div>
+            </div>
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.whatsapp_number" 
+                        placeholder="setting.placeholder.whatsapp_number" 
+                        value="{{ branch.whatsapp_number }}" 
+                        name="whatsapp_number" 
+                        type="tel">
+                    </input-field>
+                </div>
+            </div>
 
-    <input-field 
-        label="setting.label.address" 
-        placeholder="setting.placeholder.address" 
-        value="{{ branch.address }}" 
-        name="address">
-    </input-field>
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.website" 
+                        placeholder="setting.placeholder.website" 
+                        value="{{ branch.website }}" 
+                        name="website" 
+                        type="url">
+                    </input-field>
+                </div>
+            </div>
 
-    <input-field 
-        label="setting.label.postal_code" 
-        placeholder="setting.placeholder.postal_code" 
-        value="{{ branch.postal_code }}" 
-        name="postal_code" 
-        type="text">
-    </input-field>
+        </plus-tab>
+        <plus-tab text="setting.tag.info-bank">
+    
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.tax_id" 
+                        placeholder="setting.placeholder.tax_id" 
+                        value="{{ company.tax_id }}" 
+                        name="tax_id" 
+                        type="text">
+                    </input-field>
+                </div>
+            </div>
 
-    </input-field>
-            <plus-select label="setting.label.timezone" name="timezone" required value="{{ branch.timezone }}">
-            {% include 'core/option_timezone.html' %}
-    </plus-select>
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.bank_account" 
+                        placeholder="setting.placeholder.bank_account" 
+                        value="{{ company.bank_account }}" 
+                        name="bank_account" 
+                        type="text">
+                    </input-field>
+                </div>
+            </div>
 
-    <!-- Información de contacto -->
-    <input-field 
-        label="setting.label.phone" 
-        placeholder="setting.placeholder.phone" 
-        value="{{ branch.phone }}" 
-        name="phone" 
-        type="tel">
-    </input-field>
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.bank_name" 
+                        placeholder="setting.placeholder.bank_name" 
+                        value="{{ company.bank_name }}" 
+                        name="bank_name">
+                    </input-field>
+                </div>
+            </div>
 
-    <input-field 
-        label="setting.label.cellphone" 
-        placeholder="setting.placeholder.cellphone" 
-        value="{{ branch.cellphone }}" 
-        name="cellphone" 
-        type="tel">
-    </input-field>
 
-    <input-field 
-        label="setting.label.support_email" 
-        placeholder="setting.placeholder.support_email" 
-        value="{{ branch.support_email }}" 
-        name="support_email" 
-        type="email">
-    </input-field>
 
-    <input-field 
-        label="setting.label.notification_email" 
-        placeholder="setting.placeholder.notification_email" 
-        value="{{ branch.notification_email }}" 
-        name="notification_email" 
-        type="email">
-    </input-field>
+        </plus-tab>
 
-    <input-field 
-        label="setting.label.whatsapp_number" 
-        placeholder="setting.placeholder.whatsapp_number" 
-        value="{{ branch.whatsapp_number }}" 
-        name="whatsapp_number" 
-        type="tel">
-    </input-field>
 
-    <input-field 
-        label="setting.label.website" 
-        placeholder="setting.placeholder.website" 
-        value="{{ branch.website }}" 
-        name="website" 
-        type="url">
-    </input-field>
-
-    <!-- Información de Google -->
-    <input-field 
-        label="setting.label.user_google" 
-        placeholder="setting.placeholder.user_google" 
-        value="{{ branch.user_google }}" 
-        name="user_google" 
-        type="email">
-    </input-field>
-
-    <input-field 
-        label="setting.label.password_google" 
-        placeholder="setting.placeholder.password_google" 
-        value="{{ branch.password_google }}" 
-        name="password_google" 
-        type="password">
-    </input-field>
-
-    <!-- Banco -->
-    <input-field 
-        label="setting.label.bank_account" 
-        placeholder="setting.placeholder.bank_account" 
-        value="{{ branch.bank_account }}" 
-        name="bank_account" 
-        type="text">
-    </input-field>
-
-    <!-- Moneda -->
-    <plus-select 
-        label="setting.label.default_currency" 
-        value="{{ branch.default_currency }}" 
-        name="default_currency">
-
-        {% include 'core/option_currency.html' %}
-    </plus-select>
-
-    <!-- Idioma -->
-    <plus-select 
-        label="setting.label.default_language" 
-        value="{{ branch.default_language }}" 
-        name="default_language">
-        <option value="es" t="setting.language.es"></option>
-        <option value="en" t="setting.language.en"></option>
-        <option value="pl" t="setting.language.pl"></option>
-    </plus-select>
+    </plus-tabs>
+    
 
     <!-- Horarios -->
-    <input-field 
-        label="setting.label.opening_time" 
-        placeholder="setting.placeholder.opening_time" 
-        value="{{ branch.opening_time }}" 
-        name="opening_time" 
-        type="time">
-    </input-field>
 
-    <input-field 
-        label="setting.label.closing_time" 
-        placeholder="setting.placeholder.closing_time" 
-        value="{{ branch.closing_time }}" 
-        name="closing_time" 
-        type="time">
-    </input-field>
-
-    <input-field 
-        label="setting.label.opening_days" 
-        placeholder="setting.placeholder.opening_days" 
-        value="{{ branch.opening_days }}" 
-        name="opening_days" 
-        type="text">
-    </input-field>
 
     <!-- Configuración -->
-    <input-field 
-        label="setting.label.enable_online_orders" 
-        placeholder="setting.placeholder.enable_online_orders" 
-        value="{{ branch.enable_online_orders }}" 
-        name="enable_online_orders" 
-        type="checkbox">
-    </input-field>
 
-    <input-field 
-        label="setting.label.notes" 
-        placeholder="setting.placeholder.notes" 
-        value="{{ branch.notes }}" 
-        name="notes">
-    </input-field>
+
+
 
 </div>
+
+
+<message-pop name="address_branch" title="setting.label.address">
+    <div class="row section">
+        <div class="col">
+            <plus-country label="setting.label.country" name="country"  value="{{ branch.country }}"></plus-country>
+        </div>
+        <div class="col">
+            <input-field 
+                label="setting.label.postal_code" 
+                placeholder="setting.placeholder.postal_code" 
+                value="{{ branch.postal_code }}" 
+                name="postal_code" 
+                type="text">
+            </input-field>
+        </div>
+    </div>
+
+    <div class="row section">
+        <div class="col">
+            <input-field 
+                label="setting.label.address" 
+                placeholder="setting.placeholder.address" 
+                value="{{ branch.address }}" 
+                name="address">
+            </input-field>
+        </div>
+    </div>
+    <br>
+    <button class="btn btn-edit btn-success" t="btn.success"></button>
+</message-pop>

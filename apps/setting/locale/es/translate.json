@@ -3,6 +3,8 @@
     "setting.module.company": "Empresa",
     "setting.module.branch": "Sucursal",
     "setting.module.google":"Enviar email",
+    "setting.module.drives":"Dispositivos/Perifericos",
+    "setting.module.schedule":"Horario de la sucursal",
     "setting.module.plus": "Cuenta PLUS",
     "setting.module.apps":"PLUS Store",
 
@@ -32,85 +34,58 @@
 
     "setting.label.company_name": "Nombre de la empresa",
     "setting.placeholder.company_name": "Ej. PLUS Inc.",
-
     "setting.label.name_of_the_person_in_charge": "Nombre del encargado",
     "setting.placeholder.name_of_the_person_in_charge": "Ej. Emmanuel López",
-
     "setting.label.email_of_the_person_in_charge": "Correo electrónico del encargado",
     "setting.placeholder.email_of_the_person_in_charge": "Ej. emmanuel@plus.com",
-
     "setting.label.creation_date": "Fecha de creación",
     "setting.placeholder.creation_date": "Selecciona la fecha de creación",
-
     "setting.label.phone": "Teléfono fijo",
     "setting.placeholder.phone": "Ej. 55 1234 5678",
-
     "setting.label.cellphone": "Teléfono celular",
     "setting.placeholder.cellphone": "Ej. 55 9876 5432",
-
     "setting.label.support_email": "Correo de soporte",
     "setting.placeholder.support_email": "Ej. soporte@plus.com",
-
     "setting.label.website": "Sitio web",
     "setting.placeholder.website": "Ej. https://www.plus.com",
-
     "setting.label.whatsapp_number": "Número de WhatsApp",
     "setting.placeholder.whatsapp_number": "Ej. +52 55 9876 5432",
-
     "setting.label.address": "Dirección",
     "setting.placeholder.address": "Ej. Calle Reforma #123, Col. Centro",
-
     "setting.label.city": "Ciudad",
     "setting.placeholder.city": "Ej. Ciudad de México",
-
     "setting.label.state": "Estado",
     "setting.placeholder.state": "Ej. CDMX",
-
     "setting.label.postal_code": "Código postal",
     "setting.placeholder.postal_code": "Ej. 06700",
-
     "setting.label.country": "País",
     "setting.placeholder.country": "Ej. MX",
-
     "setting.label.timezone": "Zona horaria",
     "setting.placeholder.timezone": "Ej. America/Mexico_City",
-
     "setting.label.tax_id": "RFC o ID fiscal",
     "setting.placeholder.tax_id": "Ej. PLS123456AB7",
-
     "setting.label.bank_account": "Número de cuenta bancaria",
     "setting.placeholder.bank_account": "Ej. 012345678901234567",
-
     "setting.label.bank_name": "Nombre del banco",
     "setting.placeholder.bank_name": "Ej. BBVA",
-
     "setting.label.google_user": "Usuario de Google",
     "setting.placeholder.google_user": "Ej. usuario@gmail.com",
-
     "setting.label.google_password": "Contraseña de Google",
     "setting.placeholder.google_password": "Escribe la contraseña o token",
-
     "setting.label.default_currency": "Moneda predeterminada",
     "setting.placeholder.default_currency": "Ej. MXN",
-
     "setting.label.decimal_separator": "Separador decimal",
     "setting.placeholder.decimal_separator": "Ej. .",
-
     "setting.label.thousands_separator": "Separador de miles",
     "setting.placeholder.thousands_separator": "Ej. ,",
-
     "setting.label.date_format": "Formato de fecha",
     "setting.placeholder.date_format": "Ej. DD/MM/YYYY",
-
     "setting.label.activated": "Empresa activa",
     "setting.placeholder.activated": "Activa o inactiva",
-
     "setting.label.created_by": "Creado por",
     "setting.placeholder.created_by": "Nombre del usuario que creó el registro",
-
     "setting.label.updated_by": "Actualizado por",
     "setting.placeholder.updated_by": "Nombre del usuario que actualizó el registro",
-
     "setting.label.last_login": "Último acceso",
     "setting.placeholder.last_login": "Selecciona la fecha y hora del último acceso",
 
