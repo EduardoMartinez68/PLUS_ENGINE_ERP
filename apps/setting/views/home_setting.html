@@ -1,17 +1,70 @@
 <plus-modules>
     <plus-module name="setting.module.system" desc="" icon="fi fi-rr-vector">
-        
+        {% include 'partials_setting/system.html' %}
     </plus-module>
     <plus-module name="setting.module.company" desc="" icon="fi fi-rs-building">
-        
+        {% include 'partials_setting/company.html' %}
     </plus-module>
     <plus-module name="setting.module.branch" desc="" icon="fi fi-rr-store-alt">
-
+        {% include 'partials_setting/branch.html' %}
     </plus-module>
     <plus-module name="setting.module.plus" desc="" icon="fi fi-rs-rocket-lunch">
 
+    </plus-module>
+    <plus-module name="setting.module.google" desc="" icon="fi fi-rr-envelope">
+        {% include 'partials_setting/email.html' %}
     </plus-module>
     <plus-module name="setting.module.apps" desc="" icon="fi fi-rs-apps">
         
     </plus-module>
 </plus-modules>
+
+
+<message-pop name="address_company" title="setting.label.address">
+    <div class="row section">
+        <div class="col">
+            <plus-country label="setting.label.country" name="country"  value="{{ company.country }}"></plus-country>
+        </div>
+        <div class="col">
+            <input-field 
+                label="setting.label.postal_code" 
+                placeholder="setting.placeholder.postal_code" 
+                value="{{ company.postal_code }}" 
+                name="postal_code" 
+                type="text">
+            </input-field>
+        </div>
+    </div>
+
+    <div class="row section">
+        <div class="col">
+            <input-field 
+                label="setting.label.city" 
+                placeholder="setting.placeholder.city" 
+                value="{{ company.city }}" 
+                name="city">
+            </input-field>
+        </div>
+        <div class="col">
+            <input-field 
+                label="setting.label.state" 
+                placeholder="setting.placeholder.state" 
+                value="{{ company.state }}" 
+                name="state">
+            </input-field>
+        </div>
+    </div>
+
+    <div class="row section">
+        <div class="col">
+            <input-field 
+                label="setting.label.address" 
+                placeholder="setting.placeholder.address" 
+                value="{{ company.address }}" 
+                name="address">
+            </input-field>
+        </div>
+    </div>
+    <br>
+    <button class="btn btn-edit btn-success" t="btn.success"></button>
+</message-pop>
