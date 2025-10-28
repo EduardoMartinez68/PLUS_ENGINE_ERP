@@ -1,4 +1,5 @@
-<div class="container-section">
+<label t="setting.module.branch" desc="" icon="fi fi-rr-store-alt"></label>
+<hr>
     <div class="row section">
         <div class="col-3">
             <image-uploader name="logo" value="{{ branch.logo }}"></image-uploader>
@@ -57,7 +58,8 @@
                     </input-field>
                 </div>
             </div>
-
+            <show-more onclick="window.show_pop('facture_branch')" label="setting.title.billing-data"></show-more>
+            
             <plus-switch text="setting.label.enable_online_orders" value="{{ branch.enable_online_orders }}"></plus-switch>
 
             <div class="row section">
@@ -129,18 +131,6 @@
 
         </plus-tab>
         <plus-tab text="setting.tag.info-bank">
-    
-            <div class="row section">
-                <div class="col">
-                    <input-field 
-                        label="setting.label.tax_id" 
-                        placeholder="setting.placeholder.tax_id" 
-                        value="{{ company.tax_id }}" 
-                        name="tax_id" 
-                        type="text">
-                    </input-field>
-                </div>
-            </div>
 
             <div class="row section">
                 <div class="col">
@@ -165,51 +155,11 @@
                 </div>
             </div>
 
-
-
         </plus-tab>
 
 
     </plus-tabs>
     
+    <button class="btn btn-edit btn-success" t="btn.save"></button>
+    <br><br>
 
-    <!-- Horarios -->
-
-
-    <!-- Configuración -->
-
-
-
-
-</div>
-
-
-<message-pop name="address_branch" title="setting.label.address">
-    <div class="row section">
-        <div class="col">
-            <plus-country label="setting.label.country" name="country"  value="{{ branch.country }}"></plus-country>
-        </div>
-        <div class="col">
-            <input-field 
-                label="setting.label.postal_code" 
-                placeholder="setting.placeholder.postal_code" 
-                value="{{ branch.postal_code }}" 
-                name="postal_code" 
-                type="text">
-            </input-field>
-        </div>
-    </div>
-
-    <div class="row section">
-        <div class="col">
-            <input-field 
-                label="setting.label.address" 
-                placeholder="setting.placeholder.address" 
-                value="{{ branch.address }}" 
-                name="address">
-            </input-field>
-        </div>
-    </div>
-    <br>
-    <button class="btn btn-edit btn-success" t="btn.success"></button>
-</message-pop>

@@ -1,23 +1,96 @@
-    <input-field 
-        label="setting.label.opening_time" 
-        placeholder="setting.placeholder.opening_time" 
-        value="{{ branch.opening_time }}" 
-        name="opening_time" 
-        type="time">
-    </input-field>
+<!---
+<input-field label="setting.label.opening_time" placeholder="setting.placeholder.opening_time"
+    value="{{ branch.opening_time }}" name="opening_time" type="time">
+</input-field>
 
-    <input-field 
-        label="setting.label.closing_time" 
-        placeholder="setting.placeholder.closing_time" 
-        value="{{ branch.closing_time }}" 
-        name="closing_time" 
-        type="time">
-    </input-field>
+<input-field label="setting.label.closing_time" placeholder="setting.placeholder.closing_time"
+    value="{{ branch.closing_time }}" name="closing_time" type="time">
+</input-field>
 
-    <input-field 
-        label="setting.label.opening_days" 
-        placeholder="setting.placeholder.opening_days" 
-        value="{{ branch.opening_days }}" 
-        name="opening_days" 
-        type="text">
-    </input-field>
+<input-field label="setting.label.opening_days" placeholder="setting.placeholder.opening_days"
+    value="{{ branch.opening_days }}" name="opening_days" type="text">
+</input-field>
+--->
+
+
+
+<style>
+    .day-row {
+        display: grid;
+        grid-template-columns: 120px 1fr 1fr 80px;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid #edf1f5;
+    }
+
+    .day-row:last-child {
+        border-bottom: none;
+    }
+
+    .day-name {
+        font-weight: 500;
+        color: #0b63ce;
+    }
+
+    .closed-label {
+        text-align: center;
+        font-size: 13px;
+        color: #a0a9b4;
+    }
+</style>
+
+<label for="" t="setting.module.schedule" icon="fi fi-rr-clock-three"></label>
+<hr>
+<div class="container-section section">
+    <div class="day-row">
+        <div class="day-name">Lunes</div>
+        <plus-time name="tuesday_open" value="09:00"></plus-time>
+        <plus-time name="tuesday_close" value="18:00"></plus-time>
+        <input type="checkbox" name="tuesday_closed" id="tuesday_closed">
+    </div>
+
+    <div class="day-row">
+        <div class="day-name">Martes</div>
+        <plus-time name="tuesday_open" value="09:00"></plus-time>
+        <plus-time name="tuesday_close" value="18:00"></plus-time>
+        <input type="checkbox" name="tuesday_closed" id="tuesday_closed">
+    </div>
+
+    <div class="day-row">
+        <div class="day-name">Miércoles</div>
+        <plus-time name="tuesday_open" value="09:00"></plus-time>
+        <plus-time name="tuesday_close" value="18:00"></plus-time>
+        <input type="checkbox" name="tuesday_closed" id="tuesday_closed">
+    </div>
+
+    <div class="day-row">
+        <div class="day-name">Jueves</div>
+        <plus-time name="tuesday_open" value="09:00"></plus-time>
+        <plus-time name="tuesday_close" value="18:00"></plus-time>
+        <input type="checkbox" name="tuesday_closed" id="tuesday_closed">
+    </div>
+
+    <div class="day-row">
+        <div class="day-name">Viernes</div>
+        <plus-time name="tuesday_open" value="09:00"></plus-time>
+        <plus-time name="tuesday_close" value="18:00"></plus-time>
+        <input type="checkbox" name="tuesday_closed" id="tuesday_closed">
+    </div>
+
+    <div class="day-row">
+        <div class="day-name">Sábado</div>
+        <plus-time name="tuesday_open" value="09:00"></plus-time>
+        <plus-time name="tuesday_close" value="18:00"></plus-time>
+        <input type="checkbox" name="tuesday_closed" id="tuesday_closed" checked>
+    </div>
+
+    <div class="day-row">
+        <div class="day-name">Domingo</div>
+        <plus-time name="tuesday_open" value="09:00"></plus-time>
+        <plus-time name="tuesday_close" value="18:00"></plus-time>
+        <input type="checkbox" name="tuesday_closed" id="tuesday_closed" checked>
+    </div>
+</div>
+<br>
+<button class="btn btn-edit btn-success" t="btn.save"></button>

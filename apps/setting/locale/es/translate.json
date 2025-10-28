@@ -115,5 +115,14 @@
     "setting.label.last_audit_date": "Fecha de última auditoría",
     "setting.placeholder.last_audit_date": "Selecciona la fecha de auditoría",
     "setting.label.activated_branch": "Sucursal activa",
-    "setting.placeholder.activated_branch": "Indica si la sucursal está activa"
+    "setting.placeholder.activated_branch": "Indica si la sucursal está activa",
+
+    
+    "setting.label.host-driver":"Dirección del servidor",
+    "setting.text.host-driver":"Si necesitas conectar una impresora térmica, lector de código, báscula u otro dispositivo a tu computadora, descarga el sistema de conexión de PLUS desde el siguiente enlace. Este programa se encargará de comunicarse con tus dispositivos de forma automática. Una vez descargado, puedes escribir aquí la dirección (link) donde tu sistema PLUS enviará las solicitudes para imprimir o usar tus dispositivos.",
+
+    "setting.title.billing-data":"Datos de facturación",
+    "setting.label.billing-data-company-name":"Razón Social *",
+    "setting.label.fiscalRegime":"Regimen Fiscal *",
+    "setting.placeholder.billing-data-company-name":"EJ. Panificadora PLUS S.A. de C.V"
 }
