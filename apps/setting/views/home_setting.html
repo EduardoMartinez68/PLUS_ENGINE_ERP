@@ -1,22 +1,41 @@
 <plus-modules>
+    {% if permissions.edit_system %}
     <plus-module name="setting.module.system" desc="" icon="fi fi-rr-vector">
         {% include 'partials_setting/system.html' %}
     </plus-module>
+    {% endif %}
+
+
+    {% if permissions.edit_company %}
     <plus-module name="setting.module.company" desc="" icon="fi fi-rs-building">
         {% include 'partials_setting/company.html' %}
     </plus-module>
+    {% endif %}
+
+    {% if permissions.edit_branch %}
     <plus-module name="setting.module.branch" desc="" icon="fi fi-rr-store-alt">
         {% include 'partials_setting/branch.html' %}
     </plus-module>
+    {% endif %}
+
+    {% if permissions.edit_drivers %}
     <plus-module name="setting.module.drives" desc="" icon="fi fi-rr-plug-connection">
         {% include 'partials_setting/drivers.html' %}
     </plus-module>
+    {% endif %}
+
+    {% if permissions.edit_schedule %}
     <plus-module name="setting.module.schedule" desc="" icon="fi fi-rr-clock-three">
         {% include 'partials_setting/schedule.html' %}
     </plus-module>
+    {% endif %}
+
+    {% if permissions.edit_email %}
     <plus-module name="setting.module.google" desc="" icon="fi fi-rr-envelope">
         {% include 'partials_setting/email.html' %}
     </plus-module>
+    {% endif %}
+
     <plus-module name="setting.module.plus" desc="" icon="fi fi-rs-rocket-lunch">
 
     </plus-module>
@@ -26,6 +45,7 @@
 </plus-modules>
 
 <!-------address company-->
+{% if permissions.edit_company %}
 <message-pop name="address_company" title="setting.label.address">
     <div class="row section">
         <div class="col">
@@ -72,11 +92,12 @@
         </div>
     </div>
     <br>
-    <button class="btn btn-edit btn-success" t="btn.success"></button>
+    <button class="btn btn-edit btn-success" t="message.success" onclick="window.hide_pop('address_company')"></button>
 </message-pop>
-
+{% endif %}
 
 <!-------data of facture of branch-->
+{% if permissions.edit_company %}
 <message-pop name="facture_branch" title="setting.title.billing-data">
     <div class="container-pop">
     <!-----Número de identificación fiscal (RFC)-->
@@ -142,6 +163,7 @@
     </div>
     </div>
     <br>
-    <button class="btn btn-edit btn-success" t="btn.success"></button>
+    <button class="btn btn-edit btn-success" t="btn.save" onclick="window.hide_pop('facture_branch')"></button>
     <br>
 </message-pop>
+{% endif %}

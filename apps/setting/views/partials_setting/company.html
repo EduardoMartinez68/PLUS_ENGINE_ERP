@@ -1,6 +1,7 @@
 <label t="setting.module.company" desc="" icon="fi fi-rs-building"></label>
 <hr>
-    <!-- Logo y nombre de la empresa -->
+<form id="form_company">
+    {% csrf_token %}
     <div class="row section">
         <div class="col-3">
             <image-uploader name="logo" value="{{ company.logo }}"></image-uploader>
@@ -94,7 +95,7 @@
             </div>
         </plus-tab>
         <plus-tab text="setting.tag.info-bank">
-    
+
             <div class="row section">
                 <div class="col">
                     <input-field 
@@ -135,7 +136,20 @@
         </plus-tab>
     </plus-tabs>
     <br>
-    <button class="btn btn-edit btn-success" t="btn.save"></button>
+    <button class="btn btn-edit btn-success" t="btn.save" type="button" onclick="send_form_company()"></button>
+</form>
 
 
+<script>
+    async function send_form_company(){
+        //send the information to the server and get his answer
+        const result = await send_form_to_the_server('form_company', 'setting/view_update_company/');
 
+        //we will see if we can add the new customer
+        if (result.success) {
+            show_notification('success', result.message || 'info.info-send-with-success');
+        } else {
+            show_alert('alert', 'Error', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'))
+        }
+    }
+</script>

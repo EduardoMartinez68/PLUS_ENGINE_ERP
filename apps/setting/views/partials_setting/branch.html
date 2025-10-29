@@ -160,6 +160,19 @@
 
     </plus-tabs>
     
-    <button class="btn btn-edit btn-success" t="btn.save"></button>
+    <button class="btn btn-edit btn-success" t="btn.save" type="button" onclick="send_form_branch()"></button>
     <br><br>
 
+<script>
+    async function send_form_branch(){
+        //send the information to the server and get his answer
+        const result = await send_form_to_the_server('form_company', 'setting/view_update_branch/');
+
+        //we will see if we can add the new customer
+        if (result.success) {
+            show_notification('success', result.message || 'info.info-send-with-success');
+        } else {
+            show_alert('alert', 'Error', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'))
+        }
+    }
+</script>

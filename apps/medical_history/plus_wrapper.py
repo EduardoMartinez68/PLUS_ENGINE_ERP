@@ -114,3 +114,22 @@ class Plus:
 
         # 3️⃣ Neither user nor admin have permission
         return False #, "permission.not-have-this-permission"
+    
+
+    def get_user_permissions(user, permissions_list):
+        """
+        get un user and do a list of all the permissions of the user.
+        return a dictionary:
+        {
+            "permission1": True,
+            "permission2": False,
+            ...
+        }
+        """
+        permissions = {}
+        for perm_name in permissions_list:
+            try:
+                permissions[perm_name] = Plus.this_user_have_this_permission(user, perm_name)
+            except Exception:
+                permissions[perm_name] = False  # if exist a error return False
+        return permissions
