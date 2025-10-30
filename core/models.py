@@ -149,6 +149,8 @@ class Branch(models.Model):
     email_branch = models.TextField(null=True)
     name_of_the_person_in_charge = models.TextField(null=True)
     email_of_the_person_in_charge = models.TextField(null=True)
+
+    #address
     country = models.CharField(max_length=2, null=True) #mx, pl , etc
     address = models.TextField(null=True)
     postal_code = models.CharField(max_length=10, null=True)
@@ -400,7 +402,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     #options ubication 
     timezone = models.CharField(max_length=50, blank=True, default='America/Mexico_City')
     language =  models.CharField( max_length=10, blank=True, default='es')
-
+    decimal_separator = models.CharField(max_length=1, default=".")
+    thousands_separator = models.CharField(max_length=1, default=",")
+    date_format = models.CharField(max_length=20, default="DD/MM/YYYY")
+    
     # Required fields
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

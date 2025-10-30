@@ -20,8 +20,9 @@ def update_branch(user, data) -> dict:
                 setattr(branch, field, value)
                 updated_fields.append(field)
 
-        branch.updated_by = user.email or user.username
-        branch.save(update_fields=updated_fields + ["updated_by"])
+        #branch.updated_by = user.email or user.username
+        #branch.save(update_fields=updated_fields + ["updated_by"])
+        branch.save()
 
         result.update({
             "success": True,

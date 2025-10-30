@@ -93,9 +93,13 @@
 
     "setting.show.setting-company":"Configuración avanzada de la empresa",
     "setting.info.setting-company":"La información registrada aquí se establecerá como predeterminada para las nuevas sucursales, lo que te permitirá agilizar la configuración inicial de cada una.",
+    "setting.show.setting-branch":"Configuración avanzada de la sucursal",
+    "setting.info.setting-branch":"La información registrada aquí se establecerá como predeterminada para los nuevos empleados en esta susucrsal, lo que te permitirá agilizar la configuración inicial de cada uno.",
 
-
-
+    "setting.error.the-data-of-the-user-not-be-valid":"Los datos del usuario no son validos",
+    "setting.error.the-user-not-was-update":"El usuario no fue actualizado",
+    "setting.error.user-update":"Datos del sistema actualizados correctamente",
+    "setting.error.not-exist-change-in-the-system":"No se detectaron cambios en el sistema",
 
     "setting.label.logo": "Logo de la sucursal",
     "setting.placeholder.logo": "Sube el logo de la sucursal",

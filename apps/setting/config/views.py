@@ -1,5 +1,6 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
+from ..services.user import update_user
 from ..services.branch import update_branch
 from ..services.company import update_company
 import json
@@ -29,7 +30,7 @@ def setting_home(request):
         #here we will to construct the permissions that have the user in the view of the settings 
         permissions=Plus.get_user_permissions(user, ["edit_system","edit_company", "edit_branch", "edit_drivers", "edit_schedule", "edit_email"]) 
     
-        return render(request, 'home_setting.html', {"company": company, "branch":branch, "permissions": permissions})
+        return render(request, 'home_setting.html', {"user": user, "company": company, "branch":branch, "permissions": permissions})
     else:
         if request.method != "GET":
             return JsonResponse(
@@ -51,7 +52,7 @@ def setting_home(request):
         #here we will to construct the permissions that have the user in the view of the settings 
         permissions=Plus.get_user_permissions(user, ["edit_system","edit_company", "edit_branch", "edit_drivers", "edit_schedule", "edit_email"]) 
     
-        return render(request, 'home_setting.html', {"company": company, "branch":branch, "permissions": permissions})
+        return render(request, 'home_setting.html', {"user": user, "company": company, "branch":branch, "permissions": permissions})
 
 @login_required(login_url='login')
 def view_update_company(request):
@@ -182,4 +183,69 @@ def view_update_branch(request):
             "message": result['message'],
             "error": result.get('error',"")
         }, status=200) 
+
+@login_required(login_url='login')
+def view_update_setting_user(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != "POST":
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": "method not success"}, 
+                status=400
+            )  
+            
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'edit_setting_user'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )   
+    
+    
+        #here we will to construct the permissions that have the user in the view of the settings 
+        result=update_user(request.user, data) 
+    
+        return JsonResponse({
+            "success": result['success'],
+            "message": result['message'],
+            "error": result.get('error',"")
+        }, status=200)  
+    else:
+        if request.method != "POST":
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": "method not success"}, 
+                status=400
+            )  
+            
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'edit_setting_user'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )   
+    
+    
+        #here we will to construct the permissions that have the user in the view of the settings 
+        result=update_user(request.user, data) 
+    
+        return JsonResponse({
+            "success": result['success'],
+            "message": result['message'],
+            "error": result.get('error',"")
+        }, status=200)  
 

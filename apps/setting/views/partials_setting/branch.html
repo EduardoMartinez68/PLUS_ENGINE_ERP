@@ -57,6 +57,8 @@
                 </div>
             </div>
             <show-more onclick="window.show_pop('facture_branch')" label="setting.title.billing-data"></show-more>
+            <show-more onclick="window.show_pop('address_branch')" label="setting.label.address" description="{{branch.address}}"></show-more>
+            <show-more onclick="window.show_pop('config_branch')" label="setting.show.setting-branch"></show-more>
             
             <plus-switch text="setting.label.enable_online_orders" value="{{ branch.enable_online_orders }}"></plus-switch>
 
@@ -128,33 +130,6 @@
             </div>
 
         </plus-tab>
-        <plus-tab text="setting.tag.info-bank">
-
-            <div class="row section">
-                <div class="col">
-                    <input-field 
-                        label="setting.label.bank_account" 
-                        placeholder="setting.placeholder.bank_account" 
-                        value="{{ company.bank_account }}" 
-                        name="bank_account" 
-                        type="text">
-                    </input-field>
-                </div>
-            </div>
-
-            <div class="row section">
-                <div class="col">
-                    <input-field 
-                        label="setting.label.bank_name" 
-                        placeholder="setting.placeholder.bank_name" 
-                        value="{{ company.bank_name }}" 
-                        name="bank_name">
-                    </input-field>
-                </div>
-            </div>
-
-        </plus-tab>
-
 
     </plus-tabs>
     

@@ -1,0 +1,99 @@
+
+<!-------address company-->
+{% if permissions.edit_branch %}
+<message-pop name="address_branch" title="setting.label.address">
+    <form id="form_address_branch">
+    <div class="row section">
+        <div class="col">
+            <plus-country label="setting.label.country" name="country"  value="{{ branch.country }}"></plus-country>
+        </div>
+        <div class="col">
+            <input-field 
+                label="setting.label.postal_code" 
+                placeholder="setting.placeholder.postal_code" 
+                value="{{ branch.postal_code }}" 
+                name="postal_code" 
+                type="text">
+            </input-field>
+        </div>
+    </div>
+
+    <div class="row section">
+        <div class="col">
+            <input-field 
+                label="setting.label.address" 
+                placeholder="setting.placeholder.address" 
+                value="{{ branch.address }}" 
+                name="address">
+            </input-field>
+        </div>
+    </div>
+    <br>
+    <button class="btn btn-edit btn-success" t="message.success" onclick="send_form_pop_branch('form_address_branch', 'address_branch')" type="button"></button>
+    </form>
+</message-pop>
+
+
+<!-------address company-->
+<message-pop name="config_branch" title="setting.show.setting-branch">
+    <form id="form_config_branch">
+    <label t="setting.info.setting-branch"></label>
+
+    <div class="row section">
+        <div class="col-6">
+            <plus-select label="setting.label.default_currency" name="default_currency" value="{{ branch.default_currency }}" >
+                {% include 'core/option_currency.html' %}
+            </plus-select>
+        </div>
+        <div class="col-6">
+            <plus-select label="setting.label.date_format" name="date_format" value="{{ branch.date_format }}">
+                {% include 'core/option_data_format.html' %}
+            </plus-select>
+        </div>
+    </div>
+    <div class="row section">
+        <div class="col-6">
+            <plus-select label="setting.label.decimal_separator" name="decimal_separator" value="{{ branch.decimal_separator }}" >
+                <option value="," t="setting.option.decimal_separator2"></option>
+                <option value="." t="setting.option.decimal_separator1"></option>
+            </plus-select>
+        </div>
+        <div class="col-6">
+            <plus-select label="setting.label.thousands_separator" name="thousands_separator" value="{{ branch.thousands_separator }}" >
+                <option value="," t="setting.option.thousands_separator2"></option>
+                <option value="." t="setting.option.thousands_separator1"></option>
+            </plus-select>
+        </div>
+    </div>
+    <div class="row section">
+        <div class="col-6">
+            <plus-select label="setting.label.date_format" name="timezone" value="{{ branch.timezone }}" >
+                {% include 'core/option_timezone.html' %}
+            </plus-select>
+        </div>
+    </div>
+    <br>
+    <button class="btn btn-edit btn-success" t="message.success" onclick="send_form_pop_branch('form_config_branch', 'config_branch')" type="button"></button>
+    </form>
+</message-pop>
+
+
+
+
+
+
+<script>
+    async function send_form_pop_branch(form_id, pop){
+        //send the information to the server and get his answer
+        const result = await send_form_to_the_server(form_id, 'setting/view_update_branch/');
+
+        //we will see if we can add the new customer
+        if (result.success) {
+            show_notification('success', result.message || 'info.info-send-with-success');
+            window.hide_pop(pop);
+        } else {
+            show_alert('alert', 'Error', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'))
+        }
+    }
+</script>
+{% endif %}
