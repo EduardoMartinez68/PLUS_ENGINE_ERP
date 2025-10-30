@@ -3,10 +3,12 @@
 <form id="form_company">
     {% csrf_token %}
     <div class="row section">
+        <!---
         <div class="col-3">
             <image-uploader name="logo" value="{{ company.logo }}"></image-uploader>
         </div>
-        <div class="col-9">
+        --->
+        <div class="col">
             <plus-title 
                 label="setting.label.company_name" 
                 placeholder="setting.placeholder.company_name" 
@@ -58,6 +60,7 @@
                 </div>
             </div>
             <show-more onclick="window.show_pop('address_company')" description="( {{ company.address }}.{{ company.country }}.{{ company.postal_code }} )" label="setting.label.address"></show-more>
+            <show-more onclick="window.show_pop('config_company')" description="" label="setting.show.setting-company"></show-more>
         </plus-tab>
         <plus-tab text="setting.tag.info-contact">
             <div class="row section">
@@ -153,3 +156,21 @@
         }
     }
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

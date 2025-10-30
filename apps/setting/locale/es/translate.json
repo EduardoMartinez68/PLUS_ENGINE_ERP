@@ -75,9 +75,11 @@
     "setting.label.default_currency": "Moneda predeterminada",
     "setting.placeholder.default_currency": "Ej. MXN",
     "setting.label.decimal_separator": "Separador decimal",
-    "setting.placeholder.decimal_separator": "Ej. .",
+    "setting.option.decimal_separator1": "10.00 (diez)",
+    "setting.option.decimal_separator2": "10,00 (diez)",
     "setting.label.thousands_separator": "Separador de miles",
-    "setting.placeholder.thousands_separator": "Ej. ,",
+    "setting.option.thousands_separator1": "100,000 (cien mil)",
+    "setting.option.thousands_separator2": "100.000 (cien mil)",
     "setting.label.date_format": "Formato de fecha",
     "setting.placeholder.date_format": "Ej. DD/MM/YYYY",
     "setting.label.activated": "Empresa activa",
@@ -89,6 +91,8 @@
     "setting.label.last_login": "Último acceso",
     "setting.placeholder.last_login": "Selecciona la fecha y hora del último acceso",
 
+    "setting.show.setting-company":"Configuración avanzada de la empresa",
+    "setting.info.setting-company":"La información registrada aquí se establecerá como predeterminada para las nuevas sucursales, lo que te permitirá agilizar la configuración inicial de cada una.",
 
 
 

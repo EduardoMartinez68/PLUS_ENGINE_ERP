@@ -924,7 +924,11 @@ class PlusModules extends HTMLElement {
     const names = modules.map(m => m.getAttribute('name'));
     const icons = modules.map(m => m.getAttribute('icon') || '');
     const descs = modules.map(m => m.getAttribute('desc') || '');
-    const contents = modules.map(m => m.innerHTML);
+    const contents = modules.map(m => {
+      const clone = m.cloneNode(true);
+      return Array.from(clone.children);
+    });
+
 
     this.innerHTML = '';
 
@@ -1015,7 +1019,7 @@ class PlusModules extends HTMLElement {
     const panels = contents.map((html, i) => {
       const panel = document.createElement('div');
       panel.className = 'plus-modules-module-panel';
-      panel.innerHTML = html;
+      contents[i].forEach(child => panel.appendChild(child));
 
       // Solo mostrar el primero al inicio
       panel.style.display = i === 0 ? 'block' : 'none';

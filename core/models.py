@@ -99,13 +99,14 @@ class Company(models.Model):
     decimal_separator = models.CharField(max_length=1, default=".")
     thousands_separator = models.CharField(max_length=1, default=",")
     date_format = models.CharField(max_length=20, default="DD/MM/YYYY")
-    activated = models.BooleanField(default=True)
     timezone = models.CharField(max_length=50, default="America/Mexico_City")
 
     # Audit
     created_by = models.CharField(max_length=150, blank=True, null=True)
     updated_by = models.CharField(max_length=150, blank=True, null=True)
     last_login = models.DateTimeField(blank=True, null=True)
+
+    activated = models.BooleanField(default=True)
 
     class Meta:
         db_table = "companies_company"
