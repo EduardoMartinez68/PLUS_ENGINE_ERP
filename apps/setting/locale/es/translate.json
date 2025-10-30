@@ -132,5 +132,9 @@
     "setting.title.billing-data":"Datos de facturación",
     "setting.label.billing-data-company-name":"Razón Social *",
     "setting.label.fiscalRegime":"Regimen Fiscal *",
-    "setting.placeholder.billing-data-company-name":"EJ. Panificadora PLUS S.A. de C.V"
+    "setting.placeholder.billing-data-company-name":"EJ. Panificadora PLUS S.A. de C.V",
+
+
+    "setting.error.the-email-is-requerid":"El email es necesario",
+    "setting.error.the-password-is-requerid":"La contraseña de Google es obligatoria."
 }
