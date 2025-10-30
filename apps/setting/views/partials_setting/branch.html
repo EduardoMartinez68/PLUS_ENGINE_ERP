@@ -56,7 +56,9 @@
                     </input-field>
                 </div>
             </div>
-            <show-more onclick="window.show_pop('facture_branch')" label="setting.title.billing-data"></show-more>
+            {% if permissions.edit_data_facture %}
+                <show-more onclick="get_info_facturation()" label="setting.title.billing-data"></show-more>
+            {% endif %}
             <show-more onclick="window.show_pop('address_branch')" label="setting.label.address" description="{{branch.address}}"></show-more>
             <show-more onclick="window.show_pop('config_branch')" label="setting.show.setting-branch"></show-more>
             

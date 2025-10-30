@@ -56,7 +56,7 @@
     "setting.placeholder.city": "Ej. Ciudad de México",
     "setting.label.state": "Estado",
     "setting.placeholder.state": "Ej. CDMX",
-    "setting.label.postal_code": "Código postal",
+    "setting.label.postal_code": "Código postal *",
     "setting.placeholder.postal_code": "Ej. 06700",
     "setting.label.country": "País",
     "setting.placeholder.country": "Ej. MX",

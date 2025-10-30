@@ -10,7 +10,8 @@
         "edit_drivers",
         "edit_schedule",
         "edit_email",
-        "edit_setting_user"
+        "edit_setting_user",
+        "edit_data_facture"
     ], 
     "translate":{
         "es": {
@@ -24,7 +25,8 @@
             "edit_drivers": "Editar dirección de puertos de conexión de dispositivos locales como impresoras, basculas, etc.",
             "edit_schedule":"Editar horario de la sucursal",
             "edit_email":"Editar el email para enviar mensajes en nuestro servicio de correo electronico.",
-            "edit_setting_user":"El usuario podra editar sus propias configuraciones del sistema como zona horaria, vistas, formato de fecha, etc."
+            "edit_setting_user":"El usuario podra editar sus propias configuraciones del sistema como zona horaria, vistas, formato de fecha, etc.",
+            "edit_data_facture":"Editar datos de facturación de la sucursal"
         }
     }
 }

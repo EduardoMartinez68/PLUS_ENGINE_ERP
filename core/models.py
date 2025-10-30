@@ -248,9 +248,16 @@ class BranchBillingData(models.Model):
 
 
     # --- Address ---
-    fiscal_address = models.TextField(blank=True, null=True)
+    street = models.TextField(blank=True, null=True)
+    street = models.TextField(blank=True, null=True)
+    num_ins = models.CharField(max_length=5, blank=True, null=True)
+    num_out = models.CharField(max_length=5, blank=True, null=True)
+
     city = models.CharField(max_length=150, blank=True, null=True)
     state = models.CharField(max_length=150, blank=True, null=True)
+    municipality = models.CharField(max_length=150, blank=True, null=True)
+    cologne= models.CharField(max_length=150, blank=True, null=True)
+
     postal_code = models.CharField(max_length=20, blank=True, null=True)
     country = models.CharField(max_length=2, help_text=("example. MX, US, CO, ES, PL"))
 
