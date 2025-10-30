@@ -12,7 +12,7 @@ def update_company(user, data) -> dict:
     if not company:
         result["message"] = "El usuario no tiene una compañía asociada."
         return result
-
+  
     try:
         # 🔹 Iteramos sobre las claves del diccionario y actualizamos
         for field, value in data.items():

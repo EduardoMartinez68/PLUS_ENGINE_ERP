@@ -1,5 +1,6 @@
 <label t="setting.module.branch" desc="" icon="fi fi-rr-store-alt"></label>
 <hr>
+<form id="form_branch">
     <div class="row section">
         <div class="col-3">
             <image-uploader name="logo" value="{{ branch.logo }}"></image-uploader>
@@ -162,11 +163,11 @@
     
     <button class="btn btn-edit btn-success" t="btn.save" type="button" onclick="send_form_branch()"></button>
     <br><br>
-
+</form>
 <script>
     async function send_form_branch(){
         //send the information to the server and get his answer
-        const result = await send_form_to_the_server('form_company', 'setting/view_update_branch/');
+        const result = await send_form_to_the_server('form_branch', 'setting/view_update_branch/');
 
         //we will see if we can add the new customer
         if (result.success) {

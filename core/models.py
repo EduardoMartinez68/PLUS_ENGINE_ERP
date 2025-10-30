@@ -87,21 +87,20 @@ class Company(models.Model):
     state = models.TextField(blank=True, null=True)
     postal_code = models.CharField(max_length=10, blank=True, null=True)
     country = models.CharField(max_length=2, blank=True, null=True)  # MX, PL, etc
-    timezone = models.CharField(max_length=50, default="America/Mexico_City")
 
     # Sensitive data encrypted
-    _tax_id = models.BinaryField(db_column="tax_id", blank=True, null=True)
-    _bank_account = models.BinaryField(db_column="bank_account", blank=True, null=True)
+    tax_id = EncryptedTextField(db_column="tax_id", blank=True, null=True)
+    bank_account = EncryptedTextField(db_column="bank_account", blank=True, null=True)
     bank_name = models.CharField(max_length=150, blank=True, null=True)
-    _google_password = models.BinaryField(db_column="google_password", blank=True, null=True)
-    google_user = models.TextField(blank=True, null=True)
 
     # Internal configuration
+    #this configuration be use when the user create other branch. The new branch for default use this character
     default_currency = models.CharField(max_length=5, default="MXN")
     decimal_separator = models.CharField(max_length=1, default=".")
     thousands_separator = models.CharField(max_length=1, default=",")
     date_format = models.CharField(max_length=20, default="DD/MM/YYYY")
     activated = models.BooleanField(default=True)
+    timezone = models.CharField(max_length=50, default="America/Mexico_City")
 
     # Audit
     created_by = models.CharField(max_length=150, blank=True, null=True)
@@ -113,31 +112,7 @@ class Company(models.Model):
 
     def __str__(self):
         return self.company_name or f"Company {self.id}"
-
-    # Getters and setters for encrypted fields
-    @property
-    def tax_id(self):
-        return decrypt_field(self._tax_id)
-
-    @tax_id.setter
-    def tax_id(self, value):
-        self._tax_id = encrypt_field(value)
-
-    @property
-    def bank_account(self):
-        return decrypt_field(self._bank_account)
-
-    @bank_account.setter
-    def bank_account(self, value):
-        self._bank_account = encrypt_field(value)
-
-    @property
-    def google_password(self):
-        return decrypt_field(self._google_password)
-
-    @google_password.setter
-    def google_password(self, value):
-        self._google_password = encrypt_field(value)
+    
 
     # Logo validation and optimization
     def save(self, *args, **kwargs):
@@ -162,11 +137,12 @@ class Company(models.Model):
 
         super().save(*args, **kwargs)
 
+
+
 class Branch(models.Model):
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='company')
 
     #information of the branch
-    logo = models.ImageField(upload_to=logo_path, blank=True, null=True)
     name_branch = models.CharField(max_length=500)
     nickname = models.CharField(max_length=100, null=True)
     email_branch = models.TextField(null=True)
@@ -175,7 +151,6 @@ class Branch(models.Model):
     country = models.CharField(max_length=2, null=True) #mx, pl , etc
     address = models.TextField(null=True)
     postal_code = models.CharField(max_length=10, null=True)
-    timezone = models.CharField(max_length=50, default="America/Mexico_City")
 
     #contact information
     cellphone = models.CharField(max_length=25, null=True)
@@ -186,17 +161,23 @@ class Branch(models.Model):
     website = models.TextField(null=True)
 
     #-----Google Information-----
-    user_google = models.TextField(null=True)
-    password_google = models.TextField(null=True)
+    user_google = EncryptedTextField(null=True)
+    password_google = EncryptedTextField(null=True)
 
     # Additional useful fields
-    _bank_account = models.BinaryField(db_column="bank_account", blank=True, null=True)
+    bank_account = EncryptedTextField(db_column="bank_account", blank=True, null=True)
+    bank_name = models.CharField(max_length=150, blank=True, null=True)
+
+    #setting branch, this information be use when a new employee be add to the branch
     default_currency = models.CharField(max_length=5, default="MXN")  
     default_language = models.CharField(max_length=10, default="es") 
-    opening_time = models.TimeField(blank=True, null=True) 
-    closing_time = models.TimeField(blank=True, null=True) 
-    opening_days = models.CharField(max_length=7, default='0111110')  #Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
+    decimal_separator = models.CharField(max_length=1, default=".")
+    thousands_separator = models.CharField(max_length=1, default=",")
+    date_format = models.CharField(max_length=20, default="DD/MM/YYYY")
+    timezone = models.CharField(max_length=50, default="America/Mexico_City")
 
+
+    #other character
     enable_online_orders = models.BooleanField(default=False)  # Allow online orders. This is for if the user need use API like PLUS SHOP
     notes = models.TextField(blank=True, null=True) 
     last_audit_date = models.DateField(blank=True, null=True)  # Date of last audit or review
@@ -206,28 +187,100 @@ class Branch(models.Model):
     creation_date = models.DateField(auto_now_add=True)
     activated = models.BooleanField(default=True)
 
-    @property
-    def bank_account(self):
-        val = self._bank_account
-        if val:
-            try:
-                return cipher.decrypt(val).decode()
-            except Exception:
-                return None
-        return None
-
-    @bank_account.setter
-    def bank_account(self, value):
-        if value is None:
-            self._bank_account = None
-        else:
-            self._bank_account = cipher.encrypt(value.encode())
-
     class Meta:
         db_table = "companies_branch"
 
     def __str__(self):
         return self.name_branch
+
+class BranchSchedule(models.Model):
+    DAYS_OF_WEEK = [
+        (0, "Monday"),
+        (1, "Tuesday"),
+        (2, "Wednesday"),
+        (3, "Thursday"),
+        (4, "Friday"),
+        (5, "Saturday"),
+        (6, "Sunday"),
+    ]
+
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name="schedules")
+    day_of_week = models.IntegerField(choices=DAYS_OF_WEEK)
+    open_time = models.TimeField(blank=True, null=True)
+    close_time = models.TimeField(blank=True, null=True)
+    is_closed = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ("branch", "day_of_week")
+        ordering = ["day_of_week"]
+
+    def __str__(self):
+        return f"{self.branch.name} - {self.get_day_of_week_display()}"
+    
+
+class BranchBillingData(models.Model):
+    '''
+    this model is for create factures example in Mexico is for create facture CFDI, 
+    with this we can have many billing data of other branch or a equal in all the branch
+    '''
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=False, db_column='company')
+    branch = models.OneToOneField(Branch, on_delete=models.CASCADE, related_name="billing_data")
+
+    #----- Tax identifiers (vary by country) ----
+    tax_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text=("RFC (MX), NIT (CO), NIF (ES), EIN (US), NIP (PL), etc.")
+    )
+    secondary_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text=("CURP (MX), DNI (ES), PESEL (PL) or other document.")
+    )
+
+    # --- social name this is the 'razon social' in Mexico. ---
+    legal_name = models.CharField(max_length=255, help_text=("Name that have the company in the country"))
+
+
+    # --- Address ---
+    fiscal_address = models.TextField(blank=True, null=True)
+    city = models.CharField(max_length=150, blank=True, null=True)
+    state = models.CharField(max_length=150, blank=True, null=True)
+    postal_code = models.CharField(max_length=20, blank=True, null=True)
+    country = models.CharField(max_length=2, help_text=("example. MX, US, CO, ES, PL"))
+
+    # --- Certificates or keys (for stamping or digital signature) ---
+    digital_certificate = models.FileField(upload_to="certificates/", blank=True, null=True)
+    private_key = models.FileField(upload_to="keys/", blank=True, null=True)
+    private_key_password = models.CharField(max_length=255, blank=True, null=True)
+
+    # --- Metadata ---
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+    # --- setting ---
+    is_active = models.BooleanField(default=True)
+    notes = models.TextField(blank=True, null=True)
+
+
+    #----this is if the ERP is use a API external
+    fiscal_engine = models.CharField(
+        max_length=50,
+        default="generic",
+        help_text=("Tax engine or system: 'sat_mx', 'irs_us', 'aeat_es', 'zapl_pl', 'facturama', etc.")
+    )
+
+    class Meta:
+        db_table = "companies_branch_billing_data"
+        verbose_name = ("Billing Data")
+        verbose_name_plural = ("Billing Data")
+
+    def __str__(self):
+        return f"{self.legal_name} ({self.country})"
+
 
 class UserDepartment(models.Model):
     color = models.CharField(max_length=100, null=True)

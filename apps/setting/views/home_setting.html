@@ -47,6 +47,7 @@
 <!-------address company-->
 {% if permissions.edit_company %}
 <message-pop name="address_company" title="setting.label.address">
+    <form id="form_address_company">
     <div class="row section">
         <div class="col">
             <plus-country label="setting.label.country" name="country"  value="{{ company.country }}"></plus-country>
@@ -92,8 +93,24 @@
         </div>
     </div>
     <br>
-    <button class="btn btn-edit btn-success" t="message.success" onclick="window.hide_pop('address_company')"></button>
+    <button class="btn btn-edit btn-success" t="message.success" onclick="send_form_address_company()" type="button"></button>
+    </form>
 </message-pop>
+
+<script>
+    async function send_form_address_company(){
+        //send the information to the server and get his answer
+        const result = await send_form_to_the_server('form_address_company', 'setting/view_update_company/');
+
+        //we will see if we can add the new customer
+        if (result.success) {
+            show_notification('success', result.message || 'info.info-send-with-success');
+            window.hide_pop('address_company');
+        } else {
+            show_alert('alert', 'Error', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'))
+        }
+    }
+</script>
 {% endif %}
 
 <!-------data of facture of branch-->
