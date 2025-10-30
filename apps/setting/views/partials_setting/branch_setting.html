@@ -99,8 +99,9 @@
 {% if permissions.edit_data_facture %}
 <!-------data of facture of branch-->
 <message-pop name="facture_branch" title="setting.title.billing-data">
-    <form id="form_facture_branch">
+    
     <div class="container-pop">
+    <form id="form_facture_branch">
     <!-----Número de identificación fiscal (RFC)-->
     <div class="row section">
         <div class="col">
@@ -109,7 +110,8 @@
                 placeholder="setting.placeholder.tax_id" 
                 value="{{ billing_data.tax_id }}" 
                 name="tax_id" 
-                type="text" required>
+                type="text" required
+                id="tax_id_form">
             </input-field>
         </div>
     </div>
@@ -183,6 +185,7 @@
             </input-field>
         </div>
     </div>
+
     <div class="row section">
         <div class="col">
             <input-field 
@@ -219,11 +222,12 @@
             </input-field>
         </div>
     </div>
+    </form>
     </div>
     <br>
     <button class="btn btn-edit btn-success" t="btn.save" onclick="send_form_pop_facture_branch()" type="button"></button>
     <br>
-    </form>
+    
 </message-pop>
 
 
@@ -243,6 +247,12 @@
 
 
     async function get_info_facturation() {
+        //first we will see if already information in the form 
+        if(document.getElementById('tax_id_form').value!=''){
+            window.show_pop('facture_branch');
+            return; //if exist information is because the user already get the information of the server
+        }
+
         const backend = await window.send_message_to_the_server(
             'setting/view_get_branch_billing_data/', 
             {}, 
