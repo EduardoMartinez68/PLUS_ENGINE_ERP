@@ -3620,20 +3620,17 @@ class PlusTime extends HTMLElement {
   }
 
   disable() {
-    // Bloquea la interacción
-    if (this.display) {
-      this.display.style.pointerEvents = "none";
-      this.display.style.opacity = "0.5"; 
-    }
-    if (this.input) {
-      this.input.disabled = true; 
-    }
-    if (this.hiddenInput) {
-      this.hiddenInput.disabled = true;
-    }
-    if (this.dropdown) {
-      this.dropdown.style.display = "none"; 
-    }
+      if (this.display) {
+        this.display.style.pointerEvents = "none";
+        this.display.style.opacity = "0.5"; 
+      }
+      if (this.dropdown) {
+        this.dropdown.style.display = "none";
+      }
+
+      this.selectedHour = 0;
+      this.selectedMinute = 0;
+      this.update_input_form();
   }
 
   enable(defaultTime = "07:00") {
