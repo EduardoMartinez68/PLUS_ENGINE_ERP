@@ -44,7 +44,6 @@ def save_branch_schedule(branch, data) -> dict:
     data proviene del formulario en formato JSON o POST.
     """
     result = {"success": False, "message": "", "answer": None}
-    print("📥 Datos recibidos:", data)
 
     if not branch:
         result["message"] = "No se proporcionó una sucursal válida."

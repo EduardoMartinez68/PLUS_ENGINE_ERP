@@ -18,11 +18,13 @@
     </plus-module>
     {% endif %}
 
+    <!--
     {% if permissions.edit_drivers %}
     <plus-module name="setting.module.drives" desc="" icon="fi fi-rr-plug-connection">
         {% include 'partials_setting/drivers.html' %}
     </plus-module>
     {% endif %}
+    --->
 
     {% if permissions.edit_schedule %}
     <plus-module name="setting.module.schedule" desc="" icon="fi fi-rr-clock-three">
@@ -35,7 +37,7 @@
         {% include 'partials_setting/email.html' %}
     </plus-module>
     {% endif %}
-
+    <!---
     <plus-module name="ERP" desc="" icon="fi-rr-vector">
     </plus-module>
 
@@ -45,6 +47,7 @@
     <plus-module name="setting.module.apps" desc="" icon="fi fi-rs-apps">
         
     </plus-module>
+    --->
 </plus-modules>
 
 
