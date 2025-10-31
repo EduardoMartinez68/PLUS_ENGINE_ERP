@@ -1,19 +1,3 @@
-<!---
-<input-field label="setting.label.opening_time" placeholder="setting.placeholder.opening_time"
-    value="{{ branch.opening_time }}" name="opening_time" type="time">
-</input-field>
-
-<input-field label="setting.label.closing_time" placeholder="setting.placeholder.closing_time"
-    value="{{ branch.closing_time }}" name="closing_time" type="time">
-</input-field>
-
-<input-field label="setting.label.opening_days" placeholder="setting.placeholder.opening_days"
-    value="{{ branch.opening_days }}" name="opening_days" type="text">
-</input-field>
---->
-
-
-
 <style>
     .day-row {
         display: grid;
@@ -42,55 +26,77 @@
 
 <label for="" t="setting.module.schedule" icon="fi fi-rr-clock-three"></label>
 <hr>
+<form id="form_schedule">
 <div class="container-section section">
+
     <div class="day-row">
         <div class="day-name">Lunes</div>
-        <plus-time name="tuesday_open" value="09:00"></plus-time>
-        <plus-time name="tuesday_close" value="18:00"></plus-time>
-        <input type="checkbox" name="tuesday_closed" id="tuesday_closed">
+        <plus-time name="monday_open" value="{{ schedule.monday_open }}"></plus-time>
+        <plus-time name="monday_close" value="{{ schedule.monday_close }}"></plus-time>
+        <input type="checkbox" name="monday_closed" id="monday_closed" {% if schedule.monday_closed %}checked{% endif %}>
     </div>
 
     <div class="day-row">
         <div class="day-name">Martes</div>
-        <plus-time name="tuesday_open" value="09:00"></plus-time>
-        <plus-time name="tuesday_close" value="18:00"></plus-time>
-        <input type="checkbox" name="tuesday_closed" id="tuesday_closed">
+        <plus-time name="tuesday_open" value="{{ schedule.tuesday_open }}"></plus-time>
+        <plus-time name="tuesday_close" value="{{ schedule.tuesday_close }}"></plus-time>
+        <input type="checkbox" name="tuesday_closed" id="tuesday_closed" {% if schedule.tuesday_closed %}checked{% endif %}>
     </div>
 
     <div class="day-row">
         <div class="day-name">Miércoles</div>
-        <plus-time name="tuesday_open" value="09:00"></plus-time>
-        <plus-time name="tuesday_close" value="18:00"></plus-time>
-        <input type="checkbox" name="tuesday_closed" id="tuesday_closed">
+        <plus-time name="wednesday_open" value="{{ schedule.wednesday_open }}"></plus-time>
+        <plus-time name="wednesday_close" value="{{ schedule.wednesday_close }}"></plus-time>
+        <input type="checkbox" name="wednesday_closed" id="wednesday_closed" {% if schedule.wednesday_closed %}checked{% endif %}>
     </div>
 
     <div class="day-row">
         <div class="day-name">Jueves</div>
-        <plus-time name="tuesday_open" value="09:00"></plus-time>
-        <plus-time name="tuesday_close" value="18:00"></plus-time>
-        <input type="checkbox" name="tuesday_closed" id="tuesday_closed">
+        <plus-time name="thursday_open" value="{{ schedule.thursday_open }}"></plus-time>
+        <plus-time name="thursday_close" value="{{ schedule.thursday_close }}"></plus-time>
+        <input type="checkbox" name="thursday_closed" id="thursday_closed" {% if schedule.thursday_closed %}checked{% endif %}>
     </div>
 
     <div class="day-row">
         <div class="day-name">Viernes</div>
-        <plus-time name="tuesday_open" value="09:00"></plus-time>
-        <plus-time name="tuesday_close" value="18:00"></plus-time>
-        <input type="checkbox" name="tuesday_closed" id="tuesday_closed">
+        <plus-time name="friday_open" value="{{ schedule.friday_open }}"></plus-time>
+        <plus-time name="friday_close" value="{{ schedule.friday_close }}"></plus-time>
+        <input type="checkbox" name="friday_closed" id="friday_closed" {% if schedule.friday_closed %}checked{% endif %}>
     </div>
 
     <div class="day-row">
         <div class="day-name">Sábado</div>
-        <plus-time name="tuesday_open" value="09:00"></plus-time>
-        <plus-time name="tuesday_close" value="18:00"></plus-time>
-        <input type="checkbox" name="tuesday_closed" id="tuesday_closed" checked>
+        <plus-time name="saturday_open" value="{{ schedule.saturday_open }}"></plus-time>
+        <plus-time name="saturday_close" value="{{ schedule.saturday_close }}"></plus-time>
+        <input type="checkbox" name="saturday_closed" id="saturday_closed" {% if schedule.saturday_closed %}checked{% endif %}>
     </div>
 
     <div class="day-row">
         <div class="day-name">Domingo</div>
-        <plus-time name="tuesday_open" value="09:00"></plus-time>
-        <plus-time name="tuesday_close" value="18:00"></plus-time>
-        <input type="checkbox" name="tuesday_closed" id="tuesday_closed" checked>
+        <plus-time name="sunday_open" value="{{ schedule.sunday_open }}"></plus-time>
+        <plus-time name="sunday_close" value="{{ schedule.sunday_close }}"></plus-time>
+        <input type="checkbox" name="sunday_closed" id="sunday_closed" {% if schedule.sunday_closed %}checked{% endif %}>
     </div>
+
 </div>
-<br>
-<button class="btn btn-edit btn-success" t="btn.save"></button>
+
+    <br>
+    <button class="btn btn-edit btn-success" t="btn.save" type="button" onclick="send_form_schedule_branch()"></button>
+</form>
+
+
+<script>
+    async function send_form_schedule_branch() {
+        //if all is success, now we will send the form
+        const result = await send_form_to_the_server('form_schedule', 'setting/view_update_schedule/');
+        if (result.success) {
+            show_notification('success', result.message || 'info.info-send-with-success');
+        } else {
+            show_alert(
+                'Error',
+                result.message || 'info.not-was-can-send-the-information',
+                result.error || 'info.not-was-can-send-the-information'
+            );
+        }
+    }
+</script>

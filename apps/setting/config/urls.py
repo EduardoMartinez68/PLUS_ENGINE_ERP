@@ -8,4 +8,5 @@ urlpatterns = [
     path('view_update_setting_user/', views.view_update_setting_user, name='view_update_setting_user'),
     path('view_update_data_facture_branch/', views.view_update_data_facture_branch, name='view_update_data_facture_branch'),
     path('view_get_branch_billing_data/', views.view_get_branch_billing_data, name='view_get_branch_billing_data'),
+    path('view_update_schedule/', views.view_update_schedule, name='view_update_schedule'),
 ]

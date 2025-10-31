@@ -3,6 +3,7 @@ from ..plus_wrapper import Plus
 from django.http import JsonResponse
 import json
 
+from ..services.schedule import get_branch_schedule_all
 def setting_home(request):
     if request.method != "GET":
         return JsonResponse(
@@ -24,7 +25,13 @@ def setting_home(request):
     #here we will to construct the permissions that have the user in the view of the settings 
     permissions=Plus.get_user_permissions(user, ["edit_system","edit_company", "edit_branch", "edit_drivers", "edit_schedule", "edit_email", "edit_data_facture"]) 
 
-    return render(request, 'home_setting.html', {"user": user, "company": company, "branch":branch, "permissions": permissions})
+    #here we will see if have permission for edit the schedule for get from the function
+    schedule=None
+    if permissions.get("edit_schedule"):
+        schedule=get_branch_schedule_all(branch)
+        print(schedule)
+
+    return render(request, 'home_setting.html', {"user": user, "company": company, "branch":branch, "permissions": permissions, "schedule": schedule})
 
 
 
@@ -186,6 +193,41 @@ def view_get_branch_billing_data(request):
     #here we will to construct the permissions that have the user in the view of the settings 
     result=get_branch_billing_data(request.user.branch) 
  
+    return JsonResponse({
+        "success": result['success'],
+        "answer": result['answer'],
+        "message": result['message'],
+        "error": result.get('error',"")
+    }, status=200)   
+
+
+
+def view_update_schedule(request):
+    if request.method != "POST":
+        return JsonResponse(
+            {"success": False, "answer": "Invalid JSON", "error": "method not success"}, 
+            status=400
+        )  
+        
+    #now we will see if the user have the permsssion need that the ERP need
+    if not Plus.this_user_have_this_permission(request.user, 'edit_schedule'):
+        return JsonResponse(
+            {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+            status=200
+        )
+    
+    try:
+        data = json.loads(request.body)
+    except Exception as e:
+        return JsonResponse(
+            {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+            status=400
+        )
+       
+    
+    from ..services.schedule import save_branch_schedule
+    result=save_branch_schedule(request.user.branch, data) 
+
     return JsonResponse({
         "success": result['success'],
         "answer": result['answer'],
