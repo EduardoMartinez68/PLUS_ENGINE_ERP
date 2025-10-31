@@ -29,7 +29,6 @@ def setting_home(request):
     schedule=None
     if permissions.get("edit_schedule"):
         schedule=get_branch_schedule_all(branch)
-        print(schedule)
 
     return render(request, 'home_setting.html', {"user": user, "company": company, "branch":branch, "permissions": permissions, "schedule": schedule})
 

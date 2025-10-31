@@ -3618,6 +3618,40 @@ class PlusTime extends HTMLElement {
       this.display.textContent = `${String(this.selectedHour).padStart(2, '0')}:${String(this.selectedMinute).padStart(2, '0')}`;
     }
   }
+
+  disable() {
+    // Bloquea la interacción
+    if (this.display) {
+      this.display.style.pointerEvents = "none";
+      this.display.style.opacity = "0.5"; 
+    }
+    if (this.input) {
+      this.input.disabled = true; 
+    }
+    if (this.hiddenInput) {
+      this.hiddenInput.disabled = true;
+    }
+    if (this.dropdown) {
+      this.dropdown.style.display = "none"; 
+    }
+  }
+
+  enable(defaultTime = "07:00") {
+    if (this.display) {
+      this.display.style.pointerEvents = "auto";
+      this.display.style.opacity = "1";
+    }
+    if (this.input) {
+      this.input.disabled = false;
+    }
+    if (this.hiddenInput) {
+      this.hiddenInput.disabled = false;
+    }
+
+    if (defaultTime) {
+      change_plus_time(this.id, defaultTime);
+    }
+  }
 }
 
 function change_plus_time(id, newTime) {
