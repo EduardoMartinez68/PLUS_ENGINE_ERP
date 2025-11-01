@@ -185,10 +185,6 @@ class Tooth(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="healthy")
 
 
-
-
-
-
     # Diagnostic and observation fields
     diagnosis = EncryptedTextField(blank=True, null=True)
     notes = EncryptedTextField(blank=True, null=True)
@@ -199,6 +195,25 @@ class Tooth(models.Model):
     surface_distal = models.CharField(max_length=50, blank=True, null=True)
     surface_lingual = models.CharField(max_length=50, blank=True, null=True)
     surface_buccal = models.CharField(max_length=50, blank=True, null=True)
+
+    caries_depth = models.PositiveSmallIntegerField(
+        default=0,
+        choices=[
+            (0, "No cavities"),
+            (1, "Affected enamel"),
+            (2, "affected dentin"),
+            (3, "Close to the pulp"),
+            (4, "It compromises the pulp")
+        ],
+        help_text="Indicates the level of depth of the caries on a scale of 0 to 4."
+    )
+
+    # Visual state of the tooth in SVG format
+    svg_state = models.TextField(
+        blank=True, 
+        null=True,
+        help_text="SVG code that represents the current visual state of the tooth."
+    )
 
     # Information on treatments applied
     treatments = EncryptedTextField(blank=True, null=True)
@@ -223,8 +238,6 @@ class Tooth(models.Model):
 
     def __str__(self):
         return f"Diente {self.FDI_number} - {self.get_status_display()}"
-
-
 
 class OdontogramFile(models.Model):
     """
