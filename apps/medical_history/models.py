@@ -164,3 +164,9 @@ class LabResult(models.Model):
 
     def __str__(self):
         return f"{self.test_name} - {self.customer}"
+
+
+
+
+
+#---------------------------------------------------------ODONTOGRAMA--------------------------------------------------------

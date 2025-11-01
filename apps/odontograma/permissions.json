@@ -1,0 +1,32 @@
+{
+    "character": {
+        "icon": "fi fi-rr-tooth"
+    },
+    "permissions": [
+        "view_odontogram",
+        "add_odontogram",
+        "update_odontogram",
+        "delete_odontogram",
+        "attach_files_odontogram",
+        "view_all_odontograms",
+        "lock_odontogram",
+        "unlock_odontogram",
+        "export_odontogram"
+    ],
+    "translate": {
+        "es": {
+            "app_name": "Odontograma",
+            "description": "Permite crear, organizar y gestionar diferentes odontogramas y archivos clínicos de los pacientes.",
+
+            "view_odontogram": "Ver los odontogramas de los pacientes asignados.",
+            "add_odontogram": "Permite crear nuevos odontogramas de pacientes.",
+            "update_odontogram": "Actualizar la información de los odontogramas (dientes, tratamientos, notas).",
+            "delete_odontogram": "Eliminar odontogramas existentes del paciente.",
+            "attach_files_odontogram": "Adjuntar o eliminar archivos (radiografías, fotografías, documentos) en un odontograma.",
+            "view_all_odontograms": "Ver todos los odontogramas de todos los pacientes, incluso los no asignados.",
+            "lock_odontogram": "Bloquear un odontograma para impedir su edición (por ejemplo, tras la firma del odontólogo responsable).",
+            "unlock_odontogram": "Desbloquear un odontograma previamente bloqueado (solo administradores o jefes de clínica).",
+            "export_odontogram": "Exportar el odontograma en formato PDF o digital para compartir con el paciente u otros doctores."
+        }
+    }
+}
