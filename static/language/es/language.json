@@ -37,6 +37,8 @@
     "btn.download":"Descargar",
     "btn.open":"Abrir",
     "btn.copy":"Copiar",
+    "btn.add":"Agregar",
+    "btn.make":"Crear",
 
     
     "message.title": "Confirmación",

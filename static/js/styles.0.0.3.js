@@ -1460,10 +1460,11 @@ class PlusSelect extends HTMLElement {
             redSquare.style.verticalAlign = 'middle';
           }
 
-          if (data.photo) {
+          const photo=data.photo || data.avatar; 
+          if (photo) {
             const imgThumb = document.createElement('img');
-            imgThumb.src = data.photo;
-            imgThumb.alt = data.text;
+            imgThumb.src = photo;
+            imgThumb.alt = data.text || data.name;
             imgThumb.loading = 'lazy';
             imgThumb.style.width = '24px';
             imgThumb.style.height = '24px';
@@ -1484,7 +1485,7 @@ class PlusSelect extends HTMLElement {
           // text
           const textSpan = document.createElement('span');
           textSpan.classList.add('option-text');
-          textSpan.textContent = data.text;
+          textSpan.textContent = data.text || data.name;
 
           // Contenedor de botones
           const actionsContainer = document.createElement('div');
@@ -1532,7 +1533,7 @@ class PlusSelect extends HTMLElement {
 
           // Option selection event
           div.addEventListener('click', () => {
-            select.querySelector('.plus-select-selected-text').textContent = data.text;
+            select.querySelector('.plus-select-selected-text').textContent = data.text || data.name;
             hiddenInput.value = data.id;
             popup.classList.remove('active');
             searchInput.value = '';

@@ -1,0 +1,18 @@
+{% if customer %}
+    <label>Cliente ID: {{ customer.id }}</label>
+{% else %}
+    <!---when the customer not exist, we will to create the form for that the user can add-->
+    <form id="">
+        <br>
+        <div class="container">
+            <label t="odontograma.label.create-odontogram" icon="fi fi-sr-tooth"></label>
+            <hr>
+            <plus-select label="odontograma.label.select-patient" link="customers/customers_search/" method="GET" name="select_customer">
+            </plus-select>
+            <br>
+            <plus-switch text="odontograma.label.this-patient-be-a-kit" name="this_odontograma_is_a_kid"></plus-switch>
+            <br><br><br>
+            <button class="btn btn-add btn-success" t="btn.make"></button>
+        </div>
+    </form>
+{% endif %}

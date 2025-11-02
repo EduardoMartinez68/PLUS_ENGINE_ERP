@@ -1,23 +1,352 @@
+<style>
+.container-odontograms {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.2rem;
+  padding: 20px;
+  box-sizing: border-box;
+}
 
-        <title>Welcome to odontograma</title>
-        <style>
-            h1 {
-                color: #007ACC;
-                margin-bottom: 20px;
-            }
-            p {
-                font-size: 18px;
-                line-height: 1.6;
-                max-width: 600px;
-                margin: 0 auto;
-                color: #555;
-            }
-            .highlight {
-                color: #ff6600;
-                font-weight: bold;
-            }
-        </style>
-        <h1>Welcome to your app <span class="highlight">odontograma</span> in PLUS</h1>
-        <p>Thank you for choosing our platform. This app is designed to help you manage your <strong>odontograma</strong> efficiently and effortlessly.</p>
-        <p>Explore the features and enjoy a seamless experience!</p>
-    
+.patient-odontogram-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (max-width: 600px) {
+  .container-odontograms {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .patient-odontogram-card {
+    padding: 14px;
+  }
+
+  .patient-odontogram-card svg {
+    height: 100px;
+  }
+}
+</style>
+
+<div class="container-section">
+
+    <div class="row">
+        <div class="col-8">
+            
+        </div>
+        <div class="col-4 p-3">
+            <plus-search input_id="search-odontograma">
+                <search-option>
+                    <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-employee')"><i class="fi fi-rr-settings-sliders"></i></button>
+                </search-option>
+                <search-option>
+                    <button class="btn btn-add" onclick="window.nextWeb('odontograma/add_odontogram/')">+</button>
+                </search-option>
+            </plus-search>
+        </div>
+    </div>
+
+    <div class="container-odontograms" id="container-odontograms">
+        <div class="row section">
+            <div class="col-2">
+                <div class="skeleton skeleton-circle"></div>
+            </div>
+            <div class="col-10">
+                <div class="skeleton skeleton-rect" style="width: 90%;"></div><br>
+                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col-2">
+                <div class="skeleton skeleton-circle"></div>
+            </div>
+            <div class="col-10">
+                <div class="skeleton skeleton-rect" style="width: 90%;"></div><br>
+                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col-2">
+                <div class="skeleton skeleton-circle"></div>
+            </div>
+            <div class="col-10">
+                <div class="skeleton skeleton-rect" style="width: 90%;"></div><br>
+                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+//here we will to create the label 
+if (!customElements.get("patient-odontogram-card")) {
+class PatientOdontogramCard extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    const photo = this.getAttribute('photo') || '';
+    const namePatient = this.getAttribute('name-patient') || 'Paciente';
+    const createdAt = this.getAttribute('created-at') || '';
+    const odontogramString = this.getAttribute('odontogram');
+    const odontogramUrl = this.getAttribute('odontogram-url');
+
+    // Template
+    const wrapper = document.createElement('article');
+    wrapper.setAttribute('role', 'button');
+    wrapper.className = 'card';
+    wrapper.tabIndex = 0;
+
+    wrapper.innerHTML = `
+      <div class="left">
+        <div class="avatar">
+          <img alt="Foto de ${this._escapeHtml(namePatient)}" />
+        </div>
+        <div class="meta">
+          <div class="name" title="${this._escapeHtml(namePatient)}">${this._escapeHtml(namePatient)}</div>
+          <div class="created">${this._escapeHtml(createdAt)}</div>
+        </div>
+      </div>
+
+      <div class="preview" aria-hidden="false">
+        <div class="svg-wrap" part="svg-wrap"></div>
+      </div>
+
+      <style>
+        :host {
+          display: block;
+          max-width: 720px;
+          margin: 8px;
+          font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+        .card {
+          display: flex;
+          gap: 16px;
+          align-items: center;
+          background: white;
+          border-radius: 8px;
+          padding: 12px;
+          box-shadow: 0 2px 8px rgba(16,24,40,0.06);
+          border: 1px solid rgba(16,24,40,0.04);
+          cursor: pointer;
+        }
+
+        .left {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: 160px;
+        }
+
+        .avatar {
+          width: 64px;
+          height: 64px;
+          flex: 0 0 64px;
+          border-radius: 8px;
+          overflow: hidden;
+          background: #f3f4f6;
+          display: inline-grid;
+          place-items: center;
+        }
+        .avatar img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+
+        .meta { display:flex; flex-direction:column; gap:4px; }
+        .name { font-weight:600; color:#0f172a; font-size:14px; }
+        .created { font-size:12px; color:#6b7280; }
+
+        .preview {
+          flex: 1 1 auto;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .svg-wrap {
+          width: 240px;
+          height: 120px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 6px;
+          background: #fff;
+          overflow: hidden;
+          border: 1px solid rgba(15,23,42,0.04);
+        }
+
+        /* scalable SVG inside the wrapper */
+        .svg-wrap svg {
+          width: 100%;
+          height: 100%;
+          display: block;
+        }
+
+        /* Mobile: stacked */
+        @media (max-width: 600px) {
+          .card {
+            flex-direction: column;
+            align-items: stretch;
+          }
+          .left { width: 100%; }
+          .svg-wrap { width: 100%; height: 200px; }
+        }
+      </style>
+    `;
+
+    const imgEl = wrapper.querySelector('.avatar img');
+    imgEl.src = photo || this._placeholderImage();
+    imgEl.onerror = () => { imgEl.src = this._placeholderImage(); };
+
+    // created & name already printed in template
+
+    const svgWrap = wrapper.querySelector('.svg-wrap');
+
+    // If odontogram string provided - parse and insert
+    if (odontogramString) {
+      const parsed = this._parseAndValidateSVG(odontogramString);
+      if (parsed) {
+        // make responsive: remove width/height attributes to scale in wrapper
+        parsed.removeAttribute('width');
+        parsed.removeAttribute('height');
+        // set preserveAspectRatio if not exist
+        if (!parsed.getAttribute('preserveAspectRatio')) {
+          parsed.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        }
+        svgWrap.appendChild(parsed);
+      } else {
+        svgWrap.textContent = 'SVG inválido';
+      }
+    } else if (odontogramUrl) {
+      // Use <object> for external SVGs (keeps styles inside)
+      const obj = document.createElement('object');
+      obj.type = 'image/svg+xml';
+      obj.data = odontogramUrl;
+      obj.style.width = '100%';
+      obj.style.height = '100%';
+      obj.setAttribute('aria-label', `Odontograma de ${namePatient}`);
+      svgWrap.appendChild(obj);
+    } else {
+      svgWrap.textContent = 'Sin odontograma';
+    }
+
+    // Event: expose a click to the outside so the app can open detail
+    wrapper.addEventListener('click', (e) => {
+      this.dispatchEvent(new CustomEvent('card-click', {
+        detail: {
+          photo, namePatient, createdAt,
+          odontogramString, odontogramUrl
+        },
+        bubbles: true,
+        composed: true
+      }));
+    });
+
+    // keyboard accessibility
+    wrapper.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        wrapper.click();
+      }
+    });
+
+    // Clear shadow and append
+    this.shadowRoot.innerHTML = '';
+    this.shadowRoot.appendChild(wrapper);
+  }
+
+  // Simple sanitizer: parse and ensure root is <svg>. Returns a cloned SVG Element or null.
+  _parseAndValidateSVG(svgString) {
+    try {
+      // If the SVG was encoded in attributes (quotes etc), attempt a decode
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(svgString, 'image/svg+xml');
+
+      // parse errors generate <parsererror>
+      if (doc.documentElement.nodeName === 'parsererror') return null;
+
+      const svg = doc.querySelector('svg');
+      if (!svg) return null;
+
+      // Basic safety: remove <script> tags and on* attributes
+      svg.querySelectorAll('script').forEach(n => n.remove());
+      // remove event attributes like onclick
+      const FORBIDDEN_ATTR = [/^on/i];
+      const walk = (el) => {
+        for (let i = el.attributes.length - 1; i >= 0; i--) {
+          const name = el.attributes[i].name;
+          if (FORBIDDEN_ATTR.some(rx => rx.test(name))) {
+            el.removeAttribute(name);
+          }
+        }
+        el.childNodes.forEach(c => {
+          if (c.nodeType === 1) walk(c);
+        });
+      };
+      walk(svg);
+
+      // Import into current document to be safe
+      return /** @type {SVGElement} */ (document.importNode(svg, true));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  _placeholderImage() {
+    // tiny neutral placeholder; puedes cambiar por una URL en tu app
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+        <rect width="100%" height="100%" fill="#f3f4f6"/>
+        <g fill="#9ca3af"><path d="M32 12a8 8 0 100 16 8 8 0 000-16zM18 44c0-7.732 6.268-14 14-14s14 6.268 14 14v2H18v-2z"/></g>
+      </svg>`
+    );
+  }
+
+  _escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+}
+
+customElements.define('patient-odontogram-card', PatientOdontogramCard);
+}
+
+function get_div_odontograma(){
+    return `
+        <patient-odontogram-card
+            photo="https://example.com/patient1.jpg"
+            name-patient="Juan Pérez"
+            created-at="2025-10-30"
+            odontogram='<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#f5f5f5"/><circle cx="50" cy="50" r="30" fill="#e0e0e0"/></svg>'
+        ></patient-odontogram-card>
+    `
+}
+
+window.update_container_with_seeker(
+    'search-odontograma', 
+    'container-odontograms', 
+    get_div_odontograma(), 
+    'odontograma/search_odontogram/', 
+    'GET'
+)
+
+</script>

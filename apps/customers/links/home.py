@@ -80,7 +80,7 @@ def customers_search(request):
             answer = search_customer_for_filter(
                 request.user, search, customer_type, source, priority, activated
             )
-
+            
             if answer["success"]:
                 return JsonResponse(
                     {"success": True, "answer": answer["answer"], "error": answer["error"]},
@@ -310,6 +310,9 @@ def delete_type_customer(request):
 from ..services.customer_source import get_customer_source, add_a_new_source, update_source, delete_a_source_with_his_id, get_source_by_id, get_customer_source_select
 
 def get_customers_with_seeker(request):
+    if request.method != "GET":
+        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+
     #now we will see if the user have the permsssion need that the ERP need
     if not Plus.this_user_have_this_permission(request.user, 'view_customer'):
         return JsonResponse(
@@ -317,12 +320,8 @@ def get_customers_with_seeker(request):
             status=200
         )
     
-    if request.method != "GET":
-        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
-
     query = request.GET.get("query", "").strip()
     result = get_customer_source(request.user, query)
-
     return JsonResponse({"success": True, "answer": result}, status=200)
 
 def search_source(request):
