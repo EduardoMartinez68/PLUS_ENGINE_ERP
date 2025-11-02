@@ -1366,7 +1366,7 @@ class PlusSelect extends HTMLElement {
 
         // position for default of the select 
         let left = rect.left + window.scrollX + rect.width;
-        let top = rect.top;
+        let top = rect.bottom + window.scrollY - 43;
 
         // Check if the popup goes off the screen (right side)
         if (left + popupRect.width > window.innerWidth) {
@@ -1374,9 +1374,17 @@ class PlusSelect extends HTMLElement {
             left = left-rect.width/2;
         }
 
+
+        //here we will see if the user be in the cellphone 
+        if (window.innerWidth <= 768) {
+          popupElement.style.width = `${window.innerWidth-64}px`;
+          left = left-rect.width/2;
+          top = rect.bottom + window.scrollY + 8;
+        }
+
         //update the positions
         popupElement.style.left = `${left}px`;
-        popupElement.style.top = `${rect.bottom + window.scrollY - 43}px`;
+        popupElement.style.top = `${top}px`;
     }
 
     async function filterOptions(term) {
