@@ -1371,14 +1371,18 @@ class PlusSelect extends HTMLElement {
         // Check if the popup goes off the screen (right side)
         if (left + popupRect.width > window.innerWidth) {
             // If it goes outside, move it to the left of the select
-            left = left-rect.width/2;
+            //here we will to calculate the excess of the border
+            const overflowRight = left + popupRect.width - window.innerWidth;
+
+            // Adjust left by subtracting the excess
+            left = left - overflowRight-16;
         }
 
 
         //here we will see if the user be in the cellphone 
         if (window.innerWidth <= 768) {
           popupElement.style.width = `${window.innerWidth-64}px`;
-          left = left-rect.width/2;
+          left = rect.left + window.scrollX;
           top = rect.bottom + window.scrollY + 8;
         }
 
