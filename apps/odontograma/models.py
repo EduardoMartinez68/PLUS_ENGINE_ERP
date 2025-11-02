@@ -2,6 +2,7 @@
 from django.db import models
 from encrypted_model_fields.fields import EncryptedTextField, EncryptedCharField
 from apps.customers.models import Customer
+from apps.files.models import File
 from django.utils import timezone
 from core.models import CustomUser, Branch, Company
 
@@ -233,7 +234,7 @@ class Tooth(models.Model):
     )
 
     class Meta:
-        unique_together = ("odontogram", "FDI_number")
+        unique_together = ("historyodontogram", "FDI_number")
         ordering = ["FDI_number"]
 
     def __str__(self):
@@ -244,12 +245,12 @@ class OdontogramFile(models.Model):
     Relationship between an odontogram and one or more files (x-rays, photos, documents, etc.).
     """
     odontogram = models.ForeignKey(
-        "Odontogram",
+        Odontogram,
         on_delete=models.CASCADE,
         related_name="odontogram_files"
     )
     file = models.ForeignKey(
-        "File",
+        File,
         on_delete=models.CASCADE,
         related_name="odontogram_links"
     )

@@ -2,8 +2,39 @@ let currentPopZIndex = 5000;
 const colors = {
   color_company: '#2b6cb0',
   color_company_hover: '#064985',
-  color_second: '#1d7dd1ff'
+  color_second: '#1d7dd1ff',
+  color_container_white:"#ffffffff",
+
+
+  color_company_black:'#1D1D1F',
+  color_second_black: '#303033ff',
+  color_icon_black:'#76B5D6',
+  color_container_black:"#32323E",
+  color_text_black:'#E5E4EA'
 }
+
+/*
+const toggleTheme = () => {
+  const root = document.documentElement;
+  const currentTheme = root.getAttribute("data-theme");
+  const newTheme = currentTheme === "dark" ? "light" : "dark";
+  root.setAttribute("data-theme", newTheme);
+
+  // save the preference of the user
+  localStorage.setItem("theme", newTheme);
+};
+
+window.addEventListener("DOMContentLoaded", () => {
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme) {
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  } else {
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  }
+});
+*/
 
 //this functions is for create a id unique for that not exist a error when create a new element
 function generate_unique_dom_id(prefix = "plus-") {
@@ -1290,22 +1321,7 @@ class PlusSelect extends HTMLElement {
       searchInput.focus();
 
       if (popup.classList.contains('active')) {
-        const rect = select.getBoundingClientRect();
-        popup.style.position = 'absolute';
-        const insideMessagePop = this.closest("message-pop") !== null;
-
-        if (left == 0) {
-          if (insideMessagePop) {
-            left = rect.left + window.scrollX + 130; //130
-          } else {
-            left = rect.left + window.scrollX + rect.width;
-          }
-        } else {
-          left = rect.left + window.scrollX + rect.width;
-        }
-
-        popup.style.top = `${rect.bottom + window.scrollY - 43}px`;
-        popup.style.left = `${left}px`;
+        positionPopup(select, popup);
       }
 
 
@@ -1342,6 +1358,26 @@ class PlusSelect extends HTMLElement {
         await filterOptions(e.target.value.toLowerCase()); //if not send data to the server, we will filter to the instant 
       }
     });
+
+    function positionPopup(selectElement, popupElement) {
+        // get the position in the screen
+        const rect = selectElement.getBoundingClientRect();
+        const popupRect = popupElement.getBoundingClientRect();
+
+        // position for default of the select 
+        let left = rect.left + window.scrollX + rect.width;
+        let top = rect.top;
+
+        // Check if the popup goes off the screen (right side)
+        if (left + popupRect.width > window.innerWidth) {
+            // If it goes outside, move it to the left of the select
+            left = left-rect.width/2;
+        }
+
+        //update the positions
+        popupElement.style.left = `${left}px`;
+        popupElement.style.top = `${rect.bottom + window.scrollY - 43}px`;
+    }
 
     async function filterOptions(term) {
       //Standardize the search term: lowercase letters and no accents
