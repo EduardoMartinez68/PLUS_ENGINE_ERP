@@ -1322,6 +1322,7 @@ class PlusSelect extends HTMLElement {
 
       if (popup.classList.contains('active')) {
         positionPopup(select, popup);
+        positionPopup(select, popup);
       }
 
 
@@ -1360,35 +1361,35 @@ class PlusSelect extends HTMLElement {
     });
 
     function positionPopup(selectElement, popupElement) {
-        // get the position in the screen
-        const rect = selectElement.getBoundingClientRect();
-        const popupRect = popupElement.getBoundingClientRect();
+      // get the position in the screen
+      const rect = selectElement.getBoundingClientRect();
+      const popupRect = popupElement.getBoundingClientRect();
 
-        // position for default of the select 
-        let left = rect.left + window.scrollX + rect.width;
-        let top = rect.bottom + window.scrollY - 43;
+      // position for default of the select 
+      let left = rect.left + window.scrollX + rect.width;
+      let top = rect.bottom + window.scrollY - 43;
 
-        // Check if the popup goes off the screen (right side)
-        if (left + popupRect.width > window.innerWidth) {
-            // If it goes outside, move it to the left of the select
-            //here we will to calculate the excess of the border
-            const overflowRight = left + popupRect.width - window.innerWidth;
+      // Check if the popup goes off the screen (right side)
+      if (left + popupRect.width > window.innerWidth) {
+          // If it goes outside, move it to the left of the select
+          //here we will to calculate the excess of the border
+          const overflowRight = left + popupRect.width - window.innerWidth;
 
-            // Adjust left by subtracting the excess
-            left = left - overflowRight-16;
-        }
+          // Adjust left by subtracting the excess
+          left = left - overflowRight-16;
+      }
 
 
-        //here we will see if the user be in the cellphone 
-        if (window.innerWidth <= 768) {
-          popupElement.style.width = `${window.innerWidth-64}px`;
-          left = rect.left + window.scrollX;
-          top = rect.bottom + window.scrollY + 8;
-        }
+      //here we will see if the user be in the cellphone 
+      if (window.innerWidth <= 768) {
+        popupElement.style.width = `${window.innerWidth-64}px`;
+        left = rect.left + window.scrollX;
+        top = rect.bottom + window.scrollY + 8;
+      }
 
-        //update the positions
-        popupElement.style.left = `${left}px`;
-        popupElement.style.top = `${top}px`;
+      //update the positions
+      popupElement.style.left = `${left}px`;
+      popupElement.style.top = `${top}px`;
     }
 
     async function filterOptions(term) {
