@@ -10,5 +10,8 @@
   "odontograma.error.not-exit":"Este odontograma no existe en la base de datos del dentista",
   "odontograma.error.unexpected":"Sucedio un error inesperado en el servidor al momento de crear el odontograma del cliente.",
   "odontograma.error.integrity-error":"Tienes un error en el odontograma",
-  "odontograma.error.already-exist": "El paciente ya tiene un odontograma en esta empresa."
+  "odontograma.error.already-exist": "El paciente ya tiene un odontograma en esta empresa.",
+
+
+  "odontograma.label.select-a-tooth":"Selecciona un diente"
 }

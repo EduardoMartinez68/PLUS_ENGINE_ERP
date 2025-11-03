@@ -1,9 +1,0 @@
-name: "medical_history"
-appName: "Historial medico"
-icon: "medical_history/icon.webp"
-path: "/medical_history"
-depends: ["customers"]
-dbInit: true
-permissionsFile: 'permissions.json'
-dependencies:
-  - "customers"

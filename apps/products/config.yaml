@@ -1,7 +1,0 @@
-name: "products"
-appName: "products"
-icon: "products/icon.webp"
-path: "/products"
-dbInit: true
-permissionsFile: 'permissions.json'
-    

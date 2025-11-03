@@ -2,13 +2,13 @@
     
 {% load static %}
 <style>
+  
 /* ===== CONTENEDORES PRINCIPALES ===== */
 .container-theen {
   display: flex;
   flex: 1;
   overflow: hidden;
   height: 100vh;
-  /*background: #f7fafc;*/
 }
 
 .odontograma {
@@ -18,7 +18,6 @@
   justify-content: center;
   gap: 30px;
   padding: 20px;
-  /*background: white;*/
   border-right: 2px solid #ddd;
 }
 
@@ -81,10 +80,9 @@
 .panel-info {
   flex: 1;
   padding: 20px;
-  /*background: #edf2f7;*/
   transition: transform 0.3s ease;
   overflow-y: auto;
-  width: 500px;
+  min-width: 500px;
 }
 
 .panel-info h2 { margin-top: 0; }
@@ -184,6 +182,7 @@
   cursor: pointer;
   transform: scale(1.03);
 }
+
 .cara.activa {
   background: #63a4ff;
   border-color: #4a90e2;
@@ -261,6 +260,197 @@
   background: #a0aec0; /* Gris simulando daño / hueso afectado */
   color: #fff;
 }
+
+
+/*--------------------------------------------------------------------------------------*/
+/* ===== CONTENEDORES PRINCIPALES ===== */
+.container-theen {
+  display: flex;
+  flex: 1;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ===== ODONTOGRAMA ===== */
+.odontograma {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 30px;
+  padding: 20px;
+  border-right: 2px solid #ddd;
+}
+
+
+
+/* ===== PANEL DE INFORMACIÓN ===== */
+.panel-info {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  min-width: 400px;
+  transition: transform 0.3s ease;
+}
+
+.panel-info img {
+  max-width: 100%;
+  height: auto;
+}
+
+.full-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+/* Tablet: 992px o menos */
+@media (max-width: 1200px) {
+  .odontograma {
+    overflow: hidden;
+  }
+}
+
+/* Tablet: 992px o menos */
+@media (max-width: 992px) {
+  .container-theen {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .odontograma {
+    border-right: none;
+    border-bottom: 2px solid #ddd;
+    padding: 15px;
+    overflow: hidden;
+  }
+
+  .panel-info {
+    width: 100%;
+    min-width: auto;
+    max-width: none;
+    padding: 15px;
+    height: auto;
+  }
+
+  .diente {
+    min-width: 55px;
+    min-height: 85px;
+  }
+}
+
+/* Celulares grandes (768px o menos) */
+@media (max-width: 768px) {
+  .odontograma {
+    gap: 20px;
+    overflow: hidden;
+  }
+
+  .diente {
+    min-width: 50px;
+    min-height: 75px;
+  }
+
+  .arcada {
+    gap: 6px;
+  }
+
+  .panel-info {
+    padding: 10px;
+  }
+}
+
+/* Celulares pequeños (480px o menos) */
+@media (max-width: 480px) {
+  .diente {
+    min-width: 42px;
+    min-height: 65px;
+  }
+
+  .arcada {
+    gap: 4px;
+  }
+
+  .odontograma {
+    padding: 10px;
+    overflow: hidden;
+  }
+
+  .panel-info {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+}
+
+
+
+/* ===== CONTENEDOR DEL NOMBRE Y FLECHAS ===== */
+.tooth-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 15px 0;
+}
+
+/* ===== BOTONES DE FLECHA ===== */
+.tooth-navigation button {
+  background-color: #E5E9EF;
+  width: 100%;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  outline: none;
+  border-radius: 5px;
+}
+
+.tooth-navigation button:hover {
+  background-color: #ced2d8;
+  border-color: #a0aec0;
+}
+
+.tooth-navigation button i {
+  font-size: 18px;
+  color: #2d3748;
+}
+
+/* ===== TÍTULO DEL DIENTE ===== */
+.tooth-navigation h2 {
+  font-size: 1.4rem;
+  color: #2d3748;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .tooth-navigation {
+    gap: 8px;
+  }
+
+  .tooth-navigation button {
+    width: 32px;
+    height: 32px;
+  }
+
+  .tooth-navigation button i {
+    font-size: 16px;
+  }
+
+  .tooth-navigation h2 {
+    font-size: 1.1rem;
+  }
+}
 </style>
 
 
@@ -272,7 +462,7 @@
   <div class="panel-info" id="panel-info">
     <div class="full-center">
       <img src="{% static 'img/theen.webp' %}" alt="" style="width: 100%; height: auto;">
-      <center><label t="medical-history.label.select-a-tooth"></p></center>
+      <center><label t="odontograma.label.select-a-tooth"></p></center>
     </div>
   </div>
 </div>
@@ -434,6 +624,7 @@ window.dientes=dientes;
 
 
 // ===== CREATE THEETH =====
+const dientesMap = new Map();
 dientes.forEach(diente => {
   const div = document.createElement('div');
   div.classList.add('diente');
@@ -447,12 +638,15 @@ dientes.forEach(diente => {
   const dibujo = crearDibujoDiente(diente.id);
   div.appendChild(dibujo);
 
-  div.addEventListener('click', () => mostrarInfo(diente, div));
+  div.addEventListener('click', () => mostrarInfo(diente.id));
+  dientesMap.set(diente.id, div);
 
   if (diente.id <= 16) arcadaSuperior.appendChild(div);
   else arcadaInferior.appendChild(div);
 });
 
+
+window.dientesMap=dientesMap;
 })();
 
 
@@ -470,12 +664,17 @@ function crearDibujoDiente(id) {
   return container;
 }
 
-function mostrarInfo(diente, div) {
+function mostrarInfo(dienteId) {
+  if (dienteId<1 || dienteId>32){
+    return;
+  }
+  
+  const div=window.dientesMap.get(dienteId);
   document.querySelectorAll('.diente').forEach(d => d.classList.remove('activo'));
   div.classList.add('activo');
 
   // Limpiar y obtener nueva información
-  get_data_theen(diente.id);
+  get_data_theen(dienteId);
   panelInfo.classList.remove('hidden');
   if(window.innerWidth <= 768) panelInfo.classList.add('visible');
 }
@@ -501,13 +700,18 @@ function mostrarInfo(diente, div) {
 
 // ===== NUEVA FUNCIÓN =====
 function get_data_theen(dienteId) {
-  const panel = document.getElementById('panel-info');
+  if (dienteId<1 || dienteId>32){
+    return;
+  }
 
+  const panel = document.getElementById('panel-info');
   panel.innerHTML = `
 <div class="info-diente">
-  <center><h2>Diente ${dienteId}</h2></center>
-
-  
+  <div class="tooth-navigation">
+    <button id="prev-tooth" onclick="mostrarInfo(${dienteId-1})"><i class="fi fi-rr-angle-left"></i></button>
+    <h2>Diente ${dienteId}</h2>
+    <button id="next-tooth" onclick="mostrarInfo(${dienteId+1})"><i class="fi fi-rr-angle-right"></i></button>
+  </div>
   <div class="row">
     <div class="col">
         <!-- ESQUEMA CIRCULAR -->

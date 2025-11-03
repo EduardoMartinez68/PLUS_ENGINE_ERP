@@ -1,6 +1,0 @@
-name: "services"
-appName: "services"
-icon: "services/icon.webp"
-path: "/services"
-dbInit: true
-permissionsFile: 'permissions.json'

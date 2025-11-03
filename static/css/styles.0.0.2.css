@@ -792,9 +792,9 @@ hr {
 }
 
 .btn-transparent{
-    background-color: transparent;
-    border: 0;
-    color: #8b8a8a;
+  background-color: transparent;
+  border: 0;
+  color: #8b8a8a;
 }
 
 .btn-transparent:hover{
@@ -879,6 +879,16 @@ hr {
 .btn-info:hover{
     background-color: #e5f3ff;
     color: var(--primary);
+}
+
+.btn-ligth{
+  background-color: #E5E9EF;
+  border-radius: 5px;
+}
+
+.btn-ligth:hover{
+  background-color: #ced2d8;
+  border-color: #a0aec0;
 }
 
 /* === Responsive for small screens === */

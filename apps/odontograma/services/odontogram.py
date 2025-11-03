@@ -41,11 +41,20 @@ def get_odontograms(user, sku: str = '', page: int = 1, limit: int = 20) -> Dict
 
     #if exist a sku in the weeker
     if sku:
-        customers = Customer.objects.filter(
+        qs = Customer.objects.filter(
             company=company
-        ).filter(
-            Q(sku__icontains=sku) | Q(name__icontains=sku)
-        )[:limit]
+        )
+ 
+        sku = sku.lower()
+        qs = [c for c in qs if (
+            (c.sku and sku in c.sku.lower()) or
+            (c.name and sku in c.name.lower()) or
+            (c.email and sku in c.email.lower()) or
+            (c.phone and sku in c.phone.lower()) or
+            (c.cellphone and sku in c.cellphone.lower())
+        )]
+        qs = qs[:20]
+        customers=qs
     else:
         # if not exist a sku we get the first 20 odontograms
         customers = Customer.objects.filter(
