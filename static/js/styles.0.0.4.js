@@ -575,6 +575,10 @@ class InputField extends HTMLElement {
       wrapper.appendChild(label);
     }
 
+    const line = this.getAttribute("line") || true;
+    if (!is_true(line)) {
+      input.classList.add("no-line");
+    }
 
     wrapper.appendChild(input);
 

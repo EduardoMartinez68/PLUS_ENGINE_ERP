@@ -27,19 +27,22 @@
             </div>
 
             <div class="section">
-                <plus-switch text="all-day" name="activate_event_all_the_day" onclick="activate_event_all_the_day"></plus-switch>
-                <label t="starts" style="margin-bottom: -24px; display: block;"></label>
-                <div class="row section">
-                    <plus-date label="starts" name="start_date" id="start_date"></plus-date>
-                    <plus-time label="min-start" name="start_time" id="start_time"></plus-time>
-                </div>
+                <div class="row">
+                    <div class="col">
+                        <plus-switch text="all-day" name="activate_event_all_the_day" onclick="activate_event_all_the_day"></plus-switch>
+                        <label t="starts" style="margin-bottom: -24px; display: block;"></label>
+                        <div class="row section">
+                            <plus-date label="starts" name="start_date" id="start_date"></plus-date>
+                            <plus-time label="min-start" name="start_time" id="start_time"></plus-time>
+                        </div>
 
-                <label t="ends" style="margin-bottom: -24px; display: block;"></label>
-                <div class="row section">
-                    <plus-date label="ends" name="end_date" id="end_date"></plus-date>
-                    <plus-time label="min-end" name="end_time" id="end_time"></plus-time>
+                        <label t="ends" style="margin-bottom: -24px; display: block;"></label>
+                        <div class="row section">
+                            <plus-date label="ends" name="end_date" id="end_date"></plus-date>
+                            <plus-time label="min-end" name="end_time" id="end_time"></plus-time>
+                        </div>
+                    </div>
                 </div>
-
             </div>
 
             <div class="section">

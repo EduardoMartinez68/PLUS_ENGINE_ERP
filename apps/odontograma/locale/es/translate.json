@@ -12,6 +12,7 @@
   "odontograma.error.integrity-error":"Tienes un error en el odontograma",
   "odontograma.error.already-exist": "El paciente ya tiene un odontograma en esta empresa.",
 
-
+  "odontograma.tab.odontogram":"Odontograma",
+  "odontograma.tab.files":"Documentos",
   "odontograma.label.select-a-tooth":"Selecciona un diente"
 }

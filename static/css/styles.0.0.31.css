@@ -337,6 +337,17 @@ select {
   padding-right: 30px;
 }
 
+/* If it has the class no-line, the line is not displayed */
+input.no-line {
+  border-bottom: 2px solid transparent;
+}
+
+/* It appears when you hover the mouse over it or focus on it. */
+input.no-line:hover,
+input.no-line:focus {
+  border-bottom-color: #d0d5dd;
+}
+
 label {
   font-size: 0.85em;
   color: #475467;
@@ -789,6 +800,13 @@ hr {
   transition: background 0.3s;
   color: white;
   margin-right: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .btn {
+    margin-bottom: 20px; 
+    padding: 12px 18px; 
+  }
 }
 
 .btn-transparent{
@@ -1525,11 +1543,11 @@ hr {
   background-color: var(--background);
   border: 1px solid #ccc;
   box-sizing: border-box;
-  min-width: 50vw;
+  min-width: 70vw; 
   width: auto;
   height: auto;
   max-height: 70vh;
-  max-width: 90vw;
+  max-width: 100vw;
   overflow: hidden;
   border-radius: 6px;
 
@@ -1537,10 +1555,6 @@ hr {
   padding: 0;
   overflow: auto;
 }
-
-
-
-
 
 .my-pop-content-wrapper {
   position: relative;
@@ -1598,7 +1612,7 @@ hr {
   padding: 20px;
 }
 
-
+/*cellphones*/
 @media (max-width: 600px) {
   .my-pop-content {
     width: 100vw;
@@ -1633,6 +1647,7 @@ hr {
     margin-top: 3rem
   }
 }
+
 
 /**------------------------------------------------------------------------------------------message pop for question------------------------------------------------------------------------*/
 .confirm-popup-overlay {

@@ -36,11 +36,13 @@
                 </div>
                 
                 <div class="row section">
-                    <plus-select name="gender" value="{{customer.gender}}" label="gener.label" id="gender">
-                        <option value="M" t="gender.men"></option>
-                        <option value="F" t="gender.woman"></option>
-                        <option value="O" t="gender.other"></option>
-                    </plus-select>
+                    <div class="col">
+                        <plus-select name="gender" value="{{customer.gender}}" label="gener.label" id="gender">
+                            <option value="M" t="gender.men"></option>
+                            <option value="F" t="gender.woman"></option>
+                            <option value="O" t="gender.other"></option>
+                        </plus-select>
+                    </div>
                 </div>
 
                 <show-more text="add-info-address-customer" onclick="show_pop('pop-data-address')" description='({{customer.state}} {{customer.city}}.{{customer.country}})'></show-more>
