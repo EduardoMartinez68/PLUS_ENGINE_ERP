@@ -1,5 +1,14 @@
 {
-    "odontograma.label.create-odontogram":"Crear odontograma",
-    "odontograma.label.select-patient":"Selecciona al paciente *",
-    "odontograma.label.this-patient-be-a-kit":"Crear el odontograma de dientes de leche"
-  }
+  "odontograma.label.create-odontogram":"Crear odontograma",
+  "odontograma.label.select-patient":"Selecciona al paciente *",
+  "odontograma.label.key-odontogram":"Clave del odontograma *",
+  "odontograma.placeholder.key-odontogram":"Escribe la clave de identificacion del odontograma",
+  "odontograma.label.this-patient-be-a-kit":"Crear el odontograma de dientes de leche",
+
+
+  "odontograma.error.need-all-the-data":"No se recibieron todos los datos correspondientes",
+  "odontograma.error.not-exit":"Este odontograma no existe en la base de datos del dentista",
+  "odontograma.error.unexpected":"Sucedio un error inesperado en el servidor al momento de crear el odontograma del cliente.",
+  "odontograma.error.integrity-error":"Tienes un error en el odontograma",
+  "odontograma.error.already-exist": "El paciente ya tiene un odontograma en esta empresa."
+}

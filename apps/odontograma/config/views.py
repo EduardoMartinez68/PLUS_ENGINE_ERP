@@ -1,6 +1,8 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
-from ..services.odontogram import get_odontograms
+from ..services.odontogram import get_odontograms, add_new_odontogram, get_latest_history_for_odontogram
+from django.template.loader import render_to_string
+import json
 from django.http import JsonResponse
 from ..plus_wrapper import Plus
 from django.shortcuts import render
@@ -45,14 +47,71 @@ def search_odontogram(request):
 @login_required(login_url='login')
 def add_odontogram(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render(request, 'load_form_odontograma.html')
+        if request.method == 'GET': 
+            return render(request, 'load_form_odontograma.html')
+        
+        #this is when the user would like add a new odotogram
+        elif request.method == 'POST': 
+            #get the information of the form
+            try:
+                data = json.loads(request.body)
+            except Exception as e:
+                return JsonResponse(
+                    {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                    status=400
+                )   
+            result=add_new_odontogram(request.user, data) 
+            return JsonResponse({"success": result.get("success", False), "message": result.get("message", 'not exist message'), "answer": result.get("odontogram_id", ''), 'error':result.get("error", 'not exist error in the return')}, status=200)
     else:
-        return render(request, 'load_form_odontograma.html')
+        if request.method == 'GET': 
+            return render(request, 'load_form_odontograma.html')
+        
+        #this is when the user would like add a new odotogram
+        elif request.method == 'POST': 
+            #get the information of the form
+            try:
+                data = json.loads(request.body)
+            except Exception as e:
+                return JsonResponse(
+                    {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                    status=400
+                )   
+            result=add_new_odontogram(request.user, data) 
+            return JsonResponse({"success": result.get("success", False), "message": result.get("message", 'not exist message'), "answer": result.get("odontogram_id", ''), 'error':result.get("error", 'not exist error in the return')}, status=200)
+
+@login_required(login_url='login')
+def view_odontogram(request, odontogram_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method == 'GET': 
+            context = {
+                "odontogram_id": odontogram_id
+            }
+    
+    
+            return render(request, 'load_form_odontograma.html', context)
+    else:
+        if request.method == 'GET': 
+            context = {
+                "odontogram_id": odontogram_id
+            }
+    
+    
+            return render(request, 'load_form_odontograma.html', context)
 
 @login_required(login_url='login')
 def get_odontogram(request, odontogram_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render(request, 'home_odontograma.html')
+        result = get_latest_history_for_odontogram(request.user, odontogram_id)
+        if result["success"]:
+            html = render_to_string("form_odontogram.html", {"odontogram": result["answer"]}, request=request)
+            return JsonResponse({"success": True, "answer": html})
+        else:
+            return JsonResponse({"success": False, "error": result.get("error", "Unknown error")})
     else:
-        return render(request, 'home_odontograma.html')
+        result = get_latest_history_for_odontogram(request.user, odontogram_id)
+        if result["success"]:
+            html = render_to_string("form_odontogram.html", {"odontogram": result["answer"]}, request=request)
+            return JsonResponse({"success": True, "answer": html})
+        else:
+            return JsonResponse({"success": False, "error": result.get("error", "Unknown error")})
 

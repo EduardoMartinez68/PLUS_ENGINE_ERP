@@ -244,18 +244,6 @@ class PatientOdontogramCard extends HTMLElement {
       svgWrap.textContent = 'Sin odontograma';
     }
 
-    // Event: expose a click to the outside so the app can open detail
-    wrapper.addEventListener('click', (e) => {
-      this.dispatchEvent(new CustomEvent('card-click', {
-        detail: {
-          photo, namePatient, createdAt,
-          odontogramString, odontogramUrl
-        },
-        bubbles: true,
-        composed: true
-      }));
-    });
-
     // keyboard accessibility
     wrapper.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -267,6 +255,10 @@ class PatientOdontogramCard extends HTMLElement {
     // Clear shadow and append
     this.shadowRoot.innerHTML = '';
     this.shadowRoot.appendChild(wrapper);
+
+    wrapper.addEventListener('click', (e) => {
+      window.nextWeb(`odontograma/view_odontogram/${this.id}/`)
+    });
   }
 
   // Simple sanitizer: parse and ensure root is <svg>. Returns a cloned SVG Element or null.
@@ -325,6 +317,7 @@ class PatientOdontogramCard extends HTMLElement {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
   }
+
 }
 
 customElements.define('patient-odontogram-card', PatientOdontogramCard);
@@ -333,10 +326,11 @@ customElements.define('patient-odontogram-card', PatientOdontogramCard);
 function get_div_odontograma(){
     return `
         <patient-odontogram-card
-            photo="https://example.com/patient1.jpg"
-            name-patient="Juan Pérez"
-            created-at="2025-10-30"
-            odontogram='<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#f5f5f5"/><circle cx="50" cy="50" r="30" fill="#e0e0e0"/></svg>'
+            id={ odontogram_id }
+            photo={ avatar }
+            name-patient={ name }
+            created-at= { odontogram_created_at }
+            odontogram='{ odontogram_svg }'
         ></patient-odontogram-card>
     `
 }
