@@ -24,10 +24,10 @@
     
     <!--our styles-->
     <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
-    <link rel="stylesheet" href="{% static 'css/styles.0.0.31.css' %}">
-    <link rel="stylesheet" href="{% static 'css/navbar.0.0.1.css' %}">
-    <link rel="stylesheet" href="{% static 'css/subMenuApp.0.0.1.css' %}">
-    <link rel="stylesheet" href="{% static 'css/tableAndSearch.0.0.1.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=2.0">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}?v=2.0">
+    <link rel="stylesheet" href="{% static 'css/subMenuApp.css' %}?v=2.0">
+    <link rel="stylesheet" href="{% static 'css/tableAndSearch.css' %}?v=2.0">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -36,11 +36,11 @@
 
 <body>
     <!--this is for transform the date to lenguace human and get the language of the buttons and other message in the web-->
-    <script src="{% static 'js/languaceUI.0.0.1.js' %}"></script>
+    <script src="{% static 'js/languaceUI.js' %}?v=2.0"></script>
 
-    <!--this is for load the input of text-->
+    <!--this is for load the input of text
     <script src="https://cdn.tiny.cloud/1/{{ KEY_TINYMCE }}/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
-
+    -->
 
     <!---her we will load the UI basic-->
     {% include 'core/navbar.html' %}
@@ -76,14 +76,14 @@
     </script>
 
     
-    <script src="{% static 'js/translate.0.0.1.js' %}"></script>
-    <script src="{% static 'js/sendDataToTheServer.0.0.1.js' %}" defer></script>
-    <script src="{% static 'js/navbar.0.0.1.js' %}" defer></script>
-    <script src="{% static 'js/shortcuts.0.0.1.js' %}" defer></script>
-    <script src="{% static 'js/styles.0.0.4.js' %}" defer></script>
-    <script src="{% static 'js/selectStatus.0.0.1.js' %}" defer></script>
-    <script src="{% static 'js/search.0.0.1.js' %}" defer></script>
-    <script src="{% static 'js/currency.0.0.1.js' %}" defer></script>
+    <script src="{% static 'js/translate.js' %}?v=2.0"></script>
+    <script src="{% static 'js/sendDataToTheServer.js' %}?v=2.0" defer></script>
+    <script src="{% static 'js/navbar.js' %}?v=2.0" defer></script>
+    <script src="{% static 'js/shortcuts.js' %}?v=2.0" defer></script>
+    <script src="{% static 'js/styles.js' %}?v=2.0" defer></script>
+    <script src="{% static 'js/selectStatus.js' %}?v=2.0" defer></script>
+    <script src="{% static 'js/search.js' %}?v=2.0" defer></script>
+    <script src="{% static 'js/currency.js' %}?v=2.0" defer></script>
 
     <script>
         //here we will to translate the ads 
