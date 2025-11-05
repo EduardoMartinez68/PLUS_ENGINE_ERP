@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from ..services.odontogram import get_odontograms, add_new_odontogram, get_latest_history_for_odontogram
 from django.template.loader import render_to_string
 import json
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import JsonResponse
 from ..plus_wrapper import Plus
 from django.shortcuts import render
@@ -86,16 +87,12 @@ def view_odontogram(request, odontogram_id):
             context = {
                 "odontogram_id": odontogram_id
             }
-    
-    
             return render(request, 'load_form_odontograma.html', context)
     else:
         if request.method == 'GET': 
             context = {
                 "odontogram_id": odontogram_id
             }
-    
-    
             return render(request, 'load_form_odontograma.html', context)
 
 @login_required(login_url='login')
@@ -103,14 +100,14 @@ def get_odontogram(request, odontogram_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         result = get_latest_history_for_odontogram(request.user, odontogram_id)
         if result["success"]:
-            html = render_to_string("form_odontogram.html", {"odontogram": result["answer"]}, request=request)
+            html = render_to_string("odontogram.html", {"odontogram": result["answer"]}, request=request)
             return JsonResponse({"success": True, "answer": html})
         else:
             return JsonResponse({"success": False, "error": result.get("error", "Unknown error")})
     else:
         result = get_latest_history_for_odontogram(request.user, odontogram_id)
         if result["success"]:
-            html = render_to_string("form_odontogram.html", {"odontogram": result["answer"]}, request=request)
+            html = render_to_string("odontogram.html", {"odontogram": result["answer"]}, request=request)
             return JsonResponse({"success": True, "answer": html})
         else:
             return JsonResponse({"success": False, "error": result.get("error", "Unknown error")})

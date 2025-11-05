@@ -501,15 +501,30 @@
 
 <div class="container-theen">
   <div class="odontograma" id="odontograma">
-    <div class="arcada" id="arcada-superior"></div>
-    <div class="arcada arcada-inferior" id="arcada-inferior"></div>
+    <div class="arcada" id="arcada-superior">
+      <!--
+      {% for tooth in odontogram.teeth %}
+        <div class="diente" title="{{ tooth.name_key }}" onclick='mostrarInfo("{{ tooth.id }}")'>
+          <div class="numero-diente">{{ tooth.FDI_number }}</div>
+          <div class="diente-container">{{tooth.svg_state}}</div>
+        </div>
+      {% endfor %}
+      --->
+    </div>
+    <div class="arcada arcada-inferior" id="arcada-inferior">
+
+    </div>
   </div>
+
+
   <div class="panel-info" id="panel-info">
     <div class="full-center">
       <img src="{% static 'img/theen.webp' %}" alt="" style="width: 80%; height: auto;">
       <center><label t="odontograma.label.select-a-tooth"></p></center>
     </div>
   </div>
+</div>
+
 
 <script>
 (()=>{
@@ -587,7 +602,8 @@ const svgsDientesPruebas = {
         d="M235.687 208.384C232.522 206.374 229.862 200.861 230.412 195.648C230.67 193.205 232.887 186.64 236.741 184.276C238.09 183.449 241.953 182.381 244.944 185.085C248.564 188.359 250.937 193.288 251.687 198.522C251.954 200.383 251.734 204.278 248.872 207.02C244.444 211.264 239.483 210.794 235.687 208.384Z"
         fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
 </svg>`,
-  6: `
+  
+6: `
 <svg viewBox="263 125 45 89" xmlns="http://www.w3.org/2000/svg">
   <path fill-rule="evenodd" clip-rule="evenodd"
       d="M293.581 190.654C291.642 168.023 289.888 153.578 288.321 147.318C287.044 142.218 283.872 134.104 280.982 130.838C278.55 128.091 276.196 129.5 276.537 131.836C276.827 133.825 277.615 143.529 277.67 154.926C277.755 172.822 276.114 194.891 275.707 197.816C275.262 201.007 281.221 198.62 293.581 190.654Z"
@@ -596,7 +612,8 @@ const svgsDientesPruebas = {
       d="M280.916 183.623C282.272 182.796 285.813 181.412 288.954 183.812C292.696 186.671 296.214 192.923 296.723 199.316C297.382 207.584 295.975 210.711 292.497 213.207C291.646 213.817 287.999 215.809 283.817 214.756C280.702 213.972 274.779 209.875 274.075 207.537C272.336 201.765 275.004 193.241 275.985 190.782C277.56 186.833 279.704 184.362 280.916 183.623Z"
       fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
 </svg>`,
-  7: `
+  
+7: `
 <svg viewBox="311 130 40 80" xmlns="http://www.w3.org/2000/svg">
   <path fill-rule="evenodd" clip-rule="evenodd"
       d="M336.206 189.746C335.753 179.932 334.48 168.985 332.387 156.904C329.247 138.783 320.528 134.374 319.89 138.112C319.587 139.887 321.6 146.479 322.211 153.806C322.886 161.914 320.472 191.256 321.392 193.835C322.006 195.555 326.944 194.191 336.206 189.746Z"
@@ -616,6 +633,71 @@ const svgsDientesPruebas = {
 </svg>`
 };
 
+const numersTooth = {
+  adult: {
+    // Maxilar superior
+    16: { FDI: 28, Universal: 16 },
+    15: { FDI: 27, Universal: 15 },
+    14: { FDI: 26, Universal: 14 },
+    13: { FDI: 25, Universal: 13 },
+    12: { FDI: 24, Universal: 12 },
+    11: { FDI: 23, Universal: 11 },
+    10: { FDI: 22, Universal: 10 },
+    9:  { FDI: 21, Universal: 9 },
+    8:  { FDI: 11, Universal: 8 },
+    7:  { FDI: 12, Universal: 7 },
+    6:  { FDI: 13, Universal: 6 },
+    5:  { FDI: 14, Universal: 5 },
+    4:  { FDI: 15, Universal: 4 },
+    3:  { FDI: 16, Universal: 3 },
+    2:  { FDI: 17, Universal: 2 },
+    1:  { FDI: 18, Universal: 1 },
+
+    // Mandíbula inferior
+    17: { FDI: 38, Universal: 17 },
+    18: { FDI: 37, Universal: 18 },
+    19: { FDI: 36, Universal: 19 },
+    20: { FDI: 35, Universal: 20 },
+    21: { FDI: 34, Universal: 21 },
+    22: { FDI: 33, Universal: 22 },
+    23: { FDI: 32, Universal: 23 },
+    24: { FDI: 31, Universal: 24 },
+    25: { FDI: 41, Universal: 25 },
+    26: { FDI: 42, Universal: 26 },
+    27: { FDI: 43, Universal: 27 },
+    28: { FDI: 44, Universal: 28 },
+    29: { FDI: 45, Universal: 29 },
+    30: { FDI: 46, Universal: 30 },
+    31: { FDI: 47, Universal: 31 },
+    32: { FDI: 48, Universal: 32 }
+  },
+
+  kid: {
+    // Maxilar superior (primarios, letras A–J)
+    1: { FDI: 55, Universal: 'A' },
+    2: { FDI: 54, Universal: 'B' },
+    3: { FDI: 53, Universal: 'C' },
+    4: { FDI: 52, Universal: 'D' },
+    5: { FDI: 51, Universal: 'E' },
+    6: { FDI: 61, Universal: 'F' },
+    7: { FDI: 62, Universal: 'G' },
+    8: { FDI: 63, Universal: 'H' },
+    9: { FDI: 64, Universal: 'I' },
+    10: { FDI: 65, Universal: 'J' },
+
+    // Mandíbula inferior (primarios, letras K–T)
+    11: { FDI: 85, Universal: 'K' },
+    12: { FDI: 84, Universal: 'L' },
+    13: { FDI: 83, Universal: 'M' },
+    14: { FDI: 82, Universal: 'N' },
+    15: { FDI: 81, Universal: 'O' },
+    16: { FDI: 71, Universal: 'P' },
+    17: { FDI: 72, Universal: 'Q' },
+    18: { FDI: 73, Universal: 'R' },
+    19: { FDI: 74, Universal: 'S' },
+    20: { FDI: 75, Universal: 'T' }
+  }
+};
 
 //this function is for transform the teeth basic for create all the mouth
 function reflect_tooth(svg, ejeX = true, ejeY = false) {
@@ -645,14 +727,39 @@ for (let i = 1; i <= 8; i++) {
 
 
 
+
+
+
 const arcadaSuperior = document.getElementById('arcada-superior');
 const arcadaInferior = document.getElementById('arcada-inferior');
 const panelInfo = document.getElementById('panel-info');
 const tituloDiente = document.getElementById('titulo-diente');
 const descripcionDiente = document.getElementById('descripcion-diente');
 
+const typeOdontogram=1; //1 is FDI, 2 is Universal
+const typeThooth=2; //1 is kid, 2 is adult
 
+function get_number_tooth(id){
 
+  //first we will see if the patient is a kid
+  if(typeThooth==1){
+    if(typeOdontogram==1){
+      return numersTooth.kid[id].FDI;
+    }
+
+    return numersTooth.kid[id].Universal;
+  }
+
+  
+  //if the patient is an adult we will to get the type of tooth
+  if(typeOdontogram==1){
+    return numersTooth.adult[id].FDI;
+  }
+  
+  return numersTooth.adult[id].Universal;
+
+  //return numersTooth.adult[id].FDI;
+}
 
 
 window.arcadaSuperior=arcadaSuperior;
@@ -662,7 +769,7 @@ window.tituloDiente=tituloDiente;
 window.descripcionDiente=descripcionDiente;
 window.svgsDientes=svgsDientes;
 window.dientes=dientes;
-
+window.get_number_tooth=get_number_tooth;
 
 // ===== CREATE THEETH =====
 const dientesMap = new Map();
@@ -673,7 +780,7 @@ dientes.forEach(diente => {
 
   const num = document.createElement('div');
   num.classList.add('numero-diente');
-  num.textContent = diente.id;
+  num.textContent = get_number_tooth(diente.id);
   div.appendChild(num);
 
   const dibujo = crearDibujoDiente(diente.id);
@@ -758,7 +865,7 @@ function get_data_theen(dienteId) {
 <div class="info-diente">
   <div class="tooth-navigation">
     <button id="prev-tooth" onclick="mostrarInfo(${dienteId-1})"><i class="fi fi-rr-angle-left"></i></button>
-    <h2>Diente ${dienteId}</h2>
+    <h2>Diente ${window.get_number_tooth(dienteId)}</h2>
     <button id="next-tooth" onclick="mostrarInfo(${dienteId+1})"><i class="fi fi-rr-angle-right"></i></button>
   </div>
   <div class="row">
@@ -909,3 +1016,4 @@ window.addEventListener('click', e => {
   }
 });
 </script>
+

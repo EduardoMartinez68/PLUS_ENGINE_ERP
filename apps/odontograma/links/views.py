@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from ..plus_wrapper import Plus
 from django.http import JsonResponse
+from django.core.serializers.json import DjangoJSONEncoder
 import json
 from django.template.loader import render_to_string
 
@@ -49,8 +50,6 @@ def view_odontogram(request, odontogram_id):
         context = {
             "odontogram_id": odontogram_id
         }
-
-
         return render(request, 'load_form_odontograma.html', context)
 
 
@@ -58,7 +57,8 @@ def view_odontogram(request, odontogram_id):
 def get_odontogram(request, odontogram_id):
     result = get_latest_history_for_odontogram(request.user, odontogram_id)
     if result["success"]:
-        html = render_to_string("form_odontogram.html", {"odontogram": result["answer"]}, request=request)
+        html = render_to_string("odontogram.html", {"odontogram": result["answer"]}, request=request)
         return JsonResponse({"success": True, "answer": html})
     else:
         return JsonResponse({"success": False, "error": result.get("error", "Unknown error")})
+    

@@ -1,5 +1,3 @@
-<div class="container-section">
-
 {% load static %}
 <style>
 /* ===== CONTENEDORES PRINCIPALES ===== */
@@ -263,11 +261,26 @@
 }
 </style>
 
-
 <div class="container-theen">
   <div class="odontograma" id="odontograma">
     <div class="arcada" id="arcada-superior"></div>
-    <div class="arcada arcada-inferior" id="arcada-inferior"></div>
+    <div class="arcada arcada-inferior" id="arcada-inferior">
+      {% for tooth in odontogram.teeth %}
+        <div class="tooth-card" style="border:1px solid #ccc; padding:10px; border-radius:8px; width:180px; background:#f9f9f9;">
+          <p><b>ID:</b> {{ tooth.id }}</p>
+          <p><b>FDI Number:</b> {{ tooth.FDI_number }}</p>
+          <p><b>Name Key:</b> {{ tooth.name_key }}</p>
+          <p><b>Status:</b> {{ tooth.status }}</p>
+          {% if tooth.diagnosis %}
+            <p><b>Diagnosis:</b> {{ tooth.diagnosis }}</p>
+          {% endif %}
+          {% if tooth.notes %}
+            <p><b>Notes:</b> {{ tooth.notes }}</p>
+          {% endif %}
+          <p><b>Caries Depth:</b> {{ tooth.caries_depth }}</p>
+        </div>
+      {% endfor %}
+    </div>
   </div>
   <div class="panel-info" id="panel-info">
     <img src="{% static 'img/theen.webp' %}" alt="" style="width: 100%; height: auto;">
@@ -276,7 +289,7 @@
 </div>
 
 <script>
-(()=>{
+(async()=>{
 const dientes = Array.from({ length: 32 }, (_, i) => ({
   id: i + 1,
   nombre: `Diente ${i + 1}`,
@@ -412,6 +425,7 @@ for (let i = 1; i <= 8; i++) {
 
 
 
+
 const arcadaSuperior = document.getElementById('arcada-superior');
 const arcadaInferior = document.getElementById('arcada-inferior');
 const panelInfo = document.getElementById('panel-info');
@@ -429,7 +443,6 @@ window.tituloDiente=tituloDiente;
 window.descripcionDiente=descripcionDiente;
 window.svgsDientes=svgsDientes;
 window.dientes=dientes;
-
 
 // ===== CREATE THEETH =====
 dientes.forEach(diente => {
@@ -450,7 +463,6 @@ dientes.forEach(diente => {
   if (diente.id <= 16) arcadaSuperior.appendChild(div);
   else arcadaInferior.appendChild(div);
 });
-
 })();
 
 
@@ -477,7 +489,6 @@ function mostrarInfo(diente, div) {
   panelInfo.classList.remove('hidden');
   if(window.innerWidth <= 768) panelInfo.classList.add('visible');
 }
-
 
 
 
@@ -608,42 +619,42 @@ function get_data_theen(dienteId) {
     });
   });
 
-document.querySelectorAll('.caries-nivel').forEach(nivel => {
-  nivel.addEventListener('click', () => {
-    const niveles = Array.from(document.querySelectorAll('.caries-nivel'));
-    const index = niveles.indexOf(nivel);
+  document.querySelectorAll('.caries-nivel').forEach(nivel => {
+    nivel.addEventListener('click', () => {
+      const niveles = Array.from(document.querySelectorAll('.caries-nivel'));
+      const index = niveles.indexOf(nivel);
 
-    // Si la capa ya estaba activa → deseleccionamos todo
-    if (nivel.classList.contains('activa')) {
+      // Si la capa ya estaba activa → deseleccionamos todo
+      if (nivel.classList.contains('activa')) {
+        niveles.forEach(n => {
+          n.classList.remove('activa');
+          n.classList.remove('infectada');
+        });
+        return;
+      }
+
+      // Limpiar estados previos
       niveles.forEach(n => {
         n.classList.remove('activa');
         n.classList.remove('infectada');
       });
-      return;
-    }
 
-    // Limpiar estados previos
-    niveles.forEach(n => {
-      n.classList.remove('activa');
-      n.classList.remove('infectada');
+      // Activar la capa clickeada
+      nivel.classList.add('activa');
+
+      // Marcar capas por debajo como infectadas
+      for (let i = index + 1; i < niveles.length; i++) {
+        niveles[i].classList.add('infectada');
+      }
+
+      // Las capas por encima vuelven a normal
+      for (let i = 0; i < index; i++) {
+        niveles[i].classList.remove('infectada');
+        niveles[i].classList.remove('activa');
+      }
     });
-
-    // Activar la capa clickeada
-    nivel.classList.add('activa');
-
-    // Marcar capas por debajo como infectadas
-    for (let i = index + 1; i < niveles.length; i++) {
-      niveles[i].classList.add('infectada');
-    }
-
-    // Las capas por encima vuelven a normal
-    for (let i = 0; i < index; i++) {
-      niveles[i].classList.remove('infectada');
-      niveles[i].classList.remove('activa');
-    }
   });
-});
-}
+  }
 
 // Ocultar panel si toca fuera en móvil
 window.addEventListener('click', e => {
@@ -653,4 +664,5 @@ window.addEventListener('click', e => {
     panelInfo.classList.remove('visible');
   }
 });
+
 </script>
