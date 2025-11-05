@@ -1130,7 +1130,11 @@ class PlusModules extends HTMLElement {
 
     // Resize
     window.addEventListener('resize', () => {
-      if (window.innerWidth >= 768) {
+      const newWidth = window.innerWidth;
+      if (Math.abs(newWidth - lastWidth) < 50) return; // Ignore minor changes
+      lastWidth = newWidth;
+
+      if (newWidth >= 768) {
         sidebar.style.width = `${(colSidebar / 12) * 100}%`;
         sidebar.style.display = 'block';
         content.style.width = `${(colContent / 12) * 100}%`;
@@ -5423,6 +5427,7 @@ function transform_my_labels_erp() {
   if (!customElements.get("info-label")) {
     customElements.define("info-label", InfoLabel);
   }
+  
   if (!customElements.get("message-pop")) {
     customElements.define("message-pop", MessagePop);
   }

@@ -39,172 +39,7 @@ apps-grid
 --->
 
 
-
-{% load static %}
-
-<style>
-  /* Modal fullscreen */
-  .plus-app-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(135deg, #DCDAE8, #D9D7E9, #E3DEEC, #E0E0E8);
-    background-size: 400% 400%;
-    flex-direction: column;
-    z-index: 999999;
-  }
-
-  @keyframes plus-app-gradientBG {
-    0% {
-      background-position: 0% 50%;
-    }
-
-    50% {
-      background-position: 100% 50%;
-    }
-
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-
-  .plus-app-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 18px 25px;
-  }
-
-  /* Botón cerrar mejorado */
-  .plus-app-close-btn {
-    font-size: 18px;
-    color: rgb(27, 27, 27);
-    background: white;
-    border: none;
-    border-radius: 11px;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: transform 0.2s;
-  }
-
-  /* Título de la empresa y user */
-  .plus-app-header-info {
-    text-align: left;
-    color: #333;
-  }
-
-  .plus-app-header-info .plus-app-company {
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0;
-  }
-
-  .plus-app-header-info .plus-app-user {
-    font-size: 14px;
-    color: #555;
-    margin: 2px 0 0 0;
-  }
-
-  /* Barra búsqueda */
-  .plus-app-search-bar {
-    width: 90%;
-    max-width: 600px;
-    margin: 0 auto 25px auto;
-    padding: 12px 18px;
-    font-size: 15px;
-    outline: none;
-    color: #333;
-  }
-
-
-
-  /* Grid apps */
-  .plus-app-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    /*
-    flex: 1;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    row-gap: 0px;
-    column-gap: 16px;
-    padding: 0 28%;
-    */
-    overflow-y: auto;
-    justify-items: center;
-  }
-
-  @media (max-width: 1024px) {
-    .plus-app-grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  @media (max-width: 600px) {
-    .plus-app-grid {
-      grid-template-columns: repeat(1, 1fr);
-    }
-
-    .plus-app-app {
-      padding: 1rem;
-    }
-  }
-
-  .plus-app-app {
-    text-align: center;
-    cursor: pointer;
-  }
-
-  .plus-app-app img {
-    width: 76px;
-    height: 76px;
-    border-radius: 11px;
-    border-radius: 19px;
-    margin-bottom: 8px;
-    backdrop-filter: blur(6px);
-    padding: 4px;
-    transition: transform 0.2s;
-  }
-
-  .plus-app-app img:hover {
-    transform: scale(1.1);
-  }
-
-  .plus-app-app-name {
-    font-size: 13px;
-    font-weight: 500;
-    color: #333;
-    text-align: center;
-
-    font-size: 14px;
-    font-weight: 500;
-    color: #222;
-    margin-top: -6px
-  }
-
-  .plus-app-grid::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  .plus-app-grid::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
-  }
-
-  .plus-app-grid::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.35);
-  }
-
-  .plus-app-grid::-webkit-scrollbar-track {
-    background: transparent;
-  }
-</style>
-
-
+<!--
 <div class="plus-app-modal" id="appMenu">
   <div class="plus-app-modal-header">
     <div class="plus-app-header-info">
@@ -244,20 +79,251 @@ apps-grid
 
   </div>
 </div>
+---->
+
+
+{% load static %}
+
+<style>
+  .menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #DCDAE8;
+      background: linear-gradient(to bottom right, #D7D6E6, #D7D6E6, #D7D6E6, #A3A0C0);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10000;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      opacity: 0;
+      transform: translateY(-100%);
+      padding-top: 40px;
+  }
+
+  .menu.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+  }
+
+  .close-menu {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, .5);
+      color: black;
+      border: none;
+      border-radius: 5px;
+      padding: 10px;
+      cursor: pointer;
+      z-index: 1000;
+  }
+
+  .close-menu:hover {
+      background-color: rgba(255, 255, 255, .8);
+  }
+
+  .container-app {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      /* Adjusted for larger icons */
+      grid-auto-rows: minmax(120px, auto);
+      /* Adjusted for larger icons */
+      gap: 20px;
+      max-width: 1000px;
+      padding: 20px;
+      grid-template-columns: repeat(6, 1fr);
+      /* Limit to 6 columns */
+      opacity: 0;
+      transition: opacity 0.5s ease;
+  }
+
+  .menu.active .container-app {
+      opacity: 1;
+  }
+
+  .app-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: white;
+      border-radius: 10px;
+      padding: 10px;
+      transition: transform 0.3s ease;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 100px;
+      /* Adjust the size here */
+      height: 100px;
+      /* Adjust the size here */
+  }
+
+  .app-icon img {
+      width: 40px;
+      /* Adjust the size here */
+      height: 40px;
+      /* Adjust the size here */
+      margin-bottom: 5px;
+  }
+
+  .app-icon span {
+      font-size: 12px;
+      /* Adjust the font size here */
+      font-weight: bold;
+      color: #333;
+  }
+
+  .app-icon:hover {
+      transform: scale(1.1);
+      cursor: pointer;
+  }
+  .shortcuts-label {
+      display: none;
+      position: absolute;
+      transform: translateY(280%);
+      font-size: 0.8rem;
+      pointer-events: none;
+      opacity: 0.7;
+  }
+
+
+  /* 📱 Tablets */
+  @media (max-width: 1024px) {
+      .container-app {
+          grid-template-columns: repeat(5, 1fr);
+      }
+
+      .app-icon {
+          width: 85px;
+          height: 85px;
+      }
+
+      .app-icon img {
+          width: 40px;
+          height: 40px;
+      }
+
+      .app-icon span {
+          font-size: 13px;
+      }
+  }
+
+  /* 📱 Celulares (4 columnas) */
+  @media (max-width: 768px) {
+      .menu {
+          padding-top: 60px;
+      }
+
+      .container-app {
+          grid-template-columns: repeat(4, 1fr); /* ✅ Cuatro íconos por fila */
+          gap: 15px;
+          width: 95%;
+      }
+
+      .app-icon {
+          width: 80px;
+          height: 80px;
+          border-radius: 12px;
+      }
+
+      .app-icon img {
+          width: 38px;
+          height: 38px;
+      }
+
+      .app-icon span {
+          font-size: 11px;
+      }
+  }
+
+  /* 📱 Teléfonos pequeños */
+  @media (max-width: 480px) {
+      .container-app {
+          grid-template-columns: repeat(4, 1fr); /* Mantén 4 íconos pero más compactos */
+          gap: 10px;
+      }
+
+      .app-icon {
+          width: 70px;
+          height: 70px;
+          padding: 10px;
+      }
+
+      .app-icon img {
+          width: 32px;
+          height: 32px;
+      }
+
+      .app-icon span {
+          font-size: 10px;
+      }
+  }
+
+  .shortcuts-label {
+      display: none;
+      position: absolute;
+      transform: translateY(280%);
+      font-size: 0.8rem;
+      pointer-events: none;
+      opacity: 0.7;
+  }
+</style>
+
+<div class="plus-app-modal" id="appMenu">
+  <ul class="ul-menu-bar">
+      <label for="check" class="btn-menu-bar">
+          <i class="fi-des fi-br-menu-burger menu-toggle" id="btn-navbar-open" step="btnNavBar"></i>
+          <i class="fi-des fi-br-cross" id="btn-navbar-cancel"></i>
+      </label>
+  </ul>
+
+  <div class="menu">
+      <input type="text" placeholder="Busca una App" class="form-control" style="width: 25%;" id="searchInput">
+      <button class="close-menu">×</button>
+
+      <div class="container-app" id="plus-appGrid">
+          {% for app in apps %}
+          <div class="app-icon plus-app-container plus-app-app" onclick="nextWeb('{{ app.path }}{{ app.path }}')" data-id="{{ app.name }}">
+              <img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy">
+              <span class="app-name">{{ app.name }}</span>
+          </div>
+          {% endfor %}
+
+
+          <form method="post" action="{% url 'logout' %}" class="form-app-exit">
+            {% csrf_token %}
+
+            <button class="app-icon plus-app-container plus-app-app" style="border:none" data-id="app-plus-exit">
+                <img src="{% static 'img/icons/exit1.webp' %}" alt="" loading="lazy">
+                <span class="app-name plus-app-app-name">SALIDA</span>
+            </button>
+          </form>
+      </div>
+  </div>
+</div>
 
 
 <script>
+  const typeMenu=2; //1=apps , 2=navbar
   function openModalApp() {
-    if (window.innerWidth <= 1024) {
-      document.getElementById("appMenu").style.display = "flex";
+    if (typeMenu==1) {
+      const appMenu = document.getElementById("appMenu");
+      appMenu.style.display = "flex";
+      appMenu.querySelector(".menu").classList.add("active");
     } else {
       openSideMenu();
     }
 
   }
   function closeModalApp() {
-    if (window.innerWidth <= 1024) {
-      document.getElementById("appMenu").style.display = "none";
+    if (typeMenu==1) {
+      const appMenu = document.getElementById("appMenu");
+      appMenu.style.display = "none";
+      appMenu.querySelector(".menu").classList.remove("active"); 
     } else {
       closeSideMenu();
     }
@@ -361,14 +427,6 @@ window.addEventListener('resize', () => {
     width: 70px;
     height: 70px;
   }
-  /* Solo mostrar en desktop */
-  @media (max-width: 1024px) {
-
-    .side-menu,
-    .menu-overlay {
-      display: none;
-    }
-  }
 
 /* Logo empresa */
 .info-branch {
@@ -471,6 +529,74 @@ window.addEventListener('resize', () => {
 
 .btn-exit:hover {
   background: #054a87;
+}
+
+
+
+/* ✅ Adaptación para celulares */
+@media (max-width: 768px) {
+  .side-menu {
+    width: 80%;
+    max-width: 270px;
+    left: -100%;
+    padding: 18px 16px;
+    border-radius: 0;
+  }
+
+  .side-menu.active {
+    left: 0;
+  }
+
+  .menu-links a {
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .info-branch {
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .name_company {
+    font-size: 15px;
+  }
+
+  .image-icon-user-menu {
+    width: 44px;
+    height: 44px;
+  }
+
+  .employee-details {
+    font-size: 12px;
+  }
+
+  .btn-exit {
+    font-size: 15px;
+    padding: 10px;
+  }
+}
+
+/* ✅ Ultra compacto para móviles muy pequeños */
+@media (max-width: 480px) {
+  .side-menu {
+    width: 85%;
+    max-width: 250px;
+    padding: 14px;
+  }
+
+  .menu-links a {
+    font-size: 14px;
+  }
+
+  .icon-company-menu {
+    width: 42px;
+    height: 42px;
+  }
+
+  .name_company {
+    font-size: 14px;
+  }
 }
 </style>
 <!-- Fondo desenfocado -->

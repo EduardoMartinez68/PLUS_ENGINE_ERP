@@ -300,7 +300,7 @@ function translate_menu_apps(){
   const searchApp=document.getElementById('searchInput'); //get the search input
   if (menuApps && searchApp){
     //update the placeholder of the search input
-    searchApp.setAttribute('placeholder', LANG['menu.search']);
+    searchApp.setAttribute('placeholder', LANG['menu.search'] || 'Search an app');
 
     //here we will translate all the apps that be in the menu
     menuApps.forEach(app => {

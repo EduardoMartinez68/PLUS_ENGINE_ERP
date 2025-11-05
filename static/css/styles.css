@@ -2084,7 +2084,39 @@ hr {
   display: none;
 }
 
+/* ------------------------- */
+/* 🔹 Adaptaciones móviles */
+/* ------------------------- */
+@media (max-width: 768px) {
+  .plus-tab-buttons {
+    overflow-x: auto;        /* Permite desplazamiento horizontal */
+    white-space: nowrap;
+    flex-wrap: nowrap;       /* No forzamos salto de línea */
+    gap: 0;
+    border-bottom-width: 1px;
+    -webkit-overflow-scrolling: touch;
+  }
 
+  .plus-tab-buttons button {
+    flex: 0 0 auto;          /* Mantiene ancho mínimo por botón */
+    padding: 8px 14px;
+    font-size: 0.9em;
+  }
+
+  .plus-tabs {
+    overflow-x: hidden;
+  }
+}
+
+/* 🔹 Opcional: mejora estética del scroll en móviles */
+.plus-tab-buttons::-webkit-scrollbar {
+  height: 6px;
+}
+
+.plus-tab-buttons::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
 
 /**-----------------------------------------------------PLUS ACTION-----------------------------------------------*/
 .plus-actions {

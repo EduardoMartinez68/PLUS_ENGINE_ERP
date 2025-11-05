@@ -22,6 +22,50 @@
         font-size: 13px;
         color: #a0a9b4;
     }
+
+    @media (max-width: 768px) {
+    .day-row {
+        grid-template-columns: 1fr 1fr; 
+        grid-template-areas:
+        "day day"
+        "open close"
+        "check check";
+        gap: 8px;
+        padding: 12px 0;
+    }
+
+    .day-name {
+        grid-area: day;
+        font-size: 1em;
+        color: #0b63ce;
+    }
+
+    .day-row input[type="checkbox"] {
+        grid-area: check;
+        justify-self: end;
+        transform: scale(1.3); 
+    }
+    }
+
+    @media (max-width: 480px) {
+    .day-row {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+        "day"
+        "open"
+        "close"
+        "check";
+    }
+
+    .day-row input[type="checkbox"] {
+        justify-self: start;
+        transform: scale(1.2);
+    }
+
+    .day-name {
+        text-align: left;
+    }
+    }
 </style>
 
 <label for="" t="setting.module.schedule" icon="fi fi-rr-clock-three"></label>
