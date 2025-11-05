@@ -30,32 +30,17 @@ function openMenu(){
 
 // Atajos de teclado
 document.addEventListener('keydown', (e) => {
-  const isMenuOpen = document.getElementById('appMenu').classList.contains('hidden');//navMenuShort.classList.contains('open');
+  const appMenu = document.getElementById("appMenu");
+  const isMenuOpen = appMenu.querySelector(".menu").classList.contains("active");
+  const navbar= document.getElementById("sideMenu").classList.contains("active")
 
-  // Tecla ESC: cerrar menú si está abierto
   if (e.key === 'Escape') {
-    if (!isMenuOpen) {
+    if (isMenuOpen || navbar) {
       e.preventDefault();
-      closeMenu();
+      closeModalApp();
     }else{
-      openMenu();
+      openModalApp();
     }
   }
 
-  // Ctrl + 1 para ir al home
-  if (e.ctrlKey && e.key === '1') {
-    window.location.href = '/';
-  }
-
-  // Ctrl + 2 para ir al módulo clientes
-  if (e.ctrlKey && e.key === '2') {
-    window.location.href = '/clientes';
-  }
-
-  // Ctrl + 3 para ir al módulo casos
-  if (e.ctrlKey && e.key === '3') {
-    window.location.href = '/casos';
-  }
-
-  // Agrega más si necesitas...
 });

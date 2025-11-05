@@ -1,86 +1,3 @@
-<!---
-apps-grid
-<div id="appMenu" class="app-menu-overlay hidden">
-  <div class="menu-header">
-    <input type="text" id="searchInput" oninput="filterApps()" placeholder="Buscar una app..." t="menu.search">
-    <button class="close-btn" onclick="closeMenu()">✕</button>
-  </div>
-
-  <div class="apps-grid">
-
-    {% load static %}
-    {% for app in apps %}
-    <div class="app-container" data-id="{{ app.name }}" onclick="nextWeb('{{ app.path }}{{ app.path }}')">
-      <div class="app-box">
-        <img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy">
-      </div>
-      <p class="app-name">{{ app.name }}</p>
-    </div>
-    {% endfor %}
-
-    <div class="app-container" data-id="app-plus-settings">
-      <div class="app-box">
-        <img src="https://cdn-icons-png.flaticon.com/512/1170/1170584.png" alt="">
-      </div>
-      <p class="app-name">settings</p>
-    </div>
-
-    <form method="post" action="{% url 'logout' %}" style="margin-top: -10px;" >
-      {% csrf_token %}
-      <button class="btn app-container" type="submit" style="background-color: transparent;" data-id="app-plus-exit">
-        <div class="app-box">
-          <img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" alt="" loading="lazy">
-        </div>
-        <p class="app-name">exit</p>
-      </button>
-    </form>
-  </div>
-</div>
---->
-
-
-<!--
-<div class="plus-app-modal" id="appMenu">
-  <div class="plus-app-modal-header">
-    <div class="plus-app-header-info">
-      <p class="plus-app-company">{{ branch.branch_name }}</p>
-      <p class="plus-app-user">{{ user.username }}</p>
-    </div>
-    <button class="plus-app-close-btn" onclick="closeModalApp()">×</button>
-  </div>
-
-  <input type="text" id="searchInput" class="plus-app-search-bar" placeholder="Search an app..."
-    onkeyup="plusFilterApps()" t="menu.search">
-
-  <div class="plus-app-grid apps-grid" id="plus-appGrid">
-    {% load static %}
-    {% for app in apps %}
-    <div class="plus-app-container plus-app-app" data-id="{{ app.name }}"
-      onclick="nextWeb('{{ app.path }}{{ app.path }}')">
-      <img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy">
-      <div class="app-name plus-app-app-name">{{ app.name }}</div>
-    </div>
-    {% endfor %}
-
-    <div class="plus-app-container plus-app-app" data-id="app-store" onclick="nextWeb('/app-store')">
-      <img src="{% static 'img/icons/appstore.webp' %}" alt="App Store" loading="lazy">
-      <div class="app-name plus-app-app-name">App Store</div>
-    </div>
-
-    <form method="post" action="{% url 'logout' %}" style="margin-top: -10px;" class="form-app-exit">
-      {% csrf_token %}
-      <button class="btn " type="submit" style="background-color: transparent;" data-id="app-plus-exit">
-        <div class="app-box">
-          <img src="{% static 'img/icons/exit1.webp' %}" alt="" loading="lazy">
-        </div>
-        <p class="app-name">Exit</p>
-      </button>
-    </form>
-
-  </div>
-</div>
----->
-
 
 {% load static %}
 
@@ -271,6 +188,11 @@ apps-grid
       pointer-events: none;
       opacity: 0.7;
   }
+
+  .form-control{
+    background-color: white;
+    padding: .5rem;
+  }
 </style>
 
 <div class="plus-app-modal" id="appMenu">
@@ -282,8 +204,8 @@ apps-grid
   </ul>
 
   <div class="menu">
-      <input type="text" placeholder="Busca una App" class="form-control" style="width: 25%;" id="searchInput">
-      <button class="close-menu">×</button>
+      <input type="text" placeholder="Search an App" class="form-control" style="width: 25%;" id="searchInput" t="menu.search">
+      <button class="close-menu" onclick="window.closeModalApp()">×</button>
 
       <div class="container-app" id="plus-appGrid">
           {% for app in apps %}
@@ -304,11 +226,12 @@ apps-grid
           </form>
       </div>
   </div>
+  
 </div>
 
 
 <script>
-  const typeMenu=2; //1=apps , 2=navbar
+  const typeMenu=1; //1=apps , 2=navbar
   function openModalApp() {
     if (typeMenu==1) {
       const appMenu = document.getElementById("appMenu");
@@ -329,24 +252,25 @@ apps-grid
     }
   }
 
-  function plusFilterApps() {
+  const searchInput = document.getElementById('searchInput');
+  const appContainers = document.querySelectorAll('.plus-app-app');
 
-    let input = document.getElementById("searchInput").value.toLowerCase();
-    let apps = document.getElementById("plus-appGrid").getElementsByClassName("plus-app-app");
-    for (let i = 0; i < apps.length; i++) {
-      let name = apps[i].getElementsByClassName("plus-app-app-name")[0].innerText.toLowerCase();
-      apps[i].style.display = name.includes(input) ? "block" : "none";
-    }
-  }
+  searchInput.addEventListener('input', function() {
+    const filter = this.value.toLowerCase(); // texto ingresado en minúsculas
+
+    appContainers.forEach(app => {
+      const appName = app.querySelector('.app-name').textContent.toLowerCase();
+      // Mostrar si contiene el texto, ocultar si no
+      if (appName.includes(filter)) {
+        app.style.display = '';
+      } else {
+        app.style.display = 'none';
+      }
+    });
+  });
 
   window.openModalApp = openModalApp;
   window.closeModalApp = closeModalApp;
-// Opcional: actualizar dinámicamente si el usuario cambia tamaño de ventana
-window.addEventListener('resize', () => {
-  // cerramos ambos menús para evitar inconsistencias
-  closeModalApp();
-  closeSideMenu();
-});
 </script>
 
 
