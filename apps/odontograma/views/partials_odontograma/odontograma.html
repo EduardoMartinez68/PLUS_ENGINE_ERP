@@ -899,13 +899,13 @@ function get_data_theen(dienteId) {
   <!-- Estado general -->
   <div class="estado-general">
     <h3>Estado del diente</h3>
-    <select id="estado-${dienteId}">
+    <plus-select id="estado-${dienteId}">
       <option value="sano">Sano</option>
       <option value="caries">Caries</option>
       <option value="restaurado">Restaurado</option>
       <option value="endodoncia">Endodoncia</option>
       <option value="extraido">Extraído</option>
-    </select>
+    </plus-select>
   </div>
 
   <!-- Detalle por cara -->
@@ -913,21 +913,21 @@ function get_data_theen(dienteId) {
     <h3>Detalle por cara</h3>
     <div class="cara-detalle">
       <label>Mesial</label>
-      <select id="cara-mesial-${dienteId}">
+      <plus-select id="cara-mesial-${dienteId}">
         <option value="sano">Sano</option>
         <option value="caries">Caries</option>
         <option value="restaurado">Restaurado</option>
         <option value="fractura">Fractura</option>
-      </select>
+      </plus-select>
     </div>
     <div class="cara-detalle">
       <label>Distal</label>
-      <select id="cara-distal-${dienteId}">
+      <plus-select id="cara-distal-${dienteId}">
         <option value="sano">Sano</option>
         <option value="caries">Caries</option>
         <option value="restaurado">Restaurado</option>
         <option value="fractura">Fractura</option>
-      </select>
+      </plus-select>
     </div>
     <!-- Repetir Vestibular, Lingual, Oclusal -->
   </div>
@@ -936,23 +936,19 @@ function get_data_theen(dienteId) {
   <div class="tejido">
     <h3>Encía / tejido</h3>
     <label>Encía:</label>
-    <select id="encia-${dienteId}">
+    <plus-select id="encia-${dienteId}">
       <option value="normal">Normal</option>
       <option value="inflamada">Inflamada</option>
       <option value="sangrado">Sangrado</option>
-    </select>
-    <label>Placa / sarro:</label>
-    <select id="placa-${dienteId}">
-      <option value="no">No</option>
-      <option value="si">Sí</option>
-    </select>
+    </plus-select>
+    <plus-switch id="placa-${dienteId}" text="Tiene Placa / sarro"></plus-switch>
     <label>Movilidad:</label>
-    <select id="movilidad-${dienteId}">
+    <plus-select id="movilidad-${dienteId}">
       <option value="0">0</option>
       <option value="1">1</option>
       <option value="2">2</option>
       <option value="3">3</option>
-    </select>
+    </plus-select>
   </div>
 
   <!-- Observaciones -->

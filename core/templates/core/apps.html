@@ -231,7 +231,7 @@
 
 
 <script>
-  const typeMenu=1; //1=apps , 2=navbar
+  const typeMenu=2; //1=apps , 2=navbar
   function openModalApp() {
     if (typeMenu==1) {
       const appMenu = document.getElementById("appMenu");
@@ -256,11 +256,10 @@
   const appContainers = document.querySelectorAll('.plus-app-app');
 
   searchInput.addEventListener('input', function() {
-    const filter = this.value.toLowerCase(); // texto ingresado en minúsculas
+    const filter = this.value.toLowerCase();
 
     appContainers.forEach(app => {
       const appName = app.querySelector('.app-name').textContent.toLowerCase();
-      // Mostrar si contiene el texto, ocultar si no
       if (appName.includes(filter)) {
         app.style.display = '';
       } else {

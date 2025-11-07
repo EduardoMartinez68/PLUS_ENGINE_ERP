@@ -1,13 +1,5 @@
 const sidebar = document.getElementById('sidebar');
 const overlay = document.getElementById('overlay');
-const openBtn = document.getElementById('openSidebarBtn');
-const closeBtn = document.getElementById('closeSidebarBtn');
-
-openBtn.addEventListener('click', () => {
-  openMenu();
-  //sidebar.classList.add('open');
-  //overlay.classList.add('active');
-});
 
 overlay.addEventListener('click', () => {
   sidebar.classList.remove('open');

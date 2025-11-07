@@ -167,8 +167,186 @@ class MessagePop extends HTMLElement {
       `;
   }
 }
+class PlusPanel extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    this._onOverlayClick = this._onOverlayClick.bind(this);
+  }
 
+  connectedCallback() {
+    const side = this.getAttribute('side') || 'left';
+    const size = this.getAttribute('size') || '400px';
+    const titleText = window.translate_text(this.getAttribute('title') || 'Panel');
 
+    let blurBackground = false;
+    if(this.hasAttribute('blur-background')){
+      blurBackground = this.getAttribute('blur-background') === 'true';
+    }
+
+    const closeOnOverlay = this.getAttribute('close-on-overlay') === 'true';
+
+    const containerBg = '#F5F7FA';
+    const companyBg = colors.color_company;
+
+    // overlay for all the screen
+    const overlay = document.createElement('div');
+    overlay.classList.add('plus-panel-overlay');
+
+    // container of the panel
+    const container = document.createElement('div');
+    container.classList.add('plus-panel-container', side);
+    container.style.width = size;
+
+    // navbar
+    const navbar = document.createElement('div');
+    navbar.classList.add('plus-panel-navbar');
+
+    const title = document.createElement('span');
+    title.classList.add('plus-panel-title');
+    title.textContent = titleText;
+
+    const closeBtn = document.createElement('button');
+    closeBtn.classList.add('plus-panel-close');
+    closeBtn.setAttribute('aria-label', 'Cerrar panel');
+    closeBtn.innerHTML = '×';
+    closeBtn.addEventListener('click', () => this.hide());
+
+    navbar.append(title, closeBtn);
+
+    //container
+    const content = document.createElement('div');
+    content.classList.add('plus-panel-content');
+    const slot = document.createElement('slot');
+    content.appendChild(slot);
+
+    container.append(navbar, content);
+    overlay.appendChild(container);
+
+    const style = document.createElement('style');
+    style.textContent = `
+      :host {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none; /* por defecto no interfiere */
+        z-index: 9999;
+        display: block;
+      }
+
+      .plus-panel-overlay {
+        position: absolute;
+        inset: 0;
+        background: transparent;
+        backdrop-filter: none;
+        transition: background 0.25s ease, backdrop-filter 0.25s ease;
+        pointer-events: none; /* bloquea clicks hacia el overlay cuando no visible */
+      }
+
+      /* When the host has visible, we activate overlay. */
+      :host(.visible) .plus-panel-overlay {
+        background: ${blurBackground ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.25)'};
+        backdrop-filter: ${blurBackground ? 'blur(5px)' : 'none'};
+        pointer-events: auto; /* ahora acepta clicks (p.ej. para cerrar) */
+      }
+
+      .plus-panel-container {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        max-width: 100%;
+        background: ${containerBg};
+        color: inherit;
+        box-shadow: 2px 0 14px rgba(0, 0, 0, 0.35);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        transform: translateX(${side === 'left' ? '-100%' : '100%'});
+        transition: transform 0.35s cubic-bezier(.2,.9,.2,1);
+      }
+
+      .plus-panel-container.left { left: 0; }
+      .plus-panel-container.right { right: 0; left: auto; }
+
+      /* Show panel when host has the visible class */
+      :host(.visible) .plus-panel-container {
+        transform: translateX(0);
+      }
+
+      .plus-panel-navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 18px;
+        background: ${companyBg};
+        border-bottom: 1px solid ${companyBg};
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .plus-panel-close {
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 22px;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0;
+      }
+      .plus-panel-close:hover { transform: scale(1.08); }
+
+      .plus-panel-content {
+        padding: 18px;
+        flex: 1;
+        overflow-y: auto;
+      }
+
+      @media (max-width: 768px) {
+        .plus-panel-container { width: 100% !important; border-radius: 0; }
+      }
+    `;
+
+    // clear and add
+    this.shadowRoot.innerHTML = '';
+    this.shadowRoot.append(style, overlay);
+
+    // save references for listeners
+    this._overlayEl = overlay;
+    this._closeOnOverlay = closeOnOverlay;
+
+    //If you want to close by clicking on overlay, listen
+    if (this._closeOnOverlay) {
+      this._overlayEl.addEventListener('click', this._onOverlayClick);
+      // prevent clicks within the panel from triggering the close
+      container.addEventListener('click', e => e.stopPropagation());
+    }
+  }
+
+  // handler para click en overlay (si se habilitó)
+  _onOverlayClick(e) {
+    // sólo cerrar si el host está visible
+    if (this.classList.contains('visible')) {
+      this.hide();
+    }
+  }
+
+  show() {
+    this.classList.add('visible');
+    this.style.pointerEvents = 'auto';
+  }
+
+  hide() {
+    this.classList.remove('visible');
+    this.style.pointerEvents = 'none';
+  }
+
+  disconnectedCallback() {
+    if (this._overlayEl && this._closeOnOverlay) {
+      this._overlayEl.removeEventListener('click', this._onOverlayClick);
+    }
+  }
+}
 class EditQuantity extends HTMLElement {
   constructor() {
     super();
@@ -5551,6 +5729,11 @@ function transform_my_labels_erp() {
   if(!customElements.get("list-button")){
     customElements.define('list-button', ListButton);
   }
+
+  if(!customElements.get("plus-panel")){
+    customElements.define('plus-panel', PlusPanel);
+  }
+  
 }
 
 /**---------------------------------TAB----------------------------- */
