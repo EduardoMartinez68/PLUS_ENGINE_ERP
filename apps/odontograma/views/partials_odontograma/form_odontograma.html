@@ -1,12 +1,13 @@
+    
 {% load static %}
 <style>
+  
 /* ===== CONTENEDORES PRINCIPALES ===== */
 .container-theen {
   display: flex;
   flex: 1;
   overflow: hidden;
   height: 100vh;
-  /*background: #f7fafc;*/
 }
 
 .odontograma {
@@ -16,7 +17,6 @@
   justify-content: center;
   gap: 30px;
   padding: 20px;
-  /*background: white;*/
   border-right: 2px solid #ddd;
 }
 
@@ -79,10 +79,9 @@
 .panel-info {
   flex: 1;
   padding: 20px;
-  /*background: #edf2f7;*/
   transition: transform 0.3s ease;
   overflow-y: auto;
-  width: 500px;
+  min-width: 500px;
 }
 
 .panel-info h2 { margin-top: 0; }
@@ -182,6 +181,7 @@
   cursor: pointer;
   transform: scale(1.03);
 }
+
 .cara.activa {
   background: #63a4ff;
   border-color: #4a90e2;
@@ -259,37 +259,372 @@
   background: #a0aec0; /* Gris simulando daño / hueso afectado */
   color: #fff;
 }
+
+
+/*--------------------------------------------------------------------------------------*/
+/* ===== CONTENEDORES PRINCIPALES ===== */
+.container-theen {
+  display: flex;
+  flex: 1;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ===== ODONTOGRAMA ===== */
+.odontograma {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 30px;
+  padding: 20px;
+  border-right: 2px solid #ddd;
+}
+
+
+
+/* ===== PANEL DE INFORMACIÓN ===== */
+.panel-info {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  min-width: 400px;
+  transition: transform 0.3s ease;
+}
+
+.panel-info img {
+  max-width: 100%;
+  height: auto;
+}
+
+.full-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+/* Tablet: 992px o menos */
+@media (max-width: 1200px) {
+  .odontograma {
+    overflow: hidden;
+  }
+}
+
+/* Tablet: 992px o menos */
+@media (max-width: 992px) {
+  .container-theen {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .odontograma {
+    border-right: none;
+    border-bottom: 2px solid #ddd;
+    padding: 15px;
+    overflow: hidden;
+  }
+
+  .panel-info {
+    width: 100%;
+    min-width: auto;
+    max-width: none;
+    padding: 15px;
+    height: auto;
+  }
+
+  .diente {
+    min-width: 55px;
+    min-height: 85px;
+  }
+}
+
+/* Celulares grandes (768px o menos) */
+@media (max-width: 768px) {
+  .odontograma {
+    gap: 20px;
+    overflow: hidden;
+  }
+
+  .diente {
+    min-width: 50px;
+    min-height: 75px;
+  }
+
+  .arcada {
+    gap: 6px;
+  }
+
+  .panel-info {
+    padding: 10px;
+  }
+}
+
+/* Celulares pequeños (480px o menos) */
+@media (max-width: 480px) {
+  .diente {
+    min-width: 42px;
+    min-height: 65px;
+  }
+
+  .arcada {
+    gap: 4px;
+  }
+
+  .odontograma {
+    padding: 10px;
+    overflow: hidden;
+  }
+
+  .panel-info {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+}
+
+
+
+/* ===== CONTENEDOR DEL NOMBRE Y FLECHAS ===== */
+.tooth-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 15px 0;
+}
+
+/* ===== BOTONES DE FLECHA ===== */
+.tooth-navigation button {
+  background-color: #E5E9EF;
+  width: 100%;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  outline: none;
+  border-radius: 5px;
+}
+
+.tooth-navigation button:hover {
+  background-color: #ced2d8;
+  border-color: #a0aec0;
+}
+
+.tooth-navigation button i {
+  font-size: 18px;
+  color: #2d3748;
+}
+
+/* ===== TÍTULO DEL DIENTE ===== */
+.tooth-navigation h2 {
+  font-size: 1.4rem;
+  color: #2d3748;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .tooth-navigation {
+    gap: 8px;
+  }
+
+  .tooth-navigation button {
+    width: 100%;
+    height:50px;
+    font-size: 1rem;
+  }
+
+  .tooth-navigation button i {
+    font-size: 16px;
+  }
+
+  .tooth-navigation h2 {
+    font-size: 1.1rem;
+  }
+}
+
+
+/*------------------------------------------------------------PATIENTE INFO----------------------------------*/
+.patient-info {
+  position: absolute;
+  top: 120px;
+  left: 30px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  backdrop-filter: blur(6px);
+  border-radius: 10px;
+  padding: 6px 12px;
+  z-index: 200;
+  width: 60%
+}
+
+.patient-info img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+}
+
+.patient-info span {
+  font-weight: 600;
+  color: #1a202c;
+  font-size: 0.95em;
+}
+
+@media (max-width: 768px) {
+  .patient-info {
+    position: relative; 
+    top: auto;
+    left: auto;
+    width: 100%; 
+    margin-top: 10px; 
+    flex-direction: row; 
+  }
+}
 </style>
+
+
+<div class="patient-info">
+  <img src="{{ odontogram.customer.avatar }}" alt="{{ odontogram.customer.name }}">
+  <span>{{ odontogram.customer.name }}</span>
+</div>
 
 <div class="container-theen">
   <div class="odontograma" id="odontograma">
-    <div class="arcada" id="arcada-superior"></div>
-    <div class="arcada arcada-inferior" id="arcada-inferior">
+    <div class="arcada" id="arcada-superior">
+      <!--
       {% for tooth in odontogram.teeth %}
-        <div class="tooth-card" style="border:1px solid #ccc; padding:10px; border-radius:8px; width:180px; background:#f9f9f9;">
-          <p><b>ID:</b> {{ tooth.id }}</p>
-          <p><b>FDI Number:</b> {{ tooth.FDI_number }}</p>
-          <p><b>Name Key:</b> {{ tooth.name_key }}</p>
-          <p><b>Status:</b> {{ tooth.status }}</p>
-          {% if tooth.diagnosis %}
-            <p><b>Diagnosis:</b> {{ tooth.diagnosis }}</p>
-          {% endif %}
-          {% if tooth.notes %}
-            <p><b>Notes:</b> {{ tooth.notes }}</p>
-          {% endif %}
-          <p><b>Caries Depth:</b> {{ tooth.caries_depth }}</p>
+        <div class="diente" title="{{ tooth.name_key }}" onclick='mostrarInfo("{{ tooth.id }}")'>
+          <div class="numero-diente">{{ tooth.FDI_number }}</div>
+          <div class="diente-container">{{tooth.svg_state}}</div>
         </div>
       {% endfor %}
+      --->
+    </div>
+    <div class="arcada arcada-inferior" id="arcada-inferior">
+
     </div>
   </div>
+
+
   <div class="panel-info" id="panel-info">
-    <img src="{% static 'img/theen.webp' %}" alt="" style="width: 100%; height: auto;">
-    <center><label t="medical-history.label.select-a-tooth"></p></center>
+    <div class="full-center">
+      <img src="{% static 'img/theen.webp' %}" alt="" style="width: 80%; height: auto;">
+      <center><label t="odontograma.label.select-a-tooth"></p></center>
+    </div>
   </div>
 </div>
 
+
 <script>
-(async()=>{
+(()=>{
+  //
+
+function get_svg_activity(activity, x=64, y=181, r=15){
+  const activityTheenh={
+        "corona":`
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#8BB0D1" stroke-width="2"/>
+            <circle cx="${x}" cy="${y}" r="${r}" fill="rgba(80,134,214,0.3)" stroke="#8BB0D1" stroke-width="2"/>
+        `,
+        "coronaProvisional":`
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#8BB0D1" stroke-width="2"/>
+            <circle cx="${x}" cy="${y}" r="${r}" fill="rgba(80,134,214,0.3)" stroke="#8BB0D1" stroke-width="2"/>
+            <text cx="${x}" cy="${y}" text-anchor="middle" dominant-baseline="middle" fill="#085DA8" font-size="12" font-weight="bold">X</text>
+        `,
+        "coronaMalEstado":`
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#FF5656" stroke-width="2"/>
+            <circle cx="${x}" cy="${y}" r="${r}" fill="rgba(255,86,86,0.3)" stroke="#FF5656" stroke-width="2"/>
+        `,
+        "coronaMalEstadoProvisional":`
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#FF5656" stroke-width="2"/>
+            <circle cx="${x}" cy="${y}" r="${r}" fill="rgba(255,86,86,0.3)" stroke="#FF5656" stroke-width="2"/>
+            <text cx="${x}" cy="${y}" text-anchor="middle" dominant-baseline="middle" fill="#FF5656" font-size="12" font-weight="bold">X</text>
+        `,
+
+
+        "restauracion":`
+            <circle cx="${x}" cy="${y+3}" r="5" fill="#8BB0D1" stroke="#8BB0D1" stroke-width="2"/>
+        `,
+        "restauracionMalEstado":`
+            <circle cx="${x}" cy="${y+3}" r="5" fill="#FF5656" stroke="#FF5656" stroke-width="2"/>
+        `,
+
+        "endodoncia":`
+            <line x1="${x}" y1="${y}" x2="${x}" y2="${y+30}" stroke="#8BB0D1" stroke-width="2"/>
+        `,
+        "endodonciaMalEstado":`
+            <line x1="${x}" y1="${y}" x2="${x}" y2="${y+30}" stroke="#8BB0D1" stroke-width="2"/>
+            <circle cx="${x}" cy="${y-5}" r="12" fill="none" stroke="#FF5656" stroke-width="2" stroke-dasharray="4,4"/>
+        `,
+
+
+        "implante":`
+            <circle cx="${x}" cy="${y}" r="5" fill="#8BB0D1" stroke="#8BB0D1" stroke-width="2"/>
+            <line x1="${x}" y1="${y}" x2="${x}" y2="${y-21}" stroke="#8BB0D1" stroke-width="2"/>
+        `,
+
+        "implanteMalEstado":`
+            <text cx="${x}" cy="${y}" text-anchor="middle" dominant-baseline="middle" fill="#FF5656" font-size="12" font-weight="bold">X</text>
+            <circle cx="${x}" cy="${y}" r="5" fill="#8BB0D1" stroke="#8BB0D1" stroke-width="2"/>
+            <line x1="${x}" y1="${y}" x2="${x}" y2="${y-21}" stroke="#8BB0D1" stroke-width="2"/>
+            <circle cx="${x}" cy="${y-5}" r="12" fill="none" stroke="#FF5656" stroke-width="2" stroke-dasharray="4,4"/>
+        `,
+
+        "perno":`
+            <circle cx="${x}" cy="${y+3}" r="5" fill="#8BB0D1" stroke="#8BB0D1" stroke-width="2"/>
+            <line x1="${x}" y1="${y+3-14}" x2="${x}" y2="${y+10}" stroke="gray" stroke-width="4"/>
+        `,
+        "pernoMalEstado":`
+            <circle cx="${x}" cy="${y+3}" r="5" fill="#FF5656" stroke="#FF5656" stroke-width="2"/>
+            <line x1="${x}" y1="${y+3-14}" x2="${x}" y2="${y+10}" stroke="gray" stroke-width="4"/>
+        `,
+
+        "protesisRemovible":`
+            <circle cx="${x}" cy="${y+4}" r="15" fill="none" stroke="#FFA500" stroke-width="2" stroke-dasharray="4,4"/>
+            <text x="${x}" y="${y+4}" text-anchor="middle" dominant-baseline="middle" fill="#FFA500" font-size="12" font-weight="bold">X</text>
+        `,
+
+        "amalgama":`
+            <rect x="${x-3}" y="${y-10}" width="8" height="6" rx="1" ry="1" fill="#666" stroke="#444" stroke-width="0.5"/>
+        `,
+        "amalgamaMalEstado":`
+            <circle cx="${x}" cy="${y-5}" r="12" fill="none" stroke="#FF5656" stroke-width="2" stroke-dasharray="4,4"/>
+            <rect x="${x-3}" y="${y-10}" width="8" height="6" rx="1" ry="1" fill="#666" stroke="#444" stroke-width="0.5"/>
+        `,
+
+        "sellante": `
+        <rect x="${x-9}" y="${y}" width="19" height="9" rx="1" ry="2"
+                fill="rgba(135,206,235,0.4)" stroke="#87CEEB" stroke-width="1"/>
+        `,
+
+        "dienteAusente": `
+            <line x1="${x - r/2}" y1="${y - r/2}" x2="${x + r/2}" y2="${y + r/2}" stroke="#FF5656" stroke-width="2"/>
+            <line x1="${x + r/2}" y1="${y - r/2}" x2="${x - r/2}" y2="${y + r/2}" stroke="#FF5656" stroke-width="2"/>
+        `,
+        "otro":`
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#999" stroke-width="2" stroke-dasharray="4,2"/>
+            <text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" fill="#999" font-size="12" font-weight="bold">¿?</text>
+        `
+    }
+
+
+    return activityTheenh[activity] || "";
+}
+
+
+
+
+  ///
 const dientes = Array.from({ length: 32 }, (_, i) => ({
   id: i + 1,
   nombre: `Diente ${i + 1}`,
@@ -334,9 +669,6 @@ const svgsDientesPruebas = {
 
   3: `
 <svg viewBox="135 135 40 70" xmlns="http://www.w3.org/2000/svg">
-        <path
-            d="M130.715 256.054H129.244V257.525H130.715V256.054ZM174.852 254.583H130.715V257.525H174.852V254.583ZM132.186 256.054V88.3348H129.244V256.054H132.186Z"
-            fill="#F2F2F4" mask="url(#path-19-inside-3_2063_31713)" />
         <path fill-rule="evenodd" clip-rule="evenodd"
             d="M155.912 147.051C154 144.058 152.343 141.368 150.941 138.979C148.837 135.396 145.144 133.351 144.405 138.594C143.913 142.089 144.417 147.315 145.919 154.271L149.275 168.274L153.155 170.415L158.816 168.881L162.532 156.73L155.912 147.051Z"
             fill="${colorsTheens.bone_blak_theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
@@ -367,7 +699,8 @@ const svgsDientesPruebas = {
         d="M235.687 208.384C232.522 206.374 229.862 200.861 230.412 195.648C230.67 193.205 232.887 186.64 236.741 184.276C238.09 183.449 241.953 182.381 244.944 185.085C248.564 188.359 250.937 193.288 251.687 198.522C251.954 200.383 251.734 204.278 248.872 207.02C244.444 211.264 239.483 210.794 235.687 208.384Z"
         fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
 </svg>`,
-  6: `
+  
+6: `
 <svg viewBox="263 125 45 89" xmlns="http://www.w3.org/2000/svg">
   <path fill-rule="evenodd" clip-rule="evenodd"
       d="M293.581 190.654C291.642 168.023 289.888 153.578 288.321 147.318C287.044 142.218 283.872 134.104 280.982 130.838C278.55 128.091 276.196 129.5 276.537 131.836C276.827 133.825 277.615 143.529 277.67 154.926C277.755 172.822 276.114 194.891 275.707 197.816C275.262 201.007 281.221 198.62 293.581 190.654Z"
@@ -376,7 +709,8 @@ const svgsDientesPruebas = {
       d="M280.916 183.623C282.272 182.796 285.813 181.412 288.954 183.812C292.696 186.671 296.214 192.923 296.723 199.316C297.382 207.584 295.975 210.711 292.497 213.207C291.646 213.817 287.999 215.809 283.817 214.756C280.702 213.972 274.779 209.875 274.075 207.537C272.336 201.765 275.004 193.241 275.985 190.782C277.56 186.833 279.704 184.362 280.916 183.623Z"
       fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
 </svg>`,
-  7: `
+  
+7: `
 <svg viewBox="311 130 40 80" xmlns="http://www.w3.org/2000/svg">
   <path fill-rule="evenodd" clip-rule="evenodd"
       d="M336.206 189.746C335.753 179.932 334.48 168.985 332.387 156.904C329.247 138.783 320.528 134.374 319.89 138.112C319.587 139.887 321.6 146.479 322.211 153.806C322.886 161.914 320.472 191.256 321.392 193.835C322.006 195.555 326.944 194.191 336.206 189.746Z"
@@ -396,6 +730,71 @@ const svgsDientesPruebas = {
 </svg>`
 };
 
+const numersTooth = {
+  adult: {
+    // Maxilar superior
+    16: { FDI: 28, Universal: 16 },
+    15: { FDI: 27, Universal: 15 },
+    14: { FDI: 26, Universal: 14 },
+    13: { FDI: 25, Universal: 13 },
+    12: { FDI: 24, Universal: 12 },
+    11: { FDI: 23, Universal: 11 },
+    10: { FDI: 22, Universal: 10 },
+    9:  { FDI: 21, Universal: 9 },
+    8:  { FDI: 11, Universal: 8 },
+    7:  { FDI: 12, Universal: 7 },
+    6:  { FDI: 13, Universal: 6 },
+    5:  { FDI: 14, Universal: 5 },
+    4:  { FDI: 15, Universal: 4 },
+    3:  { FDI: 16, Universal: 3 },
+    2:  { FDI: 17, Universal: 2 },
+    1:  { FDI: 18, Universal: 1 },
+
+    // Mandíbula inferior
+    17: { FDI: 38, Universal: 17 },
+    18: { FDI: 37, Universal: 18 },
+    19: { FDI: 36, Universal: 19 },
+    20: { FDI: 35, Universal: 20 },
+    21: { FDI: 34, Universal: 21 },
+    22: { FDI: 33, Universal: 22 },
+    23: { FDI: 32, Universal: 23 },
+    24: { FDI: 31, Universal: 24 },
+    25: { FDI: 41, Universal: 25 },
+    26: { FDI: 42, Universal: 26 },
+    27: { FDI: 43, Universal: 27 },
+    28: { FDI: 44, Universal: 28 },
+    29: { FDI: 45, Universal: 29 },
+    30: { FDI: 46, Universal: 30 },
+    31: { FDI: 47, Universal: 31 },
+    32: { FDI: 48, Universal: 32 }
+  },
+
+  kid: {
+    // Maxilar superior (primarios, letras A–J)
+    1: { FDI: 55, Universal: 'A' },
+    2: { FDI: 54, Universal: 'B' },
+    3: { FDI: 53, Universal: 'C' },
+    4: { FDI: 52, Universal: 'D' },
+    5: { FDI: 51, Universal: 'E' },
+    6: { FDI: 61, Universal: 'F' },
+    7: { FDI: 62, Universal: 'G' },
+    8: { FDI: 63, Universal: 'H' },
+    9: { FDI: 64, Universal: 'I' },
+    10: { FDI: 65, Universal: 'J' },
+
+    // Mandíbula inferior (primarios, letras K–T)
+    11: { FDI: 85, Universal: 'K' },
+    12: { FDI: 84, Universal: 'L' },
+    13: { FDI: 83, Universal: 'M' },
+    14: { FDI: 82, Universal: 'N' },
+    15: { FDI: 81, Universal: 'O' },
+    16: { FDI: 71, Universal: 'P' },
+    17: { FDI: 72, Universal: 'Q' },
+    18: { FDI: 73, Universal: 'R' },
+    19: { FDI: 74, Universal: 'S' },
+    20: { FDI: 75, Universal: 'T' }
+  }
+};
 
 //this function is for transform the teeth basic for create all the mouth
 function reflect_tooth(svg, ejeX = true, ejeY = false) {
@@ -426,14 +825,38 @@ for (let i = 1; i <= 8; i++) {
 
 
 
+
+
 const arcadaSuperior = document.getElementById('arcada-superior');
 const arcadaInferior = document.getElementById('arcada-inferior');
 const panelInfo = document.getElementById('panel-info');
 const tituloDiente = document.getElementById('titulo-diente');
 const descripcionDiente = document.getElementById('descripcion-diente');
 
+const typeOdontogram=1; //1 is FDI, 2 is Universal
+const typeThooth=2; //1 is kid, 2 is adult
 
+function get_number_tooth(id){
 
+  //first we will see if the patient is a kid
+  if(typeThooth==1){
+    if(typeOdontogram==1){
+      return numersTooth.kid[id].FDI;
+    }
+
+    return numersTooth.kid[id].Universal;
+  }
+
+  
+  //if the patient is an adult we will to get the type of tooth
+  if(typeOdontogram==1){
+    return numersTooth.adult[id].FDI;
+  }
+  
+  return numersTooth.adult[id].Universal;
+
+  //return numersTooth.adult[id].FDI;
+}
 
 
 window.arcadaSuperior=arcadaSuperior;
@@ -443,8 +866,10 @@ window.tituloDiente=tituloDiente;
 window.descripcionDiente=descripcionDiente;
 window.svgsDientes=svgsDientes;
 window.dientes=dientes;
+window.get_number_tooth=get_number_tooth;
 
 // ===== CREATE THEETH =====
+const dientesMap = new Map();
 dientes.forEach(diente => {
   const div = document.createElement('div');
   div.classList.add('diente');
@@ -452,17 +877,21 @@ dientes.forEach(diente => {
 
   const num = document.createElement('div');
   num.classList.add('numero-diente');
-  num.textContent = diente.id;
+  num.textContent = get_number_tooth(diente.id);
   div.appendChild(num);
 
   const dibujo = crearDibujoDiente(diente.id);
   div.appendChild(dibujo);
 
-  div.addEventListener('click', () => mostrarInfo(diente, div));
+  div.addEventListener('click', () => mostrarInfo(diente.id));
+  dientesMap.set(diente.id, div);
 
   if (diente.id <= 16) arcadaSuperior.appendChild(div);
   else arcadaInferior.appendChild(div);
 });
+
+
+window.dientesMap=dientesMap;
 })();
 
 
@@ -480,12 +909,21 @@ function crearDibujoDiente(id) {
   return container;
 }
 
-function mostrarInfo(diente, div) {
+function mostrarInfo(dienteId) {
+  if (dienteId<1){
+    dienteId=32;
+  }
+
+  if(dienteId>32){
+    dienteId=1;
+  }
+
+  const div=window.dientesMap.get(dienteId);
   document.querySelectorAll('.diente').forEach(d => d.classList.remove('activo'));
   div.classList.add('activo');
 
   // Limpiar y obtener nueva información
-  get_data_theen(diente.id);
+  get_data_theen(dienteId);
   panelInfo.classList.remove('hidden');
   if(window.innerWidth <= 768) panelInfo.classList.add('visible');
 }
@@ -508,15 +946,25 @@ function mostrarInfo(diente, div) {
 
 
 
+
 // ===== NUEVA FUNCIÓN =====
 function get_data_theen(dienteId) {
-  const panel = document.getElementById('panel-info');
+  if (dienteId<1){
+    dienteId=32;
+  }
 
+  if(dienteId>32){
+    dienteId=1;
+  }
+
+  const panel = document.getElementById('panel-info');
   panel.innerHTML = `
 <div class="info-diente">
-  <center><h2>Diente ${dienteId}</h2></center>
-
-  
+  <div class="tooth-navigation">
+    <button id="prev-tooth" onclick="mostrarInfo(${dienteId-1})"><i class="fi fi-rr-angle-left"></i></button>
+    <h2>Diente ${window.get_number_tooth(dienteId)}</h2>
+    <button id="next-tooth" onclick="mostrarInfo(${dienteId+1})"><i class="fi fi-rr-angle-right"></i></button>
+  </div>
   <div class="row">
     <div class="col">
         <!-- ESQUEMA CIRCULAR -->
@@ -548,13 +996,13 @@ function get_data_theen(dienteId) {
   <!-- Estado general -->
   <div class="estado-general">
     <h3>Estado del diente</h3>
-    <select id="estado-${dienteId}">
+    <plus-select id="estado-${dienteId}">
       <option value="sano">Sano</option>
       <option value="caries">Caries</option>
       <option value="restaurado">Restaurado</option>
       <option value="endodoncia">Endodoncia</option>
       <option value="extraido">Extraído</option>
-    </select>
+    </plus-select>
   </div>
 
   <!-- Detalle por cara -->
@@ -562,21 +1010,21 @@ function get_data_theen(dienteId) {
     <h3>Detalle por cara</h3>
     <div class="cara-detalle">
       <label>Mesial</label>
-      <select id="cara-mesial-${dienteId}">
+      <plus-select id="cara-mesial-${dienteId}">
         <option value="sano">Sano</option>
         <option value="caries">Caries</option>
         <option value="restaurado">Restaurado</option>
         <option value="fractura">Fractura</option>
-      </select>
+      </plus-select>
     </div>
     <div class="cara-detalle">
       <label>Distal</label>
-      <select id="cara-distal-${dienteId}">
+      <plus-select id="cara-distal-${dienteId}">
         <option value="sano">Sano</option>
         <option value="caries">Caries</option>
         <option value="restaurado">Restaurado</option>
         <option value="fractura">Fractura</option>
-      </select>
+      </plus-select>
     </div>
     <!-- Repetir Vestibular, Lingual, Oclusal -->
   </div>
@@ -585,23 +1033,19 @@ function get_data_theen(dienteId) {
   <div class="tejido">
     <h3>Encía / tejido</h3>
     <label>Encía:</label>
-    <select id="encia-${dienteId}">
+    <plus-select id="encia-${dienteId}">
       <option value="normal">Normal</option>
       <option value="inflamada">Inflamada</option>
       <option value="sangrado">Sangrado</option>
-    </select>
-    <label>Placa / sarro:</label>
-    <select id="placa-${dienteId}">
-      <option value="no">No</option>
-      <option value="si">Sí</option>
-    </select>
+    </plus-select>
+    <plus-switch id="placa-${dienteId}" text="Tiene Placa / sarro"></plus-switch>
     <label>Movilidad:</label>
-    <select id="movilidad-${dienteId}">
+    <plus-select id="movilidad-${dienteId}">
       <option value="0">0</option>
       <option value="1">1</option>
       <option value="2">2</option>
       <option value="3">3</option>
-    </select>
+    </plus-select>
   </div>
 
   <!-- Observaciones -->
@@ -619,42 +1063,42 @@ function get_data_theen(dienteId) {
     });
   });
 
-  document.querySelectorAll('.caries-nivel').forEach(nivel => {
-    nivel.addEventListener('click', () => {
-      const niveles = Array.from(document.querySelectorAll('.caries-nivel'));
-      const index = niveles.indexOf(nivel);
+document.querySelectorAll('.caries-nivel').forEach(nivel => {
+  nivel.addEventListener('click', () => {
+    const niveles = Array.from(document.querySelectorAll('.caries-nivel'));
+    const index = niveles.indexOf(nivel);
 
-      // Si la capa ya estaba activa → deseleccionamos todo
-      if (nivel.classList.contains('activa')) {
-        niveles.forEach(n => {
-          n.classList.remove('activa');
-          n.classList.remove('infectada');
-        });
-        return;
-      }
-
-      // Limpiar estados previos
+    // Si la capa ya estaba activa → deseleccionamos todo
+    if (nivel.classList.contains('activa')) {
       niveles.forEach(n => {
         n.classList.remove('activa');
         n.classList.remove('infectada');
       });
+      return;
+    }
 
-      // Activar la capa clickeada
-      nivel.classList.add('activa');
-
-      // Marcar capas por debajo como infectadas
-      for (let i = index + 1; i < niveles.length; i++) {
-        niveles[i].classList.add('infectada');
-      }
-
-      // Las capas por encima vuelven a normal
-      for (let i = 0; i < index; i++) {
-        niveles[i].classList.remove('infectada');
-        niveles[i].classList.remove('activa');
-      }
+    // Limpiar estados previos
+    niveles.forEach(n => {
+      n.classList.remove('activa');
+      n.classList.remove('infectada');
     });
+
+    // Activar la capa clickeada
+    nivel.classList.add('activa');
+
+    // Marcar capas por debajo como infectadas
+    for (let i = index + 1; i < niveles.length; i++) {
+      niveles[i].classList.add('infectada');
+    }
+
+    // Las capas por encima vuelven a normal
+    for (let i = 0; i < index; i++) {
+      niveles[i].classList.remove('infectada');
+      niveles[i].classList.remove('activa');
+    }
   });
-  }
+});
+}
 
 // Ocultar panel si toca fuera en móvil
 window.addEventListener('click', e => {
@@ -664,5 +1108,20 @@ window.addEventListener('click', e => {
     panelInfo.classList.remove('visible');
   }
 });
-
 </script>
+
+
+
+<!------------------here we will to save all the information of the odontogram----------------->
+<plus-panel id="infoPanel"
+            title="odontograma.title.add-new-status-of-the-theen"
+            side="right"
+            size="34%"
+            >
+
+
+
+            
+</plus-panel>
+
+<button onclick="document.getElementById('infoPanel').show()">Abrir Panel</button>

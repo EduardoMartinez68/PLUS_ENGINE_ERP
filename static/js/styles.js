@@ -167,6 +167,7 @@ class MessagePop extends HTMLElement {
       `;
   }
 }
+
 class PlusPanel extends HTMLElement {
   constructor() {
     super();
@@ -332,6 +333,8 @@ class PlusPanel extends HTMLElement {
   }
 
   show() {
+    currentPopZIndex += 1;
+    this.style.zIndex = currentPopZIndex;
     this.classList.add('visible');
     this.style.pointerEvents = 'auto';
   }
@@ -347,6 +350,8 @@ class PlusPanel extends HTMLElement {
     }
   }
 }
+
+
 class EditQuantity extends HTMLElement {
   constructor() {
     super();

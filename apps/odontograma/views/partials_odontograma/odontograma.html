@@ -1,495 +1,568 @@
-    
 {% load static %}
 <style>
-  
-/* ===== CONTENEDORES PRINCIPALES ===== */
-.container-theen {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  height: 100vh;
-}
-
-.odontograma {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 30px;
-  padding: 20px;
-  border-right: 2px solid #ddd;
-}
-
-.arcada {
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  gap: 8px;
-  padding-bottom: 10px;
-  justify-content: center;
-}
-
-.arcada-inferior {
-  transform: rotate(180deg);
-}
-
-/* ===== DIENTE ===== */
-.diente {
-  min-width: 65px;
-  min-height: 95px;
-  background: #e2e8f0;
-  border: 2px solid #718096;
-  border-radius: 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-  padding-top: 5px;
-  position: relative;
-}
-
-.diente:hover {
-  background: #bee3f8;
-}
-
-.diente.activo {
-  background: #63b3ed;
-  color: white;
-  border-color: #2b6cb0;
-}
-
-/* ===== NÚMERO DE DIENTE ===== */
-.numero-diente {
-  position: absolute;
-  top: 3px;
-  font-size: 0.9rem;
-  color: #757575;
-  font-weight: bold;
-}
-
-.arcada-inferior .numero-diente {
-  transform: rotate(180deg);
-}
-
-/* ===== PANEL INFO ===== */
-.panel-info {
-  flex: 1;
-  padding: 20px;
-  transition: transform 0.3s ease;
-  overflow-y: auto;
-  min-width: 500px;
-}
-
-.panel-info h2 { margin-top: 0; }
-.panel-info.hidden { display: none; }
-
-/* ===== DIBUJOS DE DIENTES ===== */
-.diente-container {
-  width: 40px;
-  aspect-ratio: 150 / 200; /* ancho / alto según viewBox */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-.diente-container svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  transform-origin: center bottom; /* centra el diente */
-}
-
-
-
-/*----------------------------------------------------------------------------------info theen----------------------------------------------------------------*/
-.info-diente {
-  padding: 1rem;
-  font-family: 'Segoe UI', sans-serif;
-  color: #333;
-}
-
-.titulo-info {
-  text-align: center;
-  margin-bottom: 1rem;
-  font-size: 1.4rem;
-  color: #2d2d2d;
-}
-
-/* ======== ESQUEMA DENTAL CIRCULAR ======== */
-.esquema-diente-circular {
-  position: relative;
-  width: 180px;
-  height: 180px;
-  margin: 0 auto 1.2rem;
-  border-radius: 50%;
-  background: #f8f8f8;
-  border: 3px solid #ccc;
-  overflow: hidden;
-  box-shadow: 0 0 6px rgba(0,0,0,0.1);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Cuadrantes (4 partes) */
-.cuadrante {
-  position: absolute;
-  width: 50%;
-  height: 50%;
-  background: #ffffff;
-  border: 1px solid #ddd;
-  transition: background 0.3s, transform 0.2s;
-}
-
-/* Posiciones */
-[data-cara="superior-izq"] {
-  top: 0; left: 0;
-  border-top-left-radius: 100%;
-}
-[data-cara="superior-der"] {
-  top: 0; right: 0;
-  border-top-right-radius: 100%;
-}
-[data-cara="inferior-izq"] {
-  bottom: 0; left: 0;
-  border-bottom-left-radius: 100%;
-}
-[data-cara="inferior-der"] {
-  bottom: 0; right: 0;
-  border-bottom-right-radius: 100%;
-}
-
-/* Centro (oclusal) */
-.centro {
-  width: 40%;
-  height: 40%;
-  background: #fff;
-  border: 2px solid #bbb;
-  border-radius: 50%;
-  z-index: 2;
-  transition: background 0.3s, transform 0.2s;
-}
-
-/* Interacción visual */
-.cara:hover {
-  background: #e6f0ff;
-  cursor: pointer;
-  transform: scale(1.03);
-}
-
-.cara.activa {
-  background: #63a4ff;
-  border-color: #4a90e2;
-}
-
-/* ====== Estado general y observaciones ====== */
-.estado-general, .info-detallada {
-  margin-top: 1rem;
-}
-
-.select-estado {
-  width: 100%;
-  padding: 6px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-/**--------------------------------------------------------------------------caries----------------------------------------------------------**/
-.esquema-caries-rect {
-  margin: 20px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.caries-barra {
-  display: flex;
-  flex-direction: column-reverse;
-  width: 50px;
-  height: 220px;
-  border: 2px solid #cbd5e1;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #f8fafc;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-}
-
-.caries-nivel {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #fff;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-}
-
-/* Colores por profundidad: de blanco (superficial) a negro (pulpar) */
-.caries-nivel[data-nivel="superficial"] { 
-  background: #ffffff;
-  color: #000; /* texto visible */
-}
-.caries-nivel[data-nivel="media"] { 
-  background: #d3d3d3;
-}
-.caries-nivel[data-nivel="profunda"] { 
-  background: #a0a0a0;
-}
-.caries-nivel[data-nivel="pulpar"] { 
-  background: #8b8b8b;
-}
-
-/* Nivel seleccionado */
-.caries-nivel.activa {
-  background: #f56565; /* Color de la capa seleccionada */
-  color: #fff;
-}
-
-/* Capas por debajo de la seleccionadas (infectadas) */
-.caries-nivel.infectada {
-  background: #a0aec0; /* Gris simulando daño / hueso afectado */
-  color: #fff;
-}
-
-
-/*--------------------------------------------------------------------------------------*/
-/* ===== CONTENEDORES PRINCIPALES ===== */
-.container-theen {
-  display: flex;
-  flex: 1;
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* ===== ODONTOGRAMA ===== */
-.odontograma {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 30px;
-  padding: 20px;
-  border-right: 2px solid #ddd;
-}
-
-
-
-/* ===== PANEL DE INFORMACIÓN ===== */
-.panel-info {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  min-width: 400px;
-  transition: transform 0.3s ease;
-}
-
-.panel-info img {
-  max-width: 100%;
-  height: auto;
-}
-
-.full-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  text-align: center;
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-/* Tablet: 992px o menos */
-@media (max-width: 1200px) {
-  .odontograma {
-    overflow: hidden;
-  }
-}
-
-/* Tablet: 992px o menos */
-@media (max-width: 992px) {
+  /* ===== CONTENEDORES PRINCIPALES ===== */
   .container-theen {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  .odontograma {
+    flex: 2;
+    display: flex;
     flex-direction: column;
-    height: auto;
-  }
-
-  .odontograma {
-    border-right: none;
-    border-bottom: 2px solid #ddd;
-    padding: 15px;
-    overflow: hidden;
-  }
-
-  .panel-info {
-    width: 100%;
-    min-width: auto;
-    max-width: none;
-    padding: 15px;
-    height: auto;
-  }
-
-  .diente {
-    min-width: 55px;
-    min-height: 85px;
-  }
-}
-
-/* Celulares grandes (768px o menos) */
-@media (max-width: 768px) {
-  .odontograma {
-    gap: 20px;
-    overflow: hidden;
-  }
-
-  .diente {
-    min-width: 50px;
-    min-height: 75px;
+    justify-content: center;
+    gap: 30px;
+    padding: 20px;
+    border-right: 2px solid #ddd;
   }
 
   .arcada {
-    gap: 6px;
-  }
-
-  .panel-info {
-    padding: 10px;
-  }
-}
-
-/* Celulares pequeños (480px o menos) */
-@media (max-width: 480px) {
-  .diente {
-    min-width: 42px;
-    min-height: 65px;
-  }
-
-  .arcada {
-    gap: 4px;
-  }
-
-  .odontograma {
-    padding: 10px;
-    overflow: hidden;
-  }
-
-  .panel-info {
-    padding: 10px;
-    font-size: 0.9rem;
-  }
-}
-
-
-
-/* ===== CONTENEDOR DEL NOMBRE Y FLECHAS ===== */
-.tooth-navigation {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin: 15px 0;
-}
-
-/* ===== BOTONES DE FLECHA ===== */
-.tooth-navigation button {
-  background-color: #E5E9EF;
-  width: 100%;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
-  outline: none;
-  border-radius: 5px;
-}
-
-.tooth-navigation button:hover {
-  background-color: #ced2d8;
-  border-color: #a0aec0;
-}
-
-.tooth-navigation button i {
-  font-size: 18px;
-  color: #2d3748;
-}
-
-/* ===== TÍTULO DEL DIENTE ===== */
-.tooth-navigation h2 {
-  font-size: 1.4rem;
-  color: #2d3748;
-  font-weight: 600;
-  margin: 0;
-  text-align: center;
-  white-space: nowrap;
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 480px) {
-  .tooth-navigation {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
     gap: 8px;
+    padding-bottom: 10px;
+    justify-content: center;
   }
 
-  .tooth-navigation button {
+  .arcada-inferior {
+    transform: rotate(180deg);
+  }
+
+  /* ===== DIENTE ===== */
+  .diente {
+    min-width: 65px;
+    min-height: 95px;
+    background: #e2e8f0;
+    border: 2px solid #718096;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    padding-top: 5px;
+    position: relative;
+  }
+
+  .diente:hover {
+    background: #bee3f8;
+  }
+
+  .diente.activo {
+    background: #63b3ed;
+    color: white;
+    border-color: #2b6cb0;
+  }
+
+  /* ===== NÚMERO DE DIENTE ===== */
+  .numero-diente {
+    position: absolute;
+    top: 3px;
+    font-size: 0.9rem;
+    color: #757575;
+    font-weight: bold;
+  }
+
+  .arcada-inferior .numero-diente {
+    transform: rotate(180deg);
+  }
+
+  /* ===== PANEL INFO ===== */
+  .panel-info {
+    flex: 1;
+    padding: 20px;
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    min-width: 500px;
+  }
+
+  .panel-info h2 {
+    margin-top: 0;
+  }
+
+  .panel-info.hidden {
+    display: none;
+  }
+
+  /* ===== DIBUJOS DE DIENTES ===== */
+  .diente-container {
+    width: 40px;
+    aspect-ratio: 150 / 200;
+    /* ancho / alto según viewBox */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  .diente-container svg {
     width: 100%;
-    height:50px;
+    height: 100%;
+    display: block;
+    transform-origin: center bottom;
+    /* centra el diente */
+  }
+
+
+
+  /*----------------------------------------------------------------------------------info theen----------------------------------------------------------------*/
+  .info-diente {
+    padding: 1rem;
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+  }
+
+  .titulo-info {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    color: #2d2d2d;
+  }
+
+  /* ======== ESQUEMA DENTAL CIRCULAR ======== */
+  .esquema-diente-circular {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 1.2rem;
+    border-radius: 50%;
+    background: #f8f8f8;
+    border: 3px solid #ccc;
+    overflow: hidden;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Cuadrantes (4 partes) */
+  .cuadrante {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    transition: background 0.3s, transform 0.2s;
+  }
+
+  /* Posiciones */
+  [data-cara="superior-izq"] {
+    top: 0;
+    left: 0;
+    border-top-left-radius: 100%;
+  }
+
+  [data-cara="superior-der"] {
+    top: 0;
+    right: 0;
+    border-top-right-radius: 100%;
+  }
+
+  [data-cara="inferior-izq"] {
+    bottom: 0;
+    left: 0;
+    border-bottom-left-radius: 100%;
+  }
+
+  [data-cara="inferior-der"] {
+    bottom: 0;
+    right: 0;
+    border-bottom-right-radius: 100%;
+  }
+
+  /* Centro (oclusal) */
+  .centro {
+    width: 40%;
+    height: 40%;
+    background: #fff;
+    border: 2px solid #bbb;
+    border-radius: 50%;
+    z-index: 2;
+    transition: background 0.3s, transform 0.2s;
+  }
+
+  /* Interacción visual */
+  .cara:hover {
+    background: #e6f0ff;
+    cursor: pointer;
+    transform: scale(1.03);
+  }
+
+  .cara.activa {
+    background: #63a4ff;
+    border-color: #4a90e2;
+  }
+
+  /* ====== Estado general y observaciones ====== */
+  .estado-general,
+  .info-detallada {
+    margin-top: 1rem;
+  }
+
+  .select-estado {
+    width: 100%;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+
+  /**--------------------------------------------------------------------------caries----------------------------------------------------------**/
+  .esquema-caries-rect {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .caries-barra {
+    display: flex;
+    flex-direction: column-reverse;
+    width: 50px;
+    height: 220px;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f8fafc;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .caries-nivel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1rem;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Colores por profundidad: de blanco (superficial) a negro (pulpar) */
+  .caries-nivel[data-nivel="superficial"] {
+    background: #ffffff;
+    color: #000;
+    /* texto visible */
+  }
+
+  .caries-nivel[data-nivel="media"] {
+    background: #d3d3d3;
+  }
+
+  .caries-nivel[data-nivel="profunda"] {
+    background: #a0a0a0;
+  }
+
+  .caries-nivel[data-nivel="pulpar"] {
+    background: #8b8b8b;
+  }
+
+  /* Nivel seleccionado */
+  .caries-nivel.activa {
+    background: #f56565;
+    /* Color de la capa seleccionada */
+    color: #fff;
+  }
+
+  /* Capas por debajo de la seleccionadas (infectadas) */
+  .caries-nivel.infectada {
+    background: #a0aec0;
+    /* Gris simulando daño / hueso afectado */
+    color: #fff;
+  }
+
+
+  /*--------------------------------------------------------------------------------------*/
+  /* ===== CONTENEDORES PRINCIPALES ===== */
+  .container-theen {
+    display: flex;
+    flex: 1;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ===== ODONTOGRAMA ===== */
+  .odontograma {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 30px;
+    padding: 20px;
+    border-right: 2px solid #ddd;
+  }
+
+
+
+  /* ===== PANEL DE INFORMACIÓN ===== */
+  .panel-info {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    min-width: 400px;
+    transition: transform 0.3s ease;
+  }
+
+  .panel-info img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .full-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+  }
+
+  /* ===== RESPONSIVE DESIGN ===== */
+  /* Tablet: 992px o menos */
+  @media (max-width: 1200px) {
+    .odontograma {
+      overflow: hidden;
+    }
+  }
+
+  /* Tablet: 992px o menos */
+  @media (max-width: 992px) {
+    .container-theen {
+      flex-direction: column;
+      height: auto;
+    }
+
+    .odontograma {
+      border-right: none;
+      border-bottom: 2px solid #ddd;
+      padding: 15px;
+      overflow: hidden;
+    }
+
+    .panel-info {
+      width: 100%;
+      min-width: auto;
+      max-width: none;
+      padding: 15px;
+      height: auto;
+    }
+
+    .diente {
+      min-width: 55px;
+      min-height: 85px;
+    }
+  }
+
+  /* Celulares grandes (768px o menos) */
+  @media (max-width: 768px) {
+    .odontograma {
+      gap: 20px;
+      overflow: hidden;
+    }
+
+    .diente {
+      min-width: 50px;
+      min-height: 75px;
+    }
+
+    .arcada {
+      gap: 6px;
+    }
+
+    .panel-info {
+      padding: 10px;
+    }
+  }
+
+  /* Celulares pequeños (480px o menos) */
+  @media (max-width: 480px) {
+    .diente {
+      min-width: 42px;
+      min-height: 65px;
+    }
+
+    .arcada {
+      gap: 4px;
+    }
+
+    .odontograma {
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    .panel-info {
+      padding: 10px;
+      font-size: 0.9rem;
+    }
+  }
+
+
+
+  /* ===== CONTENEDOR DEL NOMBRE Y FLECHAS ===== */
+  .tooth-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 15px 0;
+  }
+
+  /* ===== BOTONES DE FLECHA ===== */
+  .tooth-navigation button {
+    background-color: #E5E9EF;
+    width: 100%;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+  }
+
+  .tooth-navigation button:hover {
+    background-color: #ced2d8;
+    border-color: #a0aec0;
   }
 
   .tooth-navigation button i {
-    font-size: 16px;
+    font-size: 18px;
+    color: #2d3748;
   }
 
+  /* ===== TÍTULO DEL DIENTE ===== */
   .tooth-navigation h2 {
-    font-size: 1.1rem;
+    font-size: 1.4rem;
+    color: #2d3748;
+    font-weight: 600;
+    margin: 0;
+    text-align: center;
+    white-space: nowrap;
   }
-}
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 480px) {
+    .tooth-navigation {
+      gap: 8px;
+    }
+
+    .tooth-navigation button {
+      width: 100%;
+      height: 50px;
+      font-size: 1rem;
+    }
+
+    .tooth-navigation button i {
+      font-size: 16px;
+    }
+
+    .tooth-navigation h2 {
+      font-size: 1.1rem;
+    }
+  }
 
 
-/*------------------------------------------------------------PATIENTE INFO----------------------------------*/
-.patient-info {
-  position: absolute;
-  top: 120px;
-  left: 30px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  backdrop-filter: blur(6px);
-  border-radius: 10px;
-  padding: 6px 12px;
-  z-index: 200;
-  width: 60%
-}
-
-.patient-info img {
-  width: 48px;
-  height: 48px;
-  object-fit: cover;
-  border: 2px solid #e2e8f0;
-}
-
-.patient-info span {
-  font-weight: 600;
-  color: #1a202c;
-  font-size: 0.95em;
-}
-
-@media (max-width: 768px) {
+  /*------------------------------------------------------------PATIENTE INFO----------------------------------*/
   .patient-info {
-    position: relative; 
-    top: auto;
-    left: auto;
-    width: 100%; 
-    margin-top: 10px; 
-    flex-direction: row; 
+    position: absolute;
+    top: 120px;
+    left: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    backdrop-filter: blur(6px);
+    border-radius: 10px;
+    padding: 6px 12px;
+    z-index: 200;
+    width: 60%
   }
+
+  .patient-info img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border: 2px solid #e2e8f0;
+  }
+
+  .patient-info span {
+    font-weight: 600;
+    color: #1a202c;
+    font-size: 0.95em;
+  }
+
+  @media (max-width: 768px) {
+    .patient-info {
+      position: relative;
+      top: auto;
+      left: auto;
+      width: 100%;
+      margin-top: 10px;
+      flex-direction: row;
+    }
+  }
+
+
+
+
+  /*PANEL TOOTH*/
+  .container-draw-tooth {
+    width: 20%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+  }
+
+  #container-thoo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 20px;
+    /* espacio entre dientes */
+    justify-items: center;
+    /* centra los SVGs dentro de sus celdas */
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    /* centra el grid */
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  #container-thoo svg {
+    width: 100%;
+    max-width: 150px;
+    /* tamaño máximo de cada diente */
+    height: auto;
+    transition: transform 0.3s ease;
+  }
+
+  .container-status-thoo {
+    background-color: white;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .container-status-thoo:hover{
+    cursor: pointer;
+    transform: scale(1.05);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.12);
+  }
+
+.container-status-thoo.selected {
+  border: 2px solid #5aa9f8;
+  border-radius: 5px;
+  transform: scale(1.08);
 }
 </style>
 
@@ -520,316 +593,395 @@
   <div class="panel-info" id="panel-info">
     <div class="full-center">
       <img src="{% static 'img/theen.webp' %}" alt="" style="width: 80%; height: auto;">
-      <center><label t="odontograma.label.select-a-tooth"></p></center>
+      <center><label t="odontograma.label.select-a-tooth"></p>
+      </center>
     </div>
   </div>
 </div>
 
 
 <script>
-(()=>{
-const dientes = Array.from({ length: 32 }, (_, i) => ({
-  id: i + 1,
-  nombre: `Diente ${i + 1}`,
-  descripcion: `Descripción del diente ${i + 1}. Aquí puedes agregar información sobre su estado clínico, observaciones o tratamientos.`
-}));
-var colorsTheens={
-  theen:'white',
-  colorBorder: '#C2C2C2',
-  bone_theen: '#F5F3F4',
-  bone_blak_theen: '#F4F2F3'
-}
+  (() => {
+    //
+
+    function get_svg_activity(activity, x = 64, y = 181, r = 15) {
+      const activityTheenh = {
+        "corona": `
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#8BB0D1" stroke-width="2"/>
+            <circle cx="${x}" cy="${y}" r="${r}" fill="rgba(80,134,214,0.3)" stroke="#8BB0D1" stroke-width="2"/>
+        `,
+        "coronaProvisional": `
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#8BB0D1" stroke-width="2"/>
+            <circle cx="${x}" cy="${y}" r="${r}" fill="rgba(80,134,214,0.3)" stroke="#8BB0D1" stroke-width="2"/>
+            <text cx="${x}" cy="${y}" text-anchor="middle" dominant-baseline="middle" fill="#085DA8" font-size="12" font-weight="bold">X</text>
+        `,
+        "coronaMalEstado": `
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#FF5656" stroke-width="2"/>
+            <circle cx="${x}" cy="${y}" r="${r}" fill="rgba(255,86,86,0.3)" stroke="#FF5656" stroke-width="2"/>
+        `,
+        "coronaMalEstadoProvisional": `
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#FF5656" stroke-width="2"/>
+            <circle cx="${x}" cy="${y}" r="${r}" fill="rgba(255,86,86,0.3)" stroke="#FF5656" stroke-width="2"/>
+            <text cx="${x}" cy="${y}" text-anchor="middle" dominant-baseline="middle" fill="#FF5656" font-size="12" font-weight="bold">X</text>
+        `,
 
 
-//this is the format basic of the first 9 theen of the pacient
-//this theens are use for create all the patient's jaw
-const svgsDientesPruebas = {
-  1: `
-<svg viewBox="45 135 38 64" xmlns="http://www.w3.org/2000/svg">
-  <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M64.2753 147.424C57.2797 136.22 54.1597 134.335 54.9151 141.769C55.6706 149.204 57.858 157.283 61.4771 166.007L66.8019 167.199L70.9184 160.346L67.6591 149.881L64.2753 147.424Z"
-        fill="${colorsTheens.bone_blak_theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-  <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M76.1241 179.29C76.29 170.334 75.6195 163.229 74.1125 157.976C72.005 150.629 69.6182 147.062 68.0683 145.18C66.5183 143.297 62.8123 140.555 63.1369 144.517C63.3002 146.511 65.0562 150.757 65.5166 154.789C66.0671 159.611 65.2726 164.128 64.5919 164.128C63.2123 164.128 63.8894 156.31 61.4425 149.823C59.3798 144.355 54.5071 140.092 52.1722 140.356C49.8373 140.62 54.0026 150.608 53.9575 157.499C53.9039 165.678 53.7485 174.181 53.0546 176.484C52.0879 179.69 59.7777 180.626 76.1241 179.29Z"
-        fill="${colorsTheens.bone_theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-  <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M57.1449 173.704C60.9228 171.63 65.6902 170.717 70.5069 173.704C75.3237 176.691 77.6012 181.331 78.0033 184.465C78.1894 185.916 78.8645 190.748 74.2745 193.275C71.4811 194.812 67.6431 192.727 66.4252 191.74C65.2073 190.753 63.1025 189.242 60.7782 191.74C58.4539 194.237 55.4549 192.252 54.445 191.352C53.4352 190.453 50.8711 188.224 50.8711 184.22C50.8711 180.215 52.1565 176.444 57.1449 173.704Z"
-        fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-</svg>`,
+        "restauracion": `
+            <circle cx="${x}" cy="${y + 3}" r="5" fill="#8BB0D1" stroke="#8BB0D1" stroke-width="2"/>
+        `,
+        "restauracionMalEstado": `
+            <circle cx="${x}" cy="${y + 3}" r="5" fill="#FF5656" stroke="#FF5656" stroke-width="2"/>
+        `,
 
-  2: `
-<svg viewBox="90 130 40 70" xmlns="http://www.w3.org/2000/svg">
-  <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M108.416 138.753C108.283 137.579 107.978 136.557 107.5 135.684C106.783 134.375 102.776 127.124 101.355 136.256C100.408 142.344 100.408 146.372 101.355 148.342L105.485 167.307L111.951 168.101L114.562 154.346L108.416 138.753Z"
-        fill="${colorsTheens.bone_blak_theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-  <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M123.276 184.088C121.656 173.159 120.844 165.162 120.842 160.097C120.838 152.5 116.607 143.84 113.721 139.943C110.835 136.045 107.964 133.804 107.516 137.732C107.268 139.9 110.026 146.895 110.622 154.02C110.85 156.748 111.137 157.224 111.026 161.519C110.915 165.814 108.393 166.05 107.331 161.639C106.992 160.226 105.417 154.765 105.122 149.234C104.865 144.411 105.122 140.88 104.576 138.755C103.689 135.302 100.945 136.867 99.851 138.171C96.2196 142.499 95.6317 151.156 96.421 158.922C97.2103 166.688 98.0414 170.911 97.413 180.877C96.994 187.521 105.615 188.592 123.276 184.088Z"
-        fill="${colorsTheens.bone_theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-  <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M123.944 186.594C124.135 188.07 124.021 194.834 119.32 197.405C116.459 198.97 112.126 196.848 110.878 195.843C109.631 194.839 108.303 193.477 104.289 195.228C101.369 196.502 98.0319 193.492 96.9978 192.577C96.483 192.122 94.1719 188.087 94.9157 184.116C95.6661 180.109 99.4844 176.163 101.893 175.325C104.869 174.289 105.963 175.863 110.367 176.081C113.201 176.221 115.256 175.59 117.625 176.551C123.01 178.736 123.893 186.195 123.944 186.594Z"
-        fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-</svg>`,
-
-  3: `
-<svg viewBox="135 135 40 70" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd" clip-rule="evenodd"
-            d="M155.912 147.051C154 144.058 152.343 141.368 150.941 138.979C148.837 135.396 145.144 133.351 144.405 138.594C143.913 142.089 144.417 147.315 145.919 154.271L149.275 168.274L153.155 170.415L158.816 168.881L162.532 156.73L155.912 147.051Z"
-            fill="${colorsTheens.bone_blak_theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-        <path fill-rule="evenodd" clip-rule="evenodd"
-            d="M167.94 184.395C167.645 179.251 167.497 175.068 167.497 171.847C167.497 167.015 168.741 153.098 164.502 146.962C160.03 140.489 154.218 137.226 154.819 142.669C155.106 145.257 156.434 149.933 156.614 154.307C156.812 159.132 155.836 163.591 155.581 164.479C155.094 166.174 153.117 168.315 151.655 164.889C150.192 161.464 146.168 153.277 144.889 149.175C143.611 145.074 143.048 143.826 142.527 142.362C142.007 140.897 138.605 136.066 137.119 142.362C135.633 148.657 137.712 156.709 138.811 160.695C139.911 164.682 141.459 175.901 140.196 184.977C139.354 191.028 148.602 190.834 167.94 184.395Z"
-            fill="${colorsTheens.bone_theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-        <path fill-rule="evenodd" clip-rule="evenodd"
-            d="M150.969 200.092C147.952 203.338 139.764 201.09 138.111 197.529C136.73 194.434 137.544 187.091 140.359 183.202C143.549 178.796 148.073 179.322 149.111 179.337C153.121 179.928 154.646 180.017 159.546 178.831C164.446 177.646 168.429 184.8 168.923 186.124C169.417 187.448 171.177 196.384 167.091 199.89C164.771 201.88 159.077 202.356 156.768 200.251C154.426 198.117 152.511 198.433 150.969 200.092Z"
-            fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-</svg>`,
-
-  4: `
-<svg viewBox="175 128 40 78" xmlns="http://www.w3.org/2000/svg">
-  <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M204.27 184.51C202.943 171.312 201.923 162.331 201.207 157.569C199.286 144.776 196.837 137.877 196.363 136.871C195.255 134.519 191.522 129.116 190.633 135.433C190.245 138.191 191.131 146.535 190.789 160.463C190.669 165.353 190.009 174.237 188.809 187.114L204.27 184.51Z"
-        fill="${colorsTheens.bone_theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-  <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M192.229 203.346C185.151 200.247 185.921 195.732 186.674 191.483C187.428 187.233 188.5 183.073 191.216 180.418C193.932 177.763 197.907 176.347 201.905 180.418C204.058 182.611 206.715 188.037 207.449 192.949C207.725 194.798 208.133 199.876 205.024 202.218C201.106 205.168 196.196 205.084 192.229 203.346Z"
-        fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-</svg>`,
-
-  5: `
-<svg viewBox="220 137 40 75" xmlns="http://www.w3.org/2000/svg">
-  <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M248.571 190.594C248.461 178.996 248.169 171.007 247.696 166.627C246.267 153.387 243.652 145.907 242.742 144.185C241.201 141.269 239.878 140.329 237.582 140.086C235.881 139.906 232.984 140.909 232.413 144.294C232.066 146.348 232.658 150.288 232.536 156.111C232.46 159.751 232.751 166.243 232.585 175.588C232.527 178.835 232.291 184.48 231.875 192.523L248.571 190.594Z"
-        fill="${colorsTheens.bone_theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-  <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M235.687 208.384C232.522 206.374 229.862 200.861 230.412 195.648C230.67 193.205 232.887 186.64 236.741 184.276C238.09 183.449 241.953 182.381 244.944 185.085C248.564 188.359 250.937 193.288 251.687 198.522C251.954 200.383 251.734 204.278 248.872 207.02C244.444 211.264 239.483 210.794 235.687 208.384Z"
-        fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-</svg>`,
-  
-6: `
-<svg viewBox="263 125 45 89" xmlns="http://www.w3.org/2000/svg">
-  <path fill-rule="evenodd" clip-rule="evenodd"
-      d="M293.581 190.654C291.642 168.023 289.888 153.578 288.321 147.318C287.044 142.218 283.872 134.104 280.982 130.838C278.55 128.091 276.196 129.5 276.537 131.836C276.827 133.825 277.615 143.529 277.67 154.926C277.755 172.822 276.114 194.891 275.707 197.816C275.262 201.007 281.221 198.62 293.581 190.654Z"
-      fill="${colorsTheens.bone_theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-  <path fill-rule="evenodd" clip-rule="evenodd"
-      d="M280.916 183.623C282.272 182.796 285.813 181.412 288.954 183.812C292.696 186.671 296.214 192.923 296.723 199.316C297.382 207.584 295.975 210.711 292.497 213.207C291.646 213.817 287.999 215.809 283.817 214.756C280.702 213.972 274.779 209.875 274.075 207.537C272.336 201.765 275.004 193.241 275.985 190.782C277.56 186.833 279.704 184.362 280.916 183.623Z"
-      fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-</svg>`,
-  
-7: `
-<svg viewBox="311 130 40 80" xmlns="http://www.w3.org/2000/svg">
-  <path fill-rule="evenodd" clip-rule="evenodd"
-      d="M336.206 189.746C335.753 179.932 334.48 168.985 332.387 156.904C329.247 138.783 320.528 134.374 319.89 138.112C319.587 139.887 321.6 146.479 322.211 153.806C322.886 161.914 320.472 191.256 321.392 193.835C322.006 195.555 326.944 194.191 336.206 189.746Z"
-      fill="${colorsTheens.bone_theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-  <path fill-rule="evenodd" clip-rule="evenodd"
-      d="M332.497 182.373C335.937 185.543 338.254 191.54 338.759 197.829C338.881 199.341 339.789 204.593 337.789 207.106C336.017 209.333 331.432 208.93 329.839 208.969C327.106 209.035 324.009 208.688 322.105 206.8C318.522 203.248 319.369 191.924 320.928 188.018C321.55 186.459 323.296 182.868 325.849 181.498C328.264 180.202 331.056 181.045 332.497 182.373Z"
-      fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-</svg>`,
-  8: `
-<svg viewBox="354 130 40 85" xmlns="http://www.w3.org/2000/svg">
-    <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M382.036 192.717C381.192 180.51 379.822 168.757 377.926 157.46C376.738 150.378 374.059 144.678 371.62 141.93C368.221 138.101 365.899 139.205 365.443 143.52C365.093 146.828 365.908 155.719 365.641 165.182C365.265 178.551 363.125 193.062 363.648 194.58C364.245 196.308 370.374 195.687 382.036 192.717Z"
-        fill="${colorsTheens.bone_theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-    <path fill-rule="evenodd" clip-rule="evenodd"
-        d="M368.357 182.985C369.663 182.167 373.673 180.798 376.698 183.172C377.403 183.724 381.49 186.961 382.868 192.752C384.032 197.639 386.34 211.066 384.424 212.424C381.984 214.154 366.661 214.073 363.703 211.827C362.513 210.924 361.665 206.324 361.789 201.577C361.928 196.266 363.133 190.771 363.408 190.064C364.925 186.159 367.19 183.716 368.357 182.985Z"
-        fill="${colorsTheens.theen}" stroke="${colorsTheens.colorBorder}" stroke-width="0.939136" />
-</svg>`
-};
-
-const numersTooth = {
-  adult: {
-    // Maxilar superior
-    16: { FDI: 28, Universal: 16 },
-    15: { FDI: 27, Universal: 15 },
-    14: { FDI: 26, Universal: 14 },
-    13: { FDI: 25, Universal: 13 },
-    12: { FDI: 24, Universal: 12 },
-    11: { FDI: 23, Universal: 11 },
-    10: { FDI: 22, Universal: 10 },
-    9:  { FDI: 21, Universal: 9 },
-    8:  { FDI: 11, Universal: 8 },
-    7:  { FDI: 12, Universal: 7 },
-    6:  { FDI: 13, Universal: 6 },
-    5:  { FDI: 14, Universal: 5 },
-    4:  { FDI: 15, Universal: 4 },
-    3:  { FDI: 16, Universal: 3 },
-    2:  { FDI: 17, Universal: 2 },
-    1:  { FDI: 18, Universal: 1 },
-
-    // Mandíbula inferior
-    17: { FDI: 38, Universal: 17 },
-    18: { FDI: 37, Universal: 18 },
-    19: { FDI: 36, Universal: 19 },
-    20: { FDI: 35, Universal: 20 },
-    21: { FDI: 34, Universal: 21 },
-    22: { FDI: 33, Universal: 22 },
-    23: { FDI: 32, Universal: 23 },
-    24: { FDI: 31, Universal: 24 },
-    25: { FDI: 41, Universal: 25 },
-    26: { FDI: 42, Universal: 26 },
-    27: { FDI: 43, Universal: 27 },
-    28: { FDI: 44, Universal: 28 },
-    29: { FDI: 45, Universal: 29 },
-    30: { FDI: 46, Universal: 30 },
-    31: { FDI: 47, Universal: 31 },
-    32: { FDI: 48, Universal: 32 }
-  },
-
-  kid: {
-    // Maxilar superior (primarios, letras A–J)
-    1: { FDI: 55, Universal: 'A' },
-    2: { FDI: 54, Universal: 'B' },
-    3: { FDI: 53, Universal: 'C' },
-    4: { FDI: 52, Universal: 'D' },
-    5: { FDI: 51, Universal: 'E' },
-    6: { FDI: 61, Universal: 'F' },
-    7: { FDI: 62, Universal: 'G' },
-    8: { FDI: 63, Universal: 'H' },
-    9: { FDI: 64, Universal: 'I' },
-    10: { FDI: 65, Universal: 'J' },
-
-    // Mandíbula inferior (primarios, letras K–T)
-    11: { FDI: 85, Universal: 'K' },
-    12: { FDI: 84, Universal: 'L' },
-    13: { FDI: 83, Universal: 'M' },
-    14: { FDI: 82, Universal: 'N' },
-    15: { FDI: 81, Universal: 'O' },
-    16: { FDI: 71, Universal: 'P' },
-    17: { FDI: 72, Universal: 'Q' },
-    18: { FDI: 73, Universal: 'R' },
-    19: { FDI: 74, Universal: 'S' },
-    20: { FDI: 75, Universal: 'T' }
-  }
-};
-
-//this function is for transform the teeth basic for create all the mouth
-function reflect_tooth(svg, ejeX = true, ejeY = false) {
-  let transform = '';
-  if (ejeX) transform += ' scale(-1,1)';
-  return svg.replace('<svg ', `<svg transform="${transform}" `);
-}
-
-//-----------------all the theeth of the mouth------------------
-//create the fist 8 teeth of the mouth 
-const svgsDientes = { ...svgsDientesPruebas };
-
-// teeth top left (9-16)
-for (let i = 1; i <= 8; i++) {
-  svgsDientes[i + 8] = reflect_tooth(svgsDientesPruebas[9-i], true, false);
-}
-
-// Lower right teeth (25-32)
-for (let i = 1; i <= 8; i++) {
-  svgsDientes[i + 24] = reflect_tooth(svgsDientesPruebas[9-i], false, true);
-}
-
-// Lower left teeth (17-24)
-for (let i = 1; i <= 8; i++) {
-  svgsDientes[i + 16] = reflect_tooth(svgsDientesPruebas[i], true, true);
-}
+        "endodoncia": `
+            <line x1="${x}" y1="${y}" x2="${x}" y2="${y + 30}" stroke="#8BB0D1" stroke-width="2"/>
+        `,
+        "endodonciaMalEstado": `
+            <line x1="${x}" y1="${y}" x2="${x}" y2="${y + 30}" stroke="#8BB0D1" stroke-width="2"/>
+            <circle cx="${x}" cy="${y - 5}" r="12" fill="none" stroke="#FF5656" stroke-width="2" stroke-dasharray="4,4"/>
+        `,
 
 
+        "implante": `
+            <circle cx="${x}" cy="${y}" r="5" fill="#8BB0D1" stroke="#8BB0D1" stroke-width="2"/>
+            <line x1="${x}" y1="${y}" x2="${x}" y2="${y - 21}" stroke="#8BB0D1" stroke-width="2"/>
+        `,
+
+        "implanteMalEstado": `
+            <text cx="${x}" cy="${y}" text-anchor="middle" dominant-baseline="middle" fill="#FF5656" font-size="12" font-weight="bold">X</text>
+            <circle cx="${x}" cy="${y}" r="5" fill="#8BB0D1" stroke="#8BB0D1" stroke-width="2"/>
+            <line x1="${x}" y1="${y}" x2="${x}" y2="${y - 21}" stroke="#8BB0D1" stroke-width="2"/>
+            <circle cx="${x}" cy="${y - 5}" r="12" fill="none" stroke="#FF5656" stroke-width="2" stroke-dasharray="4,4"/>
+        `,
+
+        "perno": `
+            <circle cx="${x}" cy="${y + 3}" r="5" fill="#8BB0D1" stroke="#8BB0D1" stroke-width="2"/>
+            <line x1="${x}" y1="${y + 3 - 14}" x2="${x}" y2="${y + 10}" stroke="gray" stroke-width="4"/>
+        `,
+        "pernoMalEstado": `
+            <circle cx="${x}" cy="${y + 3}" r="5" fill="#FF5656" stroke="#FF5656" stroke-width="2"/>
+            <line x1="${x}" y1="${y + 3 - 14}" x2="${x}" y2="${y + 10}" stroke="gray" stroke-width="4"/>
+        `,
+
+        "protesisRemovible": `
+            <circle cx="${x}" cy="${y + 4}" r="15" fill="none" stroke="#FFA500" stroke-width="2" stroke-dasharray="4,4"/>
+            <text x="${x}" y="${y + 4}" text-anchor="middle" dominant-baseline="middle" fill="#FFA500" font-size="12" font-weight="bold">X</text>
+        `,
+
+        "amalgama": `
+            <rect x="${x - 3}" y="${y - 10}" width="8" height="6" rx="1" ry="1" fill="#666" stroke="#444" stroke-width="0.5"/>
+        `,
+        "amalgamaMalEstado": `
+            <circle cx="${x}" cy="${y - 5}" r="12" fill="none" stroke="#FF5656" stroke-width="2" stroke-dasharray="4,4"/>
+            <rect x="${x - 3}" y="${y - 10}" width="8" height="6" rx="1" ry="1" fill="#666" stroke="#444" stroke-width="0.5"/>
+        `,
+
+        "sellante": `
+        <rect x="${x - 9}" y="${y}" width="19" height="9" rx="1" ry="2"
+                fill="rgba(135,206,235,0.4)" stroke="#87CEEB" stroke-width="1"/>
+        `,
+
+        "dienteAusente": `
+            <line x1="${x - r / 2}" y1="${y - r / 2}" x2="${x + r / 2}" y2="${y + r / 2}" stroke="#FF5656" stroke-width="2"/>
+            <line x1="${x + r / 2}" y1="${y - r / 2}" x2="${x - r / 2}" y2="${y + r / 2}" stroke="#FF5656" stroke-width="2"/>
+        `,
+        "otro": `
+            <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#999" stroke-width="2" stroke-dasharray="4,2"/>
+            <text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" fill="#999" font-size="12" font-weight="bold">¿?</text>
+        `
+      }
 
 
-
-
-const arcadaSuperior = document.getElementById('arcada-superior');
-const arcadaInferior = document.getElementById('arcada-inferior');
-const panelInfo = document.getElementById('panel-info');
-const tituloDiente = document.getElementById('titulo-diente');
-const descripcionDiente = document.getElementById('descripcion-diente');
-
-const typeOdontogram=1; //1 is FDI, 2 is Universal
-const typeThooth=2; //1 is kid, 2 is adult
-
-function get_number_tooth(id){
-
-  //first we will see if the patient is a kid
-  if(typeThooth==1){
-    if(typeOdontogram==1){
-      return numersTooth.kid[id].FDI;
+      return activityTheenh[activity] || "";
     }
 
-    return numersTooth.kid[id].Universal;
+
+
+
+    ///
+    const dientes = Array.from({ length: 32 }, (_, i) => ({
+      id: i + 1,
+      nombre: `Diente ${i + 1}`,
+      descripcion: `Descripción del diente ${i + 1}. Aquí puedes agregar información sobre su estado clínico, observaciones o tratamientos.`
+    }));
+    var colorsTheens = {
+      theen: 'white',
+      colorBorder: '#C2C2C2',
+      bone_theen: '#F5F3F4',
+      bone_blak_theen: '#F4F2F3'
+    }
+
+
+
+    const numersTooth = {
+      adult: {
+        // Maxilar superior
+        16: { FDI: 28, Universal: 16 },
+        15: { FDI: 27, Universal: 15 },
+        14: { FDI: 26, Universal: 14 },
+        13: { FDI: 25, Universal: 13 },
+        12: { FDI: 24, Universal: 12 },
+        11: { FDI: 23, Universal: 11 },
+        10: { FDI: 22, Universal: 10 },
+        9: { FDI: 21, Universal: 9 },
+        8: { FDI: 11, Universal: 8 },
+        7: { FDI: 12, Universal: 7 },
+        6: { FDI: 13, Universal: 6 },
+        5: { FDI: 14, Universal: 5 },
+        4: { FDI: 15, Universal: 4 },
+        3: { FDI: 16, Universal: 3 },
+        2: { FDI: 17, Universal: 2 },
+        1: { FDI: 18, Universal: 1 },
+
+        // Mandíbula inferior
+        17: { FDI: 38, Universal: 17 },
+        18: { FDI: 37, Universal: 18 },
+        19: { FDI: 36, Universal: 19 },
+        20: { FDI: 35, Universal: 20 },
+        21: { FDI: 34, Universal: 21 },
+        22: { FDI: 33, Universal: 22 },
+        23: { FDI: 32, Universal: 23 },
+        24: { FDI: 31, Universal: 24 },
+        25: { FDI: 41, Universal: 25 },
+        26: { FDI: 42, Universal: 26 },
+        27: { FDI: 43, Universal: 27 },
+        28: { FDI: 44, Universal: 28 },
+        29: { FDI: 45, Universal: 29 },
+        30: { FDI: 46, Universal: 30 },
+        31: { FDI: 47, Universal: 31 },
+        32: { FDI: 48, Universal: 32 }
+      },
+
+      kid: {
+        // Maxilar superior (primarios, letras A–J)
+        1: { FDI: 55, Universal: 'A' },
+        2: { FDI: 54, Universal: 'B' },
+        3: { FDI: 53, Universal: 'C' },
+        4: { FDI: 52, Universal: 'D' },
+        5: { FDI: 51, Universal: 'E' },
+        6: { FDI: 61, Universal: 'F' },
+        7: { FDI: 62, Universal: 'G' },
+        8: { FDI: 63, Universal: 'H' },
+        9: { FDI: 64, Universal: 'I' },
+        10: { FDI: 65, Universal: 'J' },
+
+        // Mandíbula inferior (primarios, letras K–T)
+        11: { FDI: 85, Universal: 'K' },
+        12: { FDI: 84, Universal: 'L' },
+        13: { FDI: 83, Universal: 'M' },
+        14: { FDI: 82, Universal: 'N' },
+        15: { FDI: 81, Universal: 'O' },
+        16: { FDI: 71, Universal: 'P' },
+        17: { FDI: 72, Universal: 'Q' },
+        18: { FDI: 73, Universal: 'R' },
+        19: { FDI: 74, Universal: 'S' },
+        20: { FDI: 75, Universal: 'T' }
+      }
+    };
+
+
+    //-----------------all the theeth of the mouth------------------
+    //create the fist 8 teeth of the mouth 
+    const svgsDientes = {
+      1: "\n<svg viewBox=\"45 135 38 64\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M64.2753 147.424C57.2797 136.22 54.1597 134.335 54.9151 141.769C55.6706 149.204 57.858 157.283 61.4771 166.007L66.8019 167.199L70.9184 160.346L67.6591 149.881L64.2753 147.424Z\"\n        fill=\"#F4F2F3\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M76.1241 179.29C76.29 170.334 75.6195 163.229 74.1125 157.976C72.005 150.629 69.6182 147.062 68.0683 145.18C66.5183 143.297 62.8123 140.555 63.1369 144.517C63.3002 146.511 65.0562 150.757 65.5166 154.789C66.0671 159.611 65.2726 164.128 64.5919 164.128C63.2123 164.128 63.8894 156.31 61.4425 149.823C59.3798 144.355 54.5071 140.092 52.1722 140.356C49.8373 140.62 54.0026 150.608 53.9575 157.499C53.9039 165.678 53.7485 174.181 53.0546 176.484C52.0879 179.69 59.7777 180.626 76.1241 179.29Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M57.1449 173.704C60.9228 171.63 65.6902 170.717 70.5069 173.704C75.3237 176.691 77.6012 181.331 78.0033 184.465C78.1894 185.916 78.8645 190.748 74.2745 193.275C71.4811 194.812 67.6431 192.727 66.4252 191.74C65.2073 190.753 63.1025 189.242 60.7782 191.74C58.4539 194.237 55.4549 192.252 54.445 191.352C53.4352 190.453 50.8711 188.224 50.8711 184.22C50.8711 180.215 52.1565 176.444 57.1449 173.704Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 2
+        :
+        "\n<svg viewBox=\"90 130 40 70\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M108.416 138.753C108.283 137.579 107.978 136.557 107.5 135.684C106.783 134.375 102.776 127.124 101.355 136.256C100.408 142.344 100.408 146.372 101.355 148.342L105.485 167.307L111.951 168.101L114.562 154.346L108.416 138.753Z\"\n        fill=\"#F4F2F3\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M123.276 184.088C121.656 173.159 120.844 165.162 120.842 160.097C120.838 152.5 116.607 143.84 113.721 139.943C110.835 136.045 107.964 133.804 107.516 137.732C107.268 139.9 110.026 146.895 110.622 154.02C110.85 156.748 111.137 157.224 111.026 161.519C110.915 165.814 108.393 166.05 107.331 161.639C106.992 160.226 105.417 154.765 105.122 149.234C104.865 144.411 105.122 140.88 104.576 138.755C103.689 135.302 100.945 136.867 99.851 138.171C96.2196 142.499 95.6317 151.156 96.421 158.922C97.2103 166.688 98.0414 170.911 97.413 180.877C96.994 187.521 105.615 188.592 123.276 184.088Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M123.944 186.594C124.135 188.07 124.021 194.834 119.32 197.405C116.459 198.97 112.126 196.848 110.878 195.843C109.631 194.839 108.303 193.477 104.289 195.228C101.369 196.502 98.0319 193.492 96.9978 192.577C96.483 192.122 94.1719 188.087 94.9157 184.116C95.6661 180.109 99.4844 176.163 101.893 175.325C104.869 174.289 105.963 175.863 110.367 176.081C113.201 176.221 115.256 175.59 117.625 176.551C123.01 178.736 123.893 186.195 123.944 186.594Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 3
+        :
+        "\n<svg viewBox=\"135 135 40 70\" xmlns=\"http://www.w3.org/2000/svg\">\n        <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n            d=\"M155.912 147.051C154 144.058 152.343 141.368 150.941 138.979C148.837 135.396 145.144 133.351 144.405 138.594C143.913 142.089 144.417 147.315 145.919 154.271L149.275 168.274L153.155 170.415L158.816 168.881L162.532 156.73L155.912 147.051Z\"\n            fill=\"#F4F2F3\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n        <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n            d=\"M167.94 184.395C167.645 179.251 167.497 175.068 167.497 171.847C167.497 167.015 168.741 153.098 164.502 146.962C160.03 140.489 154.218 137.226 154.819 142.669C155.106 145.257 156.434 149.933 156.614 154.307C156.812 159.132 155.836 163.591 155.581 164.479C155.094 166.174 153.117 168.315 151.655 164.889C150.192 161.464 146.168 153.277 144.889 149.175C143.611 145.074 143.048 143.826 142.527 142.362C142.007 140.897 138.605 136.066 137.119 142.362C135.633 148.657 137.712 156.709 138.811 160.695C139.911 164.682 141.459 175.901 140.196 184.977C139.354 191.028 148.602 190.834 167.94 184.395Z\"\n            fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n        <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n            d=\"M150.969 200.092C147.952 203.338 139.764 201.09 138.111 197.529C136.73 194.434 137.544 187.091 140.359 183.202C143.549 178.796 148.073 179.322 149.111 179.337C153.121 179.928 154.646 180.017 159.546 178.831C164.446 177.646 168.429 184.8 168.923 186.124C169.417 187.448 171.177 196.384 167.091 199.89C164.771 201.88 159.077 202.356 156.768 200.251C154.426 198.117 152.511 198.433 150.969 200.092Z\"\n            fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 4
+        :
+        "\n<svg viewBox=\"175 128 40 78\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M204.27 184.51C202.943 171.312 201.923 162.331 201.207 157.569C199.286 144.776 196.837 137.877 196.363 136.871C195.255 134.519 191.522 129.116 190.633 135.433C190.245 138.191 191.131 146.535 190.789 160.463C190.669 165.353 190.009 174.237 188.809 187.114L204.27 184.51Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M192.229 203.346C185.151 200.247 185.921 195.732 186.674 191.483C187.428 187.233 188.5 183.073 191.216 180.418C193.932 177.763 197.907 176.347 201.905 180.418C204.058 182.611 206.715 188.037 207.449 192.949C207.725 194.798 208.133 199.876 205.024 202.218C201.106 205.168 196.196 205.084 192.229 203.346Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 5
+        :
+        "\n<svg viewBox=\"220 137 40 75\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M248.571 190.594C248.461 178.996 248.169 171.007 247.696 166.627C246.267 153.387 243.652 145.907 242.742 144.185C241.201 141.269 239.878 140.329 237.582 140.086C235.881 139.906 232.984 140.909 232.413 144.294C232.066 146.348 232.658 150.288 232.536 156.111C232.46 159.751 232.751 166.243 232.585 175.588C232.527 178.835 232.291 184.48 231.875 192.523L248.571 190.594Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M235.687 208.384C232.522 206.374 229.862 200.861 230.412 195.648C230.67 193.205 232.887 186.64 236.741 184.276C238.09 183.449 241.953 182.381 244.944 185.085C248.564 188.359 250.937 193.288 251.687 198.522C251.954 200.383 251.734 204.278 248.872 207.02C244.444 211.264 239.483 210.794 235.687 208.384Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 6
+        :
+        "\n<svg viewBox=\"263 125 45 89\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M293.581 190.654C291.642 168.023 289.888 153.578 288.321 147.318C287.044 142.218 283.872 134.104 280.982 130.838C278.55 128.091 276.196 129.5 276.537 131.836C276.827 133.825 277.615 143.529 277.67 154.926C277.755 172.822 276.114 194.891 275.707 197.816C275.262 201.007 281.221 198.62 293.581 190.654Z\"\n      fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M280.916 183.623C282.272 182.796 285.813 181.412 288.954 183.812C292.696 186.671 296.214 192.923 296.723 199.316C297.382 207.584 295.975 210.711 292.497 213.207C291.646 213.817 287.999 215.809 283.817 214.756C280.702 213.972 274.779 209.875 274.075 207.537C272.336 201.765 275.004 193.241 275.985 190.782C277.56 186.833 279.704 184.362 280.916 183.623Z\"\n      fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 7
+        :
+        "\n<svg viewBox=\"311 130 40 80\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M336.206 189.746C335.753 179.932 334.48 168.985 332.387 156.904C329.247 138.783 320.528 134.374 319.89 138.112C319.587 139.887 321.6 146.479 322.211 153.806C322.886 161.914 320.472 191.256 321.392 193.835C322.006 195.555 326.944 194.191 336.206 189.746Z\"\n      fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M332.497 182.373C335.937 185.543 338.254 191.54 338.759 197.829C338.881 199.341 339.789 204.593 337.789 207.106C336.017 209.333 331.432 208.93 329.839 208.969C327.106 209.035 324.009 208.688 322.105 206.8C318.522 203.248 319.369 191.924 320.928 188.018C321.55 186.459 323.296 182.868 325.849 181.498C328.264 180.202 331.056 181.045 332.497 182.373Z\"\n      fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 8
+        :
+        "\n<svg viewBox=\"354 130 40 85\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M382.036 192.717C381.192 180.51 379.822 168.757 377.926 157.46C376.738 150.378 374.059 144.678 371.62 141.93C368.221 138.101 365.899 139.205 365.443 143.52C365.093 146.828 365.908 155.719 365.641 165.182C365.265 178.551 363.125 193.062 363.648 194.58C364.245 196.308 370.374 195.687 382.036 192.717Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n    <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M368.357 182.985C369.663 182.167 373.673 180.798 376.698 183.172C377.403 183.724 381.49 186.961 382.868 192.752C384.032 197.639 386.34 211.066 384.424 212.424C381.984 214.154 366.661 214.073 363.703 211.827C362.513 210.924 361.665 206.324 361.789 201.577C361.928 196.266 363.133 190.771 363.408 190.064C364.925 186.159 367.19 183.716 368.357 182.985Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 9
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"354 130 40 85\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M382.036 192.717C381.192 180.51 379.822 168.757 377.926 157.46C376.738 150.378 374.059 144.678 371.62 141.93C368.221 138.101 365.899 139.205 365.443 143.52C365.093 146.828 365.908 155.719 365.641 165.182C365.265 178.551 363.125 193.062 363.648 194.58C364.245 196.308 370.374 195.687 382.036 192.717Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n    <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M368.357 182.985C369.663 182.167 373.673 180.798 376.698 183.172C377.403 183.724 381.49 186.961 382.868 192.752C384.032 197.639 386.34 211.066 384.424 212.424C381.984 214.154 366.661 214.073 363.703 211.827C362.513 210.924 361.665 206.324 361.789 201.577C361.928 196.266 363.133 190.771 363.408 190.064C364.925 186.159 367.19 183.716 368.357 182.985Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 10
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"311 130 40 80\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M336.206 189.746C335.753 179.932 334.48 168.985 332.387 156.904C329.247 138.783 320.528 134.374 319.89 138.112C319.587 139.887 321.6 146.479 322.211 153.806C322.886 161.914 320.472 191.256 321.392 193.835C322.006 195.555 326.944 194.191 336.206 189.746Z\"\n      fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M332.497 182.373C335.937 185.543 338.254 191.54 338.759 197.829C338.881 199.341 339.789 204.593 337.789 207.106C336.017 209.333 331.432 208.93 329.839 208.969C327.106 209.035 324.009 208.688 322.105 206.8C318.522 203.248 319.369 191.924 320.928 188.018C321.55 186.459 323.296 182.868 325.849 181.498C328.264 180.202 331.056 181.045 332.497 182.373Z\"\n      fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 11
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"263 125 45 89\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M293.581 190.654C291.642 168.023 289.888 153.578 288.321 147.318C287.044 142.218 283.872 134.104 280.982 130.838C278.55 128.091 276.196 129.5 276.537 131.836C276.827 133.825 277.615 143.529 277.67 154.926C277.755 172.822 276.114 194.891 275.707 197.816C275.262 201.007 281.221 198.62 293.581 190.654Z\"\n      fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M280.916 183.623C282.272 182.796 285.813 181.412 288.954 183.812C292.696 186.671 296.214 192.923 296.723 199.316C297.382 207.584 295.975 210.711 292.497 213.207C291.646 213.817 287.999 215.809 283.817 214.756C280.702 213.972 274.779 209.875 274.075 207.537C272.336 201.765 275.004 193.241 275.985 190.782C277.56 186.833 279.704 184.362 280.916 183.623Z\"\n      fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 12
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"220 137 40 75\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M248.571 190.594C248.461 178.996 248.169 171.007 247.696 166.627C246.267 153.387 243.652 145.907 242.742 144.185C241.201 141.269 239.878 140.329 237.582 140.086C235.881 139.906 232.984 140.909 232.413 144.294C232.066 146.348 232.658 150.288 232.536 156.111C232.46 159.751 232.751 166.243 232.585 175.588C232.527 178.835 232.291 184.48 231.875 192.523L248.571 190.594Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M235.687 208.384C232.522 206.374 229.862 200.861 230.412 195.648C230.67 193.205 232.887 186.64 236.741 184.276C238.09 183.449 241.953 182.381 244.944 185.085C248.564 188.359 250.937 193.288 251.687 198.522C251.954 200.383 251.734 204.278 248.872 207.02C244.444 211.264 239.483 210.794 235.687 208.384Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 13
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"175 128 40 78\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M204.27 184.51C202.943 171.312 201.923 162.331 201.207 157.569C199.286 144.776 196.837 137.877 196.363 136.871C195.255 134.519 191.522 129.116 190.633 135.433C190.245 138.191 191.131 146.535 190.789 160.463C190.669 165.353 190.009 174.237 188.809 187.114L204.27 184.51Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M192.229 203.346C185.151 200.247 185.921 195.732 186.674 191.483C187.428 187.233 188.5 183.073 191.216 180.418C193.932 177.763 197.907 176.347 201.905 180.418C204.058 182.611 206.715 188.037 207.449 192.949C207.725 194.798 208.133 199.876 205.024 202.218C201.106 205.168 196.196 205.084 192.229 203.346Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 14
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"135 135 40 70\" xmlns=\"http://www.w3.org/2000/svg\">\n        <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n            d=\"M155.912 147.051C154 144.058 152.343 141.368 150.941 138.979C148.837 135.396 145.144 133.351 144.405 138.594C143.913 142.089 144.417 147.315 145.919 154.271L149.275 168.274L153.155 170.415L158.816 168.881L162.532 156.73L155.912 147.051Z\"\n            fill=\"#F4F2F3\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n        <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n            d=\"M167.94 184.395C167.645 179.251 167.497 175.068 167.497 171.847C167.497 167.015 168.741 153.098 164.502 146.962C160.03 140.489 154.218 137.226 154.819 142.669C155.106 145.257 156.434 149.933 156.614 154.307C156.812 159.132 155.836 163.591 155.581 164.479C155.094 166.174 153.117 168.315 151.655 164.889C150.192 161.464 146.168 153.277 144.889 149.175C143.611 145.074 143.048 143.826 142.527 142.362C142.007 140.897 138.605 136.066 137.119 142.362C135.633 148.657 137.712 156.709 138.811 160.695C139.911 164.682 141.459 175.901 140.196 184.977C139.354 191.028 148.602 190.834 167.94 184.395Z\"\n            fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n        <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n            d=\"M150.969 200.092C147.952 203.338 139.764 201.09 138.111 197.529C136.73 194.434 137.544 187.091 140.359 183.202C143.549 178.796 148.073 179.322 149.111 179.337C153.121 179.928 154.646 180.017 159.546 178.831C164.446 177.646 168.429 184.8 168.923 186.124C169.417 187.448 171.177 196.384 167.091 199.89C164.771 201.88 159.077 202.356 156.768 200.251C154.426 198.117 152.511 198.433 150.969 200.092Z\"\n            fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 15
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"90 130 40 70\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M108.416 138.753C108.283 137.579 107.978 136.557 107.5 135.684C106.783 134.375 102.776 127.124 101.355 136.256C100.408 142.344 100.408 146.372 101.355 148.342L105.485 167.307L111.951 168.101L114.562 154.346L108.416 138.753Z\"\n        fill=\"#F4F2F3\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M123.276 184.088C121.656 173.159 120.844 165.162 120.842 160.097C120.838 152.5 116.607 143.84 113.721 139.943C110.835 136.045 107.964 133.804 107.516 137.732C107.268 139.9 110.026 146.895 110.622 154.02C110.85 156.748 111.137 157.224 111.026 161.519C110.915 165.814 108.393 166.05 107.331 161.639C106.992 160.226 105.417 154.765 105.122 149.234C104.865 144.411 105.122 140.88 104.576 138.755C103.689 135.302 100.945 136.867 99.851 138.171C96.2196 142.499 95.6317 151.156 96.421 158.922C97.2103 166.688 98.0414 170.911 97.413 180.877C96.994 187.521 105.615 188.592 123.276 184.088Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M123.944 186.594C124.135 188.07 124.021 194.834 119.32 197.405C116.459 198.97 112.126 196.848 110.878 195.843C109.631 194.839 108.303 193.477 104.289 195.228C101.369 196.502 98.0319 193.492 96.9978 192.577C96.483 192.122 94.1719 188.087 94.9157 184.116C95.6661 180.109 99.4844 176.163 101.893 175.325C104.869 174.289 105.963 175.863 110.367 176.081C113.201 176.221 115.256 175.59 117.625 176.551C123.01 178.736 123.893 186.195 123.944 186.594Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 16
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"45 135 38 64\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M64.2753 147.424C57.2797 136.22 54.1597 134.335 54.9151 141.769C55.6706 149.204 57.858 157.283 61.4771 166.007L66.8019 167.199L70.9184 160.346L67.6591 149.881L64.2753 147.424Z\"\n        fill=\"#F4F2F3\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M76.1241 179.29C76.29 170.334 75.6195 163.229 74.1125 157.976C72.005 150.629 69.6182 147.062 68.0683 145.18C66.5183 143.297 62.8123 140.555 63.1369 144.517C63.3002 146.511 65.0562 150.757 65.5166 154.789C66.0671 159.611 65.2726 164.128 64.5919 164.128C63.2123 164.128 63.8894 156.31 61.4425 149.823C59.3798 144.355 54.5071 140.092 52.1722 140.356C49.8373 140.62 54.0026 150.608 53.9575 157.499C53.9039 165.678 53.7485 174.181 53.0546 176.484C52.0879 179.69 59.7777 180.626 76.1241 179.29Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M57.1449 173.704C60.9228 171.63 65.6902 170.717 70.5069 173.704C75.3237 176.691 77.6012 181.331 78.0033 184.465C78.1894 185.916 78.8645 190.748 74.2745 193.275C71.4811 194.812 67.6431 192.727 66.4252 191.74C65.2073 190.753 63.1025 189.242 60.7782 191.74C58.4539 194.237 55.4549 192.252 54.445 191.352C53.4352 190.453 50.8711 188.224 50.8711 184.22C50.8711 180.215 52.1565 176.444 57.1449 173.704Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 17
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"45 135 38 64\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M64.2753 147.424C57.2797 136.22 54.1597 134.335 54.9151 141.769C55.6706 149.204 57.858 157.283 61.4771 166.007L66.8019 167.199L70.9184 160.346L67.6591 149.881L64.2753 147.424Z\"\n        fill=\"#F4F2F3\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M76.1241 179.29C76.29 170.334 75.6195 163.229 74.1125 157.976C72.005 150.629 69.6182 147.062 68.0683 145.18C66.5183 143.297 62.8123 140.555 63.1369 144.517C63.3002 146.511 65.0562 150.757 65.5166 154.789C66.0671 159.611 65.2726 164.128 64.5919 164.128C63.2123 164.128 63.8894 156.31 61.4425 149.823C59.3798 144.355 54.5071 140.092 52.1722 140.356C49.8373 140.62 54.0026 150.608 53.9575 157.499C53.9039 165.678 53.7485 174.181 53.0546 176.484C52.0879 179.69 59.7777 180.626 76.1241 179.29Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M57.1449 173.704C60.9228 171.63 65.6902 170.717 70.5069 173.704C75.3237 176.691 77.6012 181.331 78.0033 184.465C78.1894 185.916 78.8645 190.748 74.2745 193.275C71.4811 194.812 67.6431 192.727 66.4252 191.74C65.2073 190.753 63.1025 189.242 60.7782 191.74C58.4539 194.237 55.4549 192.252 54.445 191.352C53.4352 190.453 50.8711 188.224 50.8711 184.22C50.8711 180.215 52.1565 176.444 57.1449 173.704Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 18
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"90 130 40 70\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M108.416 138.753C108.283 137.579 107.978 136.557 107.5 135.684C106.783 134.375 102.776 127.124 101.355 136.256C100.408 142.344 100.408 146.372 101.355 148.342L105.485 167.307L111.951 168.101L114.562 154.346L108.416 138.753Z\"\n        fill=\"#F4F2F3\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M123.276 184.088C121.656 173.159 120.844 165.162 120.842 160.097C120.838 152.5 116.607 143.84 113.721 139.943C110.835 136.045 107.964 133.804 107.516 137.732C107.268 139.9 110.026 146.895 110.622 154.02C110.85 156.748 111.137 157.224 111.026 161.519C110.915 165.814 108.393 166.05 107.331 161.639C106.992 160.226 105.417 154.765 105.122 149.234C104.865 144.411 105.122 140.88 104.576 138.755C103.689 135.302 100.945 136.867 99.851 138.171C96.2196 142.499 95.6317 151.156 96.421 158.922C97.2103 166.688 98.0414 170.911 97.413 180.877C96.994 187.521 105.615 188.592 123.276 184.088Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M123.944 186.594C124.135 188.07 124.021 194.834 119.32 197.405C116.459 198.97 112.126 196.848 110.878 195.843C109.631 194.839 108.303 193.477 104.289 195.228C101.369 196.502 98.0319 193.492 96.9978 192.577C96.483 192.122 94.1719 188.087 94.9157 184.116C95.6661 180.109 99.4844 176.163 101.893 175.325C104.869 174.289 105.963 175.863 110.367 176.081C113.201 176.221 115.256 175.59 117.625 176.551C123.01 178.736 123.893 186.195 123.944 186.594Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 19
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"135 135 40 70\" xmlns=\"http://www.w3.org/2000/svg\">\n        <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n            d=\"M155.912 147.051C154 144.058 152.343 141.368 150.941 138.979C148.837 135.396 145.144 133.351 144.405 138.594C143.913 142.089 144.417 147.315 145.919 154.271L149.275 168.274L153.155 170.415L158.816 168.881L162.532 156.73L155.912 147.051Z\"\n            fill=\"#F4F2F3\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n        <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n            d=\"M167.94 184.395C167.645 179.251 167.497 175.068 167.497 171.847C167.497 167.015 168.741 153.098 164.502 146.962C160.03 140.489 154.218 137.226 154.819 142.669C155.106 145.257 156.434 149.933 156.614 154.307C156.812 159.132 155.836 163.591 155.581 164.479C155.094 166.174 153.117 168.315 151.655 164.889C150.192 161.464 146.168 153.277 144.889 149.175C143.611 145.074 143.048 143.826 142.527 142.362C142.007 140.897 138.605 136.066 137.119 142.362C135.633 148.657 137.712 156.709 138.811 160.695C139.911 164.682 141.459 175.901 140.196 184.977C139.354 191.028 148.602 190.834 167.94 184.395Z\"\n            fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n        <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n            d=\"M150.969 200.092C147.952 203.338 139.764 201.09 138.111 197.529C136.73 194.434 137.544 187.091 140.359 183.202C143.549 178.796 148.073 179.322 149.111 179.337C153.121 179.928 154.646 180.017 159.546 178.831C164.446 177.646 168.429 184.8 168.923 186.124C169.417 187.448 171.177 196.384 167.091 199.89C164.771 201.88 159.077 202.356 156.768 200.251C154.426 198.117 152.511 198.433 150.969 200.092Z\"\n            fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 20
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"175 128 40 78\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M204.27 184.51C202.943 171.312 201.923 162.331 201.207 157.569C199.286 144.776 196.837 137.877 196.363 136.871C195.255 134.519 191.522 129.116 190.633 135.433C190.245 138.191 191.131 146.535 190.789 160.463C190.669 165.353 190.009 174.237 188.809 187.114L204.27 184.51Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M192.229 203.346C185.151 200.247 185.921 195.732 186.674 191.483C187.428 187.233 188.5 183.073 191.216 180.418C193.932 177.763 197.907 176.347 201.905 180.418C204.058 182.611 206.715 188.037 207.449 192.949C207.725 194.798 208.133 199.876 205.024 202.218C201.106 205.168 196.196 205.084 192.229 203.346Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 21
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"220 137 40 75\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M248.571 190.594C248.461 178.996 248.169 171.007 247.696 166.627C246.267 153.387 243.652 145.907 242.742 144.185C241.201 141.269 239.878 140.329 237.582 140.086C235.881 139.906 232.984 140.909 232.413 144.294C232.066 146.348 232.658 150.288 232.536 156.111C232.46 159.751 232.751 166.243 232.585 175.588C232.527 178.835 232.291 184.48 231.875 192.523L248.571 190.594Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M235.687 208.384C232.522 206.374 229.862 200.861 230.412 195.648C230.67 193.205 232.887 186.64 236.741 184.276C238.09 183.449 241.953 182.381 244.944 185.085C248.564 188.359 250.937 193.288 251.687 198.522C251.954 200.383 251.734 204.278 248.872 207.02C244.444 211.264 239.483 210.794 235.687 208.384Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 22
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"263 125 45 89\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M293.581 190.654C291.642 168.023 289.888 153.578 288.321 147.318C287.044 142.218 283.872 134.104 280.982 130.838C278.55 128.091 276.196 129.5 276.537 131.836C276.827 133.825 277.615 143.529 277.67 154.926C277.755 172.822 276.114 194.891 275.707 197.816C275.262 201.007 281.221 198.62 293.581 190.654Z\"\n      fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M280.916 183.623C282.272 182.796 285.813 181.412 288.954 183.812C292.696 186.671 296.214 192.923 296.723 199.316C297.382 207.584 295.975 210.711 292.497 213.207C291.646 213.817 287.999 215.809 283.817 214.756C280.702 213.972 274.779 209.875 274.075 207.537C272.336 201.765 275.004 193.241 275.985 190.782C277.56 186.833 279.704 184.362 280.916 183.623Z\"\n      fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 23
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"311 130 40 80\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M336.206 189.746C335.753 179.932 334.48 168.985 332.387 156.904C329.247 138.783 320.528 134.374 319.89 138.112C319.587 139.887 321.6 146.479 322.211 153.806C322.886 161.914 320.472 191.256 321.392 193.835C322.006 195.555 326.944 194.191 336.206 189.746Z\"\n      fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M332.497 182.373C335.937 185.543 338.254 191.54 338.759 197.829C338.881 199.341 339.789 204.593 337.789 207.106C336.017 209.333 331.432 208.93 329.839 208.969C327.106 209.035 324.009 208.688 322.105 206.8C318.522 203.248 319.369 191.924 320.928 188.018C321.55 186.459 323.296 182.868 325.849 181.498C328.264 180.202 331.056 181.045 332.497 182.373Z\"\n      fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 24
+        :
+        "\n<svg transform=\" scale(-1,1)\" viewBox=\"354 130 40 85\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M382.036 192.717C381.192 180.51 379.822 168.757 377.926 157.46C376.738 150.378 374.059 144.678 371.62 141.93C368.221 138.101 365.899 139.205 365.443 143.52C365.093 146.828 365.908 155.719 365.641 165.182C365.265 178.551 363.125 193.062 363.648 194.58C364.245 196.308 370.374 195.687 382.036 192.717Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n    <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M368.357 182.985C369.663 182.167 373.673 180.798 376.698 183.172C377.403 183.724 381.49 186.961 382.868 192.752C384.032 197.639 386.34 211.066 384.424 212.424C381.984 214.154 366.661 214.073 363.703 211.827C362.513 210.924 361.665 206.324 361.789 201.577C361.928 196.266 363.133 190.771 363.408 190.064C364.925 186.159 367.19 183.716 368.357 182.985Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 25
+        :
+        "\n<svg transform=\"\" viewBox=\"354 130 40 85\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M382.036 192.717C381.192 180.51 379.822 168.757 377.926 157.46C376.738 150.378 374.059 144.678 371.62 141.93C368.221 138.101 365.899 139.205 365.443 143.52C365.093 146.828 365.908 155.719 365.641 165.182C365.265 178.551 363.125 193.062 363.648 194.58C364.245 196.308 370.374 195.687 382.036 192.717Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n    <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M368.357 182.985C369.663 182.167 373.673 180.798 376.698 183.172C377.403 183.724 381.49 186.961 382.868 192.752C384.032 197.639 386.34 211.066 384.424 212.424C381.984 214.154 366.661 214.073 363.703 211.827C362.513 210.924 361.665 206.324 361.789 201.577C361.928 196.266 363.133 190.771 363.408 190.064C364.925 186.159 367.19 183.716 368.357 182.985Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 26
+        :
+        "\n<svg transform=\"\" viewBox=\"311 130 40 80\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M336.206 189.746C335.753 179.932 334.48 168.985 332.387 156.904C329.247 138.783 320.528 134.374 319.89 138.112C319.587 139.887 321.6 146.479 322.211 153.806C322.886 161.914 320.472 191.256 321.392 193.835C322.006 195.555 326.944 194.191 336.206 189.746Z\"\n      fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M332.497 182.373C335.937 185.543 338.254 191.54 338.759 197.829C338.881 199.341 339.789 204.593 337.789 207.106C336.017 209.333 331.432 208.93 329.839 208.969C327.106 209.035 324.009 208.688 322.105 206.8C318.522 203.248 319.369 191.924 320.928 188.018C321.55 186.459 323.296 182.868 325.849 181.498C328.264 180.202 331.056 181.045 332.497 182.373Z\"\n      fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 27
+        :
+        "\n<svg transform=\"\" viewBox=\"263 125 45 89\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M293.581 190.654C291.642 168.023 289.888 153.578 288.321 147.318C287.044 142.218 283.872 134.104 280.982 130.838C278.55 128.091 276.196 129.5 276.537 131.836C276.827 133.825 277.615 143.529 277.67 154.926C277.755 172.822 276.114 194.891 275.707 197.816C275.262 201.007 281.221 198.62 293.581 190.654Z\"\n      fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n      d=\"M280.916 183.623C282.272 182.796 285.813 181.412 288.954 183.812C292.696 186.671 296.214 192.923 296.723 199.316C297.382 207.584 295.975 210.711 292.497 213.207C291.646 213.817 287.999 215.809 283.817 214.756C280.702 213.972 274.779 209.875 274.075 207.537C272.336 201.765 275.004 193.241 275.985 190.782C277.56 186.833 279.704 184.362 280.916 183.623Z\"\n      fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 28
+        :
+        "\n<svg transform=\"\" viewBox=\"220 137 40 75\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M248.571 190.594C248.461 178.996 248.169 171.007 247.696 166.627C246.267 153.387 243.652 145.907 242.742 144.185C241.201 141.269 239.878 140.329 237.582 140.086C235.881 139.906 232.984 140.909 232.413 144.294C232.066 146.348 232.658 150.288 232.536 156.111C232.46 159.751 232.751 166.243 232.585 175.588C232.527 178.835 232.291 184.48 231.875 192.523L248.571 190.594Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M235.687 208.384C232.522 206.374 229.862 200.861 230.412 195.648C230.67 193.205 232.887 186.64 236.741 184.276C238.09 183.449 241.953 182.381 244.944 185.085C248.564 188.359 250.937 193.288 251.687 198.522C251.954 200.383 251.734 204.278 248.872 207.02C244.444 211.264 239.483 210.794 235.687 208.384Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 29
+        :
+        "\n<svg transform=\"\" viewBox=\"175 128 40 78\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M204.27 184.51C202.943 171.312 201.923 162.331 201.207 157.569C199.286 144.776 196.837 137.877 196.363 136.871C195.255 134.519 191.522 129.116 190.633 135.433C190.245 138.191 191.131 146.535 190.789 160.463C190.669 165.353 190.009 174.237 188.809 187.114L204.27 184.51Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M192.229 203.346C185.151 200.247 185.921 195.732 186.674 191.483C187.428 187.233 188.5 183.073 191.216 180.418C193.932 177.763 197.907 176.347 201.905 180.418C204.058 182.611 206.715 188.037 207.449 192.949C207.725 194.798 208.133 199.876 205.024 202.218C201.106 205.168 196.196 205.084 192.229 203.346Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 30
+        :
+        "\n<svg transform=\"\" viewBox=\"135 135 40 70\" xmlns=\"http://www.w3.org/2000/svg\">\n        <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n            d=\"M155.912 147.051C154 144.058 152.343 141.368 150.941 138.979C148.837 135.396 145.144 133.351 144.405 138.594C143.913 142.089 144.417 147.315 145.919 154.271L149.275 168.274L153.155 170.415L158.816 168.881L162.532 156.73L155.912 147.051Z\"\n            fill=\"#F4F2F3\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n        <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n            d=\"M167.94 184.395C167.645 179.251 167.497 175.068 167.497 171.847C167.497 167.015 168.741 153.098 164.502 146.962C160.03 140.489 154.218 137.226 154.819 142.669C155.106 145.257 156.434 149.933 156.614 154.307C156.812 159.132 155.836 163.591 155.581 164.479C155.094 166.174 153.117 168.315 151.655 164.889C150.192 161.464 146.168 153.277 144.889 149.175C143.611 145.074 143.048 143.826 142.527 142.362C142.007 140.897 138.605 136.066 137.119 142.362C135.633 148.657 137.712 156.709 138.811 160.695C139.911 164.682 141.459 175.901 140.196 184.977C139.354 191.028 148.602 190.834 167.94 184.395Z\"\n            fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n        <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n            d=\"M150.969 200.092C147.952 203.338 139.764 201.09 138.111 197.529C136.73 194.434 137.544 187.091 140.359 183.202C143.549 178.796 148.073 179.322 149.111 179.337C153.121 179.928 154.646 180.017 159.546 178.831C164.446 177.646 168.429 184.8 168.923 186.124C169.417 187.448 171.177 196.384 167.091 199.89C164.771 201.88 159.077 202.356 156.768 200.251C154.426 198.117 152.511 198.433 150.969 200.092Z\"\n            fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 31
+        :
+        "\n<svg transform=\"\" viewBox=\"90 130 40 70\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M108.416 138.753C108.283 137.579 107.978 136.557 107.5 135.684C106.783 134.375 102.776 127.124 101.355 136.256C100.408 142.344 100.408 146.372 101.355 148.342L105.485 167.307L111.951 168.101L114.562 154.346L108.416 138.753Z\"\n        fill=\"#F4F2F3\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M123.276 184.088C121.656 173.159 120.844 165.162 120.842 160.097C120.838 152.5 116.607 143.84 113.721 139.943C110.835 136.045 107.964 133.804 107.516 137.732C107.268 139.9 110.026 146.895 110.622 154.02C110.85 156.748 111.137 157.224 111.026 161.519C110.915 165.814 108.393 166.05 107.331 161.639C106.992 160.226 105.417 154.765 105.122 149.234C104.865 144.411 105.122 140.88 104.576 138.755C103.689 135.302 100.945 136.867 99.851 138.171C96.2196 142.499 95.6317 151.156 96.421 158.922C97.2103 166.688 98.0414 170.911 97.413 180.877C96.994 187.521 105.615 188.592 123.276 184.088Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M123.944 186.594C124.135 188.07 124.021 194.834 119.32 197.405C116.459 198.97 112.126 196.848 110.878 195.843C109.631 194.839 108.303 193.477 104.289 195.228C101.369 196.502 98.0319 193.492 96.9978 192.577C96.483 192.122 94.1719 188.087 94.9157 184.116C95.6661 180.109 99.4844 176.163 101.893 175.325C104.869 174.289 105.963 175.863 110.367 176.081C113.201 176.221 115.256 175.59 117.625 176.551C123.01 178.736 123.893 186.195 123.944 186.594Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+      , 32
+        :
+        "\n<svg transform=\"\" viewBox=\"45 135 38 64\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M64.2753 147.424C57.2797 136.22 54.1597 134.335 54.9151 141.769C55.6706 149.204 57.858 157.283 61.4771 166.007L66.8019 167.199L70.9184 160.346L67.6591 149.881L64.2753 147.424Z\"\n        fill=\"#F4F2F3\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M76.1241 179.29C76.29 170.334 75.6195 163.229 74.1125 157.976C72.005 150.629 69.6182 147.062 68.0683 145.18C66.5183 143.297 62.8123 140.555 63.1369 144.517C63.3002 146.511 65.0562 150.757 65.5166 154.789C66.0671 159.611 65.2726 164.128 64.5919 164.128C63.2123 164.128 63.8894 156.31 61.4425 149.823C59.3798 144.355 54.5071 140.092 52.1722 140.356C49.8373 140.62 54.0026 150.608 53.9575 157.499C53.9039 165.678 53.7485 174.181 53.0546 176.484C52.0879 179.69 59.7777 180.626 76.1241 179.29Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M57.1449 173.704C60.9228 171.63 65.6902 170.717 70.5069 173.704C75.3237 176.691 77.6012 181.331 78.0033 184.465C78.1894 185.916 78.8645 190.748 74.2745 193.275C71.4811 194.812 67.6431 192.727 66.4252 191.74C65.2073 190.753 63.1025 189.242 60.7782 191.74C58.4539 194.237 55.4549 192.252 54.445 191.352C53.4352 190.453 50.8711 188.224 50.8711 184.22C50.8711 180.215 52.1565 176.444 57.1449 173.704Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
+    }
+
+
+    const arcadaSuperior = document.getElementById('arcada-superior');
+    const arcadaInferior = document.getElementById('arcada-inferior');
+    const panelInfo = document.getElementById('panel-info');
+    const tituloDiente = document.getElementById('titulo-diente');
+    const descripcionDiente = document.getElementById('descripcion-diente');
+
+    const typeOdontogram = 1; //1 is FDI, 2 is Universal
+    const typeThooth = 2; //1 is kid, 2 is adult
+
+    function get_number_tooth(id) {
+
+      //first we will see if the patient is a kid
+      if (typeThooth == 1) {
+        if (typeOdontogram == 1) {
+          return numersTooth.kid[id].FDI;
+        }
+
+        return numersTooth.kid[id].Universal;
+      }
+
+
+      //if the patient is an adult we will to get the type of tooth
+      if (typeOdontogram == 1) {
+        return numersTooth.adult[id].FDI;
+      }
+
+      return numersTooth.adult[id].Universal;
+
+      //return numersTooth.adult[id].FDI;
+    }
+
+
+    window.arcadaSuperior = arcadaSuperior;
+    window.arcadaInferior = arcadaInferior;
+    window.panelInfo = panelInfo;
+    window.tituloDiente = tituloDiente;
+    window.descripcionDiente = descripcionDiente;
+    window.svgsDientes = svgsDientes;
+    window.dientes = dientes;
+    window.get_number_tooth = get_number_tooth;
+    window.get_svg_activity = get_svg_activity;
+
+    // ===== CREATE THEETH =====
+    const dientesMap = new Map();
+    dientes.forEach(diente => {
+      const div = document.createElement('div');
+      div.classList.add('diente');
+      div.title = diente.nombre;
+
+      const num = document.createElement('div');
+      num.classList.add('numero-diente');
+      num.textContent = get_number_tooth(diente.id);
+      div.appendChild(num);
+
+      const dibujo = crearDibujoDiente(diente.id);
+      div.appendChild(dibujo);
+
+      div.addEventListener('click', () => mostrarInfo(diente.id));
+      dientesMap.set(diente.id, div);
+
+      if (diente.id <= 16) arcadaSuperior.appendChild(div);
+      else arcadaInferior.appendChild(div);
+    });
+
+
+    window.dientesMap = dientesMap;
+  })();
+
+
+
+
+
+  // ===== FUNCIONES =====
+  function crearDibujoDiente(id) {
+    const container = document.createElement('div');
+    container.classList.add('diente-container');
+
+    // Insertar el SVG correspondiente
+    container.innerHTML = svgsDientes[id] || '<div>Diente no disponible</div>';
+
+    return container;
   }
 
-  
-  //if the patient is an adult we will to get the type of tooth
-  if(typeOdontogram==1){
-    return numersTooth.adult[id].FDI;
-  }
-  
-  return numersTooth.adult[id].Universal;
+  function mostrarInfo(dienteId) {
+    if (dienteId < 1) {
+      dienteId = 32;
+    }
 
-  //return numersTooth.adult[id].FDI;
-}
+    if (dienteId > 32) {
+      dienteId = 1;
+    }
 
+    const div = window.dientesMap.get(dienteId);
+    document.querySelectorAll('.diente').forEach(d => d.classList.remove('activo'));
+    div.classList.add('activo');
 
-window.arcadaSuperior=arcadaSuperior;
-window.arcadaInferior=arcadaInferior;
-window.panelInfo=panelInfo;
-window.tituloDiente=tituloDiente;
-window.descripcionDiente=descripcionDiente;
-window.svgsDientes=svgsDientes;
-window.dientes=dientes;
-window.get_number_tooth=get_number_tooth;
-
-// ===== CREATE THEETH =====
-const dientesMap = new Map();
-dientes.forEach(diente => {
-  const div = document.createElement('div');
-  div.classList.add('diente');
-  div.title = diente.nombre;
-
-  const num = document.createElement('div');
-  num.classList.add('numero-diente');
-  num.textContent = get_number_tooth(diente.id);
-  div.appendChild(num);
-
-  const dibujo = crearDibujoDiente(diente.id);
-  div.appendChild(dibujo);
-
-  div.addEventListener('click', () => mostrarInfo(diente.id));
-  dientesMap.set(diente.id, div);
-
-  if (diente.id <= 16) arcadaSuperior.appendChild(div);
-  else arcadaInferior.appendChild(div);
-});
-
-
-window.dientesMap=dientesMap;
-})();
-
-
-
-
-
-// ===== FUNCIONES =====
-function crearDibujoDiente(id) {
-  const container = document.createElement('div');
-  container.classList.add('diente-container');
-
-  // Insertar el SVG correspondiente
-  container.innerHTML = svgsDientes[id] || '<div>Diente no disponible</div>';
-
-  return container;
-}
-
-function mostrarInfo(dienteId) {
-  if (dienteId<1){
-    dienteId=32;
+    // Limpiar y obtener nueva información
+    get_data_theen(dienteId);
+    panelInfo.classList.remove('hidden');
+    if (window.innerWidth <= 768) panelInfo.classList.add('visible');
   }
 
-  if(dienteId>32){
-    dienteId=1;
-  }
-
-  const div=window.dientesMap.get(dienteId);
-  document.querySelectorAll('.diente').forEach(d => d.classList.remove('activo'));
-  div.classList.add('activo');
-
-  // Limpiar y obtener nueva información
-  get_data_theen(dienteId);
-  panelInfo.classList.remove('hidden');
-  if(window.innerWidth <= 768) panelInfo.classList.add('visible');
-}
 
 
 
@@ -849,24 +1001,24 @@ function mostrarInfo(dienteId) {
 
 
 
+  // ===== NUEVA FUNCIÓN =====
+  function get_data_theen(dienteId) {
+    if (dienteId < 1) {
+      dienteId = 32;
+    }
 
-// ===== NUEVA FUNCIÓN =====
-function get_data_theen(dienteId) {
-  if (dienteId<1){
-    dienteId=32;
-  }
+    if (dienteId > 32) {
+      dienteId = 1;
+    }
 
-  if(dienteId>32){
-    dienteId=1;
-  }
-
-  const panel = document.getElementById('panel-info');
-  panel.innerHTML = `
+    const panel = document.getElementById('panel-info');
+    panel.innerHTML = `
 <div class="info-diente">
+  <h2>Diente ${window.get_number_tooth(dienteId)}</h2>
   <div class="tooth-navigation">
-    <button id="prev-tooth" onclick="mostrarInfo(${dienteId-1})"><i class="fi fi-rr-angle-left"></i></button>
-    <h2>Diente ${window.get_number_tooth(dienteId)}</h2>
-    <button id="next-tooth" onclick="mostrarInfo(${dienteId+1})"><i class="fi fi-rr-angle-right"></i></button>
+    <button id="prev-tooth" onclick="mostrarInfo(${dienteId - 1})"><i class="fi fi-rr-angle-left"></i></button>
+    <div class="container-draw-tooth">${window.svgsDientes[dienteId]}</div>
+    <button id="next-tooth" onclick="mostrarInfo(${dienteId + 1})"><i class="fi fi-rr-angle-right"></i></button>
   </div>
   <div class="row">
     <div class="col">
@@ -898,14 +1050,7 @@ function get_data_theen(dienteId) {
 
   <!-- Estado general -->
   <div class="estado-general">
-    <h3>Estado del diente</h3>
-    <plus-select id="estado-${dienteId}">
-      <option value="sano">Sano</option>
-      <option value="caries">Caries</option>
-      <option value="restaurado">Restaurado</option>
-      <option value="endodoncia">Endodoncia</option>
-      <option value="extraido">Extraído</option>
-    </plus-select>
+    <show-more text='Estado del diente' onclick='window.show_information_thoot(${dienteId})'></show-more>
   </div>
 
   <!-- Detalle por cara -->
@@ -959,57 +1104,185 @@ function get_data_theen(dienteId) {
 </div>
   `;
 
-  // Añadir interacción visual (clic para resaltar zonas)
-  panel.querySelectorAll('.cara').forEach(cara => {
-    cara.addEventListener('click', () => {
-      cara.classList.toggle('activa');
-    });
-  });
-
-document.querySelectorAll('.caries-nivel').forEach(nivel => {
-  nivel.addEventListener('click', () => {
-    const niveles = Array.from(document.querySelectorAll('.caries-nivel'));
-    const index = niveles.indexOf(nivel);
-
-    // Si la capa ya estaba activa → deseleccionamos todo
-    if (nivel.classList.contains('activa')) {
-      niveles.forEach(n => {
-        n.classList.remove('activa');
-        n.classList.remove('infectada');
+    // Añadir interacción visual (clic para resaltar zonas)
+    panel.querySelectorAll('.cara').forEach(cara => {
+      cara.addEventListener('click', () => {
+        cara.classList.toggle('activa');
       });
+    });
+
+    document.querySelectorAll('.caries-nivel').forEach(nivel => {
+      nivel.addEventListener('click', () => {
+        const niveles = Array.from(document.querySelectorAll('.caries-nivel'));
+        const index = niveles.indexOf(nivel);
+
+        // Si la capa ya estaba activa → deseleccionamos todo
+        if (nivel.classList.contains('activa')) {
+          niveles.forEach(n => {
+            n.classList.remove('activa');
+            n.classList.remove('infectada');
+          });
+          return;
+        }
+
+        // Limpiar estados previos
+        niveles.forEach(n => {
+          n.classList.remove('activa');
+          n.classList.remove('infectada');
+        });
+
+        // Activar la capa clickeada
+        nivel.classList.add('activa');
+
+        // Marcar capas por debajo como infectadas
+        for (let i = index + 1; i < niveles.length; i++) {
+          niveles[i].classList.add('infectada');
+        }
+
+        // Las capas por encima vuelven a normal
+        for (let i = 0; i < index; i++) {
+          niveles[i].classList.remove('infectada');
+          niveles[i].classList.remove('activa');
+        }
+      });
+    });
+  }
+
+  // Ocultar panel si toca fuera en móvil
+  window.addEventListener('click', e => {
+    if (window.innerWidth <= 768 &&
+      !panelInfo.contains(e.target) &&
+      !e.target.classList.contains('diente')) {
+      panelInfo.classList.remove('visible');
+    }
+  });
+</script>
+
+
+
+<!------------------here we will to save all the information of the odontogram----------------->
+<plus-panel id="infoPanel" title="odontograma.title.add-new-status-of-the-theen" side="right" size="34%">
+
+  <div id="container-thoo"></div>
+
+  <button class="btn btn-edit btn-success" onclick="add_new_status_thoo()" t="btn.save"></button>
+</plus-panel>
+
+<button onclick="show_information_thoot(1)">Abrir Panel</button>
+
+
+<script>
+  (()=>{
+  let estadoSeleccionado = null;
+
+  function show_information_thoot(id) {
+    const container = document.getElementById('container-thoo');
+    const baseSvg = window.svgsDientes[id];
+
+    if (!baseSvg) {
+      container.innerHTML = '<div>Thoot not exist</div>';
       return;
     }
 
-    // Limpiar estados previos
-    niveles.forEach(n => {
-      n.classList.remove('activa');
-      n.classList.remove('infectada');
+    // list of all the status of the thoot for show
+    const actividades = [
+      "corona",
+      "coronaProvisional",
+      "coronaMalEstado",
+      "coronaMalEstadoProvisional",
+
+      "restauracion",
+      "restauracionMalEstado",
+
+      "endodoncia",
+      "endodonciaMalEstado",
+
+      "implante",
+      "implanteMalEstado",
+
+      "perno",
+      "pernoMalEstado",
+
+      "amalgama",
+      "amalgamaMalEstado",
+
+      "protesisRemovible",
+      "sellante",
+      "dienteAusente",
+      "otro"
+    ];
+
+    //this are all the coordinates of all the status for know who draw the status
+    const coordinates={
+      1: [64,181,15],
+      2: [110, 181, 15],
+      3:[155, 187, 15],
+      4:[197, 187, 15],
+      5:[241, 194, 15],
+      6:[285, 197, 15],
+      7:[330, 194, 15],
+      8:[373, 198, 15],
+      9:[373, 198, 15],
+      10:[330, 194, 15],
+      11:[285, 197, 15],
+      12:[241, 194, 15],
+      13:[197, 187, 15],
+      14:[155, 187, 15],
+      15: [110, 181, 15],
+      16: [64,181,15],
+
+      32: [64,181,15],
+      31: [110, 181, 15],
+      30:[155, 187, 15],
+      29:[197, 187, 15],
+      28:[241, 194, 15],
+      27:[285, 197, 15],
+      26:[330, 194, 15],
+      25:[373, 198, 15],
+      24:[373, 198, 15],
+      23:[330, 194, 15],
+      22:[285, 197, 15],
+      21:[241, 194, 15],
+      20:[197, 187, 15],
+      19:[155, 187, 15],
+      18: [110, 181, 15],
+      17: [64,181,15],
+    }
+
+
+    // here we will to create all the bloack for all the thoot
+    const html = actividades.map(tipo => {
+      const overlay = window.get_svg_activity(tipo, coordinates[id][0], coordinates[id][1], coordinates[id][2]);
+      const thootSvg = baseSvg.replace('</svg>', `${overlay}</svg>`);
+      return `<div class="container-status-thoo p-2">${thootSvg}</div>`;
+    }).join('');
+
+
+
+     //save all the container and show the panel
+    container.innerHTML = html;
+
+    //create the event for when the user do click in a status of the thooth
+    container.querySelectorAll('.container-status-thoo').forEach(div => {
+      div.addEventListener('click', function() {
+        estadoSeleccionado = this.dataset.estado; // save the new status
+
+        //add a class for show that be select
+        container.querySelectorAll('.container-status-thoo').forEach(d => d.classList.remove('selected'));
+        this.classList.add('selected');
+      });
     });
-
-    // Activar la capa clickeada
-    nivel.classList.add('activa');
-
-    // Marcar capas por debajo como infectadas
-    for (let i = index + 1; i < niveles.length; i++) {
-      niveles[i].classList.add('infectada');
-    }
-
-    // Las capas por encima vuelven a normal
-    for (let i = 0; i < index; i++) {
-      niveles[i].classList.remove('infectada');
-      niveles[i].classList.remove('activa');
-    }
-  });
-});
-}
-
-// Ocultar panel si toca fuera en móvil
-window.addEventListener('click', e => {
-  if(window.innerWidth <= 768 &&
-     !panelInfo.contains(e.target) &&
-     !e.target.classList.contains('diente')) {
-    panelInfo.classList.remove('visible');
+    document.getElementById('infoPanel').show();
   }
-});
-</script>
 
+
+  function add_new_status_thoo() {
+    document.getElementById('infoPanel').hide()
+  }
+
+
+  window.show_information_thoot = show_information_thoot;
+  window.add_new_status_thoo=add_new_status_thoo;
+  })();
+
+</script>
