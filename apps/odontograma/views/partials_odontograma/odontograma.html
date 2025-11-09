@@ -564,6 +564,11 @@
   border-radius: 5px;
   transform: scale(1.08);
 }
+
+.info-status-thoo{
+  font-size: .65rem;
+  text-align: center;
+}
 </style>
 
 
@@ -1048,63 +1053,67 @@
 
 
 
-  <!-- Estado general -->
-  <div class="estado-general">
-    <show-more text='Estado del diente' onclick='window.show_information_thoot(${dienteId})'></show-more>
-  </div>
 
-  <!-- Detalle por cara -->
-  <div class="detalle-caras">
-    <h3>Detalle por cara</h3>
-    <div class="cara-detalle">
-      <label>Mesial</label>
-      <plus-select id="cara-mesial-${dienteId}">
+  <show-more text='Estado del diente' onclick='window.show_information_thoot(${dienteId})'></show-more>
+
+  <div class="row section">
+    <div class='col'>
+      <plus-select id="cara-mesial-${dienteId}" label='Mesial'>
         <option value="sano">Sano</option>
         <option value="caries">Caries</option>
         <option value="restaurado">Restaurado</option>
         <option value="fractura">Fractura</option>
       </plus-select>
     </div>
-    <div class="cara-detalle">
-      <label>Distal</label>
-      <plus-select id="cara-distal-${dienteId}">
+  </div>
+  <div class="row section">
+    <div class='col'>
+      <plus-select id="cara-distal-${dienteId}" label='Distal'>
         <option value="sano">Sano</option>
         <option value="caries">Caries</option>
         <option value="restaurado">Restaurado</option>
         <option value="fractura">Fractura</option>
       </plus-select>
     </div>
-    <!-- Repetir Vestibular, Lingual, Oclusal -->
+  </div>
+  
+
+  <div class="row section">
+    <div class='col'>
+      <plus-select id="encia-${dienteId}" label='Encía:'>
+        <option value="normal">Normal</option>
+        <option value="inflamada">Inflamada</option>
+        <option value="sangrado">Sangrado</option>
+      </plus-select>
+    </div>
   </div>
 
-  <!-- Encía / tejido -->
-  <div class="tejido">
-    <h3>Encía / tejido</h3>
-    <label>Encía:</label>
-    <plus-select id="encia-${dienteId}">
-      <option value="normal">Normal</option>
-      <option value="inflamada">Inflamada</option>
-      <option value="sangrado">Sangrado</option>
-    </plus-select>
-    <plus-switch id="placa-${dienteId}" text="Tiene Placa / sarro"></plus-switch>
-    <label>Movilidad:</label>
-    <plus-select id="movilidad-${dienteId}">
-      <option value="0">0</option>
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-    </plus-select>
+  <plus-switch id="placa-${dienteId}" text="Tiene Placa / sarro"></plus-switch>
+
+
+  <div class="row section">
+    <div class='col'>
+      <plus-select id="movilidad-${dienteId}" label='Movilidad'>
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+      </plus-select>
+    </div>
   </div>
 
-  <!-- Observaciones -->
-  <div class="observaciones">
-    <h3>Observaciones</h3>
-    <textarea id="obs-${dienteId}" placeholder="Notas adicionales..."></textarea>
+  <div class="row section">
+    <div class='col'>
+      <label>Observaciones</label>
+      <textarea id="obs-${dienteId}" placeholder="Notas adicionales..."></textarea>
+    </div>
   </div>
+
+
 </div>
   `;
 
-    // Añadir interacción visual (clic para resaltar zonas)
+    // Add visual interaction (click to highlight areas)
     panel.querySelectorAll('.cara').forEach(cara => {
       cara.addEventListener('click', () => {
         cara.classList.toggle('activa');
@@ -1148,7 +1157,7 @@
     });
   }
 
-  // Ocultar panel si toca fuera en móvil
+  // Hide panel if tapped on mobile
   window.addEventListener('click', e => {
     if (window.innerWidth <= 768 &&
       !panelInfo.contains(e.target) &&
@@ -1174,6 +1183,35 @@
 <script>
   (()=>{
   let estadoSeleccionado = null;
+
+  //here we will to save all the translate of the status for save and only translate one time
+  const translateStatus = {
+    corona: window.translate_text('odontograma.status.crown'),
+    coronaProvisional: window.translate_text('odontograma.status.provisional-crown'),
+    coronaMalEstado: window.translate_text('odontograma.status.crown-bad-condition'),
+    coronaMalEstadoProvisional: window.translate_text('odontograma.status.provisional-crown-bad-condition'),
+
+    restauracion: window.translate_text('odontograma.status.restoration'),
+    restauracionMalEstado: window.translate_text('odontograma.status.restoration-bad-condition'),
+
+    endodoncia: window.translate_text('odontograma.status.root-canal'),
+    endodonciaMalEstado: window.translate_text('odontograma.status.root-canal-bad-condition'),
+
+    implante: window.translate_text('odontograma.status.implant'),
+    implanteMalEstado: window.translate_text('odontograma.status.implant-bad-condition'),
+
+    perno: window.translate_text('odontograma.status.post'),
+    pernoMalEstado: window.translate_text('odontograma.status.post-bad-condition'),
+
+    amalgama: window.translate_text('odontograma.status.amalgam'),
+    amalgamaMalEstado: window.translate_text('odontograma.status.amalgam-bad-condition'),
+
+    protesisRemovible: window.translate_text('odontograma.status.removable-prosthesis'),
+    sellante: window.translate_text('odontograma.status.sealant'),
+    dienteAusente: window.translate_text('odontograma.status.missing-tooth'),
+    otro: window.translate_text('odontograma.status.other')
+  };
+
 
   function show_information_thoot(id) {
     const container = document.getElementById('container-thoo');
@@ -1254,7 +1292,7 @@
     const html = actividades.map(tipo => {
       const overlay = window.get_svg_activity(tipo, coordinates[id][0], coordinates[id][1], coordinates[id][2]);
       const thootSvg = baseSvg.replace('</svg>', `${overlay}</svg>`);
-      return `<div class="container-status-thoo p-2">${thootSvg}</div>`;
+      return `<div class="container-status-thoo p-2">${thootSvg} <label class='info-status-thoo'> ${translateStatus[tipo]} </label> </div>`;
     }).join('');
 
 

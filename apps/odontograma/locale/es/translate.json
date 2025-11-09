@@ -17,5 +17,34 @@
   "odontograma.label.select-a-tooth":"Selecciona un diente",
 
 
-  "odontograma.title.add-new-status-of-the-theen":"Agregar nuevo estado del diente"
+  "odontograma.title.add-new-status-of-the-theen":"Agregar nuevo estado del diente",
+
+
+
+
+  
+  "odontograma.status.crown": "Corona",
+  "odontograma.status.provisional-crown": "Corona provisional",
+  "odontograma.status.crown-bad-condition": "Corona en mal estado",
+  "odontograma.status.provisional-crown-bad-condition": "Corona provisional en mal estado",
+  
+  "odontograma.status.restoration": "Restauración",
+  "odontograma.status.restoration-bad-condition": "Restauración en mal estado",
+  
+  "odontograma.status.root-canal": "Endodoncia",
+  "odontograma.status.root-canal-bad-condition": "Endodoncia en mal estado",
+  
+  "odontograma.status.implant": "Implante",
+  "odontograma.status.implant-bad-condition": "Implante en mal estado",
+  
+  "odontograma.status.post": "Perno",
+  "odontograma.status.post-bad-condition": "Perno en mal estado",
+  
+  "odontograma.status.amalgam": "Amalgama",
+  "odontograma.status.amalgam-bad-condition": "Amalgama en mal estado",
+  
+  "odontograma.status.removable-prosthesis": "Prótesis removible",
+  "odontograma.status.sealant": "Sellante",
+  "odontograma.status.missing-tooth": "Diente ausente",
+  "odontograma.status.other": "Otro"
 }
