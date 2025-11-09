@@ -513,12 +513,26 @@
 
   /*PANEL TOOTH*/
   .container-draw-tooth {
-    width: 10%;
-    height: auto;
+    width: auto;
+    height: 150px;
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 0 auto;
+  }
+
+  @media (max-width: 768px) {
+    .container-draw-tooth {
+      height: auto;
+      width: auto;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container-draw-tooth {
+      height: auto;
+      width: auto;
+    }
   }
 
   #container-thoo {
@@ -1061,17 +1075,18 @@
     const panel = document.getElementById('panel-info');
     panel.innerHTML = `
       <div class="info-diente">
-        <center><h6>${window.translate_text(info_tooth.name_key)}</h6></center>
-
         <div class="row">
-          <div class="col">
+          <div class="col-2">
             <div class="container-draw-tooth">${window.svgsDientes[dienteId]}</div>
+          </div>
+          <div class="col-9">
+              <h5>${window.translate_text(info_tooth.name_key)}</h5>
+              <h2>${thoot} ${window.get_number_tooth(dienteId)}</h2>
           </div>
         </div>
 
         <div class="tooth-navigation">
           <button id="prev-tooth" onclick="mostrarInfo(${dienteId - 1})"><i class="fi fi-rr-angle-left"></i></button>
-          <h2>${thoot} ${window.get_number_tooth(dienteId)}</h2>
           <button id="next-tooth" onclick="mostrarInfo(${dienteId + 1})"><i class="fi fi-rr-angle-right"></i></button>
         </div>
         <div class="row">
