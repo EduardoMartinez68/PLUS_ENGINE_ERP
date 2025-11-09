@@ -16,7 +16,7 @@
   "odontograma.tab.odontogram":"Odontograma",
   "odontograma.tab.files":"Documentos",
   "odontograma.tab.history":"Historial",
-  
+
   "odontograma.label.select-a-tooth":"Selecciona un diente",
 
   "odontograma.label.observation":"Observaciones",
@@ -54,5 +54,68 @@
   "odontograma.status.removable-prosthesis": "Prótesis removible",
   "odontograma.status.sealant": "Sellante",
   "odontograma.status.missing-tooth": "Diente ausente",
-  "odontograma.status.other": "Otro"
+  "odontograma.status.other": "Otro",
+
+
+
+
+  "odontogram.tooth.upper_right.central_incisor": "Incisivo central superior derecho",
+  "odontogram.tooth.upper_right.lateral_incisor": "Incisivo lateral superior derecho",
+  "odontogram.tooth.upper_right.canine": "Canino superior derecho",
+  "odontogram.tooth.upper_right.first_premolar": "Primer premolar superior derecho",
+  "odontogram.tooth.upper_right.second_premolar": "Segundo premolar superior derecho",
+  "odontogram.tooth.upper_right.first_molar": "Primer molar superior derecho",
+  "odontogram.tooth.upper_right.second_molar": "Segundo molar superior derecho",
+  "odontogram.tooth.upper_right.third_molar": "Tercer molar superior derecho",
+
+  "odontogram.tooth.upper_left.central_incisor": "Incisivo central superior izquierdo",
+  "odontogram.tooth.upper_left.lateral_incisor": "Incisivo lateral superior izquierdo",
+  "odontogram.tooth.upper_left.canine": "Canino superior izquierdo",
+  "odontogram.tooth.upper_left.first_premolar": "Primer premolar superior izquierdo",
+  "odontogram.tooth.upper_left.second_premolar": "Segundo premolar superior izquierdo",
+  "odontogram.tooth.upper_left.first_molar": "Primer molar superior izquierdo",
+  "odontogram.tooth.upper_left.second_molar": "Segundo molar superior izquierdo",
+  "odontogram.tooth.upper_left.third_molar": "Tercer molar superior izquierdo",
+
+  "odontogram.tooth.lower_left.central_incisor": "Incisivo central inferior izquierdo",
+  "odontogram.tooth.lower_left.lateral_incisor": "Incisivo lateral inferior izquierdo",
+  "odontogram.tooth.lower_left.canine": "Canino inferior izquierdo",
+  "odontogram.tooth.lower_left.first_premolar": "Primer premolar inferior izquierdo",
+  "odontogram.tooth.lower_left.second_premolar": "Segundo premolar inferior izquierdo",
+  "odontogram.tooth.lower_left.first_molar": "Primer molar inferior izquierdo",
+  "odontogram.tooth.lower_left.second_molar": "Segundo molar inferior izquierdo",
+  "odontogram.tooth.lower_left.third_molar": "Tercer molar inferior izquierdo",
+
+  "odontogram.tooth.lower_right.central_incisor": "Incisivo central inferior derecho",
+  "odontogram.tooth.lower_right.lateral_incisor": "Incisivo lateral inferior derecho",
+  "odontogram.tooth.lower_right.canine": "Canino inferior derecho",
+  "odontogram.tooth.lower_right.first_premolar": "Primer premolar inferior derecho",
+  "odontogram.tooth.lower_right.second_premolar": "Segundo premolar inferior derecho",
+  "odontogram.tooth.lower_right.first_molar": "Primer molar inferior derecho",
+  "odontogram.tooth.lower_right.second_molar": "Segundo molar inferior derecho",
+  "odontogram.tooth.lower_right.third_molar": "Tercer molar inferior derecho",
+
+  "odontogram.tooth.upper_right.primary_central_incisor": "Incisivo central primario superior derecho",
+  "odontogram.tooth.upper_right.primary_lateral_incisor": "Incisivo lateral primario superior derecho",
+  "odontogram.tooth.upper_right.primary_canine": "Canino primario superior derecho",
+  "odontogram.tooth.upper_right.primary_first_molar": "Primer molar primario superior derecho",
+  "odontogram.tooth.upper_right.primary_second_molar": "Segundo molar primario superior derecho",
+
+  "odontogram.tooth.upper_left.primary_central_incisor": "Incisivo central primario superior izquierdo",
+  "odontogram.tooth.upper_left.primary_lateral_incisor": "Incisivo lateral primario superior izquierdo",
+  "odontogram.tooth.upper_left.primary_canine": "Canino primario superior izquierdo",
+  "odontogram.tooth.upper_left.primary_first_molar": "Primer molar primario superior izquierdo",
+  "odontogram.tooth.upper_left.primary_second_molar": "Segundo molar primario superior izquierdo",
+
+  "odontogram.tooth.lower_left.primary_central_incisor": "Incisivo central primario inferior izquierdo",
+  "odontogram.tooth.lower_left.primary_lateral_incisor": "Incisivo lateral primario inferior izquierdo",
+  "odontogram.tooth.lower_left.primary_canine": "Canino primario inferior izquierdo",
+  "odontogram.tooth.lower_left.primary_first_molar": "Primer molar primario inferior izquierdo",
+  "odontogram.tooth.lower_left.primary_second_molar": "Segundo molar primario inferior izquierdo",
+
+  "odontogram.tooth.lower_right.primary_central_incisor": "Incisivo central primario inferior derecho",
+  "odontogram.tooth.lower_right.primary_lateral_incisor": "Incisivo lateral primario inferior derecho",
+  "odontogram.tooth.lower_right.primary_canine": "Canino primario inferior derecho",
+  "odontogram.tooth.lower_right.primary_first_molar": "Primer molar primario inferior derecho",
+  "odontogram.tooth.lower_right.primary_second_molar": "Segundo molar primario inferior derecho"
 }
