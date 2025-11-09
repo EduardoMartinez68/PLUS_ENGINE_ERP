@@ -4,6 +4,7 @@
   "odontograma.label.key-odontogram":"Clave del odontograma *",
   "odontograma.placeholder.key-odontogram":"Escribe la clave de identificacion del odontograma",
   "odontograma.label.this-patient-be-a-kit":"Crear el odontograma de dientes de leche",
+  "odontograma.status.tooth": "Diente",
 
 
   "odontograma.error.need-all-the-data":"No se recibieron todos los datos correspondientes",
@@ -14,15 +15,22 @@
 
   "odontograma.tab.odontogram":"Odontograma",
   "odontograma.tab.files":"Documentos",
+  "odontograma.tab.history":"Historial",
+  
   "odontograma.label.select-a-tooth":"Selecciona un diente",
 
+  "odontograma.label.observation":"Observaciones",
+  "odontograma.placeholder.observation":"Notas adicionales...",
+  "odontograma.label.mobility":"Movilidad",
+  "odontograma.label.have-plaque-or-tartar":"Tiene Placa / sarro",
+  "odontograma.label.gum":"Encía",
+  "odontograma.option.normal":"Normal",
+  "odontograma.option.inflamed":"Inflamada",
+  "odontograma.option.bleeding":"Sangrado",
 
-  "odontograma.title.add-new-status-of-the-theen":"Agregar nuevo estado del diente",
+  "odontograma.title.diagnosis":"Diagnostico",
+  "odontograma.title.add-new-status-of-the-theen":"Agregar un nuevo Diagnostico",
 
-
-
-
-  
   "odontograma.status.crown": "Corona",
   "odontograma.status.provisional-crown": "Corona provisional",
   "odontograma.status.crown-bad-condition": "Corona en mal estado",

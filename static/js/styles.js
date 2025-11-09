@@ -1040,7 +1040,7 @@ async function show_message_question(title, message) {
     appMenu.style.zIndex = 1000;
   }
 
-  const result = await ConfirmDialog.show(title, message);
+  const result = await ConfirmDialog.show(window.translate_text(title), window.translate_text(message));
   return result;
 }
 
