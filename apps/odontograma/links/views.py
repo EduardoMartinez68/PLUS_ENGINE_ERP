@@ -57,8 +57,16 @@ def view_odontogram(request, odontogram_id):
 def get_odontogram(request, odontogram_id):
     result = get_latest_history_for_odontogram(request.user, odontogram_id)
     if result["success"]:
-        html = render_to_string("odontogram.html", {"odontogram": result["answer"]}, request=request)
+        html = render_to_string("odontogram.html", {"odontogram": result["answer"], "odontogram_id":odontogram_id}, request=request)
         return JsonResponse({"success": True, "answer": html})
     else:
         return JsonResponse({"success": False, "error": result.get("error", "Unknown error")})
     
+
+
+def get_information_of_the_odotngoram(request, odontogram_id):
+    if request.method != 'GET':
+        return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+    
+    result = get_latest_history_for_odontogram(request.user, odontogram_id)
+    return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
