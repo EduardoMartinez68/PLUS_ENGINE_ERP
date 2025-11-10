@@ -87,30 +87,15 @@ def view_odontogram(request, odontogram_id):
             context = {
                 "odontogram_id": odontogram_id
             }
-            return render(request, 'load_form_odontograma.html', context)
+    
+            return render(request, 'odontogram.html', context)
     else:
         if request.method == 'GET': 
             context = {
                 "odontogram_id": odontogram_id
             }
-            return render(request, 'load_form_odontograma.html', context)
-
-@login_required(login_url='login')
-def get_odontogram(request, odontogram_id):
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        result = get_latest_history_for_odontogram(request.user, odontogram_id)
-        if result["success"]:
-            html = render_to_string("odontogram.html", {"odontogram": result["answer"], "odontogram_id":odontogram_id}, request=request)
-            return JsonResponse({"success": True, "answer": html})
-        else:
-            return JsonResponse({"success": False, "error": result.get("error", "Unknown error")})
-    else:
-        result = get_latest_history_for_odontogram(request.user, odontogram_id)
-        if result["success"]:
-            html = render_to_string("odontogram.html", {"odontogram": result["answer"], "odontogram_id":odontogram_id}, request=request)
-            return JsonResponse({"success": True, "answer": html})
-        else:
-            return JsonResponse({"success": False, "error": result.get("error", "Unknown error")})
+    
+            return render(request, 'odontogram.html', context)
 
 @login_required(login_url='login')
 def get_information_of_the_odotngoram(request, odontogram_id):

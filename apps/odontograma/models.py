@@ -5,6 +5,7 @@ from apps.customers.models import Customer
 from apps.files.models import File
 from django.utils import timezone
 from core.models import CustomUser, Branch, Company
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 def create_odontogram_for_patient(medical_info, include_deciduous=False):
     #this function is for create all the tooth of the mouth when the odontograma be create
@@ -92,7 +93,7 @@ class Tooth(models.Model):
     )
 
 
-    
+    #this variable save all the translate of the tooth that we going to use in the frontend for translate the tooth
     FDI_TEETH = [
         #-----------------------------------------theet adult---------------------------------------------
         # Quadrant 1 (Upper Right)
@@ -167,8 +168,7 @@ class Tooth(models.Model):
 
     # number global of the tooth (FDI)
     FDI_number = models.PositiveSmallIntegerField(unique=True) #this is unique because not exist more tooth in the mouth
-    name_key = models.CharField(max_length=200, blank=True, null=False , choices=FDI_TEETH)  # example: “Incisivo central superior derecho”
-
+    name_key = models.CharField(max_length=200, blank=True, null=False , choices=FDI_TEETH)  # example: “odontogram.tooth.upper_right.central_incisor (Incisivo central superior derecho)”
 
 
     #status of the tooth
@@ -186,17 +186,17 @@ class Tooth(models.Model):
     ]
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="healthy")
 
-
-    # Diagnostic and observation fields
-    diagnosis = EncryptedTextField(blank=True, null=True)
-    notes = EncryptedTextField(blank=True, null=True)
-
     # Detailed condition by surface
-    surface_occlusal = models.CharField(max_length=50, blank=True, null=True)
-    surface_mesial = models.CharField(max_length=50, blank=True, null=True)
-    surface_distal = models.CharField(max_length=50, blank=True, null=True)
-    surface_lingual = models.CharField(max_length=50, blank=True, null=True)
-    surface_buccal = models.CharField(max_length=50, blank=True, null=True)
+    # Superficies del diente (útil para odontogramas visuales)
+    surfaces = models.JSONField(default=dict, blank=True)
+    # example:
+    # {
+    #   "mesial": {"caries": True, "restauracion": False, "Notes": ""},
+    #   "distal": {"caries": False, "restauracion": True},
+    #   "oclusal": {"fisura": True},
+    #   "lingual": {},
+    #   "vestibular": {}
+    # }
 
     caries_depth = models.PositiveSmallIntegerField(
         default=0,
@@ -209,21 +209,51 @@ class Tooth(models.Model):
         ],
         help_text="Indicates the level of depth of the caries on a scale of 0 to 4."
     )
+    has_tartar=models.BooleanField(default=False)
+
+    '''
+    0--normal
+    1--inflamed
+    2--bleeding
+    '''
+    status_gum=models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(2)],
+        default=0
+    )
+
+    '''
+    0--WITHOUT MOBILITY
+    1--leve 
+    2--moderate
+    3--severe
+    '''
+    mobility=models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(4)],
+        default=0
+    )
+
+    # Diagnostic and observation fields
+    diagnosis = EncryptedTextField(blank=True, null=True)
+    notes = EncryptedTextField(blank=True, null=True)
+    
+    # Information on treatments applied
+    treatments = EncryptedTextField(blank=True, null=True)
 
     # Visual state of the tooth in SVG format
+    #this variable be use for save the draw of the status of the tooth in format svg
     svg_state = models.TextField(
         blank=True, 
         null=True,
         help_text="SVG code that represents the current visual state of the tooth."
     )
 
-    # Information on treatments applied
-    treatments = EncryptedTextField(blank=True, null=True)
+
 
 
 
 
     #information of creation and of update
+    last_checkup = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     last_updated_by = models.ForeignKey(
