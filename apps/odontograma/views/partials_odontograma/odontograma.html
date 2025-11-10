@@ -880,6 +880,7 @@
         //get the information basic of the odontogram and the save in other variable for use after
         const answer=backend.answer;
         const customer_id=answer.customer_id;
+        const customer=answer.customer;
         const key=answer.customer_id;
         const notes=answer.notes;
         const created_at=answer.created_at;
@@ -887,6 +888,7 @@
         const blocked=answer.updatedblocked_at;
         information_odontogram={
           customer_id,
+          customer,
           key,
           notes,
           created_at,
@@ -894,6 +896,9 @@
           blocked
         }
 
+        //here we will update the information of the patient
+        document.getElementById('photo-patient').src=customer.avatar
+        document.getElementById('name-patient').textContent=customer.name;
 
         //get the information of all the teeth and the save
         information_teeth=answer.teeth;
@@ -1075,6 +1080,8 @@
     const panel = document.getElementById('panel-info');
     panel.innerHTML = `
       <div class="info-diente">
+
+
         <div class="row">
           <div class="col-2">
             <div class="container-draw-tooth">${window.svgsDientes[dienteId]}</div>
@@ -1084,20 +1091,17 @@
               <h2>${thoot} ${window.get_number_tooth(dienteId)}</h2>
           </div>
         </div>
-
         <div class="tooth-navigation">
           <button id="prev-tooth" onclick="mostrarInfo(${dienteId - 1})"><i class="fi fi-rr-angle-left"></i></button>
           <button id="next-tooth" onclick="mostrarInfo(${dienteId + 1})"><i class="fi fi-rr-angle-right"></i></button>
         </div>
+
+
         <div class="row">
           <div class="col">
               <!-- CIRCULAR SCHEME -->
               <div class="esquema-diente-circular">
-                  <div class="cara cuadrante" data-cara="superior-izq" title="Mesial"></div>
-                  <div class="cara cuadrante" data-cara="superior-der" title="Distal"></div>
-                  <div class="cara cuadrante" data-cara="inferior-izq" title="Vestibular"></div>
-                  <div class="cara cuadrante" data-cara="inferior-der" title="Lingual"></div>
-                  <div class="cara centro" data-cara="oclusal" title="Oclusal"></div>
+                  ${get_draw_faces(info_tooth.surfaces)}
               </div>
           </div>
           <div class="col">
@@ -1112,21 +1116,21 @@
 
         <show-more text='odontograma.title.diagnosis' onclick='window.show_information_thoot(${dienteId})'></show-more>
 
-        <plus-switch id="placa-${dienteId}" text="odontograma.label.have-plaque-or-tartar"></plus-switch>
+        <plus-switch name="has_tartar" text="odontograma.label.have-plaque-or-tartar" checked='${info_tooth.has_tartar}'></plus-switch>
 
         <div class="row section">
           <div class='col'>
-            <plus-select id="encia-${dienteId}" label='odontograma.label.gum'>
-              <option value="normal" t='odontograma.option.normal'></option>
-              <option value="inflamada" t='odontograma.option.inflamed'></option>
-              <option value="sangrado" t='odontograma.option.bleeding'></option>
+            <plus-select name="status_gum" label='odontograma.label.gum' value='${info_tooth.status_gum}'>
+              <option value="0" t='odontograma.option.normal'></option>
+              <option value="1" t='odontograma.option.inflamed'></option>
+              <option value="2" t='odontograma.option.bleeding'></option>
             </plus-select>
           </div>
         </div>
 
         <div class="row section">
           <div class='col'>
-            <plus-select id="movilidad-${dienteId}" label='odontograma.label.mobility'>
+            <plus-select name="mobility" label='odontograma.label.mobility' value='${info_tooth.mobility}'>
               <option value="0">0 - Sin movilidad</option>
               <option value="1">I - Leve (hasta 1 mm)</option>
               <option value="2">II - Moderada (>1 mm)</option>
@@ -1138,7 +1142,7 @@
         <div class="row section">
           <div class='col'>
             <label>${window.translate_text('odontograma.label.observation')}</label>
-            <textarea id="obs-${dienteId}" placeholder="${window.translate_text('odontograma.placeholder.observation')}" value='${info_tooth.notes}'></textarea>
+            <textarea name="notes" placeholder="${window.translate_text('odontograma.placeholder.observation')}">${info_tooth.notes}</textarea>
           </div>
         </div>
 
@@ -1191,6 +1195,59 @@
     });
   }
 
+
+  function get_draw_faces(surfaces){
+
+    //we will see if exist information save in the list of the faces, if not exist return the body first
+    if(surfaces==null){
+      return `
+        <div class="cara cuadrante" data-cara="superior-izq" title="Mesial"></div>
+        <div class="cara cuadrante" data-cara="superior-der" title="Distal"></div>
+        <div class="cara cuadrante" data-cara="inferior-izq" title="Vestibular"></div>
+        <div class="cara cuadrante" data-cara="inferior-der" title="Lingual"></div>
+        <div class="cara centro" data-cara="oclusal" title="Oclusal"></div>
+      `
+    }
+
+    //if exist information we will to get all the information need of the face for draw
+    let faces='';
+    const mesial=surfaces.mesial
+    if(mesial && mesial.caries){
+      faces+= '<div class="cara cuadrante activa" data-cara="superior-izq" title="Mesial"></div>'
+    }else{
+      faces+= '<div class="cara cuadrante" data-cara="superior-izq" title="Mesial"></div>'
+    }
+
+    const distal=surfaces.distal
+    if(distal && distal.caries){
+      faces+= '<div class="cara cuadrante activa" data-cara="superior-der" title="Distal"></div>'
+    }else{
+      faces+= '<div class="cara cuadrante" data-cara="superior-der" title="Distal"></div>'
+    }
+
+    const vestibular=surfaces.vestibular
+    if(vestibular && vestibular.caries){
+      faces+= '<div class="cara cuadrante activa" data-cara="inferior-izq" title="Vestibular"></div>'
+    }else{
+      faces+= '<div class="cara cuadrante" data-cara="inferior-izq" title="Vestibular"></div>'
+    }
+
+    const lingual=surfaces.lingual
+    if(lingual && lingual.caries){
+      faces+= '<div class="cara cuadrante activa" data-cara="inferior-der" title="Lingual"></div>'
+    }else{
+      faces+= '<div class="cara cuadrante" data-cara="inferior-der" title="Lingual"></div>'
+    }
+
+    const oclusal=surfaces.oclusal
+    if(oclusal && oclusal.caries){
+      faces+= '<div class="cara centro activa" data-cara="oclusal" title="Oclusal"></div>'
+    }else{
+      faces+= '<div class="cara centro" data-cara="oclusal" title="Oclusal"></div>'
+    }
+
+    return faces;
+  }
 
 
   function get_draw_caries_depth(caries_depth = 0) {
@@ -1399,26 +1456,31 @@
   
 
   //here we will to create the input of search
-  const searchInput = document.getElementById('search-status-thoot');
-  searchInput.addEventListener('input', () => {
-    const searchValue = searchInput.value.toLowerCase().trim();
+    setTimeout(function() {
+    const searchInput = document.getElementById('search-status-thoot');
+    searchInput.addEventListener('input', () => {
+      const searchValue = searchInput.value.toLowerCase().trim();
 
-    // read all the divs with class container-status-thoo
-    const container = document.getElementById('container-thoo');
-    const items = container.querySelectorAll('.container-status-thoo');
+      // read all the divs with class container-status-thoo
+      const container = document.getElementById('container-thoo');
+      const items = container.querySelectorAll('.container-status-thoo');
 
-    items.forEach(item => {
-      const label = item.querySelector('.info-status-thoo');
-      const text = label.textContent.toLowerCase();
-
-      // show only the thoot that match with the weeker
-      if (text.includes(searchValue)) {
-        item.style.display = '';
-      } else {
-        item.style.display = 'none';
-      }
+      items.forEach(item => {
+        const label = item.querySelector('.info-status-thoo');
+        const text = label.textContent.toLowerCase();
+        
+        // show only the thoot that match with the weeker
+        if (text.includes(searchValue)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
     });
-  });
+  }, 2000);
+
+
+
   })();
 
 </script>

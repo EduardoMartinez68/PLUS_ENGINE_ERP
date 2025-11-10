@@ -1977,7 +1977,7 @@ class PlusSwitch extends HTMLElement {
     const name = this.getAttribute('name') || ''; //get the name for if the switch is in a form 
 
     //we will see if the proggramer would like that the switch is selected 
-    const valueCheck = this.getAttribute('checked') || false;
+    const valueCheck = this.getAttribute('checked') || this.getAttribute('value') || false;
     const isChecked = is_true(valueCheck);
 
     // Create parent container

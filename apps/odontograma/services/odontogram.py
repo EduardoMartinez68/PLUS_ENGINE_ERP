@@ -327,16 +327,19 @@ def get_latest_history_for_odontogram(user, odontogram_id: int) -> Dict[str, Any
             "FDI_number": t.FDI_number,
             "name_key": t.name_key,
             "status": t.status,
-            "diagnosis": t.diagnosis,
-            "notes": t.notes,
-            "surface_occlusal": t.surface_occlusal,
-            "surface_mesial": t.surface_mesial,
-            "surface_distal": t.surface_distal,
-            "surface_lingual": t.surface_lingual,
-            "surface_buccal": t.surface_buccal,
-            "caries_depth": t.caries_depth,
+            
             "svg_state": t.svg_state,
-            "treatments": t.treatments,
+            "surfaces":t.surfaces,
+
+            "caries_depth": t.caries_depth,
+            "has_tartar":t.has_tartar,
+            "status_gum":t.status_gum,
+            "mobility":t.mobility,
+
+            "diagnosis":t.diagnosis or '',
+            "treatments":t.treatments or '',
+            "notes":t.notes or '',
+            "last_checkup":t.last_checkup
         }
         for t in teeth_qs
     ]
