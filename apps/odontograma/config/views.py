@@ -1,6 +1,6 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
-from ..services.odontogram import get_odontograms, add_new_odontogram, get_latest_history_for_odontogram
+from ..services.odontogram import get_odontograms, add_new_odontogram, get_latest_history_for_odontogram, update_tooth
 from django.template.loader import render_to_string
 import json
 from django.core.serializers.json import DjangoJSONEncoder
@@ -110,5 +110,36 @@ def get_information_of_the_odotngoram(request, odontogram_id):
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
         
         result = get_latest_history_for_odontogram(request.user, odontogram_id)
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
+
+@login_required(login_url='login')
+def view_update_tooth(request, odontogram_id, tooth_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )  
+            
+        result = update_tooth(tooth_id, odontogram_id, data, request.user)
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
+    else:
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )  
+            
+        result = update_tooth(tooth_id, odontogram_id, data, request.user)
         return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
 

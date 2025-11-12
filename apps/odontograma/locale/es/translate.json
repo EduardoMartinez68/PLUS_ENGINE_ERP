@@ -117,5 +117,13 @@
   "odontogram.tooth.lower_right.primary_lateral_incisor": "Incisivo lateral primario inferior derecho",
   "odontogram.tooth.lower_right.primary_canine": "Canino primario inferior derecho",
   "odontogram.tooth.lower_right.primary_first_molar": "Primer molar primario inferior derecho",
-  "odontogram.tooth.lower_right.primary_second_molar": "Segundo molar primario inferior derecho"
+  "odontogram.tooth.lower_right.primary_second_molar": "Segundo molar primario inferior derecho",
+
+
+  "odontogram.title.the-tooth-was-update":"Actualizado con exito",
+  "odontograma.success.tooth_updated":"Los datos del diente fueron actualizados con exito en la clinina.",
+  "odontogram.title.exist-a-eror-to-update":"Ocurrio un error",
+  "odontograma.error.validation":"Sucedio un error en los campos del diente",
+  "odontograma.error.unexpected-tooth":"Ocurrio un error al momento de actualizar la informacion de este diente en el servidor",
+  "odontograma.error.this-tooth-not-exist-in-the-odontogram":"Este Diente no existe pertenece a este odontograma"
 }

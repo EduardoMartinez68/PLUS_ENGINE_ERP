@@ -7,4 +7,5 @@ urlpatterns = [
     path('add_odontogram/', views.add_odontogram, name='add_odontogram'),
     path('view_odontogram/<int:odontogram_id>/', views.view_odontogram, name='view_odontogram'),
     path('get_information_of_the_odotngoram/<int:odontogram_id>/', views.get_information_of_the_odotngoram, name='get_information_of_the_odotngoram'),
+    path('view_update_tooth/<int:odontogram_id>/<int:tooth_id>/', views.view_update_tooth, name='view_update_tooth'),
 ]

@@ -1,4 +1,4 @@
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from typing import Dict, Any, List
 from apps.customers.models import Customer
 from django.db import transaction, IntegrityError
@@ -365,3 +365,114 @@ def get_latest_history_for_odontogram(user, odontogram_id: int) -> Dict[str, Any
     }
 
     return result
+
+
+
+
+
+
+
+
+
+def tooth_belongs_to_doctor_odontogram(tooth_id:int, odontogram_id:int, user)->bool:
+    """
+    In this function we will see if the tooth exist in the odontogram that the doctor would like update
+
+    Args:
+        tooth_id (int): ID of the tooth.
+        odontogram_id (int): ID of the odontogram.
+        user (CustomUser): User (doctor) that would like update the tooth.
+
+    Returns:
+        bool: True if the tooth is in the odontogram.
+    """
+    try:
+        # get the tooth
+        tooth = Tooth.objects.select_related('historyodontogram').get(id=tooth_id)
+        history = tooth.historyodontogram
+
+        # get the ofontogram
+        odontogram = Odontogram.objects.select_related('doctor', 'customer').get(id=odontogram_id)
+
+        # We check if the tooth belongs to the same patient (customer)
+        # and the odontogram belongs to the same doctor
+        if odontogram.doctor == user and odontogram.customer == history.customer:
+            return True
+        else:
+            return False
+
+    except ObjectDoesNotExist:
+        return False
+
+    except Exception as e:
+        # if exist a error we will to return False for default
+        return False
+    
+def update_tooth(tooth_id: int, odontogram_id:int, data:Dict, user) -> Dict[str, Any]:
+    """
+    Update the information of a tooth with help of his ID.
+
+    Args:
+        tooth_id (int): ID of the tooth.
+        data (dict): information that send the form.
+        user (CustomUser): this is the user that do the update.
+
+    Returns:
+        dict: Diccionario con el resultado del proceso.
+    """
+    #first we will see if the tooth exist in the odontogram 
+    if not tooth_belongs_to_doctor_odontogram(tooth_id, odontogram_id, user):
+        return {
+            "success": True,
+            "message": "odontograma.error.this-tooth-not-exist-in-the-odontogram",
+            "error": None
+        }
+    
+    try:
+        # We initiated a transaction to ensure integrity.
+        with transaction.atomic():
+            try:
+                tooth = Tooth.objects.get(id=tooth_id)
+            except ObjectDoesNotExist:
+                return {
+                    "success": False,
+                    "message": "odontograma.error.tooth_not_found",
+                    "error": f"No se encontró el diente con ID {tooth_id}."
+                }
+
+            # update the input of the model
+            allowed_fields = [
+                "status", "surfaces", "caries_depth", "has_tartar",
+                "status_gum", "mobility", "diagnosis", "notes",
+                "treatments", "svg_state", "last_checkup"
+            ]
+
+            for field, value in data.items():
+                if field in allowed_fields:
+                    setattr(tooth, field, value)
+
+            # save the user that do the update
+            tooth.last_updated_by = user
+
+            # save the change
+            tooth.save()
+
+        return {
+            "success": True,
+            "message": "odontograma.success.tooth_updated",
+            "error": None
+        }
+
+    except ValidationError as e:
+        return {
+            "success": False,
+            "message": "odontograma.error.validation",
+            "error": str(e)
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "odontograma.error.unexpected-tooth",
+            "error": str(e)
+        }

@@ -971,6 +971,7 @@
     window.descripcionDiente = descripcionDiente;
     window.svgsDientes = svgsDientes;
     window.dientes = dientes;
+    window.odontogram_id=odontogram_id;
     window.get_tooth_info_by_FDI=get_tooth_info_by_FDI;
     window.get_number_tooth = get_number_tooth;
     window.get_svg_activity = get_svg_activity;
@@ -1079,6 +1080,7 @@
     const thoot = window.translate_text('odontograma.status.tooth');
     const panel = document.getElementById('panel-info');
     panel.innerHTML = `
+    <form id='form-data-tooth'>
       <div class="info-diente">
 
 
@@ -1147,8 +1149,9 @@
         </div>
 
 
-        <button class='btn btn-edit btn-success'>${window.translate_text('btn.save')}</button>
+        <button class='btn btn-edit btn-success' type='button' onclick='update_data_tooth(${info_tooth.id})'>${window.translate_text('btn.save')}</button>
       </div>
+    </form>
   `;
 
     // Add visual interaction (click to highlight areas)
@@ -1283,6 +1286,15 @@
     `;
   }
 
+  async function update_data_tooth(tooth_id){
+    const backend=await send_form_to_the_server('form-data-tooth',`odontograma/view_update_tooth/${window.odontogram_id}/${tooth_id}/`);
+    if(!backend.success){
+      window.show_alert('error', 'odontogram.title.exist-a-eror-to-update', backend.message, backend.error);
+      return;
+    }
+
+    window.show_alert('success', 'odontogram.title.the-tooth-was-update', 'odontograma.success.tooth_updated')
+  }
 
   // Hide panel if tapped on mobile
   window.addEventListener('click', e => {
