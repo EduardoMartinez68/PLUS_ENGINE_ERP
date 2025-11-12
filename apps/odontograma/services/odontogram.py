@@ -373,7 +373,7 @@ def get_latest_history_for_odontogram(user, odontogram_id: int) -> Dict[str, Any
 
 
 
-
+#-------------------------------------------update tooth in the odontogram-------------------------------------------------
 def tooth_belongs_to_doctor_odontogram(tooth_id:int, odontogram_id:int, user)->bool:
     """
     In this function we will see if the tooth exist in the odontogram that the doctor would like update
@@ -442,7 +442,7 @@ def update_tooth(tooth_id: int, odontogram_id:int, data:Dict, user) -> Dict[str,
 
             # update the input of the model
             allowed_fields = [
-                "status", "surfaces", "caries_depth", "has_tartar",
+                "status", "surfaces", "caries_depth",
                 "status_gum", "mobility", "diagnosis", "notes",
                 "treatments", "svg_state", "last_checkup"
             ]
@@ -453,7 +453,7 @@ def update_tooth(tooth_id: int, odontogram_id:int, data:Dict, user) -> Dict[str,
 
             # save the user that do the update
             tooth.last_updated_by = user
-
+            tooth.has_tartar=Plus.to_bool(data.get('has_tartar'))
             # save the change
             tooth.save()
 

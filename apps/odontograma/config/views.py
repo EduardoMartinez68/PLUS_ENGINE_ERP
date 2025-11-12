@@ -53,6 +53,13 @@ def add_odontogram(request):
         
         #this is when the user would like add a new odotogram
         elif request.method == 'POST': 
+            #now we will see if the user have the permsssion need that the ERP need
+            if not Plus.this_user_have_this_permission(request.user, 'add_odontogram'):
+                return JsonResponse(
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )
+            
             #get the information of the form
             try:
                 data = json.loads(request.body)
@@ -69,6 +76,13 @@ def add_odontogram(request):
         
         #this is when the user would like add a new odotogram
         elif request.method == 'POST': 
+            #now we will see if the user have the permsssion need that the ERP need
+            if not Plus.this_user_have_this_permission(request.user, 'add_odontogram'):
+                return JsonResponse(
+                    {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                    status=200
+                )
+            
             #get the information of the form
             try:
                 data = json.loads(request.body)
@@ -103,12 +117,26 @@ def get_information_of_the_odotngoram(request, odontogram_id):
         if request.method != 'GET':
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
         
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_odontogram'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+            
         result = get_latest_history_for_odontogram(request.user, odontogram_id)
         return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
     else:
         if request.method != 'GET':
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
         
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_odontogram'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+            
         result = get_latest_history_for_odontogram(request.user, odontogram_id)
         return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
 
@@ -117,6 +145,13 @@ def view_update_tooth(request, odontogram_id, tooth_id):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         if request.method != 'POST':
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'update_odontogram'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
         
         try:
             data = json.loads(request.body)
@@ -131,6 +166,13 @@ def view_update_tooth(request, odontogram_id, tooth_id):
     else:
         if request.method != 'POST':
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'update_odontogram'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
         
         try:
             data = json.loads(request.body)

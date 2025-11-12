@@ -915,6 +915,44 @@
       }
     }
 
+
+    function update_tooth_in_list(FDI_number, newData) {
+      // We searched for the tooth by FDI_number
+      const toothIndex = information_teeth.findIndex(t => t.FDI_number === FDI_number);
+
+      if (toothIndex === -1) {
+        return false; // the tooth not exist
+      }
+
+      const tooth = information_teeth[toothIndex];
+
+      // the file of the new data
+      const fieldsToUpdate = [
+        "status",
+        "svg_state",
+        "surfaces",
+        "caries_depth",
+        "has_tartar",
+        "status_gum",
+        "mobility",
+        "diagnosis",
+        "treatments",
+        "notes",
+        "last_checkup"
+      ];
+
+      fieldsToUpdate.forEach(field => {
+        if (newData.hasOwnProperty(field)) {
+          tooth[field] = newData[field];
+        }
+      });
+
+      // update the object
+      information_teeth[toothIndex] = tooth;
+
+      return true;
+    }
+
     await get_information_of_the_odontogram_with_id(odontogram_id);
 
 
@@ -976,6 +1014,7 @@
     window.get_number_tooth = get_number_tooth;
     window.get_svg_activity = get_svg_activity;
     window.get_number_fdi=get_number_fdi;
+    window.update_tooth_in_list=update_tooth_in_list;
 
     // ===== CREATE THEETH =====
     const dientesMap = new Map();
@@ -1104,10 +1143,12 @@
               <!-- CIRCULAR SCHEME -->
               <div class="esquema-diente-circular">
                   ${get_draw_faces(info_tooth.surfaces)}
+                  <input id='input-face-tooth' type='hidden' name='surfaces' value='${info_tooth.surfaces}'></input>
               </div>
           </div>
           <div class="col">
               ${get_draw_caries_depth(info_tooth.caries_depth)}
+              <input id='input-depth-caries' type='hidden' name='caries_depth' value='${info_tooth.caries_depth}'></input>
           </div>
         </div>
 
@@ -1132,7 +1173,7 @@
 
         <div class="row section">
           <div class='col'>
-            <plus-select name="mobility" label='odontograma.label.mobility' value='${info_tooth.mobility}'>
+            <plus-select name="mobility" label='odontograma.label.mobility' value='${info_tooth.mobility}' id='mobility-form'>
               <option value="0">0 - Sin movilidad</option>
               <option value="1">I - Leve (hasta 1 mm)</option>
               <option value="2">II - Moderada (>1 mm)</option>
@@ -1144,20 +1185,53 @@
         <div class="row section">
           <div class='col'>
             <label>${window.translate_text('odontograma.label.observation')}</label>
-            <textarea name="notes" placeholder="${window.translate_text('odontograma.placeholder.observation')}">${info_tooth.notes}</textarea>
+            <textarea name="notes" placeholder="${window.translate_text('odontograma.placeholder.observation')}" id='notes-form'>${info_tooth.notes}</textarea>
           </div>
         </div>
 
 
-        <button class='btn btn-edit btn-success' type='button' onclick='update_data_tooth(${info_tooth.id})'>${window.translate_text('btn.save')}</button>
+        <button class='btn btn-edit btn-success' type='button' onclick='update_data_tooth(${info_tooth.id}, ${info_tooth.FDI_number})'>${window.translate_text('btn.save')}</button>
       </div>
     </form>
   `;
 
     // Add visual interaction (click to highlight areas)
+    //here we will to save the information in JSON for save in the database 
+    let surfacesData = {
+      mesial: {},
+      distal: {},
+      oclusal: {},
+      lingual: {},
+      vestibular: {}
+    };
+
     panel.querySelectorAll('.cara').forEach(cara => {
       cara.addEventListener('click', () => {
-        cara.classList.toggle('activa');
+      const inputSurfaces = document.getElementById('input-face-tooth');
+      if(inputSurfaces){
+          try {
+            // try convert in JSON the value of the input
+            surfacesData = JSON.parse(inputSurfaces.value);
+          } catch (e) {
+          }
+      }
+
+      cara.classList.toggle('activa'); //show the face
+
+      // get the face 
+      const superficie = cara.getAttribute('typeFace');
+
+      // update the JSON
+      if (cara.classList.contains('activa')) {
+        surfacesData[superficie] = { "selected": true };
+      } else {
+        surfacesData[superficie] = {};
+      }
+
+      // update the input that is hiden
+      if (inputSurfaces) {
+        inputSurfaces.value = JSON.stringify(surfacesData);
+      }
       });
     });
 
@@ -1166,7 +1240,7 @@
         const niveles = Array.from(document.querySelectorAll('.caries-nivel'));
         const index = niveles.indexOf(nivel);
 
-        // Si la capa ya estaba activa → deseleccionamos todo
+        // If the layer was already active → deselect everything
         if (nivel.classList.contains('activa')) {
           niveles.forEach(n => {
             n.classList.remove('activa');
@@ -1175,14 +1249,21 @@
           return;
         }
 
-        // Limpiar estados previos
+        // Clear previous states
         niveles.forEach(n => {
           n.classList.remove('activa');
           n.classList.remove('infectada');
         });
 
-        // Activar la capa clickeada
+        // Activate the clicked layer
         nivel.classList.add('activa');
+
+        //here we will to update the input of the form for update the input of the depth caries
+        const depthInput=document.getElementById('input-depth-caries');
+        if(depthInput){
+          depthInput.value=4-index;
+        }
+
 
         // Marcar capas por debajo como infectadas
         for (let i = index + 1; i < niveles.length; i++) {
@@ -1204,54 +1285,58 @@
     //we will see if exist information save in the list of the faces, if not exist return the body first
     if(surfaces==null){
       return `
-        <div class="cara cuadrante" data-cara="superior-izq" title="Mesial"></div>
-        <div class="cara cuadrante" data-cara="superior-der" title="Distal"></div>
-        <div class="cara cuadrante" data-cara="inferior-izq" title="Vestibular"></div>
-        <div class="cara cuadrante" data-cara="inferior-der" title="Lingual"></div>
-        <div class="cara centro" data-cara="oclusal" title="Oclusal"></div>
+        <div class="cara cuadrante" data-cara="superior-izq" typeFace='mesial' title="Mesial"></div>
+        <div class="cara cuadrante" data-cara="superior-der" typeFace='distal' title="Distal"></div>
+        <div class="cara cuadrante" data-cara="inferior-izq" typeFace='vestibular' title="Vestibular"></div>
+        <div class="cara cuadrante" data-cara="inferior-der" typeFace='lingual' title="Lingual"></div>
+        <div class="cara centro" data-cara="oclusal" typeFace='oclusal' title="Oclusal"></div>
       `
+    }
+
+    //convert the text to JSON
+    if (typeof surfaces === "string") {
+      surfaces = JSON.parse(surfaces);
     }
 
     //if exist information we will to get all the information need of the face for draw
     let faces='';
     const mesial=surfaces.mesial
-    if(mesial && mesial.caries){
-      faces+= '<div class="cara cuadrante activa" data-cara="superior-izq" title="Mesial"></div>'
+    if(mesial && mesial.selected){
+      faces+= '<div class="cara cuadrante activa" data-cara="superior-izq"  typeFace="mesial" title="Mesial"></div>'
     }else{
-      faces+= '<div class="cara cuadrante" data-cara="superior-izq" title="Mesial"></div>'
+      faces+= '<div class="cara cuadrante" data-cara="superior-izq" typeFace="mesial" title="Mesial"></div>'
     }
 
     const distal=surfaces.distal
-    if(distal && distal.caries){
-      faces+= '<div class="cara cuadrante activa" data-cara="superior-der" title="Distal"></div>'
+    if(distal && distal.selected){
+      faces+= '<div class="cara cuadrante activa" data-cara="superior-der" typeFace="distal" title="Distal"></div>'
     }else{
-      faces+= '<div class="cara cuadrante" data-cara="superior-der" title="Distal"></div>'
+      faces+= '<div class="cara cuadrante" data-cara="superior-der" typeFace="distal" title="Distal"></div>'
     }
 
     const vestibular=surfaces.vestibular
-    if(vestibular && vestibular.caries){
-      faces+= '<div class="cara cuadrante activa" data-cara="inferior-izq" title="Vestibular"></div>'
+    if(vestibular && vestibular.selected){
+      faces+= '<div class="cara cuadrante activa" data-cara="inferior-izq" typeFace="vestibular" title="Vestibular"></div>'
     }else{
-      faces+= '<div class="cara cuadrante" data-cara="inferior-izq" title="Vestibular"></div>'
+      faces+= '<div class="cara cuadrante" data-cara="inferior-izq" typeFace="vestibular"  title="Vestibular"></div>'
     }
 
     const lingual=surfaces.lingual
-    if(lingual && lingual.caries){
-      faces+= '<div class="cara cuadrante activa" data-cara="inferior-der" title="Lingual"></div>'
+    if(lingual && lingual.selected){
+      faces+= '<div class="cara cuadrante activa" data-cara="inferior-der" typeFace="lingual" title="Lingual"></div>'
     }else{
-      faces+= '<div class="cara cuadrante" data-cara="inferior-der" title="Lingual"></div>'
+      faces+= '<div class="cara cuadrante" data-cara="inferior-der" typeFace="lingual" title="Lingual"></div>'
     }
 
     const oclusal=surfaces.oclusal
-    if(oclusal && oclusal.caries){
-      faces+= '<div class="cara centro activa" data-cara="oclusal" title="Oclusal"></div>'
+    if(oclusal && oclusal.selected){
+      faces+= '<div class="cara centro activa" data-cara="oclusal" typeFace="oclusal" title="Oclusal"></div>'
     }else{
-      faces+= '<div class="cara centro" data-cara="oclusal" title="Oclusal"></div>'
+      faces+= '<div class="cara centro" data-cara="oclusal" typeFace="oclusal" title="Oclusal"></div>'
     }
 
     return faces;
   }
-
 
   function get_draw_caries_depth(caries_depth = 0) {
     // We define the levels in order from top to bottom
@@ -1286,13 +1371,22 @@
     `;
   }
 
-  async function update_data_tooth(tooth_id){
+  async function update_data_tooth(tooth_id, fdi_number){
     const backend=await send_form_to_the_server('form-data-tooth',`odontograma/view_update_tooth/${window.odontogram_id}/${tooth_id}/`);
     if(!backend.success){
       window.show_alert('error', 'odontogram.title.exist-a-eror-to-update', backend.message, backend.error);
       return;
     }
 
+    //here we will to update all the information of the JSON that have save of all the tooth
+    const newData={
+      mobility:window.get_value_plus_select('mobility-form'),
+      notes:document.getElementById('notes-form').value
+    }
+    window.update_tooth_in_list(fdi_number, newData);
+
+
+    //show a message of success
     window.show_alert('success', 'odontogram.title.the-tooth-was-update', 'odontograma.success.tooth_updated')
   }
 
