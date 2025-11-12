@@ -1017,6 +1017,7 @@
     window.update_tooth_in_list=update_tooth_in_list;
     window.info_tooth_id=null;
     window.FDI_number=null;
+    window.dienteId=null;
 
     // ===== CREATE THEETH =====
     let dientesMap = new Map();
@@ -1123,6 +1124,7 @@
     //now we will get the information of the tooth in the json that save in the variable gloabl
     const number_tooth=window.get_number_fdi(dienteId);
     const info_tooth=get_tooth_info_by_FDI(number_tooth);
+    window.dienteId=dienteId;
     window.info_tooth_id=info_tooth.id;
     window.FDI_number=info_tooth.FDI_number;
 
@@ -1645,7 +1647,8 @@
         inputSvg_state.value = JSON.stringify(jsonSvg);
 
         // Refresca la vista
-        await update_data_tooth(window.info_tooth_id, window.FDI_number)
+        await update_data_tooth(window.info_tooth_id, window.FDI_number);
+        get_data_theen(dienteId); 
         window.update_all_the_mouth();
       }
 
