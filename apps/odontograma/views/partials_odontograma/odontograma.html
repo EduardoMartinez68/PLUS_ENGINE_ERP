@@ -1379,10 +1379,8 @@
     }
 
     //here we will to update all the information of the JSON that have save of all the tooth
-    const newData={
-      mobility:window.get_value_plus_select('mobility-form'),
-      notes:document.getElementById('notes-form').value
-    }
+    const formData = new FormData(document.getElementById('form-data-tooth'));
+    const newData = Object.fromEntries(formData.entries());
     window.update_tooth_in_list(fdi_number, newData);
 
 
