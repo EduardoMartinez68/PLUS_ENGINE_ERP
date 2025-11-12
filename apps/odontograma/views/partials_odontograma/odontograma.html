@@ -1025,18 +1025,17 @@
       const number_tooth=window.get_number_fdi(diente.id);
       const info_tooth=get_tooth_info_by_FDI(number_tooth);
       div.title = window.translate_text(info_tooth.name_key) || diente.nombre;
-
       const num = document.createElement('div');
       num.classList.add('numero-diente');
       num.textContent = get_number_tooth(diente.id);
       div.appendChild(num);
 
-      const dibujo = crearDibujoDiente(diente.id);
+      const dibujo = crearDibujoDiente(diente.id, info_tooth);
       div.appendChild(dibujo);
 
       div.addEventListener('click', () => mostrarInfo(diente.id));
       dientesMap.set(diente.id, div);
-
+      
 
       const limit = typeThooth === 1 ? 10 : 16;
       if (diente.id <= limit) arcadaSuperior.appendChild(div);
@@ -1052,12 +1051,12 @@
 
 
   // ===== FUNCIONES =====
-  function crearDibujoDiente(id) {
+  function crearDibujoDiente(id, info_tooth) {
     const container = document.createElement('div');
     container.classList.add('diente-container');
 
     // Insertar el SVG correspondiente
-    container.innerHTML = svgsDientes[id] || '<div>Diente no disponible</div>';
+    container.innerHTML = render_tooth_svg(id, info_tooth); //svgsDientes[id] || '<div>Diente no disponible</div>';
 
     return container;
   }
@@ -1113,11 +1112,14 @@
     //now we will get the information of the tooth in the json that save in the variable gloabl
     const number_tooth=window.get_number_fdi(dienteId);
     const info_tooth=get_tooth_info_by_FDI(number_tooth);
-    console.log(JSON.stringify(info_tooth, null, 2));
+    //console.log(JSON.stringify(info_tooth, null, 2));
 
     //here we will to draw in the panel with the information of the tooth
     const thoot = window.translate_text('odontograma.status.tooth');
     const panel = document.getElementById('panel-info');
+
+    const thootSvg = render_tooth_svg(dienteId, info_tooth);
+
     panel.innerHTML = `
     <form id='form-data-tooth'>
       <div class="info-diente">
@@ -1125,7 +1127,7 @@
 
         <div class="row">
           <div class="col-2">
-            <div class="container-draw-tooth">${window.svgsDientes[dienteId]}</div>
+            <div class="container-draw-tooth">${thootSvg}</div>
           </div>
           <div class="col-9">
               <h5>${window.translate_text(info_tooth.name_key)}</h5>
@@ -1158,6 +1160,7 @@
 
 
         <show-more text='odontograma.title.diagnosis' onclick='window.show_information_thoot(${dienteId})'></show-more>
+        <input type='hidden' name='svg_state' value="${info_tooth.svg_state}" id='form-svg_state'></input>
 
         <plus-switch name="has_tartar" text="odontograma.label.have-plaque-or-tartar" checked='${info_tooth.has_tartar}'></plus-switch>
 
@@ -1279,6 +1282,62 @@
     });
   }
 
+  function render_tooth_svg(dienteId, info_tooth) {
+    let baseSvg = window.svgsDientes[dienteId];
+    let overlays = ""; 
+
+    try {
+      const jsonSvg = JSON.parse(info_tooth.svg_state);
+      for (let i = 0; i < jsonSvg.length; i++) {
+        overlays += get_tooth_overlay(dienteId, jsonSvg[i].status);
+      }
+    } catch (e) {
+    }
+
+    // Insert all overlays inside the base SVG
+    const fullSvg = baseSvg.replace("</svg>", `${overlays}</svg>`);
+    return fullSvg;
+  }
+
+  function get_tooth_overlay(dienteId, type) {
+    const coordinates = {
+      1: [64, 181, 15],
+      2: [110, 181, 15],
+      3: [155, 187, 15],
+      4: [197, 187, 15],
+      5: [241, 194, 15],
+      6: [285, 197, 15],
+      7: [330, 194, 15],
+      8: [373, 198, 15],
+      9: [373, 198, 15],
+      10: [330, 194, 15],
+      11: [285, 197, 15],
+      12: [241, 194, 15],
+      13: [197, 187, 15],
+      14: [155, 187, 15],
+      15: [110, 181, 15],
+      16: [64, 181, 15],
+      32: [64, 181, 15],
+      31: [110, 181, 15],
+      30: [155, 187, 15],
+      29: [197, 187, 15],
+      28: [241, 194, 15],
+      27: [285, 197, 15],
+      26: [330, 194, 15],
+      25: [373, 198, 15],
+      24: [373, 198, 15],
+      23: [330, 194, 15],
+      22: [285, 197, 15],
+      21: [241, 194, 15],
+      20: [197, 187, 15],
+      19: [155, 187, 15],
+      18: [110, 181, 15],
+      17: [64, 181, 15],
+    };
+
+    const [x, y, r] = coordinates[dienteId];
+    return window.get_svg_activity(type, x, y, r);
+  }
 
   function get_draw_faces(surfaces){
 
@@ -1527,7 +1586,7 @@
 
         const overlay = window.get_svg_activity(tipo, x, y, r);
         const thootSvg = baseSvg.replace('</svg>', `${overlay}</svg>`);
-        return `<div class="container-status-thoo p-2">${thootSvg} <label class='info-status-thoo'> ${translateStatus[tipo]} </label> </div>`;
+        return `<div class="container-status-thoo p-2" status='${tipo}'>${thootSvg} <label class='info-status-thoo'> ${translateStatus[tipo]} </label> </div>`;
       }).join('');
 
 
@@ -1538,7 +1597,7 @@
       //create the event for when the user do click in a status of the thooth
       container.querySelectorAll('.container-status-thoo').forEach(div => {
         div.addEventListener('click', function () {
-          estadoSeleccionado = this.dataset.estado; // save the new status
+          estadoSeleccionado = this.getAttribute("status"); // save the new status
 
           //add a class for show that be select
           container.querySelectorAll('.container-status-thoo').forEach(d => d.classList.remove('selected'));
@@ -1548,8 +1607,24 @@
       document.getElementById('infoPanel').show();
     }
 
+    const jsonSvg = [
+    ];
 
     function add_new_status_thoo() {
+      const inputSvg_state=document.getElementById('form-svg_state')
+      if(inputSvg_state){
+        try {
+          // try convert in JSON the value of the input
+          jsonSvg = JSON.parse(inputSvg_state.value); //convert the status that exist in the form 
+        } catch (e) {
+        }
+
+        jsonSvg.push({ status: estadoSeleccionado }); //add the new status
+        inputSvg_state.value=JSON.stringify(jsonSvg); //here we will to update the input hidden 
+        console.log(inputSvg_state)
+      }
+
+
       document.getElementById('infoPanel').hide()
     }
 
@@ -1582,8 +1657,6 @@
       });
     });
   }, 2000);
-
-
 
   })();
 

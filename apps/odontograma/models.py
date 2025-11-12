@@ -241,12 +241,11 @@ class Tooth(models.Model):
 
     # Visual state of the tooth in SVG format
     #this variable be use for save the draw of the status of the tooth in format svg
-    svg_state = models.TextField(
-        blank=True, 
-        null=True,
-        help_text="SVG code that represents the current visual state of the tooth."
-    )
-
+    svg_state = models.JSONField(default=dict, blank=True, help_text="SVG code that represents the current visual state of the tooth.")
+    # example:
+    # {
+    #   {"caries", "corona", ...}
+    # }
 
 
 
