@@ -1478,7 +1478,13 @@
 
   function get_draw_table_status(info_tooth) {
     const surfacesStr = info_tooth.svg_state;
-    const surfaces = JSON.parse(surfacesStr || "[]");
+    let surfaces=[]
+    try{
+      surfaces = JSON.parse(surfacesStr || "[]");
+    } catch (e) {
+      surfaces = [];
+    }
+
     
     let div = `
       <div class="row section">
@@ -1496,7 +1502,7 @@
     if (surfaces.length === 0) {
       div += `
         <tr>
-          <td colspan="2" class="text-center text-muted">Sin estados</td>
+          <td colspan="2" class="text-center text-muted">${window.translate_text('odontogram.td.without-diagnostic')}</td>
         </tr>
       `;
     } else {
@@ -1506,7 +1512,7 @@
           <tr>
             <td>${status}</td>
             <td class="text-center">
-              <button class="btn btn-delete" type='button' onclick="remove_tooth_status('${status}')">
+              <button class="btn btn-delete" type='button' onclick="delete_status_tooth(${i})">
                 <i class="fi fi-rr-trash"></i>
               </button>
             </td>
@@ -1523,6 +1529,23 @@
     `;
 
     return div;
+  }
+
+  async function delete_status_tooth(indexStatus){
+    const info_tooth=get_tooth_info_by_FDI(window.FDI_number);
+    const surfacesStr = info_tooth.svg_state;
+    const surfaces = JSON.parse(surfacesStr || "[]");
+    const inputSvg_state = document.getElementById('form-svg_state');
+    if(inputSvg_state){
+      if(await show_message_question('odontogram.question.do-you-dele-this-diagnostic', 'odontogram.description.do-you-dele-this-diagnostic')){
+        //delete the diagnostic and update the information of the odontogram
+        console.log(surfaces)
+        surfaces.splice(indexStatus, 1); 
+        inputSvg_state.value = JSON.stringify(surfaces);
+        console.log(JSON.stringify(surfaces))
+        await window.update_all_the_information_of_the_odontogram();
+      }
+    }
   }
 
   async function update_data_tooth(tooth_id, fdi_number){
@@ -1697,19 +1720,23 @@
 
         // Actualiza el input oculto
         inputSvg_state.value = JSON.stringify(jsonSvg);
-
-        // refesh the view of the odontogram
-        await update_data_tooth(window.info_tooth_id, window.FDI_number);
-        get_data_theen(dienteId); 
-        window.update_all_the_mouth();
+        await update_all_the_information_of_the_odontogram();
       }
 
       document.getElementById('infoPanel').hide();
     }
 
+    async function update_all_the_information_of_the_odontogram(){
+      // refesh the view of the odontogram
+      await update_data_tooth(window.info_tooth_id, window.FDI_number);
+      get_data_theen(dienteId); 
+      window.update_all_the_mouth();
+    }
+
 
     window.show_information_thoot = show_information_thoot;
     window.add_new_status_thoo = add_new_status_thoo;
+    window.update_all_the_information_of_the_odontogram=update_all_the_information_of_the_odontogram;
   
 
   //here we will to create the input of search

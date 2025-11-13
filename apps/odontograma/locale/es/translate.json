@@ -128,5 +128,8 @@
   "odontograma.error.this-tooth-not-exist-in-the-odontogram":"Este Diente no existe pertenece a este odontograma",
 
 
-  "odontogram.td.diagnostic":"Diagnostico"
+  "odontogram.td.diagnostic":"Diagnosticos",
+  "odontogram.td.without-diagnostic":"Sin Diagnosticos",
+  "odontogram.question.do-you-dele-this-diagnostic":"Deseas eliminar este diagnostico?",
+  "odontogram.description.do-you-dele-this-diagnostic":"Si eliminas este Diagnostico ya no sera visible en el odontograma del paciente"
 }
