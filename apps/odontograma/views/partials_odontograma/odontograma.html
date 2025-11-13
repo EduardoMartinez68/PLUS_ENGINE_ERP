@@ -634,6 +634,34 @@
 
 <script>
   (async() => {
+    //here we will to save all the translate of the status for save and only translate one time
+    const translateStatus = {
+      corona: window.translate_text('odontograma.status.crown'),
+      coronaProvisional: window.translate_text('odontograma.status.provisional-crown'),
+      coronaMalEstado: window.translate_text('odontograma.status.crown-bad-condition'),
+      coronaMalEstadoProvisional: window.translate_text('odontograma.status.provisional-crown-bad-condition'),
+
+      restauracion: window.translate_text('odontograma.status.restoration'),
+      restauracionMalEstado: window.translate_text('odontograma.status.restoration-bad-condition'),
+
+      endodoncia: window.translate_text('odontograma.status.root-canal'),
+      endodonciaMalEstado: window.translate_text('odontograma.status.root-canal-bad-condition'),
+
+      implante: window.translate_text('odontograma.status.implant'),
+      implanteMalEstado: window.translate_text('odontograma.status.implant-bad-condition'),
+
+      perno: window.translate_text('odontograma.status.post'),
+      pernoMalEstado: window.translate_text('odontograma.status.post-bad-condition'),
+
+      amalgama: window.translate_text('odontograma.status.amalgam'),
+      amalgamaMalEstado: window.translate_text('odontograma.status.amalgam-bad-condition'),
+
+      protesisRemovible: window.translate_text('odontograma.status.removable-prosthesis'),
+      sellante: window.translate_text('odontograma.status.sealant'),
+      dienteAusente: window.translate_text('odontograma.status.missing-tooth'),
+      otro: window.translate_text('odontograma.status.other')
+    };
+
     //this funtion are for get the svg of the new status of the thoot 
     function get_svg_activity(activity, x = 64, y = 181, r = 15) {
       /*
@@ -1018,6 +1046,7 @@
     window.info_tooth_id=null;
     window.FDI_number=null;
     window.dienteId=null;
+    window.translateStatus=translateStatus;
 
     // ===== CREATE THEETH =====
     let dientesMap = new Map();
@@ -1208,6 +1237,7 @@
           </div>
         </div>
 
+        ${get_draw_table_status(info_tooth)}
 
         <button class='btn btn-edit btn-success' type='button' onclick='update_data_tooth(${info_tooth.id}, ${info_tooth.FDI_number})'>${window.translate_text('btn.save')}</button>
       </div>
@@ -1446,6 +1476,55 @@
     `;
   }
 
+  function get_draw_table_status(info_tooth) {
+    const surfacesStr = info_tooth.svg_state;
+    const surfaces = JSON.parse(surfacesStr || "[]");
+    
+    let div = `
+      <div class="row section">
+        <div class="col">
+          <table class="table table-sm table-bordered table-striped align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th>${window.translate_text('odontogram.td.diagnostic')}</th>
+                <th class="text-center"></th>
+              </tr>
+            </thead>
+            <tbody>
+    `;
+
+    if (surfaces.length === 0) {
+      div += `
+        <tr>
+          <td colspan="2" class="text-center text-muted">Sin estados</td>
+        </tr>
+      `;
+    } else {
+      for (let i = 0; i < surfaces.length; i++) {
+        const status = window.translateStatus[surfaces[i].status];
+        div += `
+          <tr>
+            <td>${status}</td>
+            <td class="text-center">
+              <button class="btn btn-delete" type='button' onclick="remove_tooth_status('${status}')">
+                <i class="fi fi-rr-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    div += `
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    return div;
+  }
+
   async function update_data_tooth(tooth_id, fdi_number){
     const backend=await send_form_to_the_server('form-data-tooth',`odontograma/view_update_tooth/${window.odontogram_id}/${tooth_id}/`);
     if(!backend.success){
@@ -1462,6 +1541,7 @@
     //show a message of success
     window.show_alert('success', 'odontogram.title.the-tooth-was-update', 'odontograma.success.tooth_updated')
   }
+
 
   // Hide panel if tapped on mobile
   window.addEventListener('click', e => {
@@ -1488,34 +1568,6 @@
 <script>
   (() => {
     let estadoSeleccionado = null;
-
-    //here we will to save all the translate of the status for save and only translate one time
-    const translateStatus = {
-      corona: window.translate_text('odontograma.status.crown'),
-      coronaProvisional: window.translate_text('odontograma.status.provisional-crown'),
-      coronaMalEstado: window.translate_text('odontograma.status.crown-bad-condition'),
-      coronaMalEstadoProvisional: window.translate_text('odontograma.status.provisional-crown-bad-condition'),
-
-      restauracion: window.translate_text('odontograma.status.restoration'),
-      restauracionMalEstado: window.translate_text('odontograma.status.restoration-bad-condition'),
-
-      endodoncia: window.translate_text('odontograma.status.root-canal'),
-      endodonciaMalEstado: window.translate_text('odontograma.status.root-canal-bad-condition'),
-
-      implante: window.translate_text('odontograma.status.implant'),
-      implanteMalEstado: window.translate_text('odontograma.status.implant-bad-condition'),
-
-      perno: window.translate_text('odontograma.status.post'),
-      pernoMalEstado: window.translate_text('odontograma.status.post-bad-condition'),
-
-      amalgama: window.translate_text('odontograma.status.amalgam'),
-      amalgamaMalEstado: window.translate_text('odontograma.status.amalgam-bad-condition'),
-
-      protesisRemovible: window.translate_text('odontograma.status.removable-prosthesis'),
-      sellante: window.translate_text('odontograma.status.sealant'),
-      dienteAusente: window.translate_text('odontograma.status.missing-tooth'),
-      otro: window.translate_text('odontograma.status.other')
-    };
 
 
     function show_information_thoot(id) {
@@ -1602,7 +1654,7 @@
 
         const overlay = window.get_svg_activity(tipo, x, y, r);
         const thootSvg = baseSvg.replace('</svg>', `${overlay}</svg>`);
-        return `<div class="container-status-thoo p-2" status='${tipo}'>${thootSvg} <label class='info-status-thoo'> ${translateStatus[tipo]} </label> </div>`;
+        return `<div class="container-status-thoo p-2" status='${tipo}'>${thootSvg} <label class='info-status-thoo'> ${window.translateStatus[tipo]} </label> </div>`;
       }).join('');
 
 
@@ -1630,23 +1682,23 @@
       const inputSvg_state = document.getElementById('form-svg_state');
       if (inputSvg_state) {
         try {
-          // Intenta convertir el valor actual del input a JSON
+          // try convert the value of the input to JSON
           jsonSvg = JSON.parse(inputSvg_state.value || "[]");
         } catch (e) {
           jsonSvg = [];
         }
 
-        // Verifica si ya existe el estado
+        //here we will see if exist the status
         const existe = jsonSvg.some(item => item.status === estadoSeleccionado);
 
         if (!existe) {
-          jsonSvg.push({ status: estadoSeleccionado }); // Agrega solo si no existe
+          jsonSvg.push({ status: estadoSeleccionado }); // add the new status only if not exist in the answer
         }
 
         // Actualiza el input oculto
         inputSvg_state.value = JSON.stringify(jsonSvg);
 
-        // Refresca la vista
+        // refesh the view of the odontogram
         await update_data_tooth(window.info_tooth_id, window.FDI_number);
         get_data_theen(dienteId); 
         window.update_all_the_mouth();
@@ -1658,7 +1710,6 @@
 
     window.show_information_thoot = show_information_thoot;
     window.add_new_status_thoo = add_new_status_thoo;
-
   
 
   //here we will to create the input of search

@@ -125,5 +125,8 @@
   "odontogram.title.exist-a-eror-to-update":"Ocurrio un error",
   "odontograma.error.validation":"Sucedio un error en los campos del diente",
   "odontograma.error.unexpected-tooth":"Ocurrio un error al momento de actualizar la informacion de este diente en el servidor",
-  "odontograma.error.this-tooth-not-exist-in-the-odontogram":"Este Diente no existe pertenece a este odontograma"
+  "odontograma.error.this-tooth-not-exist-in-the-odontogram":"Este Diente no existe pertenece a este odontograma",
+
+
+  "odontogram.td.diagnostic":"Diagnostico"
 }

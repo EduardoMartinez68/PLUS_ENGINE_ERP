@@ -75,7 +75,7 @@ async function load_language(langUrl, first=true) {
   }
   */
 
-  const MAX_DICTIONARIES = 5;
+  const MAX_DICTIONARIES = 8;
 
   //we will see if already exist the dictionary in the memory
   const existing = allTheDictionary.find(d => d.name === langUrl);
@@ -109,7 +109,7 @@ async function load_language(langUrl, first=true) {
         await load_language(link, false);
       }
     }
-
+    console.log(allTheDictionary)
     //save in localStorage
     try {
       localStorage.setItem('allTheDictionary', JSON.stringify(allTheDictionary));
