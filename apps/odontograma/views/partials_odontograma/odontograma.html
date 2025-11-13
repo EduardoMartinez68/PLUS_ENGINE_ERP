@@ -1539,27 +1539,31 @@
     return div;
   }
 
-  async function delete_status_tooth(indexStatus){
+
+  async function delete_status_tooth(indexStatus) {
     //get the information of the diagnostic of the tooth and do a question for know if would like delete the diagnostic
     //only do this if exist the input for update the information of the status of the tooth
-    const info_tooth=get_tooth_info_by_FDI(window.FDI_number);
-    const surfacesStr = info_tooth.svg_state;
+    const info_tooth = get_tooth_info_by_FDI(window.FDI_number);
+    let surfacesStr = info_tooth.svg_state;
+    let surfaces = [];
 
-    let surfaces;
-    try{
-      surfaces = JSON.parse(JSON.stringify(surfaces) || "[]");
+    try {
+      // If it's already an object (not a string), don't use JSON.parse
+      if (typeof surfacesStr === "string") {
+        surfaces = JSON.parse(surfacesStr || "[]");
+      } else {
+        surfaces = surfacesStr || [];
+      }
     } catch (e) {
       surfaces = [];
     }
 
+    const inputSvg_state = document.getElementById("form-svg_state");
 
-    const inputSvg_state = document.getElementById('form-svg_state');
-
-    if(inputSvg_state){
-      if(await show_message_question('odontogram.question.do-you-dele-this-diagnostic', 'odontogram.description.do-you-dele-this-diagnostic')){
-        //delete the diagnostic and update the information of the odontogram
-        surfaces.splice(indexStatus, 1); 
-        inputSvg_state.value = JSON.stringify(surfaces);
+    if (inputSvg_state) {
+      if (await show_message_question("odontogram.question.do-you-dele-this-diagnostic", "odontogram.description.do-you-dele-this-diagnostic")) {
+        surfaces.splice(indexStatus, 1);
+        inputSvg_state.value = JSON.stringify(surfaces); // save the data as JSON
         await window.update_all_the_information_of_the_odontogram();
       }
     }
