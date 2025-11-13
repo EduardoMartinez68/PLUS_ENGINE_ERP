@@ -1180,8 +1180,8 @@
           </div>
         </div>
         <div class="tooth-navigation">
-          <button id="prev-tooth" onclick="mostrarInfo(${dienteId - 1})"><i class="fi fi-rr-angle-left"></i></button>
-          <button id="next-tooth" onclick="mostrarInfo(${dienteId + 1})"><i class="fi fi-rr-angle-right"></i></button>
+          <button type='button' id="prev-tooth" onclick="mostrarInfo(${dienteId - 1})"><i class="fi fi-rr-angle-left"></i></button>
+          <button type='button' id="next-tooth" onclick="mostrarInfo(${dienteId + 1})"><i class="fi fi-rr-angle-right"></i></button>
         </div>
 
 
@@ -1399,8 +1399,16 @@
     }
 
     //convert the text to JSON
-    if (typeof surfaces === "string") {
+    try {
       surfaces = JSON.parse(surfaces);
+    } catch (e) {
+      return `
+        <div class="cara cuadrante" data-cara="superior-izq" typeFace='mesial' title="Mesial"></div>
+        <div class="cara cuadrante" data-cara="superior-der" typeFace='distal' title="Distal"></div>
+        <div class="cara cuadrante" data-cara="inferior-izq" typeFace='vestibular' title="Vestibular"></div>
+        <div class="cara cuadrante" data-cara="inferior-der" typeFace='lingual' title="Lingual"></div>
+        <div class="cara centro" data-cara="oclusal" typeFace='oclusal' title="Oclusal"></div>
+      `
     }
 
     //if exist information we will to get all the information need of the face for draw
@@ -1487,10 +1495,10 @@
 
     
     let div = `
-      <div class="row section">
+      <div class="row section" style="width: 100%;">
         <div class="col">
-          <table class="table table-sm table-bordered table-striped align-middle">
-            <thead class="table-dark">
+          <table style="width: 100%;">
+            <thead>
               <tr>
                 <th>${window.translate_text('odontogram.td.diagnostic')}</th>
                 <th class="text-center"></th>
@@ -1532,17 +1540,26 @@
   }
 
   async function delete_status_tooth(indexStatus){
+    //get the information of the diagnostic of the tooth and do a question for know if would like delete the diagnostic
+    //only do this if exist the input for update the information of the status of the tooth
     const info_tooth=get_tooth_info_by_FDI(window.FDI_number);
     const surfacesStr = info_tooth.svg_state;
-    const surfaces = JSON.parse(surfacesStr || "[]");
+
+    let surfaces;
+    try{
+      surfaces = JSON.parse(JSON.stringify(surfaces) || "[]");
+    } catch (e) {
+      surfaces = [];
+    }
+
+
     const inputSvg_state = document.getElementById('form-svg_state');
+
     if(inputSvg_state){
       if(await show_message_question('odontogram.question.do-you-dele-this-diagnostic', 'odontogram.description.do-you-dele-this-diagnostic')){
         //delete the diagnostic and update the information of the odontogram
-        console.log(surfaces)
         surfaces.splice(indexStatus, 1); 
         inputSvg_state.value = JSON.stringify(surfaces);
-        console.log(JSON.stringify(surfaces))
         await window.update_all_the_information_of_the_odontogram();
       }
     }
