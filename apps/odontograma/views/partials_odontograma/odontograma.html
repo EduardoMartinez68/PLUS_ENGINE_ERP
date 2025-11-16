@@ -1113,6 +1113,8 @@
         if (diente.id <= limit) arcadaSuperior.appendChild(div);
         else arcadaInferior.appendChild(div);
       });
+
+      window.dientesMap=dientesMap;
     }
 
     update_all_the_mouth();
@@ -1743,7 +1745,7 @@
     window.update_tooth_in_list(fdi_number, newData);
     
     window.update_all_the_mouth();
-    
+
     //show a message of success
     window.show_alert('success', 'odontogram.title.the-tooth-was-update', 'odontograma.success.tooth_updated')
   }
