@@ -185,3 +185,16 @@ def view_update_tooth(request, odontogram_id, tooth_id):
         result = update_tooth(tooth_id, odontogram_id, data, request.user)
         return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
 
+@login_required(login_url='login')
+def view_setting(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'GET':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        return render(request, 'odontogram_setting.html')
+    else:
+        if request.method != 'GET':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        return render(request, 'odontogram_setting.html')
+

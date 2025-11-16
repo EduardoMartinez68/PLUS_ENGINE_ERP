@@ -473,7 +473,7 @@
   /*------------------------------------------------------------PATIENTE INFO----------------------------------*/
   .patient-info {
     position: absolute;
-    top: 120px;
+    top: 180px;
     left: 30px;
     display: flex;
     align-items: center;
@@ -1072,7 +1072,7 @@
       document.getElementById('arcada-inferior').innerHTML='';
       dientesMap = new Map();
 
-      //draw all the teeth
+      //draw all the teeth with his information
       dientes.forEach(diente => {
         const div = document.createElement('div');
         div.classList.add('diente');
@@ -1114,9 +1114,14 @@
         else arcadaInferior.appendChild(div);
       });
 
+
+      //here we will to update the information of the lis of the teeth
+      //for that can update the UI of the booth when the user update the face of the teeth
       window.dientesMap=dientesMap;
       if(window.dienteId!==null){
-        mostrarInfo(window.dienteId);
+        const div = window.dientesMap.get(window.dienteId);
+        document.querySelectorAll('.diente').forEach(d => d.classList.remove('activo'));
+        div.classList.add('activo');
       }
     }
 
@@ -1129,7 +1134,7 @@
 
 
 
-  // ===== FUNCIONES =====
+  // ===== FUNCTIONS =====
   function crearDibujoDiente(id, info_tooth) {
     const container = document.createElement('div');
     container.classList.add('diente-container');
@@ -1178,7 +1183,7 @@
 
 
 
-  // ===== NUEVA FUNCIÓN =====
+  // ==========
   function get_data_theen(dienteId) {
     if (dienteId < 1) {
       dienteId = 32;

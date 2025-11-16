@@ -15,6 +15,55 @@ def create_odontogram_for_patient(medical_info, include_deciduous=False):
         Tooth.objects.create(odontogram=odontogram, FDI_number=number, name_key=key)
     return odontogram
 
+class OdontogramSetting(models.Model):
+    """
+    Here we will to save the setting of the odontogram that the user use in his job
+    example the system of the odontograms or his emails and chraracteres
+    """
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="odontogram_settings"
+    )
+    branch = models.ForeignKey(
+        Branch,
+        on_delete=models.CASCADE,
+        related_name="odontogram_settings"
+    )
+    doctor = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="odontogram_settings"
+    )
+
+    typeSystem=models.PositiveSmallIntegerField(
+        default=1,
+        choices=[
+            (1, "FDI"),
+            (2, "Universal")
+        ],
+        null=False
+    )
+
+    #colors of the options
+    color_caries = models.CharField(max_length=7, default="#FF0000") 
+
+    #here we will to save the options that the dentist can do in his office 
+    default_treatments = models.JSONField(default=dict)
+    # example: {"caries": "Relleno composite", "extracción": "Extracción simple"}
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["company", "doctor"],
+                name="unique_odontogram_per_doctor_per_company"
+            )
+        ]
+
+    def __str__(self):
+        return f"Odontogram of {self.doctor} ({self.company.name})"
+    
+
 class Odontogram(models.Model):
     """
     Represents a complete dental chart associated with a client.

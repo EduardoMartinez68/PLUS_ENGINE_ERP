@@ -5,7 +5,8 @@
   "odontograma.placeholder.key-odontogram":"Escribe la clave de identificacion del odontograma",
   "odontograma.label.this-patient-be-a-kit":"Crear el odontograma de dientes de leche",
   "odontograma.status.tooth": "Diente",
-
+  "odontograma.tab.odontograms":"Odontogramas",
+  "odontograma.tab.settings":"Configuraciones",
 
   "odontograma.error.need-all-the-data":"No se recibieron todos los datos correspondientes",
   "odontograma.error.not-exit":"Este odontograma no existe en la base de datos del dentista",
@@ -131,5 +132,11 @@
   "odontogram.td.diagnostic":"Diagnosticos",
   "odontogram.td.without-diagnostic":"Sin Diagnosticos",
   "odontogram.question.do-you-dele-this-diagnostic":"Deseas eliminar este diagnostico?",
-  "odontogram.description.do-you-dele-this-diagnostic":"Si eliminas este Diagnostico ya no sera visible en el odontograma del paciente"
+  "odontogram.description.do-you-dele-this-diagnostic":"Si eliminas este Diagnostico ya no sera visible en el odontograma del paciente",
+
+
+  "odontogram.laebl.setting-of-the-odontogram":"Configuraciones de un odontograma",
+  "odontogram.laebl.select-system":"Selecciona el sistema que deseas usar",
+  "odontogram.option.system-universal":"Sistema Universal (EE. UU)",
+  "odontogram.option.fdi":"Federación Dental Internacional (FDI)"
 }
