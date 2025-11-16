@@ -994,7 +994,6 @@
 
       // update the object
       information_teeth[toothIndex] = tooth;
-
       return true;
     }
 
@@ -1742,8 +1741,9 @@
     const formData = new FormData(document.getElementById('form-data-tooth'));
     const newData = Object.fromEntries(formData.entries());
     window.update_tooth_in_list(fdi_number, newData);
-
-
+    
+    window.update_all_the_mouth();
+    
     //show a message of success
     window.show_alert('success', 'odontogram.title.the-tooth-was-update', 'odontograma.success.tooth_updated')
   }
