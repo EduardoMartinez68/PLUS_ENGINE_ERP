@@ -25,6 +25,7 @@
     gap: 8px;
     padding-bottom: 10px;
     justify-content: center;
+    height: 145px;
   }
 
   .arcada-inferior {
@@ -594,6 +595,22 @@
     text-align: center;
     margin-top: 5px;
   }
+
+
+  /***/
+  .circle-under{
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 25px;      
+  height: auto;
+  padding: 0;
+  margin: 0;
+  display: block;
+  pointer-events: none;
+  z-index: 1;
+  }
 </style>
 
 {# This is the information of the patient #}
@@ -1074,7 +1091,24 @@
 
         div.addEventListener('click', () => mostrarInfo(diente.id));
         dientesMap.set(diente.id, div);
+
+        //here we will to create the help visual for that the doctor know if 
+        //this tooth have a face selected 
+        const svgCircle = createFivePieceCircle({
+          surfaces: info_tooth.surfaces,
+          size: 110,
+          outerRadius: 42,
+          innerRadius: 18,
+          separation: 8,
+          colors: ['#63A4FF', '#63A4FF', '#63A4FF', '#63A4FF'],
+          centerColor: '#63A4FF'
+        });
         
+        if(svgCircle){ //if have information of the face, we will add the div
+          svgCircle.classList.add("circle-under");
+          const wrapper = document.createElement('div');
+          div.appendChild(svgCircle); 
+        }
 
         const limit = typeThooth === 1 ? 10 : 16;
         if (diente.id <= limit) arcadaSuperior.appendChild(div);
@@ -1328,6 +1362,130 @@
     });
   }
 
+
+
+
+  function createFivePieceCircle({
+    surfaces=[],
+    size = 120,
+    outerRadius = 46,
+    innerRadius = 22,
+    separation = 6,
+    colors = [],
+    centerColor = '#22223b'
+  } = {}) {
+    try{
+      surfaces=JSON.parse(surfaces);
+    }
+    catch (e){
+      surfaces={};
+    }
+
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
+    svg.setAttribute('aria-hidden', 'true');
+
+    const cx = size / 2;
+    const cy = size / 2;
+
+    // paleta elegante por defecto
+    const colorDefaul='#FFFFFF'
+    const colorSelect='#3A7791'
+    let defaultColors = [colorDefaul, colorDefaul, colorDefaul, colorDefaul];
+ 
+    if(surfaces?.distal?.selected){
+      defaultColors[0] = [colorSelect];
+    }
+    if(surfaces?.mesial?.selected){
+      defaultColors[3] = [colorSelect];
+    }
+    if(surfaces?.vestibular?.selected){
+      defaultColors[2] = [colorSelect];
+    }
+    if(surfaces?.lingual?.selected){
+      defaultColors[1] = [colorSelect];
+    }
+    if(surfaces?.oclusal?.selected){
+      defaultColors[4] = [colorSelect];
+    }
+    
+    const pieceColors = defaultColors;
+
+    // helpers
+    function polar(cx, cy, r, angleDeg) {
+      const a = (angleDeg - 90) * Math.PI / 180; // rota para que 0 esté arriba
+      return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+    }
+
+    function sectorPath(cx, cy, rOuter, rInner, startDeg, endDeg) {
+      // d para un sector tipo "anillo" entre rInner y rOuter
+      const p1 = polar(cx, cy, rInner, startDeg);
+      const p2 = polar(cx, cy, rOuter, startDeg);
+      const p3 = polar(cx, cy, rOuter, endDeg);
+      const p4 = polar(cx, cy, rInner, endDeg);
+      const largeArc = (endDeg - startDeg) > 180 ? 1 : 0;
+
+      return [
+        `M ${p1.x.toFixed(3)} ${p1.y.toFixed(3)}`,
+        `L ${p2.x.toFixed(3)} ${p2.y.toFixed(3)}`,
+        `A ${rOuter} ${rOuter} 0 ${largeArc} 1 ${p3.x.toFixed(3)} ${p3.y.toFixed(3)}`,
+        `L ${p4.x.toFixed(3)} ${p4.y.toFixed(3)}`,
+        `A ${rInner} ${rInner} 0 ${largeArc} 0 ${p1.x.toFixed(3)} ${p1.y.toFixed(3)}`,
+        'Z'
+      ].join(' ');
+    }
+
+    // crear 4 piezas (cada una 90 grados)
+    const pieceAngle = 360 / 4; // 90
+    for (let i = 0; i < 4; i++) {
+      //here we will see if the face is selected
+
+          const start = i * pieceAngle;
+          const end = start + pieceAngle;
+          const path = document.createElementNS(NS, 'path');
+          path.setAttribute('d', sectorPath(cx, cy, outerRadius, innerRadius, start, end));
+          path.setAttribute('fill', pieceColors[i]);
+          if(defaultColors[i]==colorDefaul){
+            path.setAttribute('fill-opacity', '0.8');
+          }else{
+            path.setAttribute('fill-opacity', '1');
+          }
+          path.setAttribute('stroke', 'none');
+
+          // desplazar ligeramente cada pieza hacia afuera en la dirección de su bisector
+          const bisector = start + pieceAngle / 2;
+          const tx = Math.cos((bisector - 90) * Math.PI / 180) * separation;
+          const ty = Math.sin((bisector - 90) * Math.PI / 180) * separation;
+          path.setAttribute('transform', `translate(${tx.toFixed(2)} ${ty.toFixed(2)})`);
+
+          // suavizado y sombra sutil (elegante)
+          path.setAttribute('style',
+            'filter: drop-shadow(0 2px 6px rgba(32,40,60,0.06)); transform-origin: center;'
+          );
+
+          svg.appendChild(path);
+        
+    }
+
+    // círculo central (última pieza)
+    if(surfaces?.oclusal?.selected){
+      const center = document.createElementNS(NS, 'circle');
+      center.setAttribute('cx', cx);
+      center.setAttribute('cy', cy);
+      center.setAttribute('r', innerRadius - 1.8); // pequeño ajuste para que se vea bien
+      center.setAttribute('fill', colorSelect);
+      center.setAttribute('style', 'filter: drop-shadow(0 4px 8px rgba(32,40,60,0.08));');
+
+      svg.appendChild(center);
+    }
+
+
+    return svg;
+  }
+
   function render_tooth_svg(dienteId, info_tooth) {
     let baseSvg = window.svgsDientes[dienteId];
     let overlays = ""; 
@@ -1344,6 +1502,11 @@
     const fullSvg = baseSvg.replace("</svg>", `${overlays}</svg>`);
     return fullSvg;
   }
+
+
+
+
+
 
   function get_tooth_overlay(dienteId, type) {
     const coordinates = {
@@ -1538,7 +1701,6 @@
 
     return div;
   }
-
 
   async function delete_status_tooth(indexStatus) {
     //get the information of the diagnostic of the tooth and do a question for know if would like delete the diagnostic
