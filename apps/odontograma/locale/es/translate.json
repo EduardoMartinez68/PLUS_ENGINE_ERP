@@ -15,6 +15,7 @@
   "odontograma.error.already-exist": "El paciente ya tiene un odontograma en esta empresa.",
 
   "odontograma.tab.odontogram":"Odontograma",
+  "odontograma.tab.periodontogram":"Periodontograma",
   "odontograma.tab.files":"Documentos",
   "odontograma.tab.history":"Historial",
 

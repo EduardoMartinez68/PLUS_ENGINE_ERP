@@ -5,13 +5,141 @@
     #teeth-layer {
         z-index: -1;
     }
+
+.toggle-btn {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    background-color: #CECECE;
+    cursor: pointer;
+}
+
+/* Estado activo */
+.toggle-btn.black.active {
+    background-color: #000000; /* color cuando está activo */
+    border-color: #000000;
+}
+
+
+.toggle-btn.blue.active {
+    background-color: #0099FF; /* color cuando está activo */
+    border-color: #0099FF;
+}
+
+
+.toggle-btn.red.active {
+    background-color: #FF6666; /* color cuando está activo */
+    border-color: #FF6666;
+}
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+td, th {
+    padding: 8px;
+    text-align: center;
+}
+
+.title-colum{
+    text-align: left;
+}
+
+.input-value{
+    width: 30px;
+}
+
+
 </style>
 
+
+<table id="tooth-table" cellspacing="0" cellpadding="5">
+    <thead>
+        <tr id="table-header"></tr>
+    </thead>
+    <tbody id="table-body">
+    </tbody>
+</table>
+
+
 <div class="container-section">
-    <tooth-graph points="3,3,3,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" gingival="6,6,6,3,3,-6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"></tooth-graph>
+    <div class="body-periodontogram">
+        <tooth-graph points="3,3,3,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" gingival="6,6,6,3,3,-6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"></tooth-graph>
+    </div>
 </div>
 
+<script>
+(()=>{
 
+const rows = [
+    { name: 'movilidad', type: 'number', default: 0 },
+    { name: 'implante', type: 'toggle', color: 'black', count: 1 },
+    { name: 'defecto de furca', type: 'number', default: 0 },
+    { name: 'sangrado al sondaje', type: 'toggle', color: 'red', count: 3 },
+    { name: 'placa', type: 'toggle', color: 'blue', count: 3 },
+    { name: 'margen gingival', type: 'input', count: 3, default: 0 },
+    { name: 'profundidad de sondaje', type: 'input', count: 3, default: 0 }
+];
+
+// Número de columnas
+const totalColumns = 16;
+
+// Crear cabecera
+const headerRow = document.getElementById('table-header');
+headerRow.innerHTML = '<th></th>'; // columna vacía para títulos
+for (let i = 1; i <= totalColumns; i++) {
+    const th = document.createElement('th');
+    th.textContent = i;
+    headerRow.appendChild(th);
+}
+
+// Crear filas
+const tbody = document.getElementById('table-body');
+
+rows.forEach(row => {
+    const tr = document.createElement('tr');
+
+    const tdTitle = document.createElement('td');
+    tdTitle.textContent = row.name;
+    tdTitle.classList.add('title-colum');
+    tr.appendChild(tdTitle);
+
+    for (let i = 0; i < totalColumns; i++) {
+        const td = document.createElement('td');
+
+        if (row.type === 'number') {
+            td.textContent = row.default;
+        } else if (row.type === 'toggle') {
+            for (let j = 0; j < row.count; j++) {
+                const div = document.createElement('div');
+                div.classList.add('toggle-btn', row.color);
+                td.appendChild(div);
+            }
+        } else if (row.type === 'input') {
+            for (let j = 0; j < row.count; j++) {
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.value = row.default;
+                input.classList.add('input-value');
+                td.appendChild(input);
+            }
+        }
+
+        tr.appendChild(td);
+    }
+
+    tbody.appendChild(tr);
+});
+
+})();
+
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+    });
+});
+</script>
 <script>
 const svgsDientes = {
     1: "\n<svg viewBox=\"45 135 38 64\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M64.2753 147.424C57.2797 136.22 54.1597 134.335 54.9151 141.769C55.6706 149.204 57.858 157.283 61.4771 166.007L66.8019 167.199L70.9184 160.346L67.6591 149.881L64.2753 147.424Z\"\n        fill=\"#F4F2F3\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M76.1241 179.29C76.29 170.334 75.6195 163.229 74.1125 157.976C72.005 150.629 69.6182 147.062 68.0683 145.18C66.5183 143.297 62.8123 140.555 63.1369 144.517C63.3002 146.511 65.0562 150.757 65.5166 154.789C66.0671 159.611 65.2726 164.128 64.5919 164.128C63.2123 164.128 63.8894 156.31 61.4425 149.823C59.3798 144.355 54.5071 140.092 52.1722 140.356C49.8373 140.62 54.0026 150.608 53.9575 157.499C53.9039 165.678 53.7485 174.181 53.0546 176.484C52.0879 179.69 59.7777 180.626 76.1241 179.29Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M57.1449 173.704C60.9228 171.63 65.6902 170.717 70.5069 173.704C75.3237 176.691 77.6012 181.331 78.0033 184.465C78.1894 185.916 78.8645 190.748 74.2745 193.275C71.4811 194.812 67.6431 192.727 66.4252 191.74C65.2073 190.753 63.1025 189.242 60.7782 191.74C58.4539 194.237 55.4549 192.252 54.445 191.352C53.4352 190.453 50.8711 188.224 50.8711 184.22C50.8711 180.215 52.1565 176.444 57.1449 173.704Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
