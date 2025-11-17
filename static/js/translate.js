@@ -35,7 +35,7 @@ const MAX_DICTIONARIES = 5;
 const storedDict = localStorage.getItem('allTheDictionary');
 if (storedDict) {
   try {
-    allTheDictionary = JSON.parse(storedDict);
+    //allTheDictionary = JSON.parse(storedDict);
   } catch (err) {
     console.warn("Error to load the dictionaries from localStorage", err);
   }
@@ -77,7 +77,8 @@ async function load_language(langUrl, first=true) {
 
   const MAX_DICTIONARIES = 8;
 
-  //we will see if already exist the dictionary in the memory
+  //we will see if already exist the dictionary in the memory not coming back to load the dictionary
+  //and translate the web 
   const existing = allTheDictionary.find(d => d.name === langUrl);
   if (existing) {
     apply_translation_to_the_web(existing.dictionary);
@@ -109,7 +110,7 @@ async function load_language(langUrl, first=true) {
         await load_language(link, false);
       }
     }
-    console.log(allTheDictionary)
+
     //save in localStorage
     try {
       localStorage.setItem('allTheDictionary', JSON.stringify(allTheDictionary));
