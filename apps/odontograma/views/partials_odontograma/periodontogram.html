@@ -47,7 +47,7 @@ td, th {
 }
 
 .input-value{
-    width: 30px;
+    width: 40px;
 }
 
 
@@ -64,8 +64,7 @@ td, th {
 
 
 <div class="container-section">
-    <div class="body-periodontogram">
-        <tooth-graph points="3,3,3,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" gingival="6,6,6,3,3,-6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"></tooth-graph>
+    <div class="body-periodontogram" id="body-periodontogram">
     </div>
 </div>
 
@@ -97,6 +96,14 @@ for (let i = 1; i <= totalColumns; i++) {
 // Crear filas
 const tbody = document.getElementById('table-body');
 
+
+
+//in this list we will to save all the inputs of the four face of the teeth 
+//in the list exist the information of 'Vestibular', 'palantino', 'Lingual', 'Vestibular'
+//this variable be use for get the value of the input and create other 'tooth-graph' when the graphic be update
+const listInputsSondaje=[];
+const listInputsGingival=[];
+
 rows.forEach(row => {
     const tr = document.createElement('tr');
 
@@ -122,7 +129,20 @@ rows.forEach(row => {
                 input.type = 'number';
                 input.value = row.default;
                 input.classList.add('input-value');
-                td.appendChild(input);
+
+                //here we will to call to the update of the UI
+                input.addEventListener('input', () => {
+                    window.update_ui();
+                });
+
+                //here we will to see who is have the input
+                if(row.name=='profundidad de sondaje'){
+                    listInputsSondaje.push(input);
+                }else if(row.name=='margen gingival'){
+                    listInputsGingival.push(input);
+                }
+
+                td.appendChild(input); //add the input to the row
             }
         }
 
@@ -132,7 +152,26 @@ rows.forEach(row => {
     tbody.appendChild(tr);
 });
 
+window.listInputsSondaje=listInputsSondaje;
+window.listInputsGingival=listInputsGingival;
 })();
+
+function update_ui(){
+    //now we will to read all the input in the table for create a new string that we will use for save the value of the points in the graph
+    let sondajeText='';
+    window.listInputsSondaje.forEach(sondaje => {
+        sondajeText+=sondaje.value+',';
+    });
+
+    let gingivalText='';
+    window.listInputsGingival.forEach(gingival => {
+        gingivalText+=gingival.value+',';
+    });
+
+    //here we will to create a new 'tooth-graph' for show in the screen
+    document.getElementById('body-periodontogram').innerHTML=`<tooth-graph points="${sondajeText}" gingival="${gingivalText}"></tooth-graph>`
+}
+update_ui();
 
 document.querySelectorAll('.toggle-btn').forEach(btn => {
     btn.addEventListener('click', () => {
