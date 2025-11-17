@@ -144,11 +144,12 @@ class ToothGraph extends HTMLElement {
         // Dibujar área
         ctx.beginPath();
         ctx.moveTo(0, height);
-        points.forEach((p, i) => {
-            const x = stepX * i;
-            const y = height - (p - minY) / (maxY - minY) * height;
-            ctx.lineTo(x, y);
-        });
+        const gingival = this.parsePoints("gingival");
+
+        // Dibujar área solo donde sean diferentes
+        if (gingival.length > 0) {
+            this.drawAreaBetweenLines(points, gingival, "rgba(118,226,248,0.2)");
+        }
 
         ctx.lineTo(width, height);
         ctx.closePath();
@@ -169,8 +170,7 @@ class ToothGraph extends HTMLElement {
         ctx.lineWidth = strokeWidth;
         ctx.stroke();
 
-
-        const gingival = this.parsePoints("gingival");
+        //----------------------aqui dibujamos la linea de gingival------------------------
         if (gingival.length > 0) {
             this.drawSecondaryLine(
                 gingival,
@@ -205,6 +205,56 @@ class ToothGraph extends HTMLElement {
         ctx.strokeStyle = color;
         ctx.lineWidth = lineWidth;
         ctx.stroke();
+    }
+
+    drawAreaBetweenLines(line1, line2, color = "rgba(255,0,0,0.2)") {
+        if (!line1.length || !line2.length) return;
+
+        const ctx = this.canvas.getContext("2d");
+        const rect = this.canvas.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+        const stepX = width / (line1.length - 1);
+
+        const maxY = Math.max(...line1.concat(line2), 100);
+        const minY = Math.min(...line1.concat(line2), 0);
+
+        let isDrawing = false;
+        let segmentStart = 0;
+
+        // Recorremos cada punto
+        for (let i = 0; i < line1.length; i++) {
+            if (line1[i] !== line2[i] && !isDrawing) {
+                // Inicio de un área diferente
+                isDrawing = true;
+                segmentStart = i;
+            } else if ((line1[i] === line2[i] || i === line1.length - 1) && isDrawing) {
+                // Fin de un área diferente
+                isDrawing = false;
+
+                const segmentEnd = (line1[i] === line2[i]) ? i - 1 : i;
+
+                // Dibujar polígono entre segmentStart y segmentEnd
+                ctx.beginPath();
+                // Línea 1
+                for (let j = segmentStart; j <= segmentEnd; j++) {
+                    const x = stepX * j;
+                    const y = height - (line1[j] - minY) / (maxY - minY) * height;
+                    if (j === segmentStart) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                // Línea 2 al revés
+                for (let j = segmentEnd; j >= segmentStart; j--) {
+                    const x = stepX * j;
+                    const y = height - (line2[j] - minY) / (maxY - minY) * height;
+                    ctx.lineTo(x, y);
+                }
+
+                ctx.closePath();
+                ctx.fillStyle = color;
+                ctx.fill();
+            }
+        }
     }
 
     drawTeeth(stepX, height, minY, maxY) {
