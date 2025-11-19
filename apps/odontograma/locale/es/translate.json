@@ -139,5 +139,11 @@
   "odontogram.laebl.setting-of-the-odontogram":"Configuracion del odontograma",
   "odontogram.laebl.select-system":"Selecciona el sistema que deseas usar",
   "odontogram.option.system-universal":"Sistema Universal (EE. UU)",
-  "odontogram.option.fdi":"Federación Dental Internacional (FDI)"
+  "odontogram.option.fdi":"Federación Dental Internacional (FDI)",
+
+
+  "odontogram.td.defect-furca":"Defecto de furca",
+  "odontogram.td.blood-sounding":"Sangrado al sondaje",
+  "odontogram.td.marge-gingival":"Margen gingival",
+  "odontogram.td.drilling-depth":"Profundidad de sondaje"
 }

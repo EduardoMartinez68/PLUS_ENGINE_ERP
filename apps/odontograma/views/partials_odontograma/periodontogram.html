@@ -72,13 +72,13 @@ td, th {
 (()=>{
 
 const rows = [
-    { name: 'movilidad', type: 'number', default: 0 },
-    { name: 'implante', type: 'toggle', color: 'black', count: 1 },
-    { name: 'defecto de furca', type: 'number', default: 0 },
-    { name: 'sangrado al sondaje', type: 'toggle', color: 'red', count: 3 },
-    { name: 'placa', type: 'toggle', color: 'blue', count: 3 },
-    { name: 'margen gingival', type: 'input', count: 3, default: 0 },
-    { name: 'profundidad de sondaje', type: 'input', count: 3, default: 0 }
+    { name: window.translate_text('odontograma.label.mobility'), type: 'number', default: 0 , key:"mobility"},
+    { name: window.translate_text('odontograma.status.implant'), type: 'toggle', color: 'black', count: 1 , key:"implant"},
+    { name: window.translate_text('odontogram.td.defect-furca'), type: 'number', default: 0 , key:"furca"},
+    { name: window.translate_text('odontogram.td.blood-sounding'), type: 'toggle', color: 'red', count: 3 , key:"sounding"},
+    { name: window.translate_text('odontograma.label.have-plaque-or-tartar'), type: 'toggle', color: 'blue', count: 3 , key:"plaque"},
+    { name: window.translate_text('odontogram.td.marge-gingival'), type: 'input', count: 3, default: 0 , key:"gingival"},
+    { name: window.translate_text('odontogram.td.drilling-depth'), type: 'input', count: 3, default: 0 , key:"drilling"}
 ];
 
 // Número de columnas
@@ -136,9 +136,9 @@ rows.forEach(row => {
                 });
 
                 //here we will to see who is have the input
-                if(row.name=='profundidad de sondaje'){
+                if(row.key=='drilling'){
                     listInputsSondaje.push(input);
-                }else if(row.name=='margen gingival'){
+                }else if(row.key=='gingival'){
                     listInputsGingival.push(input);
                 }
 
