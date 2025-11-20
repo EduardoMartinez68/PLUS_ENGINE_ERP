@@ -145,5 +145,8 @@
   "odontogram.td.defect-furca":"Defecto de furca",
   "odontogram.td.blood-sounding":"Sangrado al sondaje",
   "odontogram.td.marge-gingival":"Margen gingival",
-  "odontogram.td.drilling-depth":"Profundidad de sondaje"
+  "odontogram.td.drilling-depth":"Profundidad de sondaje",
+
+  
+  "odontogram.title.vestibular":"Vestibular"
 }

@@ -69,116 +69,169 @@ td, th {
 </div>
 
 <script>
-(()=>{
+    function update_ui(uiPeriodontogramId, listInputsSondaje, listInputsGingival){
+        //now we will to read all the input in the table for create a new string that we will use for save the value of the points in the graph
+        let sondajeText='';
+        listInputsSondaje.forEach(sondaje => {
+            sondajeText+=sondaje.value+',';
+        });
 
-const rows = [
-    { name: window.translate_text('odontograma.label.mobility'), type: 'number', default: 0 , key:"mobility"},
-    { name: window.translate_text('odontograma.status.implant'), type: 'toggle', color: 'black', count: 1 , key:"implant"},
-    { name: window.translate_text('odontogram.td.defect-furca'), type: 'number', default: 0 , key:"furca"},
-    { name: window.translate_text('odontogram.td.blood-sounding'), type: 'toggle', color: 'red', count: 3 , key:"sounding"},
-    { name: window.translate_text('odontograma.label.have-plaque-or-tartar'), type: 'toggle', color: 'blue', count: 3 , key:"plaque"},
-    { name: window.translate_text('odontogram.td.marge-gingival'), type: 'input', count: 3, default: 0 , key:"gingival"},
-    { name: window.translate_text('odontogram.td.drilling-depth'), type: 'input', count: 3, default: 0 , key:"drilling"}
-];
+        let gingivalText='';
+        listInputsGingival.forEach(gingival => {
+            gingivalText+=gingival.value+',';
+        });
 
-// Número de columnas
-const totalColumns = 16;
-
-// Crear cabecera
-const headerRow = document.getElementById('table-header');
-headerRow.innerHTML = '<th></th>'; // columna vacía para títulos
-for (let i = 1; i <= totalColumns; i++) {
-    const th = document.createElement('th');
-    th.textContent = i;
-    headerRow.appendChild(th);
-}
-
-// Crear filas
-const tbody = document.getElementById('table-body');
-
-
-
-//in this list we will to save all the inputs of the four face of the teeth 
-//in the list exist the information of 'Vestibular', 'palantino', 'Lingual', 'Vestibular'
-//this variable be use for get the value of the input and create other 'tooth-graph' when the graphic be update
-const listInputsSondaje=[];
-const listInputsGingival=[];
-
-rows.forEach(row => {
-    const tr = document.createElement('tr');
-
-    const tdTitle = document.createElement('td');
-    tdTitle.textContent = row.name;
-    tdTitle.classList.add('title-colum');
-    tr.appendChild(tdTitle);
-
-    for (let i = 0; i < totalColumns; i++) {
-        const td = document.createElement('td');
-
-        if (row.type === 'number') {
-            td.textContent = row.default;
-        } else if (row.type === 'toggle') {
-            for (let j = 0; j < row.count; j++) {
-                const div = document.createElement('div');
-                div.classList.add('toggle-btn', row.color);
-                td.appendChild(div);
-            }
-        } else if (row.type === 'input') {
-            for (let j = 0; j < row.count; j++) {
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.value = row.default;
-                input.classList.add('input-value');
-
-                //here we will to call to the update of the UI
-                input.addEventListener('input', () => {
-                    window.update_ui();
-                });
-
-                //here we will to see who is have the input
-                if(row.key=='drilling'){
-                    listInputsSondaje.push(input);
-                }else if(row.key=='gingival'){
-                    listInputsGingival.push(input);
-                }
-
-                td.appendChild(input); //add the input to the row
-            }
-        }
-
-        tr.appendChild(td);
+        //here we will to create a new 'tooth-graph' for show in the screen
+        document.getElementById(uiPeriodontogramId).innerHTML=`<tooth-graph points="${sondajeText}" gingival="${gingivalText}"></tooth-graph>`
     }
 
-    tbody.appendChild(tr);
-});
+    function create_table(titleTable, rows, startTooth, titleTableId, tableId, listInputsSondaje, listInputsGingival, uiPeriodontogramId){
+        //here we will to create the header of the table
+        const headerRow = document.getElementById(titleTableId);
+        headerRow.innerHTML = `<th>${titleTable}</th>`;
+        for (let i = 1; i <= startTooth+16; i++) {
+            const th = document.createElement('th');
+            th.textContent = i//window.get_number_tooth(i); //here is the name of the tooth. ALSO EXIST A ERROR HERE
+            headerRow.appendChild(th);
+        }
 
-window.listInputsSondaje=listInputsSondaje;
-window.listInputsGingival=listInputsGingival;
+        //when all the numbers of the teeth was created, now we will to construct the body of the table
+        const tbody = document.getElementById(tableId);
+        create_the_body_of_the_table(tbody, rows, listInputsSondaje, listInputsGingival, uiPeriodontogramId)
+    }
+
+    function create_the_body_of_the_table(tbody, rows , listInputsSondaje, listInputsGingival, uiPeriodontogramId){
+        rows.forEach(row => {
+            const tr = document.createElement('tr');
+
+            const tdTitle = document.createElement('td');
+            tdTitle.textContent = window.translate_text(row.name);
+            tdTitle.classList.add('title-colum');
+            tr.appendChild(tdTitle);
+
+
+            //here we will to read all the JSON that send from the server for construc the table of the periodontograma
+            for (let i = 0; i < 16; i++) {
+
+                const td = document.createElement('td'); //create the row 
+                //now we will to read all the information of the inputs that have the JSON
+                const values=row.values;
+
+                //now we will see that type of input we will to create
+                if (row.type === 'number') {
+                    //here we will to create the input with his value
+                    //this col only have 1 input in his column
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.value = values[i]; //get the value of the input 
+                    input.classList.add('input-value');
+                    td.appendChild(input); //add the input to the row
+                } else if (row.type === 'toggle') {
+                    //here we will to see how many of inputs exist in the col
+                    //in this column we will to create inputs check for show the value
+                    for (let j = 0; j < values[i].length; j++) {
+                        const div = document.createElement('div');
+                        div.classList.add('toggle-btn', row.color);
+
+                        //now we will see if the input is activate or is desactivate
+                        const value = values[i][j]; //get the value of the input 
+                        if(is_true(value)){
+                            div.classList.toggle('active');
+                        }
+
+                        td.appendChild(div);
+                    }
+                } else if (row.type === 'input') {
+
+                    for (let j = 0; j < values[i].length; j++) {
+                        //here we will to create the input with his value
+                        const input = document.createElement('input');
+                        input.type = 'number';
+                        input.value = values[i][j]; //get the value of the input 
+                        input.classList.add('input-value');
+
+                        //here we will to call to the update of the UI only if is the input of 'gingival' or 'drilling'
+                        input.addEventListener('input', () => {
+                            window.update_ui(uiPeriodontogramId, listInputsSondaje, listInputsGingival);
+                        });
+
+                        //here we will to see who is have the input
+                        if(row.key=='gingival'){
+                            listInputsSondaje.push(input); //here we will to save the inputs in his list for update the UI
+                        }else if(row.key=='drilling'){
+                            listInputsGingival.push(input); //here we will to save the inputs in his list for update the UI
+                        }
+                        
+
+                        td.appendChild(input); //add the input to the row
+                    }
+                }
+
+                tr.appendChild(td);
+            }
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    function get_information_from_the_server_about_the_periodontogram(){
+        const infoTables=[
+            {
+                title:"odontogram.title.vestibular",
+                rows:[
+                    { name: 'odontograma.label.mobility', type: 'number' , key:"mobility", values:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+                    { name: 'odontograma.status.implant', type: 'toggle', color: 'black' , key:"implant", values:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+                    { name: 'odontogram.td.defect-furca', type: 'number' , key:"furca", values:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+                    { name: 'odontogram.td.blood-sounding', type: 'toggle', color: 'red' , key:"sounding", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]},
+                    { name: 'odontograma.label.have-plaque-or-tartar', type: 'toggle', color: 'blue', key:"plaque", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]},
+                    { name: 'odontogram.td.marge-gingival', type: 'input' , key:"gingival", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]},
+                    { name: 'odontogram.td.drilling-depth', type: 'input', key:"drilling", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]}
+                ]
+            }
+        ]
+        
+        return infoTables;
+    }
+
+
+(()=>{
+    //here we will to create all the list of the information
+    window.listInputsSondaje1=[];
+    window.listInputsGingival1=[];
+
+    const infoTables=get_information_from_the_server_about_the_periodontogram();
+
+    //we will to read all the information that the server send and update all the UI
+    let indexTooth=0;
+    infoTables.forEach(table => {
+        //here we will to read the table 
+        let listInputsSondaje, listInputsGingival, uiPeriodontogramId;
+        if(table.title=='odontogram.title.vestibular'){
+            //update the list for save the information of the input for update
+            listInputsSondaje=window.listInputsSondaje1;
+            listInputsGingival=window.listInputsGingival1;
+            uiPeriodontogramId='body-periodontogram';
+        }
+
+        //when all the information was update depending of his type of thable, now we will to create the table and update 
+        create_table(table.title, table.rows, indexTooth, 'table-header', 'table-body',listInputsSondaje, listInputsGingival, uiPeriodontogramId);
+        window.update_ui(uiPeriodontogramId, listInputsSondaje, listInputsGingival); //when all the data is load of the table, now we will to render the UI of the periodontogram
+        
+        indexTooth = (indexTooth + 16) % 32; //increment the teeth for after to the next but if already not teeth now return to 0
+    });
 })();
 
-function update_ui(){
-    //now we will to read all the input in the table for create a new string that we will use for save the value of the points in the graph
-    let sondajeText='';
-    window.listInputsSondaje.forEach(sondaje => {
-        sondajeText+=sondaje.value+',';
-    });
 
-    let gingivalText='';
-    window.listInputsGingival.forEach(gingival => {
-        gingivalText+=gingival.value+',';
-    });
 
-    //here we will to create a new 'tooth-graph' for show in the screen
-    document.getElementById('body-periodontogram').innerHTML=`<tooth-graph points="${sondajeText}" gingival="${gingivalText}"></tooth-graph>`
-}
-update_ui();
-
+//this code if for that can update all the button type checkbox of colors in the form
 document.querySelectorAll('.toggle-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         btn.classList.toggle('active');
     });
 });
 </script>
+
+
 <script>
 const svgsDientes = {
     1: "\n<svg viewBox=\"45 135 38 64\" xmlns=\"http://www.w3.org/2000/svg\">\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M64.2753 147.424C57.2797 136.22 54.1597 134.335 54.9151 141.769C55.6706 149.204 57.858 157.283 61.4771 166.007L66.8019 167.199L70.9184 160.346L67.6591 149.881L64.2753 147.424Z\"\n        fill=\"#F4F2F3\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M76.1241 179.29C76.29 170.334 75.6195 163.229 74.1125 157.976C72.005 150.629 69.6182 147.062 68.0683 145.18C66.5183 143.297 62.8123 140.555 63.1369 144.517C63.3002 146.511 65.0562 150.757 65.5166 154.789C66.0671 159.611 65.2726 164.128 64.5919 164.128C63.2123 164.128 63.8894 156.31 61.4425 149.823C59.3798 144.355 54.5071 140.092 52.1722 140.356C49.8373 140.62 54.0026 150.608 53.9575 157.499C53.9039 165.678 53.7485 174.181 53.0546 176.484C52.0879 179.69 59.7777 180.626 76.1241 179.29Z\"\n        fill=\"#F5F3F4\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n  <path fill-rule=\"evenodd\" clip-rule=\"evenodd\"\n        d=\"M57.1449 173.704C60.9228 171.63 65.6902 170.717 70.5069 173.704C75.3237 176.691 77.6012 181.331 78.0033 184.465C78.1894 185.916 78.8645 190.748 74.2745 193.275C71.4811 194.812 67.6431 192.727 66.4252 191.74C65.2073 190.753 63.1025 189.242 60.7782 191.74C58.4539 194.237 55.4549 192.252 54.445 191.352C53.4352 190.453 50.8711 188.224 50.8711 184.22C50.8711 180.215 52.1565 176.444 57.1449 173.704Z\"\n        fill=\"white\" stroke=\"#C2C2C2\" stroke-width=\"0.939136\" />\n</svg>"
