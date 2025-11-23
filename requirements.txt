@@ -1,10 +1,19 @@
-pip install django-q
-pip install Pillow
-pip install cryptography
-pip install python-dotenv
-pip install django-encrypted-fields
-pip install python-decouple
-pip install google-auth
-pip install google-auth-oauthlib
-pip install google-api-python-client google-auth-httplib2 
-pip install Pillow pymupdf
+pip install django==5.2.3
+pip install django-encrypted-model-fields==0.6.5
+pip install django-picklefield==3.3
+pip install django-q==1.4.8
+
+pip install Pillow==9.4.0
+pip install cryptography==45.0.4
+
+pip install python-escpos==3.1
+pip install python-dotenv==1.0.1
+pip install python-decouple==3.8
+
+pip install google-auth==2.40.3
+pip install google-auth-oauthlib==1.2.2
+pip install google-api-python-client==2.182.0
+pip install google-auth-httplib2==0.2.0
+
+pip install pymupdf==1.26.3
+pip install bcrypt==4.1.3
