@@ -25,6 +25,7 @@ RUN pip install -r requirements.txt
 
 # copy all the project ERP
 COPY . .
+COPY .env /app/.env
 
 # Expose port
 EXPOSE 8000

@@ -1,4 +1,3 @@
-import psycopg2
 import os
 from dotenv import load_dotenv
 import yaml
@@ -10,13 +9,6 @@ APPS_NAME=[]
 
 env_path = Path(__file__).resolve().parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
-conn_params = {
-    'host': os.getenv('DB_HOST'),
-    'port': os.getenv('DB_PORT'),
-    'database': os.getenv('DB_NAME'),
-    'user': os.getenv('DB_USER'),
-    'password': os.getenv('DB_PASS')
-}
 
 def read_all_my_apps():
     apps_dir = os.path.join(os.getcwd(), 'apps')
@@ -36,7 +28,6 @@ def read_all_my_apps():
                 APPS_FOLDER.append(path_app)
 
     sortApps=sort_all_apps_based_on_their_dependencies(apps)
-    create_the_body_of_the_database_of_the_erp()
     run_the_sql_of_the_database_of_all_the_apps(sortApps,apps_dir)
 
     print(f"{len(apps)} apps load was success")
@@ -44,32 +35,6 @@ def read_all_my_apps():
     return apps
 
 
-def create_the_body_of_the_database_of_the_erp():
-    #connect with the DB
-    conn = psycopg2.connect(**conn_params)
-    cur = conn.cursor()
-
-    #get the body of the database
-    sql_path = os.path.join(os.getcwd(),'database', 'database.sql')
-
-    #we will see if exist the file database
-    if os.path.exists(sql_path):
-        print(f"Run the body of the database")
-        with open(sql_path, 'r', encoding='utf-8') as f:
-            sql = f.read()
-
-        try:
-            cur.execute(sql)
-            conn.commit()
-            print(f"Body of the database run with success.")
-        except Exception as e:
-            conn.rollback()
-            print(f"Error to run the body of the SQL {e}")
-    else:
-        print(f"Not exist the file SQL for create the body of the database")
-
-    cur.close()
-    conn.close()
 
 def run_the_sql_of_the_database_of_all_the_apps(sorted_apps, base_dir):
     """
