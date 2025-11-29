@@ -116,6 +116,7 @@ class HistoryOdontogram(models.Model):
         related_name="odontograms"
     )
 
+    is_kid=models.BooleanField(default=False, null=False)  #this is for know if the odontograma is for kid or adult
     key = models.CharField(max_length=150, null=False)
     notes = EncryptedTextField(blank=True, null=True)
 

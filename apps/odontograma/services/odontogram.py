@@ -231,6 +231,7 @@ def add_new_odontogram(user, data)-> Dict[str, Any]:
             # create the first history of the odontogram
             history = HistoryOdontogram.objects.create(
                 customer=customer,
+                is_kid=is_kid,
                 key=history_name,
                 notes=f"Odontogram create by {user.name or user.username}"
             )
