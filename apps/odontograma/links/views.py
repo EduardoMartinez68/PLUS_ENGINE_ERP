@@ -97,7 +97,29 @@ def view_update_tooth(request, odontogram_id, tooth_id):
     return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
 
 
+def update_periodontogram(request, periodontogram_id):
+    if request.method != 'POST':
+        return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+    
+    #now we will see if the user have the permsssion need that the ERP need
+    if not Plus.this_user_have_this_permission(request.user, 'update_odontogram'):
+        return JsonResponse(
+            {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+            status=200
+        )
+    
 
+    try:
+        data = json.loads(request.body)
+    except Exception as e:
+        return JsonResponse(
+            {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+            status=400
+        )  
+        
+    from ..services.periodontogram import update_periodontogram_service
+    result = update_periodontogram_service(periodontogram_id, data, request.user)
+    return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
 
 
 def view_setting(request):

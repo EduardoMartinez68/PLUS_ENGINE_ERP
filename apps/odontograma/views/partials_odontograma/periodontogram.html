@@ -1,4 +1,3 @@
-
 <style>
   tooth-graph { display:block; width:60%; height:160px; }
   tooth-graph { --line-color: #7ee; --fill-color: rgba(126,238,238,0.12); --stroke-width: 2; }
@@ -49,9 +48,18 @@ td, th {
 .input-value{
     width: 40px;
 }
-
-
 </style>
+
+
+<!----buttons for save or export the periodontogram-->
+<div class="row">
+    <div class="col-10">
+
+    </div>
+    <div class="col-2">
+        <button class="btn btn-normal" t="btn.save" icon="fi fi-rs-disk" onclick="save_json_periodontogram()"></button>
+    </div>
+</div>
 
 <!----VESTIBULAR-->
 <table id="tooth-table" cellspacing="0" cellpadding="5">
@@ -80,78 +88,25 @@ td, th {
     </div>
 </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script>
-    //in this variable we will to save the enumeration of the theeth in the system universal and in the system FDI
-    //also we will to save the enumeration for the theeth of the adults and the kids. It is for that the dentist know that tooth is in revision 
-    const numersTooth = {
-      adult: {
-        // Maxilla
-        16: { FDI: 28, Universal: 16 },
-        15: { FDI: 27, Universal: 15 },
-        14: { FDI: 26, Universal: 14 },
-        13: { FDI: 25, Universal: 13 },
-        12: { FDI: 24, Universal: 12 },
-        11: { FDI: 23, Universal: 11 },
-        10: { FDI: 22, Universal: 10 },
-        9: { FDI: 21, Universal: 9 },
-        8: { FDI: 11, Universal: 8 },
-        7: { FDI: 12, Universal: 7 },
-        6: { FDI: 13, Universal: 6 },
-        5: { FDI: 14, Universal: 5 },
-        4: { FDI: 15, Universal: 4 },
-        3: { FDI: 16, Universal: 3 },
-        2: { FDI: 17, Universal: 2 },
-        1: { FDI: 18, Universal: 1 },
-
-        // Lower jaw
-        17: { FDI: 38, Universal: 17 },
-        18: { FDI: 37, Universal: 18 },
-        19: { FDI: 36, Universal: 19 },
-        20: { FDI: 35, Universal: 20 },
-        21: { FDI: 34, Universal: 21 },
-        22: { FDI: 33, Universal: 22 },
-        23: { FDI: 32, Universal: 23 },
-        24: { FDI: 31, Universal: 24 },
-        25: { FDI: 41, Universal: 25 },
-        26: { FDI: 42, Universal: 26 },
-        27: { FDI: 43, Universal: 27 },
-        28: { FDI: 44, Universal: 28 },
-        29: { FDI: 45, Universal: 29 },
-        30: { FDI: 46, Universal: 30 },
-        31: { FDI: 47, Universal: 31 },
-        32: { FDI: 48, Universal: 32 }
-      },
-
-      kid: {
-        // Upper jaw (primary, letters A–J)
-        1: { FDI: 55, Universal: 'A' },
-        2: { FDI: 54, Universal: 'B' },
-        3: { FDI: 53, Universal: 'C' },
-        4: { FDI: 52, Universal: 'D' },
-        5: { FDI: 51, Universal: 'E' },
-        6: { FDI: 61, Universal: 'F' },
-        7: { FDI: 62, Universal: 'G' },
-        8: { FDI: 63, Universal: 'H' },
-        9: { FDI: 64, Universal: 'I' },
-        10: { FDI: 65, Universal: 'J' },
-
-        // Lower jaw (primary, letters K–T)
-        11: { FDI: 85, Universal: 'K' },
-        12: { FDI: 84, Universal: 'L' },
-        13: { FDI: 83, Universal: 'M' },
-        14: { FDI: 82, Universal: 'N' },
-        15: { FDI: 81, Universal: 'O' },
-        16: { FDI: 71, Universal: 'P' },
-        17: { FDI: 72, Universal: 'Q' },
-        18: { FDI: 73, Universal: 'R' },
-        19: { FDI: 74, Universal: 'S' },
-        20: { FDI: 75, Universal: 'T' }
-      }
-    };
-
-    const typeOdontogram = 1; //1 is FDI, 2 is Universal
-    const typeThooth = 2; //1 is kid, 2 is adult
-
     function get_number_tooth(id) {
 
       //first we will see if the patient is a kid
@@ -253,7 +208,19 @@ td, th {
 
                         td.appendChild(div);
                     }
-                } else if (row.type === 'input') {
+                } else if(row.type === 'toggle_only'){
+                    const div = document.createElement('div');
+                    div.classList.add('toggle-btn', row.color);
+
+                    //now we will see if the input is activate or is desactivate
+                    const value = values[i]; //get the value of the input 
+                    if(is_true(value)){
+                        div.classList.toggle('active');
+                    }
+
+                    td.appendChild(div);
+                }
+                else if (row.type === 'input') {
 
                     for (let j = 0; j < values[i].length; j++) {
                         //here we will to create the input with his value
@@ -286,13 +253,45 @@ td, th {
         });
     }
 
-    function get_information_from_the_server_about_the_periodontogram(){
+    async function get_information_from_the_server_about_the_periodontogram(){   
+        const odontogram=document.getElementById('odontogram_id').value;
+        const backend=await send_message_to_the_server(`odontograma/get_information_of_the_odotngoram/${odontogram}/`, {}, true, 'GET')
+        if(backend.success){
+            //get the information basic of the odontogram and the save in other variable for use after
+            const answer=backend.answer;
+            const periodontograma=answer.periodontograma;
+            try{
+                //here we will to parse the information that the server send
+                const json=JSON.parse(periodontograma);
+
+                //now we will see if the json have data for send and show in the screen
+                if (this_json_of_the_periodontogram_is_valid(json)){
+                    return json;
+                }
+                
+            }catch(e){
+                console.log('Error parsing periodontograma JSON:', e);
+            }
+        }else{
+            window.show_alert('error', 'odontogram.error.load-periodontogram', backend.message, backend.error || '');
+        }
+
+        return default_odontogram();
+    }
+
+    function this_json_of_the_periodontogram_is_valid(json){
+        //in this function we will to see if the json have data and if the data have the stucturt that we need
+        return json && Object.keys(json).length > 0
+    }
+
+    function default_odontogram(){
+
         const infoTables=[
             {
                 title:"odontogram.title.vestibular",
                 rows:[
                     { name: 'odontograma.label.mobility', type: 'number' , key:"mobility", values:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-                    { name: 'odontograma.status.implant', type: 'toggle', color: 'black' , key:"implant", values:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+                    { name: 'odontograma.status.implant', type: 'toggle_only', color: 'black' , key:"implant", values:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
                     { name: 'odontogram.td.defect-furca', type: 'number' , key:"furca", values:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
                     { name: 'odontogram.td.blood-sounding', type: 'toggle', color: 'red' , key:"sounding", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]},
                     { name: 'odontograma.label.have-plaque-or-tartar', type: 'toggle', color: 'blue', key:"plaque", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]},
@@ -317,16 +316,224 @@ td, th {
         return infoTables;
     }
 
+    async function save_json_periodontogram(){
+        //here we will to create the new list of the json for after save in the backend
+        let infoTables=[];
+        infoTables.push(get_info_face_periodontogram("odontogram.title.vestibular",'tooth-table', window.listInputsSondaje1, window.listInputsGingival1));
+        infoTables.push(get_info_face_periodontogram("odontogram.title.platino", 'tooth-table2',window.listInputsSondaje2, window.listInputsGingival2));
 
-(()=>{
+
+        //now we will to convert the data of the tabla in a json 
+        const json = JSON.stringify(infoTables);
+        const odontogram_id=document.getElementById('odontogram_id').value;
+        const backend=await window.send_message_to_the_server(`/odontograma/update_periodontogram/${odontogram_id}/`,json, true, 'POST');
+        if(backend.success){
+            window.show_alert('success', 'odontogram.message.periodontogram-was-update', 'odontogram.description.periodontogram-was-update')
+        }else{
+            window.show_alert('error', 'odontogram.error.periodontogram-not-was-update', backend.message, backend.error || '')
+        }
+    }
+
+    function create_list_three_values(listInputs){
+        //now we will to get all the information of the periodontogram for save in the server
+        let list=[];
+
+        for(var i=1; i<=16; i++){
+            const index=i*3;
+            list.push([
+                parseInt(listInputs[index-3].value),
+                parseInt(listInputs[index-2].value),
+                parseInt(listInputs[index-1].value)
+            ]);
+        }
+
+        return list;
+    }
+
+    //2 son putos 0
+    //5 y 6 falta un dato no son 16 
+
+    function get_the_value_of_the_inputs_table(tableId, numRow){
+        /*
+            this functions is for get all the value of the inputs that exist in the table
+            the return of this function is a list of list. Each list have the value of the buttons
+            only can get the value of the row 1, 2 and the 3 of the table
+        */
+        let list=[];
+        const table=document.getElementById(tableId);
+        const firstRow = table.rows[numRow];
+        for (let cell of firstRow.cells) {
+            const input = cell.querySelector('input');
+            if (input) {
+                list.push(parseInt(input.value));
+            }
+        }
+
+        return list;
+    }
+
+    function get_the_value_of_the_button_table(tableId, numRow){
+        /*
+            this functions is for get all the value of the buttons that exist in the table
+            the return of this function is a list of list. Each list have the value of the buttons
+            only can get the value of the row 4 and the 5 of the table
+        */
+        let list=[];
+        const table=document.getElementById(tableId);
+        const firstRow = table.rows[numRow];
+        for (let cell of firstRow.cells) {
+            let listButtons=[];
+            const toggles = cell.querySelectorAll('.toggle-btn');
+            if(toggles.length==0){
+                continue; //if not exist toggles now continue
+            }
+            
+            for (let div of toggles) {
+                if (div.classList.contains('active')) {
+                    list.push(1);
+                }else{
+                    list.push(0);
+                }
+            }
+        }
+
+        return list;
+    }
+
+
+    function get_the_value_of_the_buttons_table(tableId, numRow){
+        /*
+            this functions is for get all the value of the buttons that exist in the table
+            the return of this function is a list of list. Each list have the value of the buttons
+            only can get the value of the row 4 and the 5 of the table
+        */
+        let list=[];
+        const table=document.getElementById(tableId);
+        const firstRow = table.rows[numRow];
+        for (let cell of firstRow.cells) {
+            let listButtons=[];
+            const toggles = cell.querySelectorAll('.toggle-btn');
+            if(toggles.length==0){
+                continue; //if not exist toggles now continue
+            }
+            
+            for (let div of toggles) {
+                if (div.classList.contains('active')) {
+                    listButtons.push(1);
+                }else{
+                    listButtons.push(0);
+                }
+            }
+
+            list.push(listButtons);
+        }
+
+        return list;
+    }
+
+    function get_info_face_periodontogram(title, tableId, gingivalInputs, sondajeInputs){
+        return {
+            title: title,
+            rows:[
+                { name: 'odontograma.label.mobility', type: 'number' , key:"mobility", values:get_the_value_of_the_inputs_table(tableId, 1)},
+                { name: 'odontograma.status.implant', type: 'toggle_only', color: 'black' , key:"implant", values:get_the_value_of_the_button_table(tableId, 2)},
+                { name: 'odontogram.td.defect-furca', type: 'number' , key:"furca", values:get_the_value_of_the_inputs_table(tableId, 3)},
+                { name: 'odontogram.td.blood-sounding', type: 'toggle', color: 'red' , key:"sounding", values:get_the_value_of_the_buttons_table(tableId, 4)},
+                { name: 'odontograma.label.have-plaque-or-tartar', type: 'toggle', color: 'blue', key:"plaque", values:get_the_value_of_the_buttons_table(tableId, 5)},
+                { name: 'odontogram.td.marge-gingival', type: 'input' , key:"gingival", values:create_list_three_values(gingivalInputs)},
+                { name: 'odontogram.td.drilling-depth', type: 'input', key:"drilling", values:create_list_three_values(sondajeInputs)}
+            ]
+        }
+    }
+
+
+(async ()=>{
+    //in this variable we will to save the enumeration of the theeth in the system universal and in the system FDI
+    //also we will to save the enumeration for the theeth of the adults and the kids. It is for that the dentist know that tooth is in revision 
+    const numersTooth = {
+      adult: {
+        // Maxilla
+        16: { FDI: 28, Universal: 16 },
+        15: { FDI: 27, Universal: 15 },
+        14: { FDI: 26, Universal: 14 },
+        13: { FDI: 25, Universal: 13 },
+        12: { FDI: 24, Universal: 12 },
+        11: { FDI: 23, Universal: 11 },
+        10: { FDI: 22, Universal: 10 },
+        9: { FDI: 21, Universal: 9 },
+        8: { FDI: 11, Universal: 8 },
+        7: { FDI: 12, Universal: 7 },
+        6: { FDI: 13, Universal: 6 },
+        5: { FDI: 14, Universal: 5 },
+        4: { FDI: 15, Universal: 4 },
+        3: { FDI: 16, Universal: 3 },
+        2: { FDI: 17, Universal: 2 },
+        1: { FDI: 18, Universal: 1 },
+
+        // Lower jaw
+        17: { FDI: 38, Universal: 17 },
+        18: { FDI: 37, Universal: 18 },
+        19: { FDI: 36, Universal: 19 },
+        20: { FDI: 35, Universal: 20 },
+        21: { FDI: 34, Universal: 21 },
+        22: { FDI: 33, Universal: 22 },
+        23: { FDI: 32, Universal: 23 },
+        24: { FDI: 31, Universal: 24 },
+        25: { FDI: 41, Universal: 25 },
+        26: { FDI: 42, Universal: 26 },
+        27: { FDI: 43, Universal: 27 },
+        28: { FDI: 44, Universal: 28 },
+        29: { FDI: 45, Universal: 29 },
+        30: { FDI: 46, Universal: 30 },
+        31: { FDI: 47, Universal: 31 },
+        32: { FDI: 48, Universal: 32 }
+      },
+
+      kid: {
+        // Upper jaw (primary, letters A–J)
+        1: { FDI: 55, Universal: 'A' },
+        2: { FDI: 54, Universal: 'B' },
+        3: { FDI: 53, Universal: 'C' },
+        4: { FDI: 52, Universal: 'D' },
+        5: { FDI: 51, Universal: 'E' },
+        6: { FDI: 61, Universal: 'F' },
+        7: { FDI: 62, Universal: 'G' },
+        8: { FDI: 63, Universal: 'H' },
+        9: { FDI: 64, Universal: 'I' },
+        10: { FDI: 65, Universal: 'J' },
+
+        // Lower jaw (primary, letters K–T)
+        11: { FDI: 85, Universal: 'K' },
+        12: { FDI: 84, Universal: 'L' },
+        13: { FDI: 83, Universal: 'M' },
+        14: { FDI: 82, Universal: 'N' },
+        15: { FDI: 81, Universal: 'O' },
+        16: { FDI: 71, Universal: 'P' },
+        17: { FDI: 72, Universal: 'Q' },
+        18: { FDI: 73, Universal: 'R' },
+        19: { FDI: 74, Universal: 'S' },
+        20: { FDI: 75, Universal: 'T' }
+      }
+    };
+
+    const typeOdontogram = 1; //1 is FDI, 2 is Universal
+    const typeThooth = 2; //1 is kid, 2 is adult
+
+    window.typeThooth=typeThooth;
+    window.typeOdontogram=typeOdontogram;
+    window.numersTooth=numersTooth;
+
     //here we will to create all the list of the information
     window.listInputsSondaje1=[];
     window.listInputsGingival1=[];
+    window.listInputSounding1=[];
 
     window.listInputsSondaje2=[];
     window.listInputsGingival2=[];
 
-    const infoTables=get_information_from_the_server_about_the_periodontogram();
+
+
+    const infoTables=await get_information_from_the_server_about_the_periodontogram();
 
     //we will to read all the information that the server send and update all the UI
     let indexTooth=0;
@@ -360,18 +567,15 @@ td, th {
         window.update_ui(uiPeriodontogramId, listInputsSondaje, listInputsGingival, indexTooth); //when all the data is load of the table, now we will to render the UI of the periodontogram
         indexTooth = (indexTooth + 16) % 32; //increment the teeth for after to the next but if already not teeth now return to 0
     });
-})();
-
-
-
-//this code if for that can update all the button type checkbox of colors in the form
-document.querySelectorAll('.toggle-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        btn.classList.toggle('active');
+    
+    //this code if for that can update all the button type checkbox of colors in the form
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.classList.toggle('active');
+        });
     });
-});
+})();
 </script>
-
 
 <script>
 const svgsDientesPeriodontogram = {
@@ -412,250 +616,252 @@ const svgsDientesPeriodontogram = {
 
 }
 
+if(!customElements.get("tooth-graph")){
+  class ToothGraph extends HTMLElement {
+      constructor() {
+          super();
+          this.attachShadow({ mode: "open" });
+          this.indexTooth=parseInt(this.getAttribute("teeth") || "0") + 1;
 
-class ToothGraph extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: "open" });
-        this.indexTooth=parseInt(this.getAttribute("teeth") || "0") + 1;
+          const wrapper = document.createElement("div");
+          wrapper.style.position = "relative";
+          wrapper.style.width = "100%";
+          wrapper.style.height = "100%";
 
-        const wrapper = document.createElement("div");
-        wrapper.style.position = "relative";
-        wrapper.style.width = "100%";
-        wrapper.style.height = "100%";
+          // Canvas para la gráfica
+          this.canvas = document.createElement("canvas");
+          this.canvas.style.width = "100%";
+          this.canvas.style.height = "100%";
+          this.canvas.style.display = "block";
 
-        // Canvas para la gráfica
-        this.canvas = document.createElement("canvas");
-        this.canvas.style.width = "100%";
-        this.canvas.style.height = "100%";
-        this.canvas.style.display = "block";
+          wrapper.appendChild(this.canvas);
+          this.shadowRoot.appendChild(wrapper);
+      }
 
-        wrapper.appendChild(this.canvas);
-        this.shadowRoot.appendChild(wrapper);
-    }
+      connectedCallback() {
+          this.points = (this.getAttribute("points") || "")
+              .split(",")
+              .map(p => parseFloat(p.trim()))
+              .filter(n => !isNaN(n));
 
-    connectedCallback() {
-        this.points = (this.getAttribute("points") || "")
-            .split(",")
-            .map(p => parseFloat(p.trim()))
-            .filter(n => !isNaN(n));
+          // Crear contenedor para dientes
+          this.teethContainer = document.createElement("div");
+          this.teethContainer.style.position = "absolute";
+          this.teethContainer.style.left = "0";
+          this.teethContainer.style.top = "0";
+          this.teethContainer.style.width = "100%";
+          this.teethContainer.style.height = "100%";
+          this.teethContainer.style.pointerEvents = "none";
 
-        // Crear contenedor para dientes
-        this.teethContainer = document.createElement("div");
-        this.teethContainer.style.position = "absolute";
-        this.teethContainer.style.left = "0";
-        this.teethContainer.style.top = "0";
-        this.teethContainer.style.width = "100%";
-        this.teethContainer.style.height = "100%";
-        this.teethContainer.style.pointerEvents = "none";
+          this.shadowRoot.appendChild(this.teethContainer);
 
-        this.shadowRoot.appendChild(this.teethContainer);
+          this.renderGraph();
+          window.addEventListener("resize", () => this.renderGraph());
+      }
 
-        this.renderGraph();
-        window.addEventListener("resize", () => this.renderGraph());
-    }
+      parsePoints(label) {
+          const raw = this.getAttribute(label);
+          if (!raw) return [];
+          return raw
+              .split(",")
+              .map(v => (-(Number(v.trim()) || 0)+6) * 3);  // ← MULTIPLICA POR 5
+      }
 
-    parsePoints(label) {
-        const raw = this.getAttribute(label);
-        if (!raw) return [];
-        return raw
-            .split(",")
-            .map(v => (-(Number(v.trim()) || 0)+6) * 3);  // ← MULTIPLICA POR 5
-    }
+      parseCombinedPoints() {
+          const rawGingival = this.getAttribute("gingival");
+          const rawPoints = this.getAttribute("points");
 
-    parseCombinedPoints() {
-        const rawGingival = this.getAttribute("gingival");
-        const rawPoints = this.getAttribute("points");
+          if (!rawGingival || !rawPoints) return [];
 
-        if (!rawGingival || !rawPoints) return [];
+          const gingivalArr = rawGingival.split(",").map(v => (-(Number(v.trim()) || 0)+6) * 3);
+          const pointsArr = rawPoints.split(",").map(v => ((Number(v.trim()) || 0)) * 3);
 
-        const gingivalArr = rawGingival.split(",").map(v => (-(Number(v.trim()) || 0)+6) * 3);
-        const pointsArr = rawPoints.split(",").map(v => ((Number(v.trim()) || 0)) * 3);
+          const combined = gingivalArr.map((g, i) => g + (pointsArr[i] || 0));
+          
 
-        const combined = gingivalArr.map((g, i) => g + (pointsArr[i] || 0));
-        
+          return combined;
+      }
 
-        return combined;
-    }
+      renderGraph() {
+          const ctx = this.canvas.getContext("2d");
 
-    renderGraph() {
-        const ctx = this.canvas.getContext("2d");
+          // Ajustar resolución del canvas
+          const rect = this.canvas.getBoundingClientRect();
+          this.canvas.width = rect.width * window.devicePixelRatio;
+          this.canvas.height = rect.height * window.devicePixelRatio;
+          ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
-        // Ajustar resolución del canvas
-        const rect = this.canvas.getBoundingClientRect();
-        this.canvas.width = rect.width * window.devicePixelRatio;
-        this.canvas.height = rect.height * window.devicePixelRatio;
-        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+          const width = rect.width;
+          const height = rect.height;
 
-        const width = rect.width;
-        const height = rect.height;
+          ctx.clearRect(0, 0, width, height);
 
-        ctx.clearRect(0, 0, width, height);
+          const points = this.parseCombinedPoints();
+          const maxY = Math.max(...points, 100);
+          const minY = Math.min(...points, 0);
 
-        const points = this.parseCombinedPoints();
-        const maxY = Math.max(...points, 100);
-        const minY = Math.min(...points, 0);
+          const stepX = width / (points.length - 1);
 
-        const stepX = width / (points.length - 1);
+          // Dibujar dientes
+          this.drawTeeth(stepX, height, minY, maxY);
 
-        // Dibujar dientes
-        this.drawTeeth(stepX, height, minY, maxY);
+          // Colores configurables
+          const lineColor = getComputedStyle(this).getPropertyValue("--line-color") || "#0ff";
+          const fillColor = getComputedStyle(this).getPropertyValue("--fill-color") || "rgba(0,255,255,0.2)";
+          const strokeWidth = parseFloat(getComputedStyle(this).getPropertyValue("--stroke-width")) || 2;
 
-        // Colores configurables
-        const lineColor = getComputedStyle(this).getPropertyValue("--line-color") || "#0ff";
-        const fillColor = getComputedStyle(this).getPropertyValue("--fill-color") || "rgba(0,255,255,0.2)";
-        const strokeWidth = parseFloat(getComputedStyle(this).getPropertyValue("--stroke-width")) || 2;
+          // Dibujar área
+          ctx.beginPath();
+          ctx.moveTo(0, height);
+          const gingival = this.parsePoints("gingival");
 
-        // Dibujar área
-        ctx.beginPath();
-        ctx.moveTo(0, height);
-        const gingival = this.parsePoints("gingival");
+          // Dibujar área solo donde sean diferentes
+          if (gingival.length > 0) {
+              this.drawAreaBetweenLines(points, gingival, "rgba(118,226,248,0.2)");
+          }
 
-        // Dibujar área solo donde sean diferentes
-        if (gingival.length > 0) {
-            this.drawAreaBetweenLines(points, gingival, "rgba(118,226,248,0.2)");
-        }
+          ctx.lineTo(width, height);
+          ctx.closePath();
+          ctx.fillStyle = fillColor;
+          ctx.fill();
 
-        ctx.lineTo(width, height);
-        ctx.closePath();
-        ctx.fillStyle = fillColor;
-        ctx.fill();
+          //this is for draw profundidad de sondeo
+          // Dibujar línea
+          ctx.beginPath();
+          points.forEach((p, i) => {
+              const x = stepX * i;
+              const y = height - (p - minY) / (maxY - minY) * height;
+              if (i === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+          });
 
-        //this is for draw profundidad de sondeo
-        // Dibujar línea
-        ctx.beginPath();
-        points.forEach((p, i) => {
-            const x = stepX * i;
-            const y = height - (p - minY) / (maxY - minY) * height;
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        });
+          ctx.strokeStyle = lineColor;
+          ctx.lineWidth = strokeWidth;
+          ctx.stroke();
 
-        ctx.strokeStyle = lineColor;
-        ctx.lineWidth = strokeWidth;
-        ctx.stroke();
+          //----------------------aqui dibujamos la linea de gingival------------------------
+          if (gingival.length > 0) {
+              this.drawSecondaryLine(
+                  gingival,
+                  "#ff0000", // color de línea gingival
+                  2          // grosor
+              );
+          }
+      }
 
-        //----------------------aqui dibujamos la linea de gingival------------------------
-        if (gingival.length > 0) {
-            this.drawSecondaryLine(
-                gingival,
-                "#ff0000", // color de línea gingival
-                2          // grosor
-            );
-        }
-    }
+      drawSecondaryLine(points, color = "#f00", lineWidth = 2) {
+          const ctx = this.canvas.getContext("2d");
 
-    drawSecondaryLine(points, color = "#f00", lineWidth = 2) {
-        const ctx = this.canvas.getContext("2d");
+          const rect = this.canvas.getBoundingClientRect();
+          const width = rect.width;
+          const height = rect.height;
 
-        const rect = this.canvas.getBoundingClientRect();
-        const width = rect.width;
-        const height = rect.height;
+          const maxY = Math.max(...points, 100);
+          const minY = Math.min(...points, 0);
 
-        const maxY = Math.max(...points, 100);
-        const minY = Math.min(...points, 0);
+          const stepX = width / (points.length - 1);
 
-        const stepX = width / (points.length - 1);
+          ctx.beginPath();
 
-        ctx.beginPath();
+          points.forEach((p, i) => {
+              const x = stepX * i;
+              const y = height - (p - minY) / (maxY - minY) * height;
 
-        points.forEach((p, i) => {
-            const x = stepX * i;
-            const y = height - (p - minY) / (maxY - minY) * height;
+              if (i === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+          });
 
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        });
+          ctx.strokeStyle = color;
+          ctx.lineWidth = lineWidth;
+          ctx.stroke();
+      }
 
-        ctx.strokeStyle = color;
-        ctx.lineWidth = lineWidth;
-        ctx.stroke();
-    }
+      drawAreaBetweenLines(line1, line2, color = "rgba(255,0,0,0.2)") {
+          if (!line1.length || !line2.length) return;
 
-    drawAreaBetweenLines(line1, line2, color = "rgba(255,0,0,0.2)") {
-        if (!line1.length || !line2.length) return;
+          const ctx = this.canvas.getContext("2d");
+          const rect = this.canvas.getBoundingClientRect();
+          const width = rect.width;
+          const height = rect.height;
+          const stepX = width / (line1.length - 1);
 
-        const ctx = this.canvas.getContext("2d");
-        const rect = this.canvas.getBoundingClientRect();
-        const width = rect.width;
-        const height = rect.height;
-        const stepX = width / (line1.length - 1);
+          const maxY = Math.max(...line1.concat(line2), 100);
+          const minY = Math.min(...line1.concat(line2), 0);
 
-        const maxY = Math.max(...line1.concat(line2), 100);
-        const minY = Math.min(...line1.concat(line2), 0);
+          let isDrawing = false;
+          let segmentStart = 0;
 
-        let isDrawing = false;
-        let segmentStart = 0;
+          // Recorremos cada punto
+          for (let i = 0; i < line1.length; i++) {
+              if (line1[i] !== line2[i] && !isDrawing) {
+                  // Inicio de un área diferente
+                  isDrawing = true;
+                  segmentStart = i;
+              } else if ((line1[i] === line2[i] || i === line1.length - 1) && isDrawing) {
+                  // Fin de un área diferente
+                  isDrawing = false;
 
-        // Recorremos cada punto
-        for (let i = 0; i < line1.length; i++) {
-            if (line1[i] !== line2[i] && !isDrawing) {
-                // Inicio de un área diferente
-                isDrawing = true;
-                segmentStart = i;
-            } else if ((line1[i] === line2[i] || i === line1.length - 1) && isDrawing) {
-                // Fin de un área diferente
-                isDrawing = false;
+                  const segmentEnd = (line1[i] === line2[i]) ? i - 1 : i;
 
-                const segmentEnd = (line1[i] === line2[i]) ? i - 1 : i;
+                  // Dibujar polígono entre segmentStart y segmentEnd
+                  ctx.beginPath();
+                  // Línea 1
+                  for (let j = segmentStart; j <= segmentEnd; j++) {
+                      const x = stepX * j;
+                      const y = height - (line1[j] - minY) / (maxY - minY) * height;
+                      if (j === segmentStart) ctx.moveTo(x, y);
+                      else ctx.lineTo(x, y);
+                  }
+                  // Línea 2 al revés
+                  for (let j = segmentEnd; j >= segmentStart; j--) {
+                      const x = stepX * j;
+                      const y = height - (line2[j] - minY) / (maxY - minY) * height;
+                      ctx.lineTo(x, y);
+                  }
 
-                // Dibujar polígono entre segmentStart y segmentEnd
-                ctx.beginPath();
-                // Línea 1
-                for (let j = segmentStart; j <= segmentEnd; j++) {
-                    const x = stepX * j;
-                    const y = height - (line1[j] - minY) / (maxY - minY) * height;
-                    if (j === segmentStart) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                // Línea 2 al revés
-                for (let j = segmentEnd; j >= segmentStart; j--) {
-                    const x = stepX * j;
-                    const y = height - (line2[j] - minY) / (maxY - minY) * height;
-                    ctx.lineTo(x, y);
-                }
+                  ctx.closePath();
+                  ctx.fillStyle = color;
+                  ctx.fill();
+              }
+          }
+      }
 
-                ctx.closePath();
-                ctx.fillStyle = color;
-                ctx.fill();
-            }
-        }
-    }
+      drawTeeth(stepX, height, minY, maxY) {
+          // Limpiar dientes anteriores
+          this.teethContainer.innerHTML = "";
 
-    drawTeeth(stepX, height, minY, maxY) {
-        // Limpiar dientes anteriores
-        this.teethContainer.innerHTML = "";
+          const total = this.points.length;
 
-        const total = this.points.length;
+          let indexTooth = this.indexTooth; //get the number of the start of the tooth 
+          for (let i = 0; i < total; i++) {
+              const value = this.points[i];
 
-        let indexTooth = this.indexTooth; //get the number of the start of the tooth 
-        for (let i = 0; i < total; i++) {
-            const value = this.points[i];
+              const x = stepX * i;
+              const y = height - (value - minY) / (maxY - minY) * height;
 
-            const x = stepX * i;
-            const y = height - (value - minY) / (maxY - minY) * height;
+              //here we will see if the tooth need add
+              if(i%3==0){
+                  const dienteNum = ((i % 24) + 1); // Repetición de 1 a 24 o ajusta según desees
+                  const svgBase = svgsDientesPeriodontogram[indexTooth];
+                  if (!svgBase) continue;
+                  indexTooth++;
 
-            //here we will see if the tooth need add
-            if(i%3==0){
-                const dienteNum = ((i % 24) + 1); // Repetición de 1 a 24 o ajusta según desees
-                const svgBase = svgsDientesPeriodontogram[indexTooth];
-                if (!svgBase) continue;
-                indexTooth++;
+                  const tooth = document.createElement("div");
+                  tooth.style.position = "absolute";
+                  tooth.style.left = `${x +15}px`;      // centrado
+                  tooth.style.top = `${86}px`;       // encima del punto
+                  tooth.style.width = "60px";
+                  tooth.style.height = "30px";
+                  tooth.style.pointerEvents = "none";
+                  tooth.style.opacity = "0.5";
+                  tooth.innerHTML = svgBase;
+                  this.teethContainer.appendChild(tooth);
+              }
+          }
+      }
+  }
 
-                const tooth = document.createElement("div");
-                tooth.style.position = "absolute";
-                tooth.style.left = `${x +15}px`;      // centrado
-                tooth.style.top = `${86}px`;       // encima del punto
-                tooth.style.width = "60px";
-                tooth.style.height = "30px";
-                tooth.style.pointerEvents = "none";
-                tooth.style.opacity = "0.5";
-                tooth.innerHTML = svgBase;
-                this.teethContainer.appendChild(tooth);
-            }
-        }
-    }
+  customElements.define("tooth-graph", ToothGraph);
 }
 
-customElements.define("tooth-graph", ToothGraph);
 </script>

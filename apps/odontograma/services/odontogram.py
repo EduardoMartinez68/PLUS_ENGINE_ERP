@@ -27,7 +27,6 @@ def get_or_create_odontogram(customer, doctor) -> 'Odontogram':
 
     return odontogram
 
-
 def get_odontograms(user, sku: str = '', page: int = 1, limit: int = 20) -> Dict[str, Any]:
     company = getattr(user, "company", None)
     if not company:
@@ -355,6 +354,7 @@ def get_latest_history_for_odontogram(user, odontogram_id: int) -> Dict[str, Any
             "created_at": latest_history.created_at,
             "updated_at": latest_history.updated_at,
             "blocked": latest_history.blocked,
+            "periodontograma": latest_history.periodontograma,
             "teeth": teeth_data,
             "customer": {
                 "id": customer.id,

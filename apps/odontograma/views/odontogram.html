@@ -1,3 +1,4 @@
+<input type="hidden" value="{{ odontogram_id }}" id="odontogram_id">
 {% include 'partials_odontograma/navbar.html' %}
 <plus-tabs>
   <plus-tab text="odontograma.tab.odontogram">
@@ -13,24 +14,5 @@
   </plus-tab>
 </plus-tabs>
 
-<!--
-{% for tooth in odontogram.teeth %}
-  <div class="tooth-card" style="border:1px solid #ccc; padding:10px; border-radius:8px; width:180px; background:#f9f9f9;">
-    <p><b>ID:</b> {{ tooth.id }}</p>
-    <p><b>FDI Number:</b> {{ tooth.FDI_number }}</p>
-    <p><b>Name Key:</b> {{ tooth.name_key }}</p>
-    <p><b>Status:</b> {{ tooth.status }}</p>
-    <p><b>diagnosis:</b> {{ tooth.diagnosis }}</p>
-    <p><b>Notes:</b> {{ tooth.notes }}</p>
-    <p><b>Caries Depth:</b> {{ tooth.caries_depth }}</p>
 
-    <p><b>surface_occlusal:</b> {{ tooth.surface_occlusal }}</p>
-    <p><b>surface_mesial:</b> {{ tooth.surface_mesial }}</p>
-    <p><b>Carisurface_distales:</b> {{ tooth.surface_distal }}</p>
-    <p><b>surface_lingual:</b> {{ tooth.surface_lingual }}</p>
-    <p><b>surface_buccal:</b> {{ tooth.surface_buccal }}</p>
-    <p>{{tooth.svg_state}}</p>
-    <p>{{tooth.treatments}}</p>
-  </div>
-{% endfor %}
---->
+

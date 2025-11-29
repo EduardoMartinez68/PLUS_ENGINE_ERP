@@ -8,5 +8,6 @@ urlpatterns = [
     path('view_odontogram/<int:odontogram_id>/', views.view_odontogram, name='view_odontogram'),
     path('get_information_of_the_odotngoram/<int:odontogram_id>/', views.get_information_of_the_odotngoram, name='get_information_of_the_odotngoram'),
     path('view_update_tooth/<int:odontogram_id>/<int:tooth_id>/', views.view_update_tooth, name='view_update_tooth'),
+    path('update_periodontogram/<int:periodontogram_id>/', views.update_periodontogram, name='update_periodontogram'),
     path('view_setting/', views.view_setting, name='view_setting'),
 ]

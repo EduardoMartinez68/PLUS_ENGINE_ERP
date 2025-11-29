@@ -149,5 +149,10 @@
 
   
   "odontogram.title.vestibular":"Vestibular",
-  "odontogram.title.platino":"Platino"
+  "odontogram.title.platino":"Platino",
+
+  "odontogram.message.periodontogram-was-update":"Periodontograma actualizado",
+  "odontogram.description.periodontogram-was-update":"El periodontograma fue actualizado con exito.",
+  "odontogram.error.periodontogram-not-was-update":"El periodontograma no fue actualizado.",
+  "odontogram.error.load-periodontogram":"Error al cargar el periodontograma"
 }

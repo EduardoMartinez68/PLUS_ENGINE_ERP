@@ -119,6 +119,7 @@ class HistoryOdontogram(models.Model):
     key = models.CharField(max_length=150, null=False)
     notes = EncryptedTextField(blank=True, null=True)
 
+    periodontograma = models.JSONField(default=dict)  #here is for save the JSON of the 4 face of the periodontograma
 
     #this is for know when was create or when was last update
     created_at = models.DateTimeField(auto_now_add=True)
