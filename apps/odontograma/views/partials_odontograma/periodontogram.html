@@ -110,21 +110,21 @@ td, th {
     function get_number_tooth(id) {
 
       //first we will see if the patient is a kid
-      if (typeThooth == 1) {
-        if (typeOdontogram == 1) {
-          return numersTooth.kid[id].FDI;
+      if (window.typeThooth == 1) {
+        if (window.typeOdontogram == 1) {
+          return window.numersTooth.kid[id].FDI;
         }
 
-        return numersTooth.kid[id].Universal;
+        return window.numersTooth.kid[id].Universal;
       }
 
 
       //if the patient is an adult we will to get the type of tooth
-      if (typeOdontogram == 1) {
-        return numersTooth.adult[id].FDI;
+      if (window.typeOdontogram == 1) {
+        return window.numersTooth.adult[id].FDI;
       }
 
-      return numersTooth.adult[id].Universal;
+      return window.numersTooth.adult[id].Universal;
     }
 
 

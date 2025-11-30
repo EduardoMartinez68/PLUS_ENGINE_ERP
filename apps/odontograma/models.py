@@ -192,29 +192,29 @@ class Tooth(models.Model):
         (51, "odontogram.tooth.upper_right.primary_central_incisor"),
         (52, "odontogram.tooth.upper_right.primary_lateral_incisor"),
         (53, "odontogram.tooth.upper_right.primary_canine"),
-        (54, "odontogram.tooth.upper_right.primary_first_molar"),
-        (55, "odontogram.tooth.upper_right.primary_second_molar"),
+        (54, "odontogram.tooth.upper_right.first_premolar"),
+        (55, "odontogram.tooth.upper_right.primary_first_molar"),
 
         # Top left
         (61, "odontogram.tooth.upper_left.primary_central_incisor"),
         (62, "odontogram.tooth.upper_left.primary_lateral_incisor"),
         (63, "odontogram.tooth.upper_left.primary_canine"),
-        (64, "odontogram.tooth.upper_left.primary_first_molar"),
-        (65, "odontogram.tooth.upper_left.primary_second_molar"),
+        (64, "odontogram.tooth.upper_left.first_premolar"),
+        (65, "odontogram.tooth.upper_left.primary_first_molar"),
 
         # Lower left
         (71, "odontogram.tooth.lower_left.primary_central_incisor"),
         (72, "odontogram.tooth.lower_left.primary_lateral_incisor"),
         (73, "odontogram.tooth.lower_left.primary_canine"),
-        (74, "odontogram.tooth.lower_left.primary_first_molar"),
-        (75, "odontogram.tooth.lower_left.primary_second_molar"),
+        (74, "odontogram.tooth.lower_left.first_premolar"),
+        (75, "odontogram.tooth.lower_left.primary_first_molar"),
 
         # Lower right
         (81, "odontogram.tooth.lower_right.primary_central_incisor"),
         (82, "odontogram.tooth.lower_right.primary_lateral_incisor"),
         (83, "odontogram.tooth.lower_right.primary_canine"),
-        (84, "odontogram.tooth.lower_right.primary_first_molar"),
-        (85, "odontogram.tooth.lower_right.primary_second_molar"),
+        (84, "odontogram.tooth.lower_right.first_premolar"),
+        (85, "odontogram.tooth.lower_right.primary_first_molar"),
     ]
 
     # number global of the tooth (FDI)

@@ -356,6 +356,7 @@ def get_latest_history_for_odontogram(user, odontogram_id: int) -> Dict[str, Any
             "updated_at": latest_history.updated_at,
             "blocked": latest_history.blocked,
             "periodontograma": latest_history.periodontograma,
+            "is_kid":latest_history.is_kid,
             "teeth": teeth_data,
             "customer": {
                 "id": customer.id,
