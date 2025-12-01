@@ -1,12 +1,12 @@
-{% include 'partials_odontograma/navbar.html' %}
-<div class="container">
+<div class="container-section">
     <label  t="odontogram.laebl.setting-of-the-odontogram" icon="fi fi-sr-gears"></label>
     <hr>
-    <plus-select label="odontogram.laebl.select-system">
+    <plus-select label="odontogram.laebl.select-system" id="typeSystem" name="typeSystem"> 
         <option t="odontogram.option.system-universal" value="1"></option>
         <option t="odontogram.option.fdi" value="2"></option>
     </plus-select>
 
-
+    <label t="odontogram.laebl.setting-color-caries"></label>
+    <input-color></input-color>
     <button class="btn btn-success btn-edit" t="btn.update"></button>
 </div>
