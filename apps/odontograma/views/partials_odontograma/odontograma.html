@@ -987,6 +987,8 @@
 
         //get the information of all the teeth and the save
         information_teeth=answer.teeth;
+        window.typeOdontogram=answer.setting_odontogram.typeSystem;
+        window.setting_odontogram=answer.setting_odontogram;
       }
 
 
@@ -1058,7 +1060,7 @@
     function get_number_tooth(id) {
       //first we will see if the patient is a kid
       if (window.typeThooth == 1) {
-        if (typeOdontogram == 1) {
+        if (window.typeOdontogram == 1) {
           return numersTooth.kid[id].FDI;
         }
 
@@ -1067,7 +1069,7 @@
 
 
       //if the patient is an adult we will to get the type of tooth
-      if (typeOdontogram == 1) {
+      if (window.typeOdontogram == 1) {
         return numersTooth.adult[id].FDI;
       }
 
@@ -1105,6 +1107,8 @@
     window.dienteId=null;
     window.translateStatus=translateStatus;
     window.typeThooth=typeThooth;
+    window.typeOdontogram=typeOdontogram;
+    window.setting_odontogram={};
 
     // ===== CREATE THEETH =====
     function update_all_the_mouth(){

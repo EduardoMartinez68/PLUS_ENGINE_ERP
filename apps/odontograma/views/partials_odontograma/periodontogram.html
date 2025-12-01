@@ -326,11 +326,11 @@ td, th {
         if(backend.success){
             //get the information basic of the odontogram and the save in other variable for use after
             const answer=backend.answer;
-            const periodontograma=answer.periodontograma;
+            const periodontograma=answer.setting_odontogram.typeSystem;
 
             //first we will see if the customer is a kid or a adult for create the teeth list
             window.typeThooth=answer.is_kid ? 1 : 2;
-
+            window.typeOdontogram=answer.setting_odontogram;
 
             //now if the customer is a kid we will to create the teeth list for kids
             if(answer.is_kid){

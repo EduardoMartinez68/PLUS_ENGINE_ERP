@@ -4,7 +4,7 @@ from apps.customers.models import Customer
 from django.db import transaction, IntegrityError
 from django.core.paginator import Paginator
 import uuid
-from ..models import Odontogram, HistoryOdontogram, Tooth
+from ..models import Odontogram, HistoryOdontogram, Tooth, OdontogramSetting
 from django.db.models import Q
 from ..plus_wrapper import Plus
 
@@ -308,6 +308,16 @@ def get_latest_history_for_odontogram(user, odontogram_id: int) -> Dict[str, Any
             "answer": {},
             "error": "This odontogram does not exist or you don't have permission"
         }
+    
+    #get the settings of the odontogram 
+    try:
+        setting_odontogram = OdontogramSetting.objects.get(doctor=user)
+    except OdontogramSetting.DoesNotExist:
+        setting_odontogram = {
+            "typeSystem": 1,
+            "color_caries": "#FF0000",
+            "default_treatments": {}
+        }
 
     # Obtener el historial más reciente para este paciente
     latest_history = HistoryOdontogram.objects.filter(
@@ -358,6 +368,7 @@ def get_latest_history_for_odontogram(user, odontogram_id: int) -> Dict[str, Any
             "periodontograma": latest_history.periodontograma,
             "is_kid":latest_history.is_kid,
             "teeth": teeth_data,
+            "setting_odontogram":setting_odontogram,
             "customer": {
                 "id": customer.id,
                 "name": customer.name,
