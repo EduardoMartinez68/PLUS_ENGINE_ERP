@@ -91,6 +91,31 @@ db_pass = os.getenv('DB_PASS')
 db_name = os.getenv('DB_NAME')
 db_port = os.getenv('DB_PORT')
 
+#----------------------------configuration of celery---------------------------------
+if TYPE_VERSION=='CLOUD':
+    #to run the worker of celery use the next command in the terminal only if you have the version cloud
+
+    #celery -A core worker -l info
+    CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://127.0.0.1:6379/0')
+    CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', "redis://127.0.0.1:6379/0")
+
+    CELERY_ACCEPT_CONTENT = ['json']
+    CELERY_TASK_SERIALIZER = 'json'
+    CELERY_RESULT_SERIALIZER = 'json'
+
+    from celery.schedules import crontab
+
+    #here we will configure the tasks that will be run in background with celery
+    #here after we will to read all the task that exist in all the apps for if one have event that would like meminder
+    CELERY_BEAT_SCHEDULE = {
+        "enviar-recordatorios-cada-5-min": {
+            "task": "apps.agenda.tasks.send_reminders",
+            "schedule": 300,  # this is run by 5 minutes
+        },
+    }
+
+
+#----------------------------configuration of django Q for task in background---------------------------------
 '''
 
 INSTALLED_APPS = [

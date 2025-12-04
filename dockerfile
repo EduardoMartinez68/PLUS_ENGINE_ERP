@@ -23,6 +23,9 @@ COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
+#we will to install celery with redis support
+RUN pip install "celery[redis]"
+
 # copy all the project ERP
 COPY . .
 COPY .env /app/.env

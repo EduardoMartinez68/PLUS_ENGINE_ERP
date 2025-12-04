@@ -82,10 +82,6 @@ for app_name in os.listdir(apps_dir):
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-
-
-
 if __name__ == "__main__":
     # Set the default Django settings module environment variable
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
