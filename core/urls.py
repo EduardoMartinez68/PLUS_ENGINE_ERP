@@ -4,6 +4,7 @@ from django.contrib.auth.views import LogoutView
 
 
 from . import views
+from apps.setting.links import views as setting_views
 from core.readApps import APPS_FOLDER
 import os
 
@@ -19,6 +20,7 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
     path('singup/', views.register, name='singup'),
+    path('whatsapp/webhook/', setting_views.whatsapp_callback, name='whatsapp_webhook'), #this is for whatsapp webhook
 ]
 
 

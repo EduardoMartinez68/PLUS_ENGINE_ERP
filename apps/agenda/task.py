@@ -55,3 +55,24 @@ def send_reminders():
             print(f"error to send a reminders to {appointment.id}: {e}")
 
     return f"{enviados} reminders sent successfully."
+
+
+
+
+def send_whatsapp_text(phone_number_id, access_token, to_number_e164, text):
+    """
+    phone_number_id: el id 'phone_number_id' provisto por Meta para la cuenta
+    access_token: token de la app/WABA (usualmente temporario o de larga duración)
+    to_number_e164: '5215512345678' (con código de país, sin +)
+    """
+    url = f"https://graph.facebook.com/v17.0/{phone_number_id}/messages"
+    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": to_number_e164,
+        "type": "text",
+        "text": {"body": text}
+    }
+    resp = requests.post(url, json=payload, headers=headers, timeout=15)
+    resp.raise_for_status()
+    return resp.json()

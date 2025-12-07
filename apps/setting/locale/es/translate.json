@@ -7,6 +7,7 @@
     "setting.module.schedule":"Horario de la sucursal",
     "setting.module.plus": "Cuenta PLUS",
     "setting.module.apps":"PLUS Store",
+    "setting.module.whatsapp":"WhatsApp",
 
     "setting.currency.ars": "Peso argentino (ARS)",
     "setting.currency.bob": "Boliviano (BOB)",
@@ -140,5 +141,11 @@
 
 
     "setting.error.the-email-is-requerid":"El email es necesario",
-    "setting.error.the-password-is-requerid":"La contraseña de Google es obligatoria."
+    "setting.error.the-password-is-requerid":"La contraseña de Google es obligatoria.",
+    "setting.btn.do-you-not-a-count-google":"¿No tienes una cuenta de Google?",
+    
+    "setting.title.connect-your-count-of-whatsapp":"Conecta tu cuenta de WhatsApp Business",
+    "setting.info.connect-your-count-of-whatsapp":"Haz clic en el botón para conectar tu número de WhatsApp con PLUS.",
+    "setting.btn.connect-your-count-of-whatsapp":"Conectar con Facebook / WhatsApp",
+    "setting.btn.do-you-not-a-count":"¿No tienes una cuenta de WhatsApp Bussines?"
 }

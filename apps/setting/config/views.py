@@ -442,3 +442,78 @@ def view_update_schedule(request):
             "error": result.get('error',"")
         }, status=200)   
 
+@login_required(login_url='login')
+def whatsapp_callback(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        import requests
+        from django.conf import settings
+        from django.shortcuts import redirect
+    
+        
+        code = request.GET.get("code")
+    
+        token_url = "https://graph.facebook.com/v18.0/oauth/access_token"
+        params = {
+            "client_id": settings.FB_APP_ID,
+            "client_secret": settings.FB_APP_SECRET,
+            "redirect_uri": "https://localhost:8000/setting/whatsapp_callback/",
+            "code": code,
+        }
+    
+        r = requests.get(token_url, params=params)
+        data = r.json()
+    
+        access_token = data["access_token"]
+    
+        # Ahora obtienes info de la cuenta: WABA + phone_number_id
+        r2 = requests.get(
+            "https://graph.facebook.com/v18.0/me?fields=id,name,accounts{business,phone_numbers}&access_token=" + access_token
+        )
+    
+        info = r2.json()
+        # Aquí procesas business_account_id y phone_number_id
+        waba_id = info["data"][0]["id"]
+        phone_number_id = phone_info["data"][0]["id"]
+        display_number = phone_info["data"][0]["display_phone_number"]
+    
+    
+    
+        # Guardas en DB y rediriges al dashboard
+        return redirect("/dashboard/")
+    else:
+        import requests
+        from django.conf import settings
+        from django.shortcuts import redirect
+    
+        
+        code = request.GET.get("code")
+    
+        token_url = "https://graph.facebook.com/v18.0/oauth/access_token"
+        params = {
+            "client_id": settings.FB_APP_ID,
+            "client_secret": settings.FB_APP_SECRET,
+            "redirect_uri": "https://localhost:8000/setting/whatsapp_callback/",
+            "code": code,
+        }
+    
+        r = requests.get(token_url, params=params)
+        data = r.json()
+    
+        access_token = data["access_token"]
+    
+        # Ahora obtienes info de la cuenta: WABA + phone_number_id
+        r2 = requests.get(
+            "https://graph.facebook.com/v18.0/me?fields=id,name,accounts{business,phone_numbers}&access_token=" + access_token
+        )
+    
+        info = r2.json()
+        # Aquí procesas business_account_id y phone_number_id
+        waba_id = info["data"][0]["id"]
+        phone_number_id = phone_info["data"][0]["id"]
+        display_number = phone_info["data"][0]["display_phone_number"]
+    
+    
+    
+        # Guardas en DB y rediriges al dashboard
+        return redirect("/dashboard/")
+

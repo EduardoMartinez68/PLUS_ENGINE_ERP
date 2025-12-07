@@ -37,6 +37,12 @@
         {% include 'partials_setting/email.html' %}
     </plus-module>
     {% endif %}
+
+    {% if permissions.edit_email %}
+    <plus-module name="setting.module.whatsapp" desc="" icon="fi fi-brands-whatsapp">
+        {% include 'partials_setting/whatsapp.html' %}
+    </plus-module>
+    {% endif %}
     <!---
     <plus-module name="ERP" desc="" icon="fi-rr-vector">
     </plus-module>
