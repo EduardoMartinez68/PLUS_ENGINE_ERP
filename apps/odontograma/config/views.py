@@ -1,6 +1,6 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
-from ..services.odontogram import get_odontograms, add_new_odontogram, get_latest_history_for_odontogram, update_tooth
+from ..services.odontogram import get_odontograms, add_new_odontogram, get_latest_history_for_odontogram, update_tooth, get_history_odontograms
 from django.template.loader import render_to_string
 import json
 from django.core.serializers.json import DjangoJSONEncoder
@@ -246,4 +246,80 @@ def view_setting(request):
             return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
         
         return render(request, 'odontogram_setting.html')
+
+@login_required(login_url='login')
+def get_information_of_the_history_odotngoram(request, odontogram_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'GET':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_odontogram'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+            
+        result = get_history_odontograms(request.user, odontogram_id)
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
+    else:
+        if request.method != 'GET':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'view_odontogram'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+            
+        result = get_history_odontograms(request.user, odontogram_id)
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
+
+@login_required(login_url='login')
+def create_odontogram_history(request, odontogram_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'add_odontogram'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )  
+            
+        from ..services.odontogram import create_odontogram_history_service
+        result = create_odontogram_history_service(request.user, odontogram_id, data)
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
+    else:
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'add_odontogram'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )  
+            
+        from ..services.odontogram import create_odontogram_history_service
+        result = create_odontogram_history_service(request.user, odontogram_id, data)
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
 

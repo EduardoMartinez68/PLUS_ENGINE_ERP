@@ -157,5 +157,29 @@
   "odontogram.error.load-periodontogram":"Error al cargar el periodontograma",
 
 
-  "odontogram.laebl.setting-color-caries":"Color caries"
+  "odontogram.laebl.setting-color-caries":"Color caries",
+  "odontogram.label.history":"Historial",
+  "odontogram.label.notes":"Sin notas",
+  "odontogram.label.kid":"Niño",
+  "odontogram.label.blocked":"Bloqueado",
+  "odontogram.label.created-at":"Creado",
+  "odontogram.label.updated-at":"Modificado",
+
+
+  "odontogram.title.create-odontogram-history":"Crear un nuevo Registro",
+  "odontogram.description.create-odontogram-history":"Aquí puedes ver el historial de cambios realizados en el odontograma del paciente.",
+  "odontogram.label.create-odontogram-history":"Crear un nuevo Registro",
+  "odontogram.placeholder.create-odontogram-history":"Crear un nuevo Registro",
+  "odontogram.labe.would-like-create-a-copy":"¿Quieres copiar los datos del actual expediente al nuevo?",
+
+  "odontogram.success.odontogram-history-created":"Nuevo expediente creado.",
+  "odontogram.description.odontogram-history-created":"El nuevo expediente del paciente fue creado con exito en tu base de datos.",
+  "odontogram.error.odontogram-history-not-created":"El nuevo expediente no fue creado.",
+  "odontogram.error.unexpected-creating-odontogram-history":"Sucedio un error",
+  "odontogram.description.unexpected-creating-odontogram-history":"Sucedio un error inesperado al crear el nuevo expediente. Por favor intenta nuevamente.",
+  "odontogram.error.not-exist-id":"No existe un ID del odontograma",
+
+
+  "odontogram.error.this-odontogram-not-exist":"Este odontograma no existe en la base de datos del dentista",
+  "odontogram.error.this-key-of-the-odontogram-is-requerid":"La llave del odontograma es obligatoria"
 }

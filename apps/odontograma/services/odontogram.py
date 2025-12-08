@@ -8,6 +8,45 @@ from ..models import Odontogram, HistoryOdontogram, Tooth, OdontogramSetting
 from django.db.models import Q
 from ..plus_wrapper import Plus
 
+def get_odontogram_father(odontogram) -> 'Odontogram':
+    """
+    Return the odontogram father of the history:
+    
+    - If exist very much data with is_father=True → get the more new and update all the others.
+    - If not exist nothing with is_father=True → now get the more new and update his status as father.
+    - Forever return a HistoryOdontogram success.
+    """
+
+    queryset = HistoryOdontogram.objects.filter(
+        customer=odontogram.customer
+    ).order_by("-created_at")
+
+    if not queryset.exists():
+        return None  # Not exist a odontogram
+
+    with transaction.atomic():
+        # 1️⃣ Search all the data that have the status is_father = True
+        fathers = queryset.filter(is_father=True).order_by("-created_at")
+
+        if fathers.exists():
+
+            # Official father = newest among the fathers
+            official_father = fathers.first()
+
+            # 2️⃣ If there is more than one father, we correct
+            extra_fathers = fathers.exclude(id=official_father.id)
+            if extra_fathers.exists():
+                extra_fathers.update(is_father=False)
+
+            return official_father
+
+        else:
+            # 3️⃣ There is no father: choose the most recent one
+            newest = queryset.first()
+            newest.is_father = True
+            newest.save(update_fields=["is_father"])
+            return newest
+
 def get_or_create_odontogram(customer, doctor) -> 'Odontogram':
     """
     Obtiene o crea un odontograma para un paciente.
@@ -78,7 +117,11 @@ def get_odontograms(user, sku: str = '', page: int = 1, limit: int = 20) -> Dict
             "odontogram_id": odontogram.id,
             "odontogram_doctor": getattr(odontogram.doctor, "name", ""),
             "odontogram_svg": '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#f5f5f5"/><circle cx="50" cy="50" r="30" fill="#e0e0e0"/></svg>',
-            "odontogram_created_at": odontogram.created_at,
+            "odontogram_created_at": Plus.format_date_to_text(
+                        Plus.convert_from_utc(odontogram.created_at, user.timezone),
+                        user.language,
+                        2
+                    ),
         })
 
     # Manual pagination
@@ -284,8 +327,6 @@ def add_new_odontogram(user, data)-> Dict[str, Any]:
             "error": str(e)
         }
 
-
-
 def get_latest_history_for_odontogram(user, odontogram_id: int) -> Dict[str, Any]:
     """
     Obtiene el historial más reciente de un odontograma con todos sus dientes.
@@ -320,9 +361,7 @@ def get_latest_history_for_odontogram(user, odontogram_id: int) -> Dict[str, Any
         }
 
     # Obtener el historial más reciente para este paciente
-    latest_history = HistoryOdontogram.objects.filter(
-        customer=odontogram.customer,
-    ).order_by('-created_at').first()
+    latest_history = get_odontogram_father(odontogram)
 
     if not latest_history:
         return result
@@ -379,12 +418,181 @@ def get_latest_history_for_odontogram(user, odontogram_id: int) -> Dict[str, Any
 
     return result
 
+def get_history_odontograms(user, odontogram_id, page=1, key=None):
+    """
+    get the history of the  HistoryOdontogram related to the given odontogram.
+    - if get `key`, filter for partial match.
+    - if not get `key`, bring the most recent.
+    - Uses pagination and returns only 20 per page.
+    """
+
+    try:
+        odontogram = Odontogram.objects.get(id=odontogram_id)
+    except Odontogram.DoesNotExist:
+        return {
+            "success": False,
+            "error": "Odontograma no encontrado."
+        }
+
+    #get the history of the patient
+    queryset = HistoryOdontogram.objects.filter(
+        customer=odontogram.customer
+    ).order_by("-created_at")
+
+    get_odontogram_father(odontogram)
+    #if exist a key now we will to filter
+    if key:
+        queryset = queryset.filter(key__icontains=key)
+
+    #pagination for 20 items per page
+    paginator = Paginator(queryset, 20)
+    page_obj = paginator.get_page(page)
+
+    # convert to list of dicts
+    history_list = [
+        {
+            "id": h.id,
+            "key": h.key,
+            "is_kid": h.is_kid,
+            "notes": h.notes,
+            "created_at": Plus.format_date_to_text(
+                        Plus.convert_from_utc(h.created_at, user.timezone),
+                        user.language,
+                        2
+                    ),
+            "updated_at": Plus.format_date_to_text(
+                        Plus.convert_from_utc(h.updated_at, user.timezone),
+                        user.language,
+                        2
+                    ),
+            "blocked": h.blocked,
+        }
+        for h in page_obj.object_list
+    ]
+
+    return {
+        "success": True,
+        "total_histories": paginator.count,
+        "total_pages": paginator.num_pages,
+        "current_page": page_obj.number,
+        "answer": history_list
+    }
 
 
 
+def create_odontogram_history_service(user, odontogram_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Create a new history of the odontogram.
+    Allows copying data from the most recent history (if applicable).
+    
+    Params:
+        - user: The doctor that is creating the history
+        - odontogram_id: ID of the odontogram of the patient
+        - data: Dict with:
+            - key: str
+            - notes: str
+            - periodontograma: dict
+            - is_kid: bool
+            - copy: bool  (if the doctor would like copy the data from the last history)
+    
+    Important rules:
+        - Yes `copy=True` only if the history is changing of kid-> adult or adult-> kid, NO copy is made.
+        - Yes `copy=False`, always new teeth are created.
+        - Yes no previous history, the copy is ignored and new teeth are created.
+    """
+
+    try:
+        odontogram = Odontogram.objects.get(id=odontogram_id)
+    except Odontogram.DoesNotExist:
+        return {"success": False, "message":"odontogram.error.this-odontogram-not-exist", "error": "Odontograma not exist."}
 
 
+    #get the data from the form that send the doctor
+    key = data.get("key_odontogram")
+    notes = data.get("notes", "")
+    is_kid = data.get("is_kid", False)
+    periodontograma = data.get("periodontograma", {})
+    copy = Plus.to_bool(data.get("is_copy", False))
 
+
+    #eval the paramt that be needed
+    if not key:
+        return {"success": False, "message":"odontogram.error.this-key-of-the-odontogram-is-requerid", "error": "The 'key' is obligatory."}
+
+    #get the last history (the father)
+    last_history = get_odontogram_father(odontogram)
+
+    #here we will see if we can coppy the data of the last history
+    can_copy = False
+    if copy and last_history:
+        if last_history.is_kid == is_kid:
+            # Only we can copy the data of both be kids or if both be adults
+            can_copy = True
+
+    # START THE TRANSACTION
+    with transaction.atomic():
+
+        # create the new history
+        new_history = HistoryOdontogram.objects.create(
+            customer=odontogram.customer,
+            is_kid=is_kid,
+            key=key,
+            notes=notes,
+            periodontograma=periodontograma,
+            blocked=False
+        )
+
+        # ----------------------------------------------------------
+        # COPY ALL THE DATA OF THE HISTORY FATHER
+        # ----------------------------------------------------------
+        if can_copy:
+            parent_teeth = Tooth.objects.filter(historyodontogram=last_history)
+
+            for t in parent_teeth:
+                Tooth.objects.create(
+                    historyodontogram=new_history,
+                    FDI_number=t.FDI_number,
+                    name_key=t.name_key,
+                    status=t.status,
+                    surfaces=t.surfaces,
+                    caries_depth=t.caries_depth,
+                    has_tartar=t.has_tartar,
+                    status_gum=t.status_gum,
+                    mobility=t.mobility,
+                    diagnosis=t.diagnosis,
+                    notes=t.notes,
+                    treatments=t.treatments,
+                    svg_state=t.svg_state,
+                    last_checkup=t.last_checkup,
+                    last_updated_by=user
+                )
+
+        # ----------------------------------------------------------
+        # IF THE TOOTHS NOT CAN BE COPPIED, CREATE NEW TEETH
+        # ----------------------------------------------------------
+        else:
+            # Selección del set de dientes según niño / adulto
+            from ..models import Tooth as ToothModel
+
+            all_teeth = (
+                ToothModel.FDI_TEETH[:32] if not is_kid else ToothModel.FDI_TEETH[32:]
+            )
+
+            for FDI_number, key_name in all_teeth:
+                Tooth.objects.create(
+                    historyodontogram=new_history,
+                    FDI_number=FDI_number,
+                    name_key=key_name,
+                    last_updated_by=user
+                )
+
+    # FINISH OF THE TRANSACTION
+    return {
+        "success": True,
+        "history_id": new_history.id,
+        "message": "Historial creado correctamente.",
+        "copied": can_copy
+    }
 
 #-------------------------------------------update tooth in the odontogram-------------------------------------------------
 def tooth_belongs_to_doctor_odontogram(tooth_id:int, odontogram_id:int, user)->bool:

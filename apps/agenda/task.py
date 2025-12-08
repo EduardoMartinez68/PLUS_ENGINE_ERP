@@ -58,7 +58,6 @@ def send_reminders():
 
 
 
-
 def send_whatsapp_text(phone_number_id, access_token, to_number_e164, text):
     """
     phone_number_id: el id 'phone_number_id' provisto por Meta para la cuenta

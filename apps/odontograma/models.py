@@ -121,6 +121,7 @@ class HistoryOdontogram(models.Model):
     notes = EncryptedTextField(blank=True, null=True)
 
     periodontograma = models.JSONField(default=dict)  #here is for save the JSON of the 4 face of the periodontograma
+    is_father=models.BooleanField(default=True, null=False)  #this is for know if the history is the father of other history
 
     #this is for know when was create or when was last update
     created_at = models.DateTimeField(auto_now_add=True)
@@ -218,7 +219,7 @@ class Tooth(models.Model):
     ]
 
     # number global of the tooth (FDI)
-    FDI_number = models.PositiveSmallIntegerField(unique=True) #this is unique because not exist more tooth in the mouth
+    FDI_number = models.PositiveSmallIntegerField()
     name_key = models.CharField(max_length=200, blank=True, null=False , choices=FDI_TEETH)  # example: “odontogram.tooth.upper_right.central_incisor (Incisivo central superior derecho)”
 
 
@@ -315,8 +316,13 @@ class Tooth(models.Model):
     )
 
     class Meta:
-        unique_together = ("historyodontogram", "FDI_number")
-        ordering = ["FDI_number"]
+         #this is unique because not exist more tooth in the mouth
+        constraints = [
+            models.UniqueConstraint(
+                fields=['historyodontogram', 'FDI_number'],
+                name='unique_tooth_per_history'
+            )
+        ]
 
     def __str__(self):
         return f"Diente {self.FDI_number} - {self.get_status_display()}"
