@@ -418,7 +418,7 @@ def get_latest_history_for_odontogram(user, odontogram_id: int) -> Dict[str, Any
 
     return result
 
-def get_history_odontograms(user, odontogram_id, page=1, key=None):
+def get_history_odontograms(user, odontogram_id, key=None, page=1):
     """
     get the history of the  HistoryOdontogram related to the given odontogram.
     - if get `key`, filter for partial match.
@@ -454,6 +454,7 @@ def get_history_odontograms(user, odontogram_id, page=1, key=None):
             "id": h.id,
             "key": h.key,
             "is_kid": h.is_kid,
+            "is_father": h.is_father,
             "notes": h.notes,
             "created_at": Plus.format_date_to_text(
                         Plus.convert_from_utc(h.created_at, user.timezone),

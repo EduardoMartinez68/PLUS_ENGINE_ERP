@@ -135,8 +135,9 @@ def get_information_of_the_history_odotngoram(request, odontogram_id):
             {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
             status=200
         )
-        
-    result = get_history_odontograms(request.user, odontogram_id)
+    
+    search = request.GET.get("query", "") 
+    result = get_history_odontograms(request.user, odontogram_id, search)
     return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
 
 

@@ -1,3 +1,11 @@
+<style>
+    .container-odontograms{
+        display: grid;
+        gap: 15px;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        padding: 10px;
+    }
+</style>
 <div class="container-section">
     <div class="row">
         <div class="col">
@@ -62,6 +70,7 @@ function get_div_odontograma(){
             id={ id }
             key={ key }
             notes={ notes }
+            is-father={ is_father }
             photo={ photo }
             created-at={ created_at }
             updated-at={ updated_at }
@@ -93,6 +102,7 @@ class HistoryCardOdontogram extends HTMLElement {
     const createdAt = this.getAttribute("created-at") || "";
     const updatedAt = this.getAttribute("updated-at") || "";
     const isKid = window.is_true(this.getAttribute("is-kid"));
+    const isFather=window.is_true(this.getAttribute("is-father")); 
     const blocked = window.is_true(this.getAttribute("blocked"));
     const photo = this.getAttribute("photo") || this._placeholderImage();
 
@@ -104,8 +114,9 @@ class HistoryCardOdontogram extends HTMLElement {
       <div class="left">
         <div class="meta">
           <div class="title">
-            ${this._escapeHtml(key)}
+            ${key}
             ${isKid ? `<span class="tag kid">${textKid}</span>` : ""}
+            ${isFather ? `<span class="tag father"></span>` : ""}
             ${blocked ? `<span class="tag blocked">${textBlocked}</span>` : ""}
           </div>
           <div class="dates">
@@ -191,7 +202,10 @@ class HistoryCardOdontogram extends HTMLElement {
           background: #dbeafe;
           color: #1d4ed8;
         }
-
+        .father {
+          background: #2D80FC;
+          color: #1d4ed8;
+        }
         .blocked {
           background: #fee2e2;
           color: #b91c1c;
@@ -229,7 +243,7 @@ class HistoryCardOdontogram extends HTMLElement {
       </style>
     `;
 
-    // Eventos
+    // events
     wrapper.addEventListener("click", () => {
       this.dispatchEvent(
         new CustomEvent("open-history", {
