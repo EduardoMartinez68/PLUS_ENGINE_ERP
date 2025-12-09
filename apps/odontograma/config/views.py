@@ -325,3 +325,50 @@ def create_odontogram_history(request, odontogram_id):
         result = create_odontogram_history_service(request.user, odontogram_id, data)
         return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
 
+@login_required(login_url='login')
+def change_father_odontogram(request, odontogram_id):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'update_odontogram'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )  
+            
+        from ..services.odontogram import set_new_father_odontogram
+        result = set_new_father_odontogram(request.user, odontogram_id)
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
+    else:
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'update_odontogram'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )  
+            
+        from ..services.odontogram import set_new_father_odontogram
+        result = set_new_father_odontogram(request.user, odontogram_id)
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
+

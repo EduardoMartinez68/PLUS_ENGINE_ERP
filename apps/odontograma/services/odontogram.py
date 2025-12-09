@@ -595,6 +595,62 @@ def create_odontogram_history_service(user, odontogram_id: int, data: Dict[str, 
         "copied": can_copy
     }
 
+
+def set_new_father_odontogram(user, history_id: int) ->Dict[str, Any]:
+    """
+    Sets the given HistoryOdontogram as the new father.
+    Steps:
+    1. Check permissions and company/branch match.
+    2. Turn off all other fathers.
+    3. Set this one as the new father.
+    """
+
+    try:
+        new_father = HistoryOdontogram.objects.select_related("customer").get(id=history_id)
+    except ObjectDoesNotExist:
+        return {
+            "success": False,
+            "message": "Historial creado correctamente.",
+            "error":"This odontogram not exist"
+        }
+
+    # ---- VALIDATE THE USER HAS ACCESS TO THIS PATIENT ----
+    # Obtiene el odontograma "principal" del paciente (solo para validar la compañía)
+    try:
+        odontogram = Odontogram.objects.get(customer=new_father.customer)
+    except Odontogram.DoesNotExist:
+        return {
+            "success": False,
+            "message": "Este historial no pertenece a un odontograma válido.",
+            "error":"This odontogram not is in the history of the odontogram"
+        }
+
+    # Validamos que el usuario esté editando dentro de la misma compañía/branch
+    if odontogram.company != user.company:
+        return {
+            "success": False,
+            "message": "No tienes permiso para modificar este odontograma.",
+            "error":"This odontogram not be in this company"
+        }
+
+    # ---- UPDATE FATHER FLAGS ----
+    with transaction.atomic():
+        # Quitar padre a todos los historiales del mismo paciente
+        HistoryOdontogram.objects.filter(
+            customer=new_father.customer,
+            is_father=True
+        ).update(is_father=False)
+
+        # Asignar padre al actual
+        new_father.is_father = True
+        new_father.save(update_fields=["is_father", "updated_at"])
+
+    return {
+        "success": True,
+        "message": "Odontograma padre actualziado",
+        "error":"This odontogram was update like father"
+    }
+
 #-------------------------------------------update tooth in the odontogram-------------------------------------------------
 def tooth_belongs_to_doctor_odontogram(tooth_id:int, odontogram_id:int, user)->bool:
     """

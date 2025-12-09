@@ -292,7 +292,25 @@ window.update_container_with_seeker(
     'GET'
 )
 
+document.addEventListener("open-history", async (event) => {
+  //first we will see if exist a id of the odontogram
+  const odontogram_id=document.getElementById('odontogram_id').value;
+  if(!odontogram_id){
+    window.show_alert('error', 'odontogram.error.unexpected-creating-odontogram-history', 'odontogram.error.not-exist-id', 'Not exist a ID of the odontogram')
+    return;
+  }
 
+  //here we will to try change the odontogram father for view the new data
+  const id = event.detail.id;
+  const backend=await window.send_message_to_the_server(`/odontograma/change_father_odontogram/${id}/`, {}, true, 'POST');
+
+  if(backend.success){
+    //if we can change the status of the odontogram father, now we will to update the view 
+    window.nextWeb(`odontograma/view_odontogram/${odontogram_id}/`);
+  }else{
+    window.show_alert('error', 'odontogram.error.unexpected-creating-odontogram-history', backend.message || '', backend.error || '');
+  }
+});
 
 function restart_form_history_odontogram(){
     document.getElementById('key_odontogram').value = ''
@@ -313,7 +331,7 @@ async function save_new_history(){
     //first we will see if exist a id of the odontogram
     const odontogram_id=document.getElementById('odontogram_id').value;
     if(!odontogram_id){
-        window.show_alert('success', 'odontogram.error.unexpected-creating-odontogram-history', 'odontogram.error.not-exist-id', 'Not exist a ID of the odontogram')
+        window.show_alert('error', 'odontogram.error.unexpected-creating-odontogram-history', 'odontogram.error.not-exist-id', 'Not exist a ID of the odontogram')
         return;
     }
 
