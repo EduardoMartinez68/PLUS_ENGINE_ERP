@@ -124,7 +124,6 @@ def view_setting(request):
     
     return render(request, 'odontogram_setting.html')
 
-
 def get_information_of_the_history_odotngoram(request, odontogram_id):
     if request.method != 'GET':
         return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
@@ -187,4 +186,28 @@ def change_father_odontogram(request, odontogram_id):
     from ..services.odontogram import set_new_father_odontogram
     result = set_new_father_odontogram(request.user, odontogram_id)
     return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
+
+
+def delete_record(request):
+    if request.method != 'POST':
+        return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+    
+    #now we will see if the user have the permsssion need that the ERP need
+    if not Plus.this_user_have_this_permission(request.user, 'delete_odontogram'):
+        return JsonResponse(
+            {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+            status=200
+        )
+    
+    try:
+        data = json.loads(request.body)
+    except Exception as e:
+        return JsonResponse(
+            {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+            status=400
+        )  
+    
+    from ..services.odontogram import delete_odontogram
+    result = delete_odontogram(request.user, data)
+    return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", ""), 'last_record':result.get('last_record',False)}, status=200)
 

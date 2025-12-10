@@ -459,12 +459,12 @@ def get_history_odontograms(user, odontogram_id, key=None, page=1):
             "created_at": Plus.format_date_to_text(
                         Plus.convert_from_utc(h.created_at, user.timezone),
                         user.language,
-                        2
+                        1
                     ),
             "updated_at": Plus.format_date_to_text(
                         Plus.convert_from_utc(h.updated_at, user.timezone),
                         user.language,
-                        2
+                        1
                     ),
             "blocked": h.blocked,
         }
@@ -596,7 +596,7 @@ def create_odontogram_history_service(user, odontogram_id: int, data: Dict[str, 
     }
 
 
-def set_new_father_odontogram(user, history_id: int) ->Dict[str, Any]:
+def set_new_father_odontogram(user, history_id: int) -> Dict[str, Any]:
     """
     Sets the given HistoryOdontogram as the new father.
     Steps:
@@ -610,7 +610,7 @@ def set_new_father_odontogram(user, history_id: int) ->Dict[str, Any]:
     except ObjectDoesNotExist:
         return {
             "success": False,
-            "message": "Historial creado correctamente.",
+            "message": "odontogram.error.this-odontogram-not-exist",
             "error":"This odontogram not exist"
         }
 
@@ -621,7 +621,7 @@ def set_new_father_odontogram(user, history_id: int) ->Dict[str, Any]:
     except Odontogram.DoesNotExist:
         return {
             "success": False,
-            "message": "Este historial no pertenece a un odontograma válido.",
+            "message": "odontogram.error.this-odontogram-not-is-valid",
             "error":"This odontogram not is in the history of the odontogram"
         }
 
@@ -629,7 +629,7 @@ def set_new_father_odontogram(user, history_id: int) ->Dict[str, Any]:
     if odontogram.company != user.company:
         return {
             "success": False,
-            "message": "No tienes permiso para modificar este odontograma.",
+            "message": "message.this-user-not-have-this-permission",
             "error":"This odontogram not be in this company"
         }
 
@@ -647,10 +647,111 @@ def set_new_father_odontogram(user, history_id: int) ->Dict[str, Any]:
 
     return {
         "success": True,
-        "message": "Odontograma padre actualziado",
+        "message": "odontogram.success.odontogram-father-update",
         "error":"This odontogram was update like father"
     }
 
+
+
+def delete_odontogram(user, data) -> Dict[str, Any]:
+    odontogram_id = data.get("odontogram_id")
+
+    if not odontogram_id:
+        return {
+            "success": False,
+            "message": "odontogram.error.no-id-provided",
+            "error": "You need to provide the id of the odontogram."
+        }
+
+    # ---- 1. VALIDATE ODONTOGRAM EXISTENCE ----
+    try:
+        odontogram = Odontogram.objects.select_related("customer").get(id=odontogram_id)
+    except Odontogram.DoesNotExist:
+        return {
+            "success": False,
+            "message": "odontogram.error.not-found",
+            "error": "This odontogram does not exist."
+        }
+
+    # ---- 2. SECURITY: validate company ----
+    if odontogram.company != user.company:
+        return {
+            "success": False,
+            "message": "message.this-user-not-have-this-permission",
+            "error": "You cannot delete odontograms of another company."
+        }
+
+    # ---- 3. GET ALL RELATED HISTORY ODONTOGRAMS ----
+    histories = list(
+        HistoryOdontogram.objects.filter(customer=odontogram.customer)
+    )
+
+    if len(histories) == 0:
+        # shouldn't happen but safe-case
+        odontogram.delete()
+        return {
+            "success": True,
+            "message": "odontogram.success.deleted-empty",
+            "error": "Odontogram removed (no histories found)."
+        }
+
+    # ---- 4. START ATOMIC OPERATION ----
+    with transaction.atomic():
+
+        # If there are multiple histories: delete only the parent
+        if len(histories) > 1:
+            # Find the father
+            father = None
+            for h in histories:
+                if h.is_father:
+                    father = h
+                    break
+
+            if not father:
+                # Safety: if something weird happens, take the newest as father
+                father = histories[0]
+
+            # Delete teeth of father
+            father.teeth.all().delete()
+
+            # Delete father history
+            father.delete()
+
+            # Now assign new father = newest (first in ordering by created_at desc)
+            remaining_histories = HistoryOdontogram.objects.filter(customer=odontogram.customer)
+
+            new_father = remaining_histories.order_by("-created_at").first()
+            new_father.is_father = True
+            new_father.save(update_fields=["is_father", "updated_at"])
+
+            return {
+                "success": True,
+                "message": "odontogram.success.history-father-replaced",
+                "error": "Father history deleted and replaced by newest one."
+            }
+
+        # ---- ONLY ONE HISTORY EXISTS: DELETE EVERYTHING ----
+        else:
+            only_history = histories[0]
+
+            # Delete teeth of unique history
+            only_history.teeth.all().delete()
+
+            # Delete the only history
+            only_history.delete()
+
+            # Delete odontogram files
+            odontogram.odontogram_files.all().delete()
+
+            # Delete odontogram
+            odontogram.delete()
+
+            return {
+                "success": True,
+                "message": "odontogram.success.entire-odontogram-deleted",
+                "error": "Entire odontogram and history were deleted.",
+                "last_record":True
+            }
 #-------------------------------------------update tooth in the odontogram-------------------------------------------------
 def tooth_belongs_to_doctor_odontogram(tooth_id:int, odontogram_id:int, user)->bool:
     """

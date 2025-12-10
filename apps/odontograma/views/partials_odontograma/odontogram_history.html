@@ -67,15 +67,15 @@
 function get_div_odontograma(){
     return `
         <history-card-odontogram
-            id={ id }
-            key={ key }
-            notes={ notes }
-            is-father={ is_father }
-            photo={ photo }
-            created-at={ created_at }
-            updated-at={ updated_at }
-            is-kid={ is_kid }
-            blocked={ blocked }>
+            id='{ id }'
+            key='{ key }'
+            notes='{ notes }'
+            is-father='{ is_father }'
+            photo='{ photo }'
+            created-at='{ created_at }'
+            updated-at='{ updated_at }'
+            is-kid='{ is_kid }'
+            blocked='{ blocked }'>
         </history-card-odontogram>
     `
 }
@@ -97,8 +97,8 @@ class HistoryCardOdontogram extends HTMLElement {
   }
 
   connectedCallback() {
-    const key = this.getAttribute("key") || textHistory;
-    const notes = this.getAttribute("notes") || textNotes;
+    const key = this.getAttribute("key") || window.translate_text('odontogram.label.history');
+    const notes = this.getAttribute("notes") || window.translate_text('odontogram.label.notes');
     const createdAt = this.getAttribute("created-at") || "";
     const updatedAt = this.getAttribute("updated-at") || "";
     const isKid = window.is_true(this.getAttribute("is-kid"));
@@ -116,12 +116,12 @@ class HistoryCardOdontogram extends HTMLElement {
           <div class="title">
             ${key}
             ${isKid ? `<span class="tag kid">${textKid}</span>` : ""}
-            ${isFather ? `<span class="tag father"></span>` : ""}
-            ${blocked ? `<span class="tag blocked">${textBlocked}</span>` : ""}
+            ${isFather ? `<span class="tag father">Root</span>` : ""}
+            ${blocked ? `<span class="tag blocked">${window.translate_text('odontogram.label.blocked')}</span>` : ""}
           </div>
           <div class="dates">
-            <span>${textCreate}: ${this._escapeHtml(createdAt)}</span>
-            <span>${textUpdated}: ${this._escapeHtml(updatedAt)}</span>
+            <span>${window.translate_text('odontogram.label.created-at')}: ${this._escapeHtml(createdAt)}</span>
+            <span>${window.translate_text('odontogram.label.updated-at')}: ${this._escapeHtml(updatedAt)}</span>
           </div>
           <div class="notes">${this._escapeHtml(notes)}</div>
         </div>
@@ -204,7 +204,7 @@ class HistoryCardOdontogram extends HTMLElement {
         }
         .father {
           background: #2D80FC;
-          color: #1d4ed8;
+          color: #0C2444;
         }
         .blocked {
           background: #fee2e2;
@@ -331,25 +331,25 @@ async function save_new_history(){
     //first we will see if exist a id of the odontogram
     const odontogram_id=document.getElementById('odontogram_id').value;
     if(!odontogram_id){
-        window.show_alert('error', 'odontogram.error.unexpected-creating-odontogram-history', 'odontogram.error.not-exist-id', 'Not exist a ID of the odontogram')
-        return;
+      window.show_alert('error', 'odontogram.error.unexpected-creating-odontogram-history', 'odontogram.error.not-exist-id', 'Not exist a ID of the odontogram')
+      return;
     }
 
     //now we will see if exist a key in the form
     const key=document.getElementById('key_odontogram').value;
     if(!key){
-        window.show_alert('success', 'odontogram.error.unexpected-creating-odontogram-history', 'odontogram.error.this-key-of-the-odontogram-is-requerid', 'You need add the key to the new record')
-        return;
+      window.show_alert('success', 'odontogram.error.unexpected-creating-odontogram-history', 'odontogram.error.this-key-of-the-odontogram-is-requerid', 'You need add the key to the new record')
+      return;
     }
 
     //now here we will send the form to the server and we will see if can be saved in the database
     const backend=await send_form_to_the_server('form-history-odontogram', `odontograma/create_odontogram_history/${odontogram_id}/`);
     if(backend.success){
-        //if we can create the new history, we will update the container with the new history added
-        window.nextWeb(`odontograma/view_odontogram/${odontogram_id}/`);
-        window.show_alert('success', 'odontogram.success.odontogram-history-created', 'odontogram.description.odontogram-history-created')
+      //if we can create the new history, we will update the container with the new history added
+      window.nextWeb(`odontograma/view_odontogram/${odontogram_id}/`);
+      window.show_alert('success', 'odontogram.success.odontogram-history-created', 'odontogram.description.odontogram-history-created')
     }else{
-        window.show_alert('error', 'odontogram.error.odontogram-history-not-created', backend.message || 'odontogram.description.unexpected-creating-odontogram-history', backend.error || '')
+      window.show_alert('error', 'odontogram.error.odontogram-history-not-created', backend.message || 'odontogram.description.unexpected-creating-odontogram-history', backend.error || '')
     }
 }
 </script>

@@ -166,10 +166,10 @@
   "odontogram.label.updated-at":"Modificado",
 
 
-  "odontogram.title.create-odontogram-history":"Crear un nuevo Registro",
-  "odontogram.description.create-odontogram-history":"Aquí puedes ver el historial de cambios realizados en el odontograma del paciente.",
-  "odontogram.label.create-odontogram-history":"Crear un nuevo Registro",
-  "odontogram.placeholder.create-odontogram-history":"Crear un nuevo Registro",
+  "odontogram.title.create-odontogram-history":"Crear un nuevo Expediente",
+  "odontogram.description.create-odontogram-history":"Aquí puedes ver el historial de cambios realizados en el expediente del paciente.",
+  "odontogram.label.create-odontogram-history":"Crear un nuevo Expediente",
+  "odontogram.placeholder.create-odontogram-history":"Ej. Tratamiento de Brakets",
   "odontogram.labe.would-like-create-a-copy":"¿Quieres copiar los datos del actual expediente al nuevo?",
 
   "odontogram.success.odontogram-history-created":"Nuevo expediente creado.",
@@ -177,9 +177,22 @@
   "odontogram.error.odontogram-history-not-created":"El nuevo expediente no fue creado.",
   "odontogram.error.unexpected-creating-odontogram-history":"Sucedio un error",
   "odontogram.description.unexpected-creating-odontogram-history":"Sucedio un error inesperado al crear el nuevo expediente. Por favor intenta nuevamente.",
-  "odontogram.error.not-exist-id":"No existe un ID del odontograma",
+  "odontogram.error.not-exist-id":"No existe un ID del expediente",
 
 
-  "odontogram.error.this-odontogram-not-exist":"Este odontograma no existe en la base de datos del dentista",
-  "odontogram.error.this-key-of-the-odontogram-is-requerid":"La llave del odontograma es obligatoria"
+  "odontogram.error.this-odontogram-not-exist":"Este expediente no existe en la base de datos del dentista",
+  "odontogram.error.this-odontogram-not-is-valid":"Este historial no pertenece a un expediente válido.",
+  "odontogram.error.this-key-of-the-odontogram-is-requerid":"La llave del expediente es obligatoria",
+  "odontogram.success.odontogram-father-update":"El expediente padre fue actualizado con exito",
+
+
+  "odontogram.title.would-like-delete-this-record":"¿Deseas eliminar este expediente?",
+  "odontogram.description.would-like-delete-this-record":"Al eliminar este expediente, se borrarán de forma permanente todos los dientes, historiales y archivos vinculados. Esta acción no se puede deshacer.",
+
+  "odontogram.btn.delete-odontogram":"Eliminar Expediente Root",
+  "odontogram.error.the-record-not-was-delete":"El expediente no fue eliminado",
+  "odontogram.success.the-record-was-delete":"Expediente eliminado",
+  "odontogram.description.the-record-was-delete":"El expediente Root fue eliminado con exito al igual que todos sus datos relacionados.",
+  "odontogram.error.no-id-provided":"No enviaste un ID del expediente",
+  "odontogram.error.not-found":"Este expediente no fue encontrado"
 }

@@ -8,6 +8,8 @@
 
     <label t="odontogram.laebl.setting-color-caries"></label>
     <input-color></input-color>
+    <button class="btn btn btn-delete" t="odontogram.btn.delete-odontogram" icon="fi fi-sr-trash" onclick="delete_record()"></button>
+    <br><br>
     <button class="btn btn-success btn-edit" t="btn.update"></button>
 </div>
 <script>
@@ -15,4 +17,31 @@
         //window.set_value_plus_select('typeSystem',window.setting_odontogram.typeSystem);
         window.set_value_plus_select('typeSystem',window.typeOdontogram);
     })();
+
+
+    async function delete_record(){
+        //first we will see if exist a id of the odontogram
+        const odontogram_id=document.getElementById('odontogram_id').value;
+        if(!odontogram_id){
+            window.show_alert('error', 'odontogram.error.unexpected-creating-odontogram-history', 'odontogram.error.not-exist-id', 'Not exist a ID of the odontogram')
+            return;
+        }
+
+        if(await window.show_message_question('odontogram.title.would-like-delete-this-record', 'odontogram.description.would-like-delete-this-record')){
+            //now we do a question to the doctor if the would like delete this odontogram
+            const backend=await send_message_to_the_server(`/odontograma/delete_record/`, {odontogram_id},true, 'POST');
+            if(backend.success){
+                //here we will see if exist other record in the history, if not exist is because the record that the user delete was the last
+                //if the record that the user delete was the last now we will to send to the user to the dashboard for show all the odontograms
+                if(backend.last_record){
+                    window.nextWeb(`odontograma/odontograma/`);
+                }else{
+                    window.nextWeb(`odontograma/view_odontogram/${odontogram_id}/`);
+                }
+                window.show_alert('success', 'odontogram.success.the-record-was-delete', 'odontogram.description.the-record-was-delete');
+            }else{
+                window.show_alert('error', 'odontogram.error.the-record-not-was-delete', backend.message || '', backend.error || '')
+            }
+        }
+    }
 </script>
