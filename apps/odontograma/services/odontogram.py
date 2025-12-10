@@ -352,7 +352,12 @@ def get_latest_history_for_odontogram(user, odontogram_id: int) -> Dict[str, Any
     
     #get the settings of the odontogram 
     try:
-        setting_odontogram = OdontogramSetting.objects.get(doctor=user)
+        setting_obj = OdontogramSetting.objects.get(doctor=user)
+        setting_odontogram = {
+            "typeSystem": setting_obj.typeSystem,
+            "color_caries": setting_obj.color_caries,
+            "default_treatments": setting_obj.default_treatments
+        }
     except OdontogramSetting.DoesNotExist:
         setting_odontogram = {
             "typeSystem": 1,
@@ -748,8 +753,8 @@ def delete_odontogram(user, data) -> Dict[str, Any]:
 
             return {
                 "success": True,
-                "message": "odontogram.success.entire-odontogram-deleted",
-                "error": "Entire odontogram and history were deleted.",
+                "message": "",
+                "error": "",
                 "last_record":True
             }
 #-------------------------------------------update tooth in the odontogram-------------------------------------------------
@@ -855,3 +860,37 @@ def update_tooth(tooth_id: int, odontogram_id:int, data:Dict, user) -> Dict[str,
             "message": "odontograma.error.unexpected-tooth",
             "error": str(e)
         }
+    
+
+def update_setting_odontogram(user,data):
+    PROTECTED_FIELDS = {"company", "branch", "doctor", "id"}
+    """
+    Updates the OdontogramSetting of the given doctor dynamically from form_data.
+    Ignores protected fields.
+    """
+
+    try:
+        settings = OdontogramSetting.objects.get(doctor=user)
+    except ObjectDoesNotExist:
+        settings = OdontogramSetting.objects.create(
+            doctor=user,
+            company=user.company,
+            branch=user.branch
+        )
+    
+    # Iterate over the form data
+    for field, value in data.items():
+        # Skip protected fields
+        if field in PROTECTED_FIELDS:
+            continue
+
+        # Check if the field exists in the model
+        if hasattr(settings, field):
+            setattr(settings, field, value)
+
+    settings.save()
+    return {
+        "success": True,
+        "message": "",
+        "error": "",
+    }

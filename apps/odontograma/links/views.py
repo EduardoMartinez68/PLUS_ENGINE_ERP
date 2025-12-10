@@ -10,7 +10,7 @@ def odontograma_home(request):
 
 
 
-from ..services.odontogram import get_odontograms, add_new_odontogram, get_latest_history_for_odontogram, update_tooth, get_history_odontograms
+from ..services.odontogram import get_odontograms, add_new_odontogram, get_latest_history_for_odontogram, update_tooth, get_history_odontograms, update_setting_odontogram
 def search_odontogram(request):
     if request.method != 'GET': 
         return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
@@ -211,3 +211,18 @@ def delete_record(request):
     result = delete_odontogram(request.user, data)
     return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", ""), 'last_record':result.get('last_record',False)}, status=200)
 
+
+def update_setting_odontograma(request):
+    if request.method != 'POST':
+        return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+    except Exception as e:
+        return JsonResponse(
+            {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+            status=400
+        )  
+    
+    result = update_setting_odontogram(request.user,data)
+    return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)

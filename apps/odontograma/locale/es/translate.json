@@ -1,18 +1,18 @@
 {
-  "odontograma.label.create-odontogram":"Crear odontograma",
+  "odontograma.label.create-odontogram":"Crear un nuevo Expediente",
   "odontograma.label.select-patient":"Selecciona al paciente *",
-  "odontograma.label.key-odontogram":"Clave del odontograma *",
-  "odontograma.placeholder.key-odontogram":"Escribe la clave de identificacion del odontograma",
-  "odontograma.label.this-patient-be-a-kit":"Crear el odontograma de dientes de leche",
+  "odontograma.label.key-odontogram":"Clave del Expediente *",
+  "odontograma.placeholder.key-odontogram":"Escribe la clave de identificacion del Expediente",
+  "odontograma.label.this-patient-be-a-kit":"Crear odontograma infantil",
   "odontograma.status.tooth": "Diente",
   "odontograma.tab.odontograms":"Expedientes",
   "odontograma.tab.settings":"Configuraciones",
 
   "odontograma.error.need-all-the-data":"No se recibieron todos los datos correspondientes",
-  "odontograma.error.not-exit":"Este odontograma no existe en la base de datos del dentista",
-  "odontograma.error.unexpected":"Sucedio un error inesperado en el servidor al momento de crear el odontograma del cliente.",
-  "odontograma.error.integrity-error":"Tienes un error en el odontograma",
-  "odontograma.error.already-exist": "El paciente ya tiene un odontograma en esta empresa.",
+  "odontograma.error.not-exit":"Este expediente no existe en la base de datos del dentista",
+  "odontograma.error.unexpected":"Sucedio un error inesperado en el servidor al momento de crear el expediente del paciente.",
+  "odontograma.error.integrity-error":"Tienes un error en el expediente",
+  "odontograma.error.already-exist": "El paciente ya tiene un expediente odontologico en esta empresa.",
 
   "odontograma.tab.odontogram":"Odontograma",
   "odontograma.tab.periodontogram":"Periodontograma",
@@ -194,5 +194,9 @@
   "odontogram.success.the-record-was-delete":"Expediente eliminado",
   "odontogram.description.the-record-was-delete":"El expediente Root fue eliminado con exito al igual que todos sus datos relacionados.",
   "odontogram.error.no-id-provided":"No enviaste un ID del expediente",
-  "odontogram.error.not-found":"Este expediente no fue encontrado"
+  "odontogram.error.not-found":"Este expediente no fue encontrado",
+
+  "odontogram.error.not-can-update-the-settings":"No se actualizaron las configuraciones",
+  "odontogram.error.message-not-can-update-the-settings":"No pudimos actualizar las configuraciones de tu sistema odontologico",
+  "odontogram.error.not-exist-user":"No existe usuario para actualizar configuraciones"
 }

@@ -1,23 +1,43 @@
-<div class="container-section">
+<div class="container-section" id="view_setting_periodontogram">
     <label  t="odontogram.laebl.setting-of-the-odontogram" icon="fi fi-sr-gears"></label>
     <hr>
-    <plus-select label="odontogram.laebl.select-system" id="typeSystem" name="typeSystem"> 
-        <option t="odontogram.option.system-universal" value="1"></option>
-        <option t="odontogram.option.fdi" value="2"></option>
-    </plus-select>
-
-    <label t="odontogram.laebl.setting-color-caries"></label>
-    <input-color></input-color>
-    <button class="btn btn btn-delete" t="odontogram.btn.delete-odontogram" icon="fi fi-sr-trash" onclick="delete_record()"></button>
-    <br><br>
-    <button class="btn btn-success btn-edit" t="btn.update"></button>
+    <form id="form_setting_record">
+        <plus-select label="odontogram.laebl.select-system" id="typeSystem" name="typeSystem"> 
+            <option t="odontogram.option.system-universal" value="1"></option>
+            <option t="odontogram.option.fdi" value="2"></option>
+        </plus-select>
+        <!--
+        <label t="odontogram.laebl.setting-color-caries"></label>
+        <input-color></input-color>
+        --->
+        <button class="btn btn btn-delete" t="odontogram.btn.delete-odontogram" icon="fi fi-sr-trash" onclick="delete_record()" type="button"></button>
+        <br><br>
+        <button class="btn btn-success btn-edit" t="btn.update" onclick="save_new_setting_record()" type="button"></button>
+    </form>
 </div>
 <script>
-    ( ()=>{
-        //window.set_value_plus_select('typeSystem',window.setting_odontogram.typeSystem);
+    //now we will get the information of the setting of the records when the partial be show in the screen
+    window.on_visible('view_setting_periodontogram', ()=>{
         window.set_value_plus_select('typeSystem',window.typeOdontogram);
-    })();
+    },true);
 
+    async function save_new_setting_record(){
+        //first we will see if exist a id of the odontogram
+        const odontogram_id=document.getElementById('odontogram_id').value;
+        if(!odontogram_id){
+            window.show_alert('error', 'odontogram.error.not-can-update-the-settings', 'odontogram.error.not-exist-id', 'Not exist a ID of the odontogram')
+            return;
+        }
+
+        const backend=await window.send_form_to_the_server('form_setting_record', '/odontograma/update_setting_odontograma/');
+        if(backend.success){
+            //if we can create the new history, we will update the container with the new history added
+            window.nextWeb(`odontograma/view_odontogram/${odontogram_id}/`);
+            window.show_alert('success', 'odontogram.success.odontogram-history-created', 'odontogram.description.odontogram-history-created')
+        }else{
+            window.show_alert('error', 'odontogram.error.not-can-update-the-settings', backend.message || 'message-odontogram.error.not-can-update-the-settings', backend.error || '')
+        }
+    }
 
     async function delete_record(){
         //first we will see if exist a id of the odontogram

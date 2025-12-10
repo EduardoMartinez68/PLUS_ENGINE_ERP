@@ -5253,6 +5253,32 @@ function toggleReadMore() {
   }
 }
 
+function on_visible(elementId, callback, runOnce = true) {
+  //get the element that the user would like see if exist in the screen
+    const element = document.getElementById(elementId);
+    if (!element) {
+      console.warn(`Element with id "${elementId}" not exist in the screen.`);
+      return;
+    }
+
+
+    //here we will to prepare the observer for that we know when the element show in the screen
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                //run the function
+                callback();
+
+                // only if need run one time
+                if (runOnce) {
+                    observer.disconnect();
+                }
+            }
+        });
+    });
+
+    observer.observe(element);
+}
 
 
 /*---------------------------------select search--------------------------*/

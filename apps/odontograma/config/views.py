@@ -1,6 +1,6 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
-from ..services.odontogram import get_odontograms, add_new_odontogram, get_latest_history_for_odontogram, update_tooth, get_history_odontograms
+from ..services.odontogram import get_odontograms, add_new_odontogram, get_latest_history_for_odontogram, update_tooth, get_history_odontograms, update_setting_odontogram
 from django.template.loader import render_to_string
 import json
 from django.core.serializers.json import DjangoJSONEncoder
@@ -418,4 +418,35 @@ def delete_record(request):
         from ..services.odontogram import delete_odontogram
         result = delete_odontogram(request.user, data)
         return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", ""), 'last_record':result.get('last_record',False)}, status=200)
+
+@login_required(login_url='login')
+def update_setting_odontograma(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )  
+        
+        result = update_setting_odontogram(request.user,data)
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
+    else:
+        if request.method != 'POST':
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )  
+        
+        result = update_setting_odontogram(request.user,data)
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", ''), "answer": result.get("answer", []), 'error': result.get("error", "")}, status=200)
 
