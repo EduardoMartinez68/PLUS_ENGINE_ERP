@@ -150,6 +150,8 @@
   
   "odontogram.title.vestibular":"Vestibular",
   "odontogram.title.platino":"Platino",
+  "odontogram.title.lingula":"Lingular",
+  "odontogram.title.vestibular2":"Vestibular",
 
   "odontogram.message.periodontogram-was-update":"Periodontograma actualizado",
   "odontogram.description.periodontogram-was-update":"El periodontograma fue actualizado con exito.",

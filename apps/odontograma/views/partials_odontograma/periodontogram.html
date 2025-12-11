@@ -89,6 +89,31 @@ td, th {
 </div>
 
 
+<!----LINGULAR-->
+<table id="tooth-table3" cellspacing="0" cellpadding="5">
+    <thead>
+        <tr id="table-header3"></tr>
+    </thead>
+    <tbody id="table-body3">
+    </tbody>
+</table>
+<div class="container-section">
+    <div class="body-periodontogram" id="body-periodontogram3">
+    </div>
+</div>
+
+<!----VESTIBULAR-->
+<table id="tooth-table4" cellspacing="0" cellpadding="5">
+    <thead>
+        <tr id="table-header4"></tr>
+    </thead>
+    <tbody id="table-body4">
+    </tbody>
+</table>
+<div class="container-section">
+    <div class="body-periodontogram" id="body-periodontogram4">
+    </div>
+</div>
 
 
 
@@ -178,7 +203,7 @@ td, th {
 
       //first we will see if the patient is a kid
       if (window.typeThooth == 1) {
-        if (window.typeOdontogram == 1) {
+        if (window.typeOdontogram.typeSystem == 1) {
           return window.numersTooth.kid[id].FDI;
         }
 
@@ -187,11 +212,11 @@ td, th {
 
 
       //if the patient is an adult we will to get the type of tooth
-      if (window.typeOdontogram == 1) {
+      if (window.typeOdontogram.typeSystem == 1) {
         return window.numersTooth.adult[id].FDI;
       }
-
-      return window.numersTooth.adult[id].Universal;
+      
+      return window.numersTooth.adult[id].Universal; //
     }
 
     function update_ui(uiPeriodontogramId, listInputsSondaje, listInputsGingival, startTooth){
@@ -324,7 +349,7 @@ td, th {
         });
     }
 
-    async function get_information_from_the_server_about_the_periodontogram(){   
+    async function get_information_from_the_server_about_the_periodontogram(){  
         const odontogram=document.getElementById('odontogram_id').value;
         const backend=await send_message_to_the_server(`odontograma/get_information_of_the_odotngoram/${odontogram}/`, {}, true, 'GET')
         if(backend.success){
@@ -392,6 +417,30 @@ td, th {
                     { name: 'odontogram.td.marge-gingival', type: 'input' , key:"gingival", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]},
                     { name: 'odontogram.td.drilling-depth', type: 'input', key:"drilling", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]}
                 ]
+            },
+            {
+                title:"odontogram.title.lingula",
+                rows:[
+                    { name: 'odontograma.label.mobility', type: 'number' , key:"mobility", values:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+                    { name: 'odontograma.status.implant', type: 'toggle', color: 'black' , key:"implant", values:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+                    { name: 'odontogram.td.defect-furca', type: 'number' , key:"furca", values:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+                    { name: 'odontogram.td.blood-sounding', type: 'toggle', color: 'red' , key:"sounding", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]},
+                    { name: 'odontograma.label.have-plaque-or-tartar', type: 'toggle', color: 'blue', key:"plaque", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]},
+                    { name: 'odontogram.td.marge-gingival', type: 'input' , key:"gingival", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]},
+                    { name: 'odontogram.td.drilling-depth', type: 'input', key:"drilling", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]}
+                ]
+            },
+            {
+                title:"odontogram.title.vestibular2",
+                rows:[
+                    { name: 'odontograma.label.mobility', type: 'number' , key:"mobility", values:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+                    { name: 'odontograma.status.implant', type: 'toggle', color: 'black' , key:"implant", values:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+                    { name: 'odontogram.td.defect-furca', type: 'number' , key:"furca", values:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+                    { name: 'odontogram.td.blood-sounding', type: 'toggle', color: 'red' , key:"sounding", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]},
+                    { name: 'odontograma.label.have-plaque-or-tartar', type: 'toggle', color: 'blue', key:"plaque", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]},
+                    { name: 'odontogram.td.marge-gingival', type: 'input' , key:"gingival", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]},
+                    { name: 'odontogram.td.drilling-depth', type: 'input', key:"drilling", values:[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]}
+                ]
             }
         ]
         
@@ -403,7 +452,8 @@ td, th {
         let infoTables=[];
         infoTables.push(get_info_face_periodontogram("odontogram.title.vestibular",'tooth-table', window.listInputsSondaje1, window.listInputsGingival1));
         infoTables.push(get_info_face_periodontogram("odontogram.title.platino", 'tooth-table2',window.listInputsSondaje2, window.listInputsGingival2));
-
+        infoTables.push(get_info_face_periodontogram("odontogram.title.lingula", 'tooth-table3',window.listInputsSondaje3, window.listInputsGingival3));
+        infoTables.push(get_info_face_periodontogram("odontogram.title.vestibular2", 'tooth-table4',window.listInputsSondaje4, window.listInputsGingival4));
 
         //now we will to convert the data of the tabla in a json 
         const json = JSON.stringify(infoTables);
@@ -615,7 +665,11 @@ window.on_visible("tooth-table", async () => {
     window.listInputsSondaje2=[];
     window.listInputsGingival2=[];
 
+    window.listInputsSondaje3=[];
+    window.listInputsGingival3=[];
 
+    window.listInputsSondaje4=[];
+    window.listInputsGingival4=[];
 
     const infoTables=await get_information_from_the_server_about_the_periodontogram();
     //we will to read all the information that the server send and update all the UI
@@ -639,8 +693,22 @@ window.on_visible("tooth-table", async () => {
             haderTableId='table-header2'
             bodyTableId='table-body2'
         }
-
-
+        else if(table.title=='odontogram.title.lingula'){
+            //update the list for save the information of the input for update
+            listInputsSondaje=window.listInputsSondaje3;
+            listInputsGingival=window.listInputsGingival3;
+            uiPeriodontogramId='body-periodontogram3';
+            haderTableId='table-header3'
+            bodyTableId='table-body3'
+        }
+        else if(table.title=='odontogram.title.vestibular2'){
+            //update the list for save the information of the input for update
+            listInputsSondaje=window.listInputsSondaje4;
+            listInputsGingival=window.listInputsGingival4;
+            uiPeriodontogramId='body-periodontogram4';
+            haderTableId='table-header4'
+            bodyTableId='table-body4'
+        }
 
 
 
