@@ -1,6 +1,7 @@
 from django.db import models
 from django.db import migrations, connection
 from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField
+from apps.customers.models import Customer
 
 #from django.contrib.auth.models import User
 from django.conf import settings
@@ -44,6 +45,7 @@ class Appointment(models.Model):
     
     id_type_appoint = models.ForeignKey(TypeAppoint, null=True, blank=True, on_delete=models.SET_NULL)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True, db_column='customer')
 
     class Meta:
         db_table = 'agenda_appointments'

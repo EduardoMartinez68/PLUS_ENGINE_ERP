@@ -5,3 +5,5 @@ iconF: "fi-rs-address-book"
 path: "/agenda"
 dbInit: true
 permissionsFile: 'permissions.json'
+dependencies:
+  - "customers"

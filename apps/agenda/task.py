@@ -3,7 +3,8 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from datetime import timedelta
 from models import Appointment
-
+from core.models import WhatsAppAccount
+import re
 
 def send_reminder_by_email(appointment):
     from django.core.mail import EmailMultiAlternatives
@@ -129,8 +130,66 @@ def send_whatsapp_text(phone_number_id, access_token, to_number_e164, text):
     resp.raise_for_status()
     return resp.json()
 
+def this_cellphone_is_valid(cellphone):
+    """
+    Validates whether a number is accepted by WhatsApp according to the E.164 format.
+    Returns True if the number is valid, False otherwise.
+    """
+    if not cellphone:
+        return False
+
+    # Clean spaces and scripts
+    cleaned = re.sub(r"[ \-\(\)]", "", cellphone)
+
+    # It must start with +
+    if not cleaned.startswith("+"):
+        return False
+
+    # It must conform to the E.164 format: +, then 8 to 15 digits
+    pattern = r"^\+[1-9]\d{7,14}$"
+
+    return bool(re.match(pattern, cleaned))
+
+def get_account(company, branch):
+    """
+    Returns the WhatsApp account associated with the company and branch.
+
+    If it doesn't exist or an error occurs, returns None.
+    """
+    try:
+        return WhatsAppAccount.objects.filter(company=company, branch=branch).first()
+    except Exception:
+        return None
+        
 def send_reminder_by_whatsapp(appointment):
-    send_whatsapp_text(appointment) 
+    #first we will see if the appointment have a customer 
+    customer=appointment.customer
+    if customer:
+        #if have a customer now we will see if this customer have a cellphone
+        cellphone=customer.cellphone
+        if this_cellphone_is_valid(cellphone):
+            #now we will get the key of API of whatsapp of the user from the database if exist 
+            company=appointment.user.company
+            branch=appointment.user.branch
+            whatsapp_account=get_account(company, branch)
+
+            if whatsapp_account:
+                #if have a cellphone for send a message and get the key of the API of the user of whatsapp to we will try send the message
+                mensaje = f""" 
+                👋 Hola {appointment.user.get_full_name() or appointment.user.username}, 
+                Este es un recordatorio de tu cita médica: {appointment.title} 
+                📅 {appointment.date_start.strftime('%Y-%m-%d %H:%M')}--{appointment.date_finish.strftime('%Y-%m-%d %H:%M')} 
+
+                
+                {appointment.description or ''} 📍 {appointment.location or ''} 
+                Link: {appointment.link or ''} 
+                
+                Power by PLUS 🚀 Sistema Clínico Profesional. 
+                https://softwarclinico.online
+                """
+                send_whatsapp_text(whatsapp_account.phone_number_id, whatsapp_account.access_token, cellphone, mensaje)
+
+
 
 
 @shared_task
@@ -147,7 +206,6 @@ def send_reminders():
 
     #now we will to read all the appointments and send the emails or notification for whatsapp
     for appointment in appointments:
-        ###-------------
         send_reminder_by_email(appointment)
         send_reminder_by_whatsapp(appointment)
         
