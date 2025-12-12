@@ -137,7 +137,7 @@ Q_CLUSTER = {
 
 #---------------------HERE WE WILL GET THE KEYS OF FACEBOOKS IF EXIST IN THE ENV-----------------------
 FB_APP_ID=os.getenv('FB_APP_ID', '')
-FB_APP_ID=os.getenv('FB_APP_SECRET', '')
+FB_APP_SECRET=os.getenv('FB_APP_SECRET', '')
 
 
 

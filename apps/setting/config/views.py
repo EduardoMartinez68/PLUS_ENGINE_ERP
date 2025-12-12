@@ -40,7 +40,7 @@ def setting_home(request):
         from django.conf import settings
         facebook_id=settings.FB_APP_ID
         facebook_redirect_uri=f'https://{settings.PLUS_URL}:8000/setting/whatsapp_callback'
-        return render(request, 'home_setting.html', {"user": user, "company": company, "branch":branch, "permissions": permissions, "schedule": schedule, "facebook":facebook_id, "facebook_redirect_uri":facebook_redirect_uri})
+        return render(request, 'home_setting.html', {"user": user, "company": company, "branch":branch, "permissions": permissions, "schedule": schedule, "facebook_id":facebook_id, "facebook_redirect_uri":facebook_redirect_uri})
     else:
         if request.method != "GET":
             return JsonResponse(
@@ -70,7 +70,7 @@ def setting_home(request):
         from django.conf import settings
         facebook_id=settings.FB_APP_ID
         facebook_redirect_uri=f'https://{settings.PLUS_URL}:8000/setting/whatsapp_callback'
-        return render(request, 'home_setting.html', {"user": user, "company": company, "branch":branch, "permissions": permissions, "schedule": schedule, "facebook":facebook_id, "facebook_redirect_uri":facebook_redirect_uri})
+        return render(request, 'home_setting.html', {"user": user, "company": company, "branch":branch, "permissions": permissions, "schedule": schedule, "facebook_id":facebook_id, "facebook_redirect_uri":facebook_redirect_uri})
 
 @login_required(login_url='login')
 def view_update_company(request):
