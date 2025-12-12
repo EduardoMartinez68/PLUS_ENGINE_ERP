@@ -138,8 +138,6 @@ class Company(models.Model):
 
         super().save(*args, **kwargs)
 
-
-
 class Branch(models.Model):
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='company')
 
@@ -379,9 +377,37 @@ class Setting(models.Model):
         return f"Settings {self.id}"
 
 
+from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField
+class WhatsAppAccount(models.Model):
+    #information of the account 
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='company')
+    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, db_column='branch')
 
+    # Tokens
+    access_token = EncryptedTextField()
+    token_expires_at = models.DateTimeField(null=True, blank=True)
 
+    # WhatsApp Business Information
+    waba_id = EncryptedCharField(max_length=50)
+    phone_number_id = EncryptedCharField(max_length=50)
+    display_phone_number = models.CharField(max_length=30)
 
+    # Status
+    status = models.CharField(
+        max_length=20,
+        default="connected",
+        choices=[
+            ("connected", "Connected"),
+            ("expired", "Expired"),
+            ("error", "Error"),
+        ]
+    )
+
+    # Timestamps
+    connected_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.company} - {self.display_phone_number}"
 
 #----------------------------------------------------THIS IS FOR CREATE THE TABLE USER OF THE ERP--------------------------------------------------------
 class CustomUser(AbstractBaseUser, PermissionsMixin):

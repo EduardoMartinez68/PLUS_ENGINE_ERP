@@ -19,6 +19,7 @@ print("""
 #character of the ERP
 FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY').encode()
 TYPE_VERSION = os.getenv('TYPE_VERSION', 'DESKTOP')
+PLUS_URL=os.getenv('PLUS_URL', 'localhost')
 
 #------------------------------------------------------run server---------------------------------------------
 # Ruta base
@@ -134,8 +135,14 @@ Q_CLUSTER = {
 }
 '''
 
+#---------------------HERE WE WILL GET THE KEYS OF FACEBOOKS IF EXIST IN THE ENV-----------------------
+FB_APP_ID=os.getenv('FB_APP_ID', '')
+FB_APP_ID=os.getenv('FB_APP_SECRET', '')
 
-# Base de datos PostgreSQL
+
+
+
+#Here we will to connect with the database of the system
 if(TYPE_VERSION=='CLOUD'):
     #This allows you to connect to your cloud database, such as PostgreSQL, MySQL, etc.
     DATABASES = {

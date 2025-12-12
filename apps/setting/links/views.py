@@ -30,7 +30,10 @@ def setting_home(request):
     if permissions.get("edit_schedule"):
         schedule=get_branch_schedule_all(branch)
 
-    return render(request, 'home_setting.html', {"user": user, "company": company, "branch":branch, "permissions": permissions, "schedule": schedule})
+    from django.conf import settings
+    facebook_id=settings.FB_APP_ID
+    facebook_redirect_uri=f'https://{settings.PLUS_URL}:8000/setting/whatsapp_callback'
+    return render(request, 'home_setting.html', {"user": user, "company": company, "branch":branch, "permissions": permissions, "schedule": schedule, "facebook":facebook_id, "facebook_redirect_uri":facebook_redirect_uri})
 
 
 
@@ -236,40 +239,76 @@ def view_update_schedule(request):
 
 
 
-#setting/whatsapp_callback
+#/setting/whatsapp_callback
 def whatsapp_callback(request):
     import requests
     from django.conf import settings
     from django.shortcuts import redirect
+    from django.utils import timezone
+    from core.models import WhatsAppAccount
 
-    
     code = request.GET.get("code")
 
+    if not code:
+        return redirect("/setting/setting_home/?error=no_code")
+
+    # 1. Swap "code" for "access_token"
     token_url = "https://graph.facebook.com/v18.0/oauth/access_token"
     params = {
         "client_id": settings.FB_APP_ID,
         "client_secret": settings.FB_APP_SECRET,
-        "redirect_uri": "https://localhost:8000/setting/whatsapp_callback/",
+        "redirect_uri": f"https://{settings.PLUS_URL}:8000/setting/whatsapp_callback/",
         "code": code,
     }
 
-    r = requests.get(token_url, params=params)
-    data = r.json()
+    token_res = requests.get(token_url, params=params)
+    token_data = token_res.json()
 
-    access_token = data["access_token"]
+    if "access_token" not in token_data:
+        return redirect("/setting_home/?error=token_error")
 
-    # Ahora obtienes info de la cuenta: WABA + phone_number_id
-    r2 = requests.get(
-        "https://graph.facebook.com/v18.0/me?fields=id,name,accounts{business,phone_numbers}&access_token=" + access_token
+    access_token = token_data["access_token"]
+    expires_in = token_data.get("expires_in", 3600)  # 1 hora por defecto
+    token_expires_at = timezone.now() + timezone.timedelta(seconds=expires_in)
+
+    # 2. Get the connected business info: waba_id, phone_number_id, display_phone_number
+    me_url = (
+        "https://graph.facebook.com/v18.0/me?"
+        "fields=id,name,accounts{business,phone_numbers}"
+        f"&access_token={access_token}"
     )
 
-    info = r2.json()
-    # Aquí procesas business_account_id y phone_number_id
-    waba_id = info["data"][0]["id"]
-    phone_number_id = phone_info["data"][0]["id"]
-    display_number = phone_info["data"][0]["display_phone_number"]
+    me_res = requests.get(me_url)
+    me_data = me_res.json()
 
+    try:
+        account = me_data["accounts"]["data"][0]
+    except:
+        return redirect("/setting/setting_home/")
 
+    waba_id = account["id"]
 
-    # Guardas en DB y rediriges al dashboard
-    return redirect("/dashboard/")
+    try:
+        phone_info = account["phone_numbers"]["data"][0]
+    except:
+        return redirect("/setting/setting_home/")
+
+    phone_number_id = phone_info["id"]
+    display_phone_number = phone_info["display_phone_number"]
+
+    # 3. Save or update record in database
+    WhatsAppAccount.objects.update_or_create(
+        company=request.user.company,
+        branch=request.user.branch,
+        defaults={
+            "access_token": access_token,
+            "token_expires_at": token_expires_at,
+            "waba_id": waba_id,
+            "phone_number_id": phone_number_id,
+            "display_phone_number": display_phone_number,
+            "status": "connected",
+        }
+    )
+
+    # 4. Redirect the user
+    return redirect("/setting/setting_home/")

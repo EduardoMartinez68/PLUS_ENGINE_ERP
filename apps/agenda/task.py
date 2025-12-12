@@ -4,6 +4,135 @@ from django.utils import timezone
 from datetime import timedelta
 from models import Appointment
 
+
+def send_reminder_by_email(appointment):
+    from django.core.mail import EmailMultiAlternatives
+
+    recipient_list = [appointment.user.email]
+    if appointment.emails_guests:
+        recipient_list.extend(appointment.emails_guests)
+
+    paciente = appointment.user.get_full_name() or appointment.user.username
+
+    html_content = f"""
+    <html>
+    <body style="margin:0; padding:0; background-color:#f4f7fb; font-family:Arial, sans-serif;">
+        
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f7fb; padding: 30px 0;">
+            <tr>
+                <td align="center">
+                    <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.08);">
+                        
+                        <!-- HEADER -->
+                        <tr>
+                            <td style="background:#2B6CB0; padding:25px; text-align:center; color:white; font-size:28px; font-weight:bold;">
+                                Recordatorio de tu Cita Médica
+                            </td>
+                        </tr>
+
+                        <!-- CONTENIDO PRINCIPAL -->
+                        <tr>
+                            <td style="padding: 30px; color:#333333; font-size:16px; line-height:1.6;">
+                                
+                                <p style="font-size:18px; margin-bottom:20px;">
+                                    👋 Hola <strong>{paciente}</strong>,
+                                </p>
+
+                                <p style="margin-bottom:15px;">
+                                    Este es un recordatorio de tu próxima cita médica.  
+                                    Aquí tienes los detalles de tu consulta:
+                                </p>
+
+                                <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px; background:#f4f7fb; border-radius:8px; padding:20px;">
+                                    <tr>
+                                        <td style="font-size:14px; color:#666;">
+                                            <strong style="color:#333;">Motivo:</strong> {appointment.title}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-top:10px; font-size:14px; color:#666;">
+                                            <strong style="color:#333;">Fecha:</strong> {appointment.date_start.strftime('%Y-%m-%d %H:%M')}
+                                            <br>
+                                            <strong style="color:#333;">Duración:</strong> {appointment.date_start.strftime('%H:%M')} – {appointment.date_finish.strftime('%H:%M')}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-top:10px; font-size:14px; color:#666;">
+                                            <strong style="color:#333;">Ubicación:</strong> {appointment.location or 'No especificado'}
+                                        </td>
+                                    </tr>
+                                    {'<tr><td style="padding-top:10px; font-size:14px; color:#666;"><strong style="color:#333;">Descripción:</strong> ' + appointment.description + '</td></tr>' if appointment.description else ''}
+                                    {'<tr><td style="padding-top:10px; font-size:14px; color:#666;"><strong style="color:#333;">Link:</strong> <a href="' + appointment.link + '" style="color:#4a90e2;">Abrir enlace</a></td></tr>' if appointment.link else ''}
+                                </table>
+
+                                <p style="margin-top:25px;">
+                                    Si necesitas modificar o cancelar tu cita, puedes hacerlo desde tu panel de paciente.
+                                </p>
+
+                                <p style="margin-top:30px; font-size:13px; color:#999;">
+                                    Atentamente,<br>
+                                    <strong>Equipo {user.branch.name_branch}</strong>
+                                </p>
+
+                            </td>
+                        </tr>
+
+                        <!-- FOOTER -->
+                        <tr>
+                            <td style="background:#f0f3f8; padding:15px; text-align:center; font-size:12px; color:#777;">
+                                Este es un mensaje automático, por favor no respondas este correo.<br><br>
+                                <a href="softwarclinico.online">Power by PLUS 🚀 Sistema Clínico Profesional</a>
+                            </td>
+                        </tr>
+
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+    </body>
+    </html>
+    """
+
+    subject = f"Recordatorio de tu cita: {appointment.title}"
+
+    email = EmailMultiAlternatives(
+        subject=subject,
+        body="Tu cliente de correo no soporta HTML, pero tienes una cita pendiente.",
+        from_email="tuservicio@gmail.com",
+        to=recipient_list
+    )
+
+    email.attach_alternative(html_content, "text/html")
+
+    try:
+        email.send()
+    except Exception as e:
+        print(f"Error to send this email {appointment.id}: {e}")
+
+def send_whatsapp_text(phone_number_id, access_token, to_number_e164, text):
+    """
+    phone_number_id: el id 'phone_number_id' provisto por Meta para la cuenta
+    access_token: token de la app/WABA (usualmente temporario o de larga duración)
+    to_number_e164: '5215512345678' (con código de país, sin +)
+    """
+    import requests
+    url = f"https://graph.facebook.com/v17.0/{phone_number_id}/messages"
+    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": to_number_e164,
+        "type": "text",
+        "text": {"body": text}
+    }
+    resp = requests.post(url, json=payload, headers=headers, timeout=15)
+    resp.raise_for_status()
+    return resp.json()
+
+def send_reminder_by_whatsapp(appointment):
+    send_whatsapp_text(appointment) 
+
+
 @shared_task
 def send_reminders():
     #get the time range for the next hour
@@ -18,60 +147,9 @@ def send_reminders():
 
     #now we will to read all the appointments and send the emails or notification for whatsapp
     for appointment in appointments:
-        # Prepare email list: main patient + guests
-        recipient_list = [appointment.user.email]  #the owner of the appointment
-        if appointment.emails_guests:
-            recipient_list.extend(appointment.emails_guests)
+        ###-------------
+        send_reminder_by_email(appointment)
+        send_reminder_by_whatsapp(appointment)
+        
 
-        # Format message
-        # here after we will to prepare the message with the preparation of the user
-        mensaje = f"""
-            Hola {appointment.user.get_full_name() or appointment.user.username},
-
-            Este es un recordatorio de tu cita médica:
-
-            Título: {appointment.title}
-            Descripción: {appointment.description or 'No hay descripción'}
-            Fecha de inicio: {appointment.date_start.strftime('%Y-%m-%d %H:%M')}
-            Fecha de finalización: {appointment.date_finish.strftime('%Y-%m-%d %H:%M')}
-            Ubicación: {appointment.location or 'No especificada'}
-            Link: {appointment.link or 'No hay link'}
-
-            Power by PLUS 🚀.
-            """
-
-        try:
-            #here we will send the email
-            send_mail(
-                subject=f"Recordatorio: {appointment.title}",
-                message=mensaje,
-                from_email="tuservicio@gmail.com",
-                recipient_list=recipient_list,
-                fail_silently=False
-            )
-            enviados += 1
-        except Exception as e:
-            # Aquí puedes registrar errores en un log
-            print(f"error to send a reminders to {appointment.id}: {e}")
-
-    return f"{enviados} reminders sent successfully."
-
-
-
-def send_whatsapp_text(phone_number_id, access_token, to_number_e164, text):
-    """
-    phone_number_id: el id 'phone_number_id' provisto por Meta para la cuenta
-    access_token: token de la app/WABA (usualmente temporario o de larga duración)
-    to_number_e164: '5215512345678' (con código de país, sin +)
-    """
-    url = f"https://graph.facebook.com/v17.0/{phone_number_id}/messages"
-    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
-    payload = {
-        "messaging_product": "whatsapp",
-        "to": to_number_e164,
-        "type": "text",
-        "text": {"body": text}
-    }
-    resp = requests.post(url, json=payload, headers=headers, timeout=15)
-    resp.raise_for_status()
-    return resp.json()
+    return f"reminders sent successfully."
