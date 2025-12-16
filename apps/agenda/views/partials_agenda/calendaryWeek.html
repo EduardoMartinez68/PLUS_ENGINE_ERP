@@ -176,7 +176,14 @@
 
 {% load static %}
 <div class="container-div only-mobile">
-  <button t="Month" icon="fi fi-sr-sort-down" class="btn-ghost">Month</button>
+<button
+  id="button-show-calendary-month"
+  t="Month"
+  icon="fi fi-sr-sort-down"
+  class="btn-ghost"
+  onclick="show_calendary_month(this)">
+  Month
+</button>
 </div>
 <div id="calendary-week-calendar" class="calendary-week-calendar" style="width: 100%; height: 100vh;">
 
@@ -551,6 +558,10 @@
     }
 
     calendar.appendChild(redLine);
+
+
+    //----here we will see if the user is in a cellphone for hidden the calendar when the user do clic about that-----
+    show_calendary_month(document.getElementById('button-show-calendary-month'))
   }
 
   function update_line(){
@@ -606,4 +617,22 @@
 
   setInterval(update_line, 60000); //update the line for minute 
   window.render_this_day = render_this_day;
+
+
+
+  function show_calendary_month(button){
+    const calendar = document.getElementById('container-calendary-month');
+
+    if(!calendar.classList.contains('first-one')){
+      calendar.classList.add('first-one');
+      return;
+    }
+
+    const rect = button.getBoundingClientRect();
+    calendar.style.top = rect.bottom + 8 + 'px';
+    calendar.style.left = rect.left + 'px';
+    calendar.style.width = window.innerWidth-30 + 'px';
+    calendar.classList.toggle('only-mobile');
+    calendar.classList.toggle('show');
+  }
 </script>

@@ -143,11 +143,34 @@
 
     @media (max-width: 768px) {
         .container-calendary-month {
-            display: none !important;
+            display: none;
         }
     }
+
+
+    /*CELLPHONE*/
+    .container-calendary-month.only-mobile {
+    position: fixed;
+    z-index: 1000;
+
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 45px rgba(0,0,0,.25);
+
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px) scale(.98);
+
+    transition: all .25s cubic-bezier(.4,0,.2,1);
+    display:block;
+    }
+    .container-calendary-month.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    }
 </style>
-<div class="container-calendary-month">
+<div class="container-calendary-month" id="container-calendary-month">
     <br>
     <label class="title-number-day" id="numberDay">1</label>
     <label class="title-day" id="textDay">FRI</label>
@@ -255,6 +278,7 @@
 
                 daysContainer.appendChild(dayElement);
             }
+
         }
 
         function changeMonth(step) {
