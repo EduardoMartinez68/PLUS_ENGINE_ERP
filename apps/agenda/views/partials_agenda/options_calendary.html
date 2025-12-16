@@ -1,11 +1,125 @@
 
-<plus-actions>
-    <plus-action text="new-event" onclick="open_type_pop" combo="Shift+n" ></plus-action>
-    <plus-action text="create-a-new-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
-    <plus-action text="title-show-all-the-type-event" onclick="open_pop_show_all_type_event"></plus-action>
-    <plus-action text="title.show-all-my-appoints" onclick="open_pop_show_all_my_appoints"></plus-action>
-    <plus-action text="title-sync-google-btn" onclick="sync_google"></plus-action>
-</plus-actions>
+<style>
+
+/* FAB container */
+.fab-container {
+  position: fixed;
+  bottom: 40px;
+  right: 24px;
+  z-index: 500;
+}
+
+/* button principal */
+.circle-button{
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(
+    135deg,
+    var(--primary),
+    var(--secondary)
+  );
+  line-height: 1;
+  color: #fff;
+  font-size: 35px;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(0,0,0,.35);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.fab-main {
+  color: #fff;
+  font-size: 35px;
+  background: transparent;
+  border-radius: 50%;
+  width: 58px;
+  height: 58px;
+  border: none;
+  transform: translateY(-1px);
+}
+
+.fab-main:active {
+  transform: scale(.95);
+}
+
+/* container action */
+.fab-actions {
+  position: absolute;
+  bottom: 70px; /* not push to the button father */
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px) scale(.95);
+  transition: all .3s cubic-bezier(.4,0,.2,1);
+  
+}
+
+/* buttons sons */
+.fab-actions button {
+  width: 150px;
+  background: #fff;
+  color: var(--primary-dark);
+  border: none;
+  padding: 11px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  box-shadow: 0 8px 20px rgba(0,0,0,.18);
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.fab-actions button:active {
+  transform: scale(.97);
+}
+
+/* status on */
+.fab-container.active .fab-actions {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+/* rotation of + 
+.fab-container.active .fab-main {
+  transform: rotate(45deg);
+}
+*/
+</style>
+<div class="container-calendary-month">
+  <plus-actions>
+      <plus-action text="new-event" onclick="open_type_pop" combo="Shift+n" ></plus-action>
+      <plus-action text="create-a-new-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
+      <plus-action text="title-show-all-the-type-event" onclick="open_pop_show_all_type_event"></plus-action>
+      <plus-action text="title.show-all-my-appoints" onclick="open_pop_show_all_my_appoints"></plus-action>
+      <plus-action text="title-sync-google-btn" onclick="sync_google"></plus-action>
+  </plus-actions>
+</div>
+
+
+<!---this is the buttons that only be show in a cellphone--->
+<div class="fab-container only-mobile">
+  <div class="circle-button">
+    <button class="fab-main" onclick="toggleFab()">+</button>
+  </div>
+
+  <div class="fab-actions">
+    <button onclick="open_type_pop()">Nuevo evento</button>
+    <button onclick="open_pop_new_type_event()">Nuevo tipo de evento</button>
+    <button onclick="open_pop_show_all_type_event()">Ver tipos de evento</button>
+    <button onclick="open_pop_show_all_my_appoints()">Mis citas</button>
+    <button onclick="sync_google()">Sincronizar Google</button>
+  </div>
+</div>
 
 <message-pop title="title-pop-create-event" name="pop-data-event">
     {% include 'partials_agenda/formCreateNewEvent.html' %}
@@ -21,6 +135,10 @@
 {% include 'partials_agenda/tableAllMyEvents.html' %}
 
 <script>
+  function toggleFab() {
+    document.querySelector('.fab-container').classList.toggle('active');
+  }
+
   function open_type_pop() {
       //first we will to clear all the input of the form 
       update_pop_information()

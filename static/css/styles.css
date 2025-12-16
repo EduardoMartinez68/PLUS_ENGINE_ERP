@@ -815,6 +815,15 @@ hr {
   color: #8b8a8a;
 }
 
+.btn-ghost{
+  background: transparent;
+  color: #1f1f1f;
+  border: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
 .btn-transparent:hover{
     color: #777676;
 }
