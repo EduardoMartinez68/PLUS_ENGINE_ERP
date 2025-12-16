@@ -1,3 +1,14 @@
+<style>
+.only-desktop {
+  display: block;
+}
+@media (max-width: 768px) {
+  .only-desktop {
+    display: none !important;
+  }
+}
+</style>
+<button class="btn btn-add btn-success only-mobile" t="btn.save" onclick="send_new_event_to_the_server()" type="button"></button>
 <div class="container-pop">
     <form  id="formCreateNewEvent">
     <plus-tabs>
@@ -8,23 +19,6 @@
                     t-placeholder="placeholder-input-title" required maxlength="300" />
             </div>
 
-            <div class="section">
-                <div class="row m-1">
-                    <div class="col">
-                        <plus-select label="priority" name="priority" required id="priority">
-                            <option selected t="priority.low" value="0"></option>
-                            <option t="priority.normal" value="1"></option>
-                            <option t="priority.high" value="2"></option>
-                        </plus-select>
-                    </div>
-                    <div class="col">
-                        <plus-select label="search-type-event" name="type_event" required id="type_event"
-                            link="agenda/get_the_first_type_events/" add="open_pop_new_type_event" edit_data="edit_type_event_for_select"
-                            delete_data="agenda/delete_type_event/" btn_delete_title="message.delte-type-event-title" btn_delete_text="message.delte-type-event-description">
-                        </plus-select>
-                    </div>
-                </div>
-            </div>
 
             <div class="section">
                 <div class="row">
@@ -59,6 +53,25 @@
                     <option t="alert.1week" value="10080"></option>
                 </plus-select>
             </div>
+
+            <div class="section">
+                <div class="row m-1">
+                    <div class="col">
+                        <plus-select label="priority" name="priority" required id="priority">
+                            <option selected t="priority.low" value="0"></option>
+                            <option t="priority.normal" value="1"></option>
+                            <option t="priority.high" value="2"></option>
+                        </plus-select>
+                    </div>
+                    <div class="col">
+                        <plus-select label="search-type-event" name="type_event" required id="type_event"
+                            link="agenda/get_the_first_type_events/" add="open_pop_new_type_event" edit_data="edit_type_event_for_select"
+                            delete_data="agenda/delete_type_event/" btn_delete_title="message.delte-type-event-title" btn_delete_text="message.delte-type-event-description">
+                        </plus-select>
+                    </div>
+                </div>
+            </div>
+
 
             <div class="section">
                 <info-label label="emails-guests"
@@ -122,7 +135,7 @@
     </form>
 </div>
 
-<button class="btn btn-add btn-success" t="message.success" onclick="send_new_event_to_the_server()">Save</button>
+<button class="btn btn-add btn-success only-desktop" t="btn.save" onclick="send_new_event_to_the_server()" type="button">Save</button>
 
 
 <script>

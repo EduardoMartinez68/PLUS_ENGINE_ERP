@@ -154,6 +154,13 @@
   gap: 12px;            
 }
 
+#button-show-calendary-month {
+  padding-left: 5%;
+}
+.container-div plus-actions {
+  padding-left: 60%;
+}
+
 .only-mobile {
   display: none;
 }
@@ -176,14 +183,20 @@
 
 {% load static %}
 <div class="container-div only-mobile">
-<button
-  id="button-show-calendary-month"
-  t="Month"
-  icon="fi fi-sr-sort-down"
-  class="btn-ghost"
-  onclick="show_calendary_month(this)">
-  Month
-</button>
+  <button
+    id="button-show-calendary-month"
+    t="Month"
+    icon="fi fi-sr-sort-down"
+    class="btn-ghost"
+    onclick="show_calendary_month(this)">
+    Month
+  </button>
+  <plus-actions>
+      <plus-action text="create-a-new-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
+      <plus-action text="title-show-all-the-type-event" onclick="open_pop_show_all_type_event"></plus-action>
+      <plus-action text="title.show-all-my-appoints" onclick="open_pop_show_all_my_appoints"></plus-action>
+      <plus-action text="title-sync-google-btn" onclick="sync_google"></plus-action>
+  </plus-actions>
 </div>
 <div id="calendary-week-calendar" class="calendary-week-calendar" style="width: 100%; height: 100vh;">
 

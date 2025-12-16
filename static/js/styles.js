@@ -2714,32 +2714,45 @@ class PlusActions extends HTMLElement {
     if (this.open) {
       menu.style.display = 'block';
 
-      // --- NUEVO: lógica para ajustar posición ---
-      const rect = this.getBoundingClientRect(); // posición del contenedor
-      const menuWidth = menu.offsetWidth;
-      const spaceRight = window.innerWidth - rect.right;
-      const spaceLeft = rect.left;
+      // Esperar a que el menú tenga tamaño real
+      requestAnimationFrame(() => {
+        const triggerRect = this.getBoundingClientRect();
+        const menuRect = menu.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
 
-      if (spaceRight >= menuWidth) {
-        // cabe a la derecha
-        menu.style.left = '100%';
-        menu.style.right = 'auto';
-      } else if (spaceLeft >= menuWidth) {
-        // cabe a la izquierda
+        const GAP = 8; //space of segurity
+
+        const spaceRight = viewportWidth - triggerRect.right;
+        const spaceLeft = triggerRect.left;
+
+        // Reset previo
         menu.style.left = 'auto';
-        menu.style.right = '100%';
-      } else {
-        // fallback: siempre a la derecha
-        menu.style.left = '100%';
         menu.style.right = 'auto';
-      }
+
+        if (spaceRight >= menuRect.width + GAP) {
+          // open to the rigth
+          menu.style.left = '100%';
+        } else if (spaceLeft >= menuRect.width + GAP) {
+          // open to the left
+          menu.style.right = '100%';
+        } else {
+          // 👉 Fallback change with help of the viewport
+          menu.style.left = '50%';
+          menu.style.transform = 'translateX(-60%)';
+        }
+      });
 
       icon.style.transform = 'rotate(90deg)';
     } else {
       menu.style.display = 'none';
+
+      // clear the fallback
+      menu.style.transform = '';
+
       icon.style.transform = 'rotate(0deg)';
     }
   }
+
   handlePin(pinIcon, action, onclick, icon, textTranslate) {
     const quickActions = this.querySelector('.plus-quick-actions');
     const alreadyPinned = pinIcon.classList.contains('fi-ss-thumbtack');

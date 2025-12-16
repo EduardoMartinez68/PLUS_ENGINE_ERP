@@ -13,7 +13,7 @@
 .circle-button{
   width: 58px;
   height: 58px;
-  border-radius: 50%;
+  border-radius: 20%;
   border: none;
   display: flex;
   align-items: center;
@@ -109,6 +109,17 @@
 <!---this is the buttons that only be show in a cellphone--->
 <div class="fab-container only-mobile">
   <div class="circle-button">
+    <button class="fab-main" onclick="open_type_pop()">+</button>
+  </div>
+
+  <div class="fab-actions">
+  </div>
+</div>
+
+
+<!---
+<div class="fab-container only-mobile">
+  <div class="circle-button">
     <button class="fab-main" onclick="toggleFab()">+</button>
   </div>
 
@@ -120,6 +131,7 @@
     <button onclick="sync_google()">Sincronizar Google</button>
   </div>
 </div>
+--->
 
 <message-pop title="title-pop-create-event" name="pop-data-event">
     {% include 'partials_agenda/formCreateNewEvent.html' %}
