@@ -65,17 +65,25 @@
     //get the date 
     const day = new Date();
 
+    //this is for aument 50 minutes to the event
+    const end = new Date(day);
+    end.setMinutes(day.getMinutes() + 60);
 
     //get the date update
     window.change_plus_date('start_date', day);
-    window.change_plus_date('end_date', day);
+    window.change_plus_date('end_date', end);
 
     //her also update the information of the minutes for get the time 
     const hours = day.getHours().toString().padStart(2, '0');
     const minutes = day.getMinutes().toString().padStart(2, '0');
     const time = `${hours}:${minutes}`;
     window.change_plus_time('start_time', time);
-    window.change_plus_time('end_time', time);
+
+    //her also update the information of the minutes for get the time 
+    const hoursEnd = end.getHours().toString().padStart(2, '0');
+    const minutesEnd = end.getMinutes().toString().padStart(2, '0');
+    const timeEnd = `${hoursEnd}:${minutesEnd}`;
+    window.change_plus_time('end_time', timeEnd);
   }
 
   function hidden_input_repet(status) {
@@ -89,9 +97,14 @@
 
   
   function activate_event_all_the_day(status) {
-    //her also update the information of the minutes for get the time 
-    window.change_plus_time('start_time', '00:00');
-    window.change_plus_time('end_time', '23:59');
+    if(status){
+      //her also update the information of the minutes for get the time 
+      window.change_plus_time('start_time', '00:00');
+      window.change_plus_time('end_time', '23:59');
+    }
+    else{
+      update_pop_information();
+    }
   }
 
 

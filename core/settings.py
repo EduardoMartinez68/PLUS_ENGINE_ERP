@@ -109,10 +109,18 @@ if TYPE_VERSION=='CLOUD':
     #here we will configure the tasks that will be run in background with celery
     #here after we will to read all the task that exist in all the apps for if one have event that would like meminder
     CELERY_BEAT_SCHEDULE = {
+        # Task 1: send reminders to the customers of the appoints of the user (this run 24/7)
         "enviar-recordatorios-cada-5-min": {
             "task": "apps.agenda.tasks.send_reminders",
             "schedule": 300,  # this is run by 5 minutes
         },
+
+        
+        # Task 2: Monthly Renewal for can send more message of whatsapp (run only the day 1 of the month to 1:00 AM)
+            "renovar-limites-mensuales": {
+                "task": "apps.agenda.tasks.renovar_limites_mensuales", 
+                "schedule": crontab(day_of_month=1, hour=1, minute=0),
+            },
     }
 
 
