@@ -3773,8 +3773,15 @@ class PlusTime extends HTMLElement {
     this.input = this.shadowRoot.querySelector("input[type='time']");
 
     this.display.addEventListener("click", () => {
-      this.dropdown.style.display =
-        this.dropdown.style.display === "none" || !this.dropdown.style.display ? "flex" : "none";
+      const isOpening = 
+        this.dropdown.style.display === "none" || !this.dropdown.style.display;
+      
+      this.dropdown.style.display = isOpening ? "flex" : "none";
+      
+      if (isOpening) {
+        // call to the option for center the hours and the minutes when the user open the input
+        this.centerSelectedOption();
+      }
     });
 
     document.addEventListener("click", (e) => {
@@ -3802,45 +3809,138 @@ class PlusTime extends HTMLElement {
   }
 
   initInteraction(type) {
-    const scroll = this.shadowRoot.getElementById(`${type}-scroll`);
-    const options = scroll.querySelectorAll(".time-option");
+      const scroll = this.shadowRoot.getElementById(`${type}-scroll`);
+      const options = scroll.querySelectorAll(".time-option");
 
-    let isDragging = false;
-    let startY;
-    let startScroll;
+      let isDragging = false;
+      let startY;
+      let startScroll;
+      
+      // Almacenamos el elemento sobre el que se hizo el último 'touchstart'
+      let touchTarget = null; 
 
-    scroll.addEventListener("mousedown", (e) => {
-      isDragging = true;
-      startY = e.clientY;
-      startScroll = scroll.scrollTop;
-    });
+      // --- Funciones de Arrastre (Desplazamiento) ---
 
-    document.addEventListener("mousemove", (e) => {
-      if (!isDragging) return;
-      const delta = startY - e.clientY;
-      scroll.scrollTop = startScroll + delta;
-    });
+      const startDrag = (e) => {
+          isDragging = true;
+          // e.touches[0].clientY para táctil, e.clientY para ratón
+          startY = e.touches ? e.touches[0].clientY : e.clientY; 
+          startScroll = scroll.scrollTop;
+          
+          // Almacena el elemento tocado para la selección posterior
+          if (e.touches) touchTarget = e.target;
+          
+          if (e.type === 'touchstart') {
+              e.preventDefault(); 
+          }
+          scroll.style.cursor = 'grabbing';
+      };
 
-    document.addEventListener("mouseup", () => {
-      isDragging = false;
-    });
+      const drag = (e) => {
+          if (!isDragging) return;
+          const currentY = e.touches ? e.touches[0].clientY : e.clientY;
+          const delta = startY - currentY;
+          scroll.scrollTop = startScroll + delta;
 
-    scroll.addEventListener("wheel", (e) => {
-      e.preventDefault();
-      scroll.scrollTop += e.deltaY;
-    });
+          // Si hay un desplazamiento significativo, cancelamos el target
+          if (Math.abs(delta) > 10) { 
+              touchTarget = null;
+          }
 
-    options.forEach((opt) => {
-      opt.addEventListener("click", () => {
-        options.forEach((o) => o.classList.remove("selected"));
-        opt.classList.add("selected");
-        const val = parseInt(opt.getAttribute("data-val"));
-        if (type === "hour") this.selectedHour = val;
-        else this.selectedMinute = val;
-        this.display.textContent = this.formatTime();
-        this.input.value = this.formatTime(true);
+          if (e.type === 'touchmove') {
+              e.preventDefault(); 
+          }
+      };
+
+      const endDrag = () => {
+          isDragging = false;
+          scroll.style.cursor = 'grab';
+      };
+      
+      // --- Lógica de Selección Unificada ---
+      const handleSelection = (opt) => {
+          // Lógica de selección:
+          options.forEach((o) => o.classList.remove("selected"));
+          opt.classList.add("selected");
+          const val = parseInt(opt.getAttribute("data-val"));
+          if (type === "hour") this.selectedHour = val;
+          else this.selectedMinute = val;
+          
+          // Usar la función de actualización centralizada
+          this.update_input_form(); 
+      };
+
+      // --- Listeners de Ratón (Desktop) ---
+      scroll.addEventListener("mousedown", startDrag);
+      document.addEventListener("mousemove", drag); 
+      document.addEventListener("mouseup", endDrag);
+
+      // --- Listeners Táctiles (Móvil) ---
+      scroll.addEventListener("touchstart", startDrag, { passive: false });
+      document.addEventListener("touchmove", drag, { passive: false });
+      document.addEventListener("touchend", endDrag); // Finaliza el arrastre
+      document.addEventListener("touchcancel", endDrag);
+
+      // --- Listener de Rueda (Scroll) ---
+      scroll.addEventListener("wheel", (e) => {
+          e.preventDefault();
+          scroll.scrollTop += e.deltaY;
+      }, { passive: false });
+
+      // --- Listener de Clic/Tap en Opciones (Selección) ---
+      options.forEach((opt) => {
+        
+        // 1. Ratón: Sigue usando 'click'. Solo se dispara si NO hubo arrastre.
+        opt.addEventListener("click", (e) => {
+          // Evita el click si el elemento fue parte de un arrastre táctil reciente
+          if (e.detail === 0 && e.pointerType === "touch") return; 
+          handleSelection(opt);
+        });
+        
+        // 2. Táctil: Usamos 'touchend'. Esto se dispara después de un toque (tap).
+        opt.addEventListener("touchend", (e) => {
+            e.preventDefault();
+            //Only select the element if the touch start and finish in is moment (touchTarget)
+            if (opt === touchTarget) { 
+                handleSelection(opt);
+            }
+            touchTarget = null; // We reset the target after the selection/attempt
+        });
       });
-    });
+  }
+
+  centerSelectedOption() {
+    const hourScroll = this.shadowRoot.getElementById('hour-scroll');
+    const minuteScroll = this.shadowRoot.getElementById('minute-scroll');
+
+    // Internal function to center a specific scroll
+    const performCentering = (scrollElement) => {
+      const selectedOption = scrollElement.querySelector('.selected');
+      if (selectedOption) {
+        // calculate for center:
+        // Top position of element + (Element height / 2) - (Scroll container height / 2)
+        const centerPosition = 
+          selectedOption.offsetTop + 
+          (selectedOption.offsetHeight / 2) - 
+          (scrollElement.clientHeight / 2);
+        
+        // aplicate scroll 
+        scrollElement.scrollTop = centerPosition;
+      }
+    };
+
+    if (hourScroll) performCentering(hourScroll);
+    if (minuteScroll) performCentering(minuteScroll);
+  }
+
+  scrollCenter(scrollElement, options) {
+      const selectedOption = scrollElement.querySelector('.selected');
+      if (selectedOption) {
+          // Height of an option element (approximately)
+          const optionHeight = selectedOption.offsetHeight; 
+          // Calculate the position to center: (element position) - (half the scroll height) + (half the element height)
+          scrollElement.scrollTop = selectedOption.offsetTop - (scrollElement.clientHeight / 2) + (optionHeight / 2);
+      }
   }
 
   update_input_form() {

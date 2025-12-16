@@ -627,6 +627,9 @@
       calendar.classList.add('first-one');
       return;
     }
+    
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (!isMobile) return;
 
     const rect = button.getBoundingClientRect();
     calendar.style.top = rect.bottom + 8 + 'px';
