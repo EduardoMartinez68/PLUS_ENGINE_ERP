@@ -60,7 +60,7 @@
     background-color: #e0f7fa79 !important;
   }
 
-  /* 📱 Adaptación a móviles */
+  /* 📱 Adaptación a móviles 
   @media (max-width: 768px) {
     .calendary-week-calendar {
       grid-template-columns: 60px repeat(7, minmax(60px, 1fr));
@@ -110,9 +110,34 @@
       left: 40px;
     }
   }
+*/
 
+  @media (max-width: 768px) {
+    .calendary-week-calendar {
+      /* Columna de Horas: 60px | Días: 7 columnas de 120px */
+      /* El ancho de 120px asegura mejor legibilidad, forzando el scroll */
+      grid-template-columns: 60px repeat(7, 120px);
+    }
+    /* ... resto de estilos de 768px ... */
+    .calendary-week-current-hour-line {
+      /* Se mantiene el ancho de la línea roja correctamente */
+      width: calc(100% - 60px);
+      left: 60px;
+    }
+  }
 
-
+  @media (max-width: 480px) {
+    .calendary-week-calendar {
+      /* Columna de Horas: 40px | Días: 7 columnas de 100px */
+      grid-template-columns: 40px repeat(7, 100px);
+    }
+    /* ... resto de estilos de 480px ... */
+    .calendary-week-current-hour-line {
+      /* Se mantiene el ancho de la línea roja correctamente */
+      width: calc(100% - 40px);
+      left: 40px;
+    }
+  }
   /*------------------------this is for skeleton loading effect------------------------------ */
 /* Skeleton shimmer animation */
 @keyframes shimmer {
@@ -283,10 +308,14 @@
         slot.dataset.day = d;
         slot.dataset.hour = h;
 
-        // Si esta es la columna del día actual, le añadimos la clase de fondo
+        //if is the day current now add the class for know that this day is today
         if (todayColumnIndices.includes(d)) {
           slot.classList.add('calendary-week-today-column');
         }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////HERE WE WILL ADD ALSO THE DAY THAT THE USER SELECT////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         row.appendChild(slot);
       }
@@ -373,6 +402,8 @@
     }
 
     ////////////////this is for add the events to the calendar/////////////////////
+    const sampleSlot = document.querySelector('.calendary-week-time-slot');
+    const slotHeight = sampleSlot ? sampleSlot.offsetHeight : 40;
     appointments.forEach(event => {
       const start = new Date(event.date_start);
       const end = new Date(event.date_finish);
@@ -392,11 +423,20 @@
 
       // Adaptable position for all the devices
       eventDiv.style.position = 'absolute';
-      eventDiv.style.top = `calc(${top}% + 4.5%)`; 
-      eventDiv.style.width = `calc(${100 / 7 - 0.5}%)`; 
 
+      const totalMinutesFromStartOfDay = startHour * 60 + startMinutes;
+      const topPositionPx = totalMinutesFromStartOfDay * (slotHeight / 60);
+      const headerHeight = sampleSlot.offsetTop;
+      eventDiv.style.top = `${headerHeight + topPositionPx}px`;
+      //eventDiv.style.width = `calc(${100 / 7 - 0.5}%)`; 
+
+      const gridColumnStart = dayIndex + 2;
+      eventDiv.style.gridColumn = `${gridColumnStart} / span 1`;
+      eventDiv.style.left = 0; // Se posiciona al inicio de su columna Grid
+      eventDiv.style.width = '100%';
 
       //here we set the left position based on the day index. All the day need a specific offset
+      /*
       if(dayIndex==0){
         eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 8%)`;
       }
@@ -420,7 +460,7 @@
       else{
         eventDiv.style.left = `calc(${(dayIndex / 8) * 100}% + 10%)`;
       }
-
+      */
 
       eventDiv.style.height = `${height}%`; //this is for the event duration
 
@@ -574,7 +614,7 @@
 
 
     //----here we will see if the user is in a cellphone for hidden the calendar when the user do clic about that-----
-    show_calendary_month(document.getElementById('button-show-calendary-month'))
+    //show_calendary_month(document.getElementById('button-show-calendary-month'))
   }
 
   function update_line(){
@@ -636,10 +676,12 @@
   function show_calendary_month(button){
     const calendar = document.getElementById('container-calendary-month');
 
+    /*
     if(!calendar.classList.contains('first-one')){
       calendar.classList.add('first-one');
       return;
     }
+    */
     
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
     if (!isMobile) return;

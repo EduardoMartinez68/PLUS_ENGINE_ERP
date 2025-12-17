@@ -63,8 +63,6 @@ class Plus:
         module = Plus._load_module('converDate')
 
         dateText=date
-        print('-------------date--------------')
-        print(date)
         if isinstance(date, datetime):
             dateText=date.isoformat()
             
