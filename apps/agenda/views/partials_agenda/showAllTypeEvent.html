@@ -14,28 +14,35 @@
 }
 </style>
 <message-pop title="type-events" name="pop-show-all-the-type-event">
-<div class="row p-3 d-flex align-items-center justify-content-center">
-  <div class="col-10">
-    <search-bar placeholder="message.search" function-callback="filter_table_type_event" id="input-search-type-event"></search-bar>
-  </div>
-  <div class="col-2 text-center">
-    <button class="btn btn-add" onclick="open_pop_new_type_event()">+</button>
-  </div>
+
+<div class="row">
+    <div class="col">
+        <plus-search input_id="input-search-type-event" placeholder="message.search">
+            <search-option>
+                <button class="btn btn-add" onclick="open_pop_new_type_event()">+</button>
+            </search-option>
+        </plus-search>
+    </div>
 </div>
 
-<table>
-    <thead>
-        <tr>
-            <th t="color" style="width:5%;"></th>
-            <th t="event" style="width:70%;" t="table-type-event">Event</th>
-            <th style="width:15%;"></th>
-            <th style="width:15%;"></th>
-        </tr>
-    </thead>
-    <tbody id="body-table-type-event" class="table-type-event">
 
-    </tbody>
-</table>
+<div class="row">
+    <div class="col">
+        <table>
+            <thead>
+                <tr>
+                    <th t="color" style="width:5%;"></th>
+                    <th t="event" style="width:70%;" t="table-type-event">Event</th>
+                    <th style="width:15%;"></th>
+                    <th style="width:15%;"></th>
+                </tr>
+            </thead>
+            <tbody id="body-table-type-event" class="table-type-event">
+
+            </tbody>
+        </table>
+    </div>
+</div>
 </message-pop>
 
 

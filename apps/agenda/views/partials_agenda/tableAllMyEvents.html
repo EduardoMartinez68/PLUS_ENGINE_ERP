@@ -43,33 +43,35 @@
 
 <message-pop title="title.show-all-my-appoints" name="pop-show-all-my-events" style="width: 80%;">
     <div class="row">
-        <div class="col-10">
-            <search-bar placeholder="search.seacrh-all-my-events" function-callback="filter_table_appoints" id="input-search-all-my-event"></search-bar>
-        </div>
-        <div class="col-2 text-center">
-            <button class="btn-add btn-add-f" onclick="open_type_pop()">+</button>
+        <div class="col">
+            <plus-search input_id="input-search-all-my-event" placeholder="search.seacrh-all-my-events">
+                <search-option>
+                    <button class="btn btn-add" onclick="open_type_pop()">+</button>
+                </search-option>
+            </plus-search>
         </div>
     </div>
-
     <div class="row">
-        <table id="table-my-events">
-            <thead>
-                <tr>
-                    <th t="table-events-title" style="width:15%;">Title</th>
-                    <th t="table-events-description" style="width:20%;">Descripción</th>
-                    <th t="table-events-date-start" style="width:15%;">Inicio</th>
-                    <th t="table-events-date-finish" style="width:15%;">Finish</th>
-                    <th t="table-events-type-event" style="width:10%;">Type event</th>
-                    <th t="table-events-priority" style="width:5%;">Prioridad</th>
-                    <th t="table-events-ubication" style="width:10%;">Ubicación</th>
-                    <th style="width:5%;"></th>
-                    <th style="width:5%;"></th>
-                </tr>
-            </thead>
-            <tbody id="body-table-my-events">
+        <div class="col">
+            <table id="table-my-events">
+                <thead>
+                    <tr>
+                        <th t="table-events-title" style="width:15%;">Title</th>
+                        <th t="table-events-description" style="width:20%;">Descripción</th>
+                        <th t="table-events-date-start" style="width:15%;">Inicio</th>
+                        <th t="table-events-date-finish" style="width:15%;">Finish</th>
+                        <th t="table-events-type-event" style="width:10%;">Type event</th>
+                        <th t="table-events-priority" style="width:5%;">Prioridad</th>
+                        <th t="table-events-ubication" style="width:10%;">Ubicación</th>
+                        <th style="width:5%;"></th>
+                        <th style="width:5%;"></th>
+                    </tr>
+                </thead>
+                <tbody id="body-table-my-events">
 
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </message-pop>
 

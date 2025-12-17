@@ -23,10 +23,9 @@ def get_credential_google_calendar(user):
 
         return creds
     except GoogleToken.DoesNotExist:
-        print(f"No se encontró token para el usuario {user}")
         return None
     except Exception as e:
-        print(f"Error obteniendo credenciales de Google Calendar: {e}")
+        print(f"Error when try get the token of Google calendar: {e}")
         return None
     
 from googleapiclient.discovery import build

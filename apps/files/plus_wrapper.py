@@ -52,6 +52,8 @@ class Plus:
                 return utc_datetime
         module = Plus._load_module('converDate')
         converted = module.convert_from_utc(utc_datetime, timezone_str)
+        return converted
+    
         if isinstance(converted, datetime):
             return converted.isoformat()
         
