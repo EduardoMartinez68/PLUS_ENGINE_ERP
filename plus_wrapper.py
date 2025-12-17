@@ -54,10 +54,6 @@ class Plus:
         converted = module.convert_from_utc(utc_datetime, timezone_str)
         return converted
     
-        if isinstance(converted, datetime):
-            return converted.isoformat()
-        
-        return converted  # If it is already a rope, we return it as is
 
     
     @staticmethod
@@ -65,7 +61,13 @@ class Plus:
         #this funtions is for transform the date example 2025-09-05T15:00:00-06:00 to lenguace human 
         #type=1 August 27, 2025 at 11:00 AM or type=2 27/06/2025 11:00AM
         module = Plus._load_module('converDate')
-        return module.format_date_to_text(date, type, language)
+
+        dateText=date
+        if isinstance(date, datetime):
+            dateText=date.isoformat()
+            
+        
+        return module.format_date_to_text(dateText, type, language)  # If it is already a rope, we return it as is
     
 
     def to_bool(value):
