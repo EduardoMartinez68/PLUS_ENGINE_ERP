@@ -5269,9 +5269,23 @@ function show_alert(type, title, description, readmoreText = '') {
   else if (type === 'error') iconEl.innerHTML = '<i class="fi fi-ss-times-hexagon"></i>';
   else iconEl.innerHTML = '';
 
+  //now we will see if the title is a text or have a structur of translate
+  //if have a struct now we will to get his information and his text
+  let titleStruct=null
+  if(Array.isArray(title)){
+    titleStruct=title[1] //here be the key that we will to remplace in the text example: {edward, 14, hi}
+    title=title[0] //is the text to translate exaple: app.label.text 
+  }
+
+  let descriptionStruct=null
+  if(Array.isArray(description)){
+    descriptionStruct=description[1]
+    description=description[0]
+  }
+
   //update the text that show the alert pop
-  titleEl.textContent = window.translate_text(title);
-  descEl.textContent = window.translate_text(description);
+  titleEl.textContent = window.translate_text(title, titleStruct);
+  descEl.textContent = window.translate_text(description, descriptionStruct);
   buttonsEl.innerHTML = '';
 
   //get the text of the buttons with the language that have the web. This is for update the text of all the button 
@@ -5332,12 +5346,20 @@ function show_notification(type = 'info', message = '', duration = 4000) {
     info: '<i class="fi fi-sr-info"></i>'
   };
 
+  //now we will see if the title is a text or have a structur of translate
+  //if have a struct now we will to get his information and his text
+  let messageStruct=[]
+  if(Array.isArray(message)){
+    messageStruct=message[1] //here be the key that we will to remplace in the text example: {edward, 14, hi}
+    message=message[0] //is the text to translate exaple: app.label.text 
+  }
+
   const alert = document.createElement('div');
   alert.style.zIndex = currentPopZIndex + 1;
   alert.className = `notification-alert ${type}`;
   alert.innerHTML = `
         <div class="icon">${icons[type] || icons['info']}</div>
-        <div class="message">${message}</div>
+        <div class="message">${window.translate_text(message, messageStruct)}</div>
         <button class="close-btn" onclick="this.parentElement.style.animation='slideOut 0.4s forwards'; setTimeout(()=>this.parentElement.remove(),400);">&times;</button>
     `;
 

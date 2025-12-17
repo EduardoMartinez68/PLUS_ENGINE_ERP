@@ -273,13 +273,50 @@ function t(key, listLanguage = LANG) {
   return listLanguage[key] || key;
 }
 
-function translate_text(key) {
+function applyKeys(text, keys) {
+  if (!keys) return text;
+
+  //if is a string we will to trasnformt this to a array
+  if (typeof keys === 'string') {
+    keys = [keys];
+  }
+
+  // if is an array → remplace the text ${} in order
+  if (Array.isArray(keys)) {
+    let i = 0;
+    return text.replace(/\$\{\}/g, () => keys[i++] ?? '');
+  }
+
+  // if is a object → ${name}
+  if (typeof keys === 'object') {
+    return text.replace(/\$\{(\w+)\}/g, (_, key) => {
+      return keys[key] ?? '';
+    });
+  }
+
+  return text;
+}
+
+function translate_text(labelKey, keys=null) {
+  /*
+   here we will to translate a text that the programer send 
+   labelKey: app.label.text (this is the key that we will use for know how translate a text)
+   keys: {"edward", "1", "2"} (this are the word that use for remplace the text of labelKey)
+
+   example:
+   app.label.text: "This is a example for ${}"
+   keys: {"you"}
+
+   the text translate be 'This is a example for you' this is only if 'keys' not is null
+  */
+
+
   // Check if the key exists in the provided listLanguage
   //if not exist in the listLanguage, we will return the key
-  let textTranslate=t(key); 
+  let textTranslate=t(labelKey); 
 
   // if we already found the work success, return the meaning
-  if (textTranslate !== key) return textTranslate;
+  if (textTranslate !== labelKey) return applyKeys(textTranslate, keys);
 
   //now if not found the work in the dictionary global, we will see if can translate the word with help of all the dictionary that exist in memory
   for (const infoDictionary of allTheDictionary) {
@@ -290,8 +327,8 @@ function translate_text(key) {
       break; 
     }
   }
-  
-  return textTranslate;
+
+  return applyKeys(textTranslate, keys);
 }
 
 //this functions is for translate the menu of the apps, this function is called when the user load the web or change the language

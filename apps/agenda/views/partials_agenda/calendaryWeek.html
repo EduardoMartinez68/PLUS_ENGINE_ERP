@@ -110,17 +110,15 @@
       left: 40px;
     }
   }
-*/
+  */
+
+
 
   @media (max-width: 768px) {
     .calendary-week-calendar {
-      /* Columna de Horas: 60px | Días: 7 columnas de 120px */
-      /* El ancho de 120px asegura mejor legibilidad, forzando el scroll */
       grid-template-columns: 60px repeat(7, 120px);
     }
-    /* ... resto de estilos de 768px ... */
     .calendary-week-current-hour-line {
-      /* Se mantiene el ancho de la línea roja correctamente */
       width: calc(100% - 60px);
       left: 60px;
     }
@@ -128,16 +126,14 @@
 
   @media (max-width: 480px) {
     .calendary-week-calendar {
-      /* Columna de Horas: 40px | Días: 7 columnas de 100px */
       grid-template-columns: 40px repeat(7, 100px);
     }
-    /* ... resto de estilos de 480px ... */
     .calendary-week-current-hour-line {
-      /* Se mantiene el ancho de la línea roja correctamente */
       width: calc(100% - 40px);
       left: 40px;
     }
   }
+  
   /*------------------------this is for skeleton loading effect------------------------------ */
 /* Skeleton shimmer animation */
 @keyframes shimmer {
@@ -183,7 +179,7 @@
   padding-left: 5%;
 }
 .container-div plus-actions {
-  padding-left: 60%;
+  padding-left: 50%;
 }
 
 .only-mobile {
@@ -210,11 +206,11 @@
 <div class="container-div only-mobile">
   <button
     id="button-show-calendary-month"
-    t="Month"
+    t="17/12/2025"
     icon="fi fi-sr-sort-down"
     class="btn-ghost"
     onclick="show_calendary_month(this)">
-    Month
+    17/12/2025
   </button>
   <plus-actions>
       <plus-action text="create-a-new-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
