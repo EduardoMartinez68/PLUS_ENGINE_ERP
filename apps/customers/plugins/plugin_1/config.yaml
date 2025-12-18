@@ -1,0 +1,8 @@
+name: "customers_plugin"
+pluginName: "Clientes Address"
+icon: "/customers/static/icon.webp"
+path: "/customers/plugin_1"
+dbInit: true
+permissionsFile: 'permissions.json'
+
+

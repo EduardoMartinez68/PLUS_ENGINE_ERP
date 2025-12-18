@@ -177,6 +177,42 @@ function restart_form(formId) {
   });
 }
 
+function valid_all_the_inputs_of_the_form(form) {
+    const inputs = form.querySelectorAll('input'); //get all the inputs of the form
+    let isValid = true;
+    let errors = [];
+
+    inputs.forEach(input => {
+        const valor = input.value.trim();
+        const nombre = input.getAttribute('name');
+
+        // 1. we will see if the input not is empty and is requested
+        if (input.hasAttribute('required') && valor === "") {
+            isValid = false;
+            errors.push(`El campo ${nombre} es obligatorio.`);
+            input.style.border = "2px solid red";
+        }
+
+        // 3. Check maximum length (Example: 5 characters)
+        const max = input.getAttribute('maxlength');
+        if (max && valor.length > parseInt(max)) {
+            isValid = false;
+            errors.push(`El campo ${nombre} no puede tener más de ${max} caracteres.`);
+        }
+
+        // 4. Check if it is a number type and contains invalid characters
+        if (input.type === 'number') {
+            // The value of an input number is "" if it contains letters in some browsers
+            if (isNaN(valor) || valor === "") {
+                isValid = false;
+                errors.push(`El campo ${nombre} debe ser un número válido.`);
+            }
+        }
+    });
+
+    return {success: isValid, errors: errors};
+}
+
 async function send_form_to_the_server(formId, url) {
   const form = document.getElementById(formId);
   if (!form) {
@@ -184,8 +220,15 @@ async function send_form_to_the_server(formId, url) {
     return;
   }
 
-  const data = formToJSON(form);
-  return await send_message_to_the_server(url, data)
+  //first we will see if the data of the form are valid 
+  const vForm=valid_all_the_inputs_of_the_form(form);
+  if(vForm.success){
+    const data = formToJSON(form);
+    return await send_message_to_the_server(url, data);
+  }
+
+  //else if the user not finish all the input that be required, we will to show a message of advertence 
+  return { success: false, error: vForm.errors };
 }
 
 //this function is for create a form that send the information to the server

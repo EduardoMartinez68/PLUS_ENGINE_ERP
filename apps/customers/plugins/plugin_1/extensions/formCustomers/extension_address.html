@@ -1,0 +1,39 @@
+<plus-extension extension_id="" extension_class="">
+    <input type="text" name="address">
+    <input type="text" name="city">
+    <input type="text" name="postal_code">
+</plus-extension>
+
+<button id="btn-recarga-1"></button>
+
+<script>
+//////ES IMPORTANTE QUE SIEMPRE EN LOS SCRIPTS DE LAS EXTENSIONES SE AGREGUE EL CODIGO DENTRO DE {} PARA ENCAPSULAR EL CODIGO DE LA EXTENSION////////////
+{ // <--- Inicio del bloque
+    const val = 1; // Esta variable solo vive aquí dentro
+
+    const abrirPopup = () => {
+        alert(val);
+    };
+
+    // Buscamos el botón y le asignamos la función manualmente
+    document.getElementById('btn-recarga-1').addEventListener('click', abrirPopup);
+
+
+
+
+    window.open_my_pop() // <--- Esto se usa cuando quiero usar una funcion global de la vista, una variable global de la vista o una funcion de PLUS
+} // <--- Fin del bloque. Fuera de aquí, "val" no existe.
+</script>
+
+
+<script type="module">
+    // Al ser type="module", este código ya está encapsulado automáticamente
+    const val = 1; 
+
+    document.getElementById('miBoton').addEventListener('click', () => {
+        alert(val);
+    });
+
+
+
+</script>
