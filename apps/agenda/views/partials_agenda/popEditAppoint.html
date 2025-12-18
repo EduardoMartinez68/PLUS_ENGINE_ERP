@@ -12,6 +12,17 @@
             </div>
 
             <div class="section">
+                <div class="row">
+                    <div class="col">
+                        <plus-select label="agenda.label.select-customer" name="customer" id="edit_customer"
+                            link="customers/customers_search/">
+                        </plus-select>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="section">
                 <plus-switch text="all-day" id="activate_event_all_the_day_edit" name="activate_event_all_the_day_edit" onclick="activate_event_all_the_day_edit"></plus-switch>
                 <label t="starts" style="margin-bottom: -24px; display: block;"></label>
                 <div class="row section">
@@ -244,6 +255,9 @@
             window.set_status_plus_switch('activate_event_all_the_day_edit',statusActivateAllTheDay);
             activate_event_all_the_day_edit(statusActivateAllTheDay);
 
+
+            
+            window.set_value_plus_select('edit_customer', dataAppoints.customer_id, dataAppoints.customer)
             window.update_input_date_and_time('start_date_edit','start_time_edit',date_start)
             window.update_input_date_and_time('end_date_edit','end_time_edit',date_finish)
             window.set_value_plus_select('alert_time_edit', dataAppoints.time_alert || '0');

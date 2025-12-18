@@ -68,10 +68,15 @@ def customers_search(request):
     if request.method == "GET":
         #we will to check if this user have this permission
         if Plus.this_user_have_this_permission(request.user, 'view_customer'):
+            query = request.GET.get("query", None)
             all_filters = request.GET.get("allFilters", "")
             values = all_filters.split(",")
 
-            search = values[0] if len(values) > 0 else ""
+            if query:
+                search = query
+            else:
+                search = values[0] if len(values) > 0 else query
+
             customer_type = request.GET.get("customer_type")
             source = request.GET.get("source")
             priority = values[1] if len(values) > 1 else None

@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from ..services.calendary import create_new_appointment
 from ..services.google import get_credential_google_calendar, delete_event_in_google_calendar, update_event_in_google_calendar, crear_evento_google, obtener_eventos_google, get_appoint_from_google_with_id, get_appoints_from_google_with_title
 from django.utils.timezone import  make_aware, is_naive, get_default_timezone
+from apps.customers.models import Customer
 from dateutil.relativedelta import relativedelta
 from django.utils.timezone import localtime
 from dateutil import parser as ps
@@ -107,8 +108,9 @@ def create_event(request):
             i_am_free = body_json.get("i_am_free") == "on"  # True/False
             
             id_type_appoint = body_json.get("type_event", None) #get the id of the type of event
-    
             
+            customer_id=body_json.get("customer", None)
+            customer = Customer.objects.get(id=customer_id)
             #first here we will see if the user added a name to the event
             if not titleEvent:
                 return JsonResponse({'success': False, 'message': 'message.error.need-a-name-for-your-event'}, status=200)
@@ -154,6 +156,7 @@ def create_event(request):
                     i_am_free=i_am_free,
                     id_type_appoint_id=id_type_appoint, 
                     id_event_in_google_calendar=id_event_in_google_calendar,
+                    customer=customer,
                     user=user
                 )
     
@@ -232,8 +235,9 @@ def create_event(request):
             i_am_free = body_json.get("i_am_free") == "on"  # True/False
             
             id_type_appoint = body_json.get("type_event", None) #get the id of the type of event
-    
             
+            customer_id=body_json.get("customer", None)
+            customer = Customer.objects.get(id=customer_id)
             #first here we will see if the user added a name to the event
             if not titleEvent:
                 return JsonResponse({'success': False, 'message': 'message.error.need-a-name-for-your-event'}, status=200)
@@ -279,6 +283,7 @@ def create_event(request):
                     i_am_free=i_am_free,
                     id_type_appoint_id=id_type_appoint, 
                     id_event_in_google_calendar=id_event_in_google_calendar,
+                    customer=customer,
                     user=user
                 )
     
@@ -821,6 +826,8 @@ def get_appointment_by_id(request):
                 'finish_repeat_date': e.finish_repeat_date.isoformat() if e.finish_repeat_date else None,
                 'send_notification': e.send_notification,
                 'i_am_free': e.i_am_free,
+                'customer_id':e.customer.id,
+                'customer':e.customer.name,
                 'type_appoint': {
                     'id': e.id_type_appoint.id if e.id_type_appoint else None,
                     'name': e.id_type_appoint.name if e.id_type_appoint else None,
@@ -893,6 +900,8 @@ def get_appointment_by_id(request):
                 'finish_repeat_date': e.finish_repeat_date.isoformat() if e.finish_repeat_date else None,
                 'send_notification': e.send_notification,
                 'i_am_free': e.i_am_free,
+                'customer_id':e.customer.id,
+                'customer':e.customer.name,
                 'type_appoint': {
                     'id': e.id_type_appoint.id if e.id_type_appoint else None,
                     'name': e.id_type_appoint.name if e.id_type_appoint else None,
@@ -1199,7 +1208,8 @@ def edit_event(request):
             i_am_free = body_json.get("i_am_free") == "on"  # True/False
             
             id_type_appoint = body_json.get("type_event", None) #get the id of the type of event
-    
+            customer_id=body_json.get("customer", None)
+            customer = Customer.objects.get(id=customer_id)
             
             #first here we will see if the user added a name to the event
             if not titleEvent:
@@ -1239,6 +1249,7 @@ def edit_event(request):
                 appointment.finish_repeat_date = date_end_repeat if date_end_repeat else None
                 appointment.send_notification = send_notification
                 appointment.i_am_free = i_am_free
+                appointment.customer=customer
                 appointment.id_type_appoint_id = id_type_appoint
                 appointment.save()
     
@@ -1335,7 +1346,8 @@ def edit_event(request):
             i_am_free = body_json.get("i_am_free") == "on"  # True/False
             
             id_type_appoint = body_json.get("type_event", None) #get the id of the type of event
-    
+            customer_id=body_json.get("customer", None)
+            customer = Customer.objects.get(id=customer_id)
             
             #first here we will see if the user added a name to the event
             if not titleEvent:
@@ -1375,6 +1387,7 @@ def edit_event(request):
                 appointment.finish_repeat_date = date_end_repeat if date_end_repeat else None
                 appointment.send_notification = send_notification
                 appointment.i_am_free = i_am_free
+                appointment.customer=customer
                 appointment.id_type_appoint_id = id_type_appoint
                 appointment.save()
     
