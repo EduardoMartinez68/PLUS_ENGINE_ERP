@@ -199,8 +199,7 @@ td, th {
     })();
 
 
-    function get_number_tooth(id) {
-
+    function get_number_tooth_periodontogram(id) {
       //first we will see if the patient is a kid
       if (window.typeThooth == 1) {
         if (window.typeOdontogram.typeSystem == 1) {
@@ -244,14 +243,14 @@ td, th {
 
             //here is the name of the tooth. ALSO EXIST A ERROR HERE
             if(startTooth<window.numTooth){
-                th.textContent = get_number_tooth(i);
+                th.textContent = get_number_tooth_periodontogram(i);
             }else{
                 if(window.typeThooth==1){
                     //if the patient is a kid we will to get the number of the tooth for kids
-                    th.textContent = get_number_tooth(20 - i + 1);
+                    th.textContent = get_number_tooth_periodontogram(20 - i + 1);
                 }else{
                     //if the patient is an adult we will to get the number of the tooth for adults
-                    th.textContent = get_number_tooth(32 - i + 1);
+                    th.textContent = get_number_tooth_periodontogram(32 - i + 1);
                 }
             }
 
