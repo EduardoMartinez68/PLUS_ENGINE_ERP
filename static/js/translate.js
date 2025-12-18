@@ -273,6 +273,16 @@ function t(key, listLanguage = LANG) {
   return listLanguage[key] || key;
 }
 
+function has_valid_array_data(arr) {
+  return Array.isArray(arr) &&
+    arr.some(
+      v =>
+        v !== null &&
+        v !== undefined &&
+        (typeof v !== 'string' || v.trim() !== '')
+    );
+}
+
 function applyKeys(text, keys) {
   if (!keys) return text;
 
@@ -283,11 +293,12 @@ function applyKeys(text, keys) {
 
   // if is an array → remplace the text ${} in order
   if (Array.isArray(keys)) {
+    if (!has_valid_array_data(keys)) return text; //if not have nothing in the array
     let i = 0;
     return text.replace(/\$\{\}/g, () => keys[i++] ?? '');
   }
 
-  // if is a object → ${name}
+  // if it is a object → ${name}
   if (typeof keys === 'object') {
     return text.replace(/\$\{(\w+)\}/g, (_, key) => {
       return keys[key] ?? '';
@@ -308,6 +319,19 @@ function translate_text(labelKey, keys=null) {
    keys: {"you"}
 
    the text translate be 'This is a example for you' this is only if 'keys' not is null
+  translate_text(
+    'app.example',
+    { name: 'Edward', count: 3 }
+  );
+  "Hello ${name}, you have ${count} messages"  -> "Hello Edward, you have 3 messages"
+
+  translate_text(
+    'app.example',
+    ['Edward', 3]
+  );
+  "Hello ${}, you have ${} messages"  -> "Hello Edward, you have 3 messages"
+
+  -> show_alert('success', ['Hello ${name}, you have ${count} messages', { name: 'Edward', count: 3 }], ['Hello ${}, you have ${} messages', ['Edward', 3 ]])
   */
 
 

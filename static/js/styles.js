@@ -1024,6 +1024,26 @@ class ConfirmDialog {
   }
 }
 
+function get_text_and_keys(struct){
+  let text = ''; //is the text to translate exaple: app.label.text 
+  let keys = null; //here be the key that we will to remplace in the text. example: { name: 'Edward', count: 3 } or ['Edward', 3]
+  
+
+  if (typeof struct === 'string') {
+    text = struct;
+
+  } else if (Array.isArray(struct)) {
+    text = struct[0];
+    keys = struct[1];
+
+  } else if (typeof struct === 'object' && struct !== null) {
+    text = struct.text;
+    keys = struct.keys;
+  }
+
+  return { text, keys };
+}
+
 async function show_message_question(title, message) {
   currentPopZIndex += 1
 
@@ -1040,7 +1060,12 @@ async function show_message_question(title, message) {
     appMenu.style.zIndex = 1000;
   }
 
-  const result = await ConfirmDialog.show(window.translate_text(title), window.translate_text(message));
+  //Here we will to see if the programmer have a struct in the text
+  //-> show_message_question(['Hello ${name}, you have ${count} messages', { name: 'Edward', count: 3 }], ['Hello ${}, you have ${} messages', ['Edward', 3 ]])
+  let titleStruct=get_text_and_keys(title);
+  let messageStruct=get_text_and_keys(message);
+
+  const result = await ConfirmDialog.show(window.translate_text(titleStruct.text, titleStruct.keys), window.translate_text(messageStruct.text, messageStruct.keys));
   return result;
 }
 
@@ -5271,21 +5296,13 @@ function show_alert(type, title, description, readmoreText = '') {
 
   //now we will see if the title is a text or have a structur of translate
   //if have a struct now we will to get his information and his text
-  let titleStruct=null
-  if(Array.isArray(title)){
-    titleStruct=title[1] //here be the key that we will to remplace in the text example: {edward, 14, hi}
-    title=title[0] //is the text to translate exaple: app.label.text 
-  }
-
-  let descriptionStruct=null
-  if(Array.isArray(description)){
-    descriptionStruct=description[1]
-    description=description[0]
-  }
+  //-> show_alert('success', ['Hello ${name}, you have ${count} messages', { name: 'Edward', count: 3 }], ['Hello ${}, you have ${} messages', ['Edward', 3 ]])
+  let titleStruct=get_text_and_keys(title);
+  let descriptionStruct=get_text_and_keys(description)
 
   //update the text that show the alert pop
-  titleEl.textContent = window.translate_text(title, titleStruct);
-  descEl.textContent = window.translate_text(description, descriptionStruct);
+  titleEl.textContent = window.translate_text(titleStruct.text, titleStruct.keys);
+  descEl.textContent = window.translate_text(descriptionStruct.text, descriptionStruct.keys);
   buttonsEl.innerHTML = '';
 
   //get the text of the buttons with the language that have the web. This is for update the text of all the button 
@@ -5348,18 +5365,14 @@ function show_notification(type = 'info', message = '', duration = 4000) {
 
   //now we will see if the title is a text or have a structur of translate
   //if have a struct now we will to get his information and his text
-  let messageStruct=[]
-  if(Array.isArray(message)){
-    messageStruct=message[1] //here be the key that we will to remplace in the text example: {edward, 14, hi}
-    message=message[0] //is the text to translate exaple: app.label.text 
-  }
+  let messageStruct=get_text_and_keys(message);
 
   const alert = document.createElement('div');
   alert.style.zIndex = currentPopZIndex + 1;
   alert.className = `notification-alert ${type}`;
   alert.innerHTML = `
         <div class="icon">${icons[type] || icons['info']}</div>
-        <div class="message">${window.translate_text(message, messageStruct)}</div>
+        <div class="message">${window.translate_text(messageStruct.text, messageStruct.keys)}</div>
         <button class="close-btn" onclick="this.parentElement.style.animation='slideOut 0.4s forwards'; setTimeout(()=>this.parentElement.remove(),400);">&times;</button>
     `;
 
