@@ -110,7 +110,11 @@ def create_event(request):
             id_type_appoint = body_json.get("type_event", None) #get the id of the type of event
             
             customer_id=body_json.get("customer", None)
-            customer = Customer.objects.get(id=customer_id)
+            if customer_id in ("", None):
+                customer = None
+            else:
+                customer = Customer.objects.filter(pk=customer_id).first()
+    
             #first here we will see if the user added a name to the event
             if not titleEvent:
                 return JsonResponse({'success': False, 'message': 'message.error.need-a-name-for-your-event'}, status=200)
@@ -237,7 +241,11 @@ def create_event(request):
             id_type_appoint = body_json.get("type_event", None) #get the id of the type of event
             
             customer_id=body_json.get("customer", None)
-            customer = Customer.objects.get(id=customer_id)
+            if customer_id in ("", None):
+                customer = None
+            else:
+                customer = Customer.objects.filter(pk=customer_id).first()
+    
             #first here we will see if the user added a name to the event
             if not titleEvent:
                 return JsonResponse({'success': False, 'message': 'message.error.need-a-name-for-your-event'}, status=200)
@@ -826,8 +834,10 @@ def get_appointment_by_id(request):
                 'finish_repeat_date': e.finish_repeat_date.isoformat() if e.finish_repeat_date else None,
                 'send_notification': e.send_notification,
                 'i_am_free': e.i_am_free,
-                'customer_id':e.customer.id,
-                'customer':e.customer.name,
+                'customer': {
+                    'id': e.customer.id if e.customer else None,
+                    'name': e.customer.name if e.customer else None,
+                },
                 'type_appoint': {
                     'id': e.id_type_appoint.id if e.id_type_appoint else None,
                     'name': e.id_type_appoint.name if e.id_type_appoint else None,
@@ -900,8 +910,10 @@ def get_appointment_by_id(request):
                 'finish_repeat_date': e.finish_repeat_date.isoformat() if e.finish_repeat_date else None,
                 'send_notification': e.send_notification,
                 'i_am_free': e.i_am_free,
-                'customer_id':e.customer.id,
-                'customer':e.customer.name,
+                'customer': {
+                    'id': e.customer.id if e.customer else None,
+                    'name': e.customer.name if e.customer else None,
+                },
                 'type_appoint': {
                     'id': e.id_type_appoint.id if e.id_type_appoint else None,
                     'name': e.id_type_appoint.name if e.id_type_appoint else None,
@@ -1209,7 +1221,10 @@ def edit_event(request):
             
             id_type_appoint = body_json.get("type_event", None) #get the id of the type of event
             customer_id=body_json.get("customer", None)
-            customer = Customer.objects.get(id=customer_id)
+            if customer_id in ("", None):
+                customer = None
+            else:
+                customer = Customer.objects.filter(pk=customer_id).first()
             
             #first here we will see if the user added a name to the event
             if not titleEvent:
@@ -1347,7 +1362,10 @@ def edit_event(request):
             
             id_type_appoint = body_json.get("type_event", None) #get the id of the type of event
             customer_id=body_json.get("customer", None)
-            customer = Customer.objects.get(id=customer_id)
+            if customer_id in ("", None):
+                customer = None
+            else:
+                customer = Customer.objects.filter(pk=customer_id).first()
             
             #first here we will see if the user added a name to the event
             if not titleEvent:

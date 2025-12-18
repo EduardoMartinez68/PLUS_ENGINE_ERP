@@ -256,8 +256,8 @@
             activate_event_all_the_day_edit(statusActivateAllTheDay);
 
 
-            
-            window.set_value_plus_select('edit_customer', dataAppoints.customer_id, dataAppoints.customer)
+            const customer=dataAppoints.customer;
+            window.set_value_plus_select('edit_customer', customer.id, customer.name)
             window.update_input_date_and_time('start_date_edit','start_time_edit',date_start)
             window.update_input_date_and_time('end_date_edit','end_time_edit',date_finish)
             window.set_value_plus_select('alert_time_edit', dataAppoints.time_alert || '0');
