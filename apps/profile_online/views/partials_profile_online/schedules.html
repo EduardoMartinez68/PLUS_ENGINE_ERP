@@ -1,0 +1,193 @@
+<style>
+    .day-row {
+        display: grid;
+        grid-template-columns: 120px 1fr 1fr 80px;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid #edf1f5;
+    }
+
+    .day-row:last-child {
+        border-bottom: none;
+    }
+
+    .day-name {
+        font-weight: 500;
+        color: #0b63ce;
+    }
+
+    .closed-label {
+        text-align: center;
+        font-size: 13px;
+        color: #a0a9b4;
+    }
+
+    @media (max-width: 768px) {
+    .day-row {
+        grid-template-columns: 1fr 1fr; 
+        grid-template-areas:
+        "day day"
+        "open close"
+        "check check";
+        gap: 8px;
+        padding: 12px 0;
+    }
+
+    .day-name {
+        grid-area: day;
+        font-size: 1em;
+        color: #0b63ce;
+    }
+
+    .day-row input[type="checkbox"] {
+        grid-area: check;
+        justify-self: end;
+        transform: scale(1.3); 
+    }
+    }
+
+    @media (max-width: 480px) {
+    .day-row {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+        "day"
+        "open"
+        "close"
+        "check";
+    }
+
+    .day-row input[type="checkbox"] {
+        justify-self: start;
+        transform: scale(1.2);
+    }
+
+    .day-name {
+        text-align: left;
+    }
+    }
+</style>
+
+<label for="" t="setting.module.schedule" icon="fi fi-rr-clock-three"></label>
+<hr>
+<form id="form_schedule">
+<div class="container-section section">
+
+    <div class="day-row">
+        <div class="day-name">Lunes</div>
+        <plus-time name="monday_open" value="{{ schedule.monday_open }}" id="monday_open"></plus-time>
+        <plus-time name="monday_close" value="{{ schedule.monday_close }}" id="monday_close"></plus-time>
+        <input type="checkbox" name="monday_closed" id="monday_closed" {% if schedule.monday_closed %}checked{% endif %}  onclick="activate_check('monday', this)">
+    </div>
+
+    <div class="day-row">
+        <div class="day-name">Martes</div>
+        <plus-time name="tuesday_open" value="{{ schedule.tuesday_open }}" id="tuesday_open"></plus-time>
+        <plus-time name="tuesday_close" value="{{ schedule.tuesday_close }}" id="tuesday_close"></plus-time>
+        <input type="checkbox" name="tuesday_closed" id="tuesday_closed" {% if schedule.tuesday_closed %}checked{% endif %}  onclick="activate_check('tuesday', this)">
+    </div>
+
+    <div class="day-row">
+        <div class="day-name">Miércoles</div>
+        <plus-time name="wednesday_open" value="{{ schedule.wednesday_open }}" id="wednesday_open"></plus-time>
+        <plus-time name="wednesday_close" value="{{ schedule.wednesday_close }}" id="wednesday_close"></plus-time>
+        <input type="checkbox" name="wednesday_closed" id="wednesday_closed" {% if schedule.wednesday_closed %}checked{% endif %}  onclick="activate_check('wednesday', this)">
+    </div>
+
+    <div class="day-row">
+        <div class="day-name">Jueves</div>
+        <plus-time name="thursday_open" value="{{ schedule.thursday_open }}" id="thursday_open"></plus-time>
+        <plus-time name="thursday_close" value="{{ schedule.thursday_close }}" id="thursday_close"></plus-time>
+        <input type="checkbox" name="thursday_closed" id="thursday_closed" {% if schedule.thursday_closed %}checked{% endif %}  onclick="activate_check('thursday', this)">
+    </div>
+
+    <div class="day-row">
+        <div class="day-name">Viernes</div>
+        <plus-time name="friday_open" value="{{ schedule.friday_open }}" id="friday_open"></plus-time>
+        <plus-time name="friday_close" value="{{ schedule.friday_close }}" id="friday_close"></plus-time>
+        <input type="checkbox" name="friday_closed" id="friday_closed" {% if schedule.friday_closed %}checked{% endif %}  onclick="activate_check('friday', this)">
+    </div>
+
+    <div class="day-row">
+        <div class="day-name">Sábado</div>
+        <plus-time name="saturday_open" value="{{ schedule.saturday_open }}" id="saturday_open"></plus-time>
+        <plus-time name="saturday_close" value="{{ schedule.saturday_close }}" id="saturday_close"></plus-time>
+        <input type="checkbox" name="saturday_closed" id="saturday_closed" {% if schedule.saturday_closed %}checked{% endif %} onclick="activate_check('saturday', this)">
+    </div>
+
+    <div class="day-row">
+        <div class="day-name">Domingo</div>
+        <plus-time name="sunday_open" value="{{ schedule.sunday_open }}" id="sunday_open"></plus-time>
+        <plus-time name="sunday_close" value="{{ schedule.sunday_close }}" id="sunday_close"></plus-time>
+        <input type="checkbox" name="sunday_closed" id="sunday_closed" {% if schedule.sunday_closed %}checked{% endif %} onclick="activate_check('sunday', this)">
+    </div>
+
+</div>
+
+    <br>
+    <button class="btn btn-edit btn-success" t="btn.save" type="button" onclick="send_form_schedule_branch()"></button>
+</form>
+
+
+<script>
+
+    (()=>{
+        const defaultOpen = "07:00";
+        const defaultClose = "15:00";
+        const closedTime = "00:00";
+
+        function activate_check(key, checkbox){
+            toggleDayInputs(key, checkbox.checked);
+        }   
+
+        function toggleDayInputs(dayKey, isChecked) {
+            if (!isChecked) {
+                window.change_plus_time(`${dayKey}_open`,closedTime)
+                window.change_plus_time(`${dayKey}_close`,closedTime)
+
+                const pt1 = document.getElementById(`${dayKey}_open`); 
+                pt1.disable(); 
+                const pt2 = document.getElementById(`${dayKey}_close`); 
+                pt2.disable(); 
+            } else {
+                const pt1 = document.getElementById(`${dayKey}_open`); 
+                pt1.enable(defaultOpen);
+                const pt2 = document.getElementById(`${dayKey}_close`); 
+                pt2.enable(defaultClose);
+            }
+        }
+
+        //this is for that when the store is close, for default the input be 00:00
+        window.activate_check=activate_check;
+        ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].forEach(dayKey => {
+            const checkbox = document.getElementById(`${dayKey}_closed`);
+            if(!checkbox.checked){
+                window.change_plus_time(`${dayKey}_open`,closedTime);
+                window.change_plus_time(`${dayKey}_close`,closedTime);
+
+
+                const pt1 = document.getElementById(`${dayKey}_open`); 
+                pt1.disable(); 
+                const pt2 = document.getElementById(`${dayKey}_close`); 
+                pt2.disable(); 
+            }
+        });
+    })();
+
+
+
+    //this is for save the schedule of the branch
+    async function send_form_schedule_branch() {
+        //if all is success, now we will send the form
+        const result = await send_form_to_the_server('form_schedule', 'setting/view_update_schedule/');
+        if (result.success) {
+            show_notification('success', result.message || 'info.info-send-with-success');
+        } else {
+            show_alert(
+                'Error',
+                result.message || 'info.not-was-can-send-the-information',
+                result.error || 'info.not-was-can-send-the-information'
+            );
+        }
+    }
+</script>

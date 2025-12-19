@@ -1,0 +1,45 @@
+<div class="container-section">
+
+    <form id="form_profile_online">
+
+        <plus-switch
+            name="is_main"
+            value="true"
+            text="web_profile.label.show_address">
+        </plus-switch>
+
+        <div class="row section">
+            <div class="col">
+                <input-field
+                    label="web_profile.label.address"
+                    placeholder="web_profile.placeholder.address"
+                    name="address"
+                >
+                </input-field>
+            </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+                <input-field
+                    label="web_profile.label.google_maps_url"
+                    placeholder="web_profile.placeholder.google_maps_url"
+                    name="google_maps_url"
+                >
+                </input-field>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <button
+                    class="btn btn-success btn-edit"
+                    t="btn.update"
+                    type="button"
+                    onclick="send_form_profile_online()">
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>

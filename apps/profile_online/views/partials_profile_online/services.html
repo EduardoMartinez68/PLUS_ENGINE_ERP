@@ -4,20 +4,46 @@
         <div class="row section">
             <div class="col">
                 <plus-title
-                    label="setting.label.add_specialty"
-                    placeholder="setting.placeholder.select_specialty"
+                    label="profile_online.label.name-specialty"
+                    placeholder="profile_online.placeholder.name-specialty"
+                    required
+                    name="name"
                 ></plus-title>
             </div>
         </div>
 
         <div class="row section">
             <div class="col">
-                <select-field
-                    name="specialty_id"
-                    id="specialty_id"
-                ></select-field>
+                <input-field
+                    label="profile_online.label.price-specialty"
+                    placeholder="profile_online.placeholder.price-specialty"
+                    name="price"
+                    type="number"
+                ></input-field>
+            </div>
+            <div class="col">
+                <plus-select value="mxn" label="profile_online.label.currency-specialty" name="currency">
+                    <option value="mxn" t="mxn"></option>
+                </plus-select>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col">
+                <plus-switch text="profile_online.label.the_specialty_is_activate" value="true" name="is_active"></plus-switch>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col">
+                <input-field
+                    label="profile_online.label.orden"
+                    placeholder="profile_online.placeholder.orden"
+                    name="order"
+                    type="number"
+                ></input-field>
+            </div>
+        </div>
+
 
         <button
             type="button"

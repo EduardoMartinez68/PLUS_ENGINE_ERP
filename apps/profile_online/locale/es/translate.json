@@ -1,6 +1,8 @@
 {
     "web_profile.module.profile": "Perfil",
     "web_profile.module.services": "Servicios",
+    "web_profile.module.schedules":"Horarios",
+    "web_profile.module.address":"Direccion",
 
     "web_profile.label.see_my_profile":"Ver mi portafolio público",
     "web_profile.label.public_slug": "Enlace público de tu perfil",
@@ -25,5 +27,25 @@
     "web_profile.label.about":"Escribe una descripcion sobre ti",
     "web_profile.placeholder.about":"Descripcion",
     "web_profile.label.profile_image":"Foto de perfil",
-    "web_profile.label.cover_image":"Foto de portada"
+    "web_profile.label.cover_image":"Foto de portada",
+
+
+    "profile_online.label.name-specialty":"Nombre del servicio *",
+    "profile_online.placeholder.name-specialty":"Escribe el nombre del servicio que ofreces",
+    "profile_online.label.price-specialty":"Precio del servicio *",
+    "profile_online.placeholder.price-specialty":"Ej. 50",
+    "profile_online.label.currency-specialty":"Moneda",
+
+    "profile_online.label.the_specialty_is_activate":"Servicio activado",
+
+    "profile_online.label.orden":"Orden en el que se mostrara",
+    "profile_online.placeholder.orden":"Ej. 1",
+
+
+    "web_profile.label.show_address":"Mostrar Direccion en la web",
+    "web_profile.label.address":"Direccion Fisica",
+    "web_profile.placeholder.address":"Ej. Av Plaza Ciudad.",
+    "web_profile.label.google_maps_url":"Pega la URL de google maps",
+    "web_profile.placeholder.google_maps_url":"Ej. www.google.com/maps/TU_NEGOCIO/"
+    
 }
