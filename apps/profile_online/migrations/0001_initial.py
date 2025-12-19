@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
                 ('currency', models.CharField(default='MXN', max_length=3)),
                 ('is_active', models.BooleanField(default=True)),
                 ('order', models.PositiveIntegerField(default=0)),
-                ('profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='services', to='web_profile.publicprofile')),
+                ('profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='services', to='profile_online.publicprofile')),
             ],
         ),
         migrations.CreateModel(
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
                 ('start_time', models.TimeField()),
                 ('end_time', models.TimeField()),
                 ('note', models.CharField(blank=True, max_length=255, null=True)),
-                ('profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='schedules', to='web_profile.publicprofile')),
+                ('profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='schedules', to='profile_online.publicprofile')),
             ],
             options={
                 'ordering': ['day_of_week', 'start_time'],
@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
                 ('comment', models.TextField()),
                 ('is_approved', models.BooleanField(default=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reviews', to='web_profile.publicprofile')),
+                ('profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reviews', to='profile_online.publicprofile')),
             ],
             options={
                 'ordering': ['-created_at'],
@@ -82,11 +82,11 @@ class Migration(migrations.Migration):
                 ('longitude', models.DecimalField(blank=True, decimal_places=6, max_digits=9, null=True)),
                 ('google_maps_url', models.URLField(blank=True, null=True)),
                 ('is_main', models.BooleanField(default=False)),
-                ('profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='locations', to='web_profile.publicprofile')),
+                ('profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='locations', to='profile_online.publicprofile')),
             ],
         ),
         migrations.AddIndex(
             model_name='publicprofile',
-            index=models.Index(fields=['is_public'], name='web_profile_is_publ_7614b5_idx'),
+            index=models.Index(fields=['is_public'], name='profile_online_is_publ_7614b5_idx'),
         ),
     ]
