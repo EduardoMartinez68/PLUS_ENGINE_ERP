@@ -1,3 +1,34 @@
+
+
+<script>
+    (()=>{
+        async function get_information_profile(){
+            //if the information not is null is beacause already get the information of the server
+            if(window.infoProfile) return infoProfile;
+
+            //if the information is null, here will to try get the information of the server
+            const backend=await window.send_message_to_the_server(`profile_online/get_information_of_profile_online/`, {}, true, 'GET');
+
+            //we will see if we can add the new customer
+            if (backend.success) {
+                window.infoProfile=backend.answer; //here we will to update the variable global that the programmer can use in the partials
+            } else {
+                show_alert('alert', 'Error', backend.message || '', (backend.error || ''));
+                return{
+                    profile:{},
+                    services:{},
+                    schedules:{},
+                    locations:{},
+                    reviews:{}
+                };
+            }
+        }
+
+        window.infoProfile=null;
+        window.get_information_profile=get_information_profile;
+    })();
+</script>
+
 <plus-modules>
     <plus-module name="web_profile.module.profile" desc="" icon="fi fi-rr-user">
         {% include 'partials_profile_online/info_profile.html' %}
@@ -15,3 +46,5 @@
         {% include 'partials_profile_online/comment.html' %}
     </plus-module>
 </plus-modules>
+
+

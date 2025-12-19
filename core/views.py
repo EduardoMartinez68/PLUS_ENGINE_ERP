@@ -221,12 +221,58 @@ def login_view(request):
 
 #---------------------------------------------------------------HERE WE WILL TO CREATE THE WEB PUBLIC---------------------
 from django.shortcuts import get_object_or_404, render
-from .models import CustomUser
 def view_profile(request, slug):
-    user = get_object_or_404(
-        CustomUser,
-        public_slug=slug,
-        is_public=True
+    from apps.profile_online.models import PublicProfile
+
+    from apps.profile_online.models import PublicProfile
+
+    profile = (
+        PublicProfile.objects
+        .select_related("user")
+        .prefetch_related(
+            "services",
+            "schedules",
+            "locations",
+            "reviews",
+        )
+        .filter(
+            public_slug=slug,
+            is_public=True
+        )
+        .first()
     )
 
-    return render(request,"webs/profile.html",{"user": user})
+    # if the profile not exist now we will to render a web of error
+    if not profile:
+        return render(
+            request,
+            "webs/profile_not_available.html",
+            status=404  # SEO-friendly
+        )
+
+    # address
+    main_location = next(
+        (loc for loc in profile.locations.all() if loc.is_main),
+        None
+    )
+
+
+    #here we will to see that picture use 
+    DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/2716/2716038.png"
+    avatar_url = DEFAULT_AVATAR
+    if profile.profile_image:
+        avatar_url = profile.profile_image.url
+    elif hasattr(profile.user, "avatar") and profile.user.avatar:
+        avatar_url = profile.user.avatar.url
+
+
+    context = {
+        "profile": profile,
+        "avatar_url": avatar_url,
+        "main_location": main_location,
+        "services": profile.services.filter(is_active=True).order_by("order"),
+        "schedules": profile.schedules.all(),
+        "reviews": profile.reviews.filter(is_approved=True),
+    }
+
+    return render(request, "webs/profile.html", context)

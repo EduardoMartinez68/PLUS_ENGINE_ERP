@@ -51,5 +51,9 @@
     
 
     "web_profile.button.see-in-google-maps":"Ver en Google Maps",
-    "web_profile.button.create-link-google-maps":"Crear URL de Google Maps"
+    "web_profile.button.create-link-google-maps":"Crear URL de Google Maps",
+
+
+    "profile_online.error.not-exit-information":"No existe information de tu perfil online",
+    "profile_online.success.information-of-the-profle-update":"Perfil actualizado con exito"
 }
