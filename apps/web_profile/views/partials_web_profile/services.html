@@ -1,0 +1,30 @@
+<div class="container-section">
+    <form id="form_add_specialty">
+
+        <div class="row section">
+            <div class="col">
+                <plus-title
+                    label="setting.label.add_specialty"
+                    placeholder="setting.placeholder.select_specialty"
+                ></plus-title>
+            </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+                <select-field
+                    name="specialty_id"
+                    id="specialty_id"
+                ></select-field>
+            </div>
+        </div>
+
+        <button
+            type="button"
+            class="btn btn-success btn-edit"
+            t="btn.add"
+            onclick="addSpecialtyToProfile()"
+        ></button>
+
+    </form>
+</div>

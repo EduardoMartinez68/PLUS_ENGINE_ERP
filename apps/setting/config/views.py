@@ -1,7 +1,7 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
 from ..services.billingData import update_branch_billing_data, get_branch_billing_data
-from ..services.user import update_user
+from ..services.user import update_user, update_slug_user
 from ..services.branch import update_branch
 from ..services.company import update_company
 from ..services.schedule import get_branch_schedule_all
@@ -594,4 +594,51 @@ def whatsapp_callback(request):
     
         # 4. Redirect the user
         return redirect("/setting/setting_home/")
+
+@login_required(login_url='login')
+def view_update_profile_user(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != "POST":
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": "method not success"}, 
+                status=400
+            )  
+            
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )
+        
+        result=update_slug_user(request.user, data)
+        return JsonResponse({
+            "success": result.get('success',False),
+            "answer": result.get('answer',''),
+            "message": result.get('message',''),
+            "error": result.get('error',"")
+        }, status=200)   
+    else:
+        if request.method != "POST":
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": "method not success"}, 
+                status=400
+            )  
+            
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )
+        
+        result=update_slug_user(request.user, data)
+        return JsonResponse({
+            "success": result.get('success',False),
+            "answer": result.get('answer',''),
+            "message": result.get('message',''),
+            "error": result.get('error',"")
+        }, status=200)   
 

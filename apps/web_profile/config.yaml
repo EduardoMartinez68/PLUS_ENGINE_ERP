@@ -1,0 +1,8 @@
+
+name: "web_profile"
+appName: "web_profile"
+icon: "web_profile/icon.webp"
+path: "/web_profile"
+dbInit: true
+permissionsFile: 'permissions.json'
+    

@@ -109,7 +109,7 @@ def view_update_branch(request):
 
 
 
-from ..services.user import update_user
+from ..services.user import update_user, update_slug_user
 def view_update_setting_user(request):
     if request.method != "POST":
         return JsonResponse(
@@ -312,3 +312,28 @@ def whatsapp_callback(request):
 
     # 4. Redirect the user
     return redirect("/setting/setting_home/")
+
+
+
+def view_update_profile_user(request):
+    if request.method != "POST":
+        return JsonResponse(
+            {"success": False, "answer": "Invalid JSON", "error": "method not success"}, 
+            status=400
+        )  
+        
+    try:
+        data = json.loads(request.body)
+    except Exception as e:
+        return JsonResponse(
+            {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+            status=400
+        )
+    
+    result=update_slug_user(request.user, data)
+    return JsonResponse({
+        "success": result.get('success',False),
+        "answer": result.get('answer',''),
+        "message": result.get('message',''),
+        "error": result.get('error',"")
+    }, status=200)   

@@ -1,0 +1,102 @@
+<div class="container-section">
+
+    <a 
+        href="#"
+        t="web_profile.label.see_my_profile"
+        icon="fi fi-br-arrow-up-right"
+        target="_blank"
+        id="a-link-profile-user"
+    ></a>
+
+    <hr>
+
+    <form id="form_profile_online">
+
+        <plus-switch
+            name="is_public"
+            value="false"
+            text="web_profile.label.is_public">
+        </plus-switch>
+
+        <div class="row section">
+            <div class="col">
+                <input-field
+                    label="web_profile.label.public_slug"
+                    placeholder="web_profile.placeholder.public_slug"
+                    name="public_slug"
+                    id="public_slug"
+                    autocomplete="off">
+                </input-field>
+            </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+                <plus-title
+                    label="web_profile.label.profile_title"
+                    placeholder="web_profile.placeholder.profile_title"
+                    name="title"
+                    autocomplete="off">
+                </plus-title>
+            </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+                <input-field
+                    label="web_profile.label.university"
+                    placeholder="web_profile.placeholder.university"
+                    name="university">
+                </input-field>
+            </div>
+            <div class="col">
+                <input-field
+                    label="web_profile.label.specialty"
+                    placeholder="web_profile.placeholder.specialty"
+                    name="specialty">
+                </input-field>
+            </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+                <label t="web_profile.label.about"></label>
+                <textarea
+                    t-placeholder="web_profile.placeholder.about"
+                    name="about"
+                    rows="4"></textarea>
+            </div>
+        </div>
+
+        <!-- Imagen de perfil
+        <div class="row section">
+            <div class="col">
+                <file-field
+                    label="web_profile.label.profile_image"
+                    name="profile_image"
+                    accept="image/*">
+                </file-field>
+            </div>
+            <div class="col">
+                <file-field
+                    label="web_profile.label.cover_image"
+                    name="cover_image"
+                    accept="image/*">
+                </file-field>
+            </div>
+        </div>
+         -->
+
+        <div class="row">
+            <div class="col">
+                <button
+                    class="btn btn-success btn-edit"
+                    t="btn.update"
+                    type="button"
+                    onclick="send_form_profile_online()">
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>

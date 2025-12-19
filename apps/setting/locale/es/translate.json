@@ -8,6 +8,7 @@
     "setting.module.plus": "Cuenta PLUS",
     "setting.module.apps":"PLUS Store",
     "setting.module.whatsapp":"WhatsApp",
+    "setting.module.profile":"Perfil Online",
 
     "setting.currency.ars": "Peso argentino (ARS)",
     "setting.currency.bob": "Boliviano (BOB)",
@@ -147,5 +148,17 @@
     "setting.title.connect-your-count-of-whatsapp":"Conecta tu cuenta de WhatsApp Business",
     "setting.info.connect-your-count-of-whatsapp":"Haz clic en el botón para conectar tu número de WhatsApp con PLUS.",
     "setting.btn.connect-your-count-of-whatsapp":"Conectar con Facebook / WhatsApp",
-    "setting.btn.do-you-not-a-count":"¿No tienes una cuenta de WhatsApp Bussines?"
+    "setting.btn.do-you-not-a-count":"¿No tienes una cuenta de WhatsApp Bussines?",
+
+    "setting.label.see_my_profile":"Ver mi portafolio público",
+    "setting.label.public_slug": "Enlace público de tu perfil",
+    "setting.placeholder.public_slug": "doctora-laura",
+    "setting.label.is_public":"Activar enlace publico",
+
+    "setting.error.slug_required":"Es necesario que agregues el link de tu portafolio",
+    "invalid_slug":"Este link no esta permitido o ya esta en uso",
+    "setting.error.slug_already_exists":"Este link ya esta existe en la base de datos",
+    "setting.slug.no_changes":"No hubo cambios",
+    "setting.slug.updated":"Los datos de tu perfil online fueron actualizados con exito",
+    "setting.error.slug_conflict":"Sucedio un error al intentar actualizar tu perfil"
 }

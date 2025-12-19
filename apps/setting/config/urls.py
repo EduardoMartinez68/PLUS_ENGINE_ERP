@@ -10,4 +10,5 @@ urlpatterns = [
     path('view_get_branch_billing_data/', views.view_get_branch_billing_data, name='view_get_branch_billing_data'),
     path('view_update_schedule/', views.view_update_schedule, name='view_update_schedule'),
     path('whatsapp_callback/', views.whatsapp_callback, name='whatsapp_callback'),
+    path('view_update_profile_user/', views.view_update_profile_user, name='view_update_profile_user'),
 ]

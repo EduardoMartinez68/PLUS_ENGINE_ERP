@@ -438,7 +438,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     decimal_separator = models.CharField(max_length=1, default=".")
     thousands_separator = models.CharField(max_length=1, default=",")
     date_format = models.CharField(max_length=20, default="DD/MM/YYYY")
-    
+
     # Required fields
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

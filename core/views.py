@@ -214,3 +214,19 @@ def login_view(request):
 
 
     return render(request, 'login.html', {'form': form, 'error_message': error_message, 'languages': languages})
+
+
+
+
+
+#---------------------------------------------------------------HERE WE WILL TO CREATE THE WEB PUBLIC---------------------
+from django.shortcuts import get_object_or_404, render
+from .models import CustomUser
+def view_profile(request, slug):
+    user = get_object_or_404(
+        CustomUser,
+        public_slug=slug,
+        is_public=True
+    )
+
+    return render(request,"webs/profile.html",{"user": user})

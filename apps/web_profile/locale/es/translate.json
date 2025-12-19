@@ -1,0 +1,29 @@
+{
+    "web_profile.module.profile": "Perfil",
+    "web_profile.module.services": "Servicios",
+
+    "web_profile.label.see_my_profile":"Ver mi portafolio público",
+    "web_profile.label.public_slug": "Enlace público de tu perfil",
+    "web_profile.placeholder.public_slug": "doctora-laura",
+    "web_profile.label.is_public":"Activar enlace publico",
+
+    "web_profile.error.slug_required":"Es necesario que agregues el link de tu portafolio",
+    "web_profile.slug.invalid_slug":"Este link no esta permitido o ya esta en uso",
+    "web_profile.error.slug_already_exists":"Este link ya esta existe en la base de datos",
+    "web_profile.slug.no_changes":"No hubo cambios",
+    "web_profile.slug.updated":"Los datos de tu perfil online fueron actualizados con exito",
+    "web_profile.error.slug_conflict":"Sucedio un error al intentar actualizar tu perfil",
+
+    "web_profile.label.profile_title":"Escribe tu nombre profesional",
+    "web_profile.placeholder.profile_title":"Ej. Doctora Laura",
+
+    "web_profile.label.specialty":"Especialidades",
+    "web_profile.placeholder.specialty":"Pediatría y Neonatología",
+
+    "web_profile.label.university":"Universidad",
+    "web_profile.placeholder.university":"Escribe el nombre de tu universidad",
+    "web_profile.label.about":"Escribe una descripcion sobre ti",
+    "web_profile.placeholder.about":"Descripcion",
+    "web_profile.label.profile_image":"Foto de perfil",
+    "web_profile.label.cover_image":"Foto de portada"
+}
