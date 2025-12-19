@@ -55,5 +55,9 @@
 
 
     "profile_online.error.not-exit-information":"No existe information de tu perfil online",
-    "profile_online.success.information-of-the-profle-update":"Perfil actualizado con exito"
+    "profile_online.success.information-of-the-profle-update":"Perfil actualizado con exito",
+
+
+    "profile_online.title.crear-services":"Datos del Servicio",
+    "profile_online.placeholder.search-a-services":"Escribe el nombre de un servicio"
 }

@@ -1,30 +1,70 @@
+<style>
+    .services-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .service-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+
+    .service-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .badge-inactive {
+        color: red;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+</style>
 <div class="container-section">
+    <div class="row">
+        <div class="col">
+            <plus-search input_id="search-services" placeholder="profile_online.placeholder.search-a-services">
+                <search-option>
+                    <button class="btn btn-add" onclick="window.open_my_pop('pop-add-services')">+</button>
+                </search-option>
+            </plus-search>
+        </div>
+    </div>
+
+
+    <div id="container-section">
+
+    </div>
+</div>
+
+
+<message-pop title="profile_online.title.crear-services" name="pop-add-services">
     <form id="form_add_specialty">
+        <input type="hidden" id="services_id">
         <div class="row">
             <div class="col">
-                <plus-switch text="profile_online.label.the_specialty_is_activate" value="true" name="is_active"></plus-switch>
-            </div>
-        </div>
-        
-        <div class="row section">
-            <div class="col">
-                <plus-title
-                    label="profile_online.label.name-specialty"
-                    placeholder="profile_online.placeholder.name-specialty"
-                    required
-                    name="name"
-                ></plus-title>
+                <plus-switch text="profile_online.label.the_specialty_is_activate" value="true"
+                    name="is_active"></plus-switch>
             </div>
         </div>
 
         <div class="row section">
             <div class="col">
-                <input-field
-                    label="profile_online.label.price-specialty"
-                    placeholder="profile_online.placeholder.price-specialty"
-                    name="price"
-                    type="number"
-                ></input-field>
+                <plus-title label="profile_online.label.name-specialty"
+                    placeholder="profile_online.placeholder.name-specialty" required name="name"></plus-title>
+            </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+                <input-field label="profile_online.label.price-specialty"
+                    placeholder="profile_online.placeholder.price-specialty" name="price" type="number"></input-field>
             </div>
             <div class="col">
                 <plus-select value="mxn" label="profile_online.label.currency-specialty" name="currency">
@@ -35,22 +75,100 @@
 
         <div class="row section">
             <div class="col">
-                <input-field
-                    label="profile_online.label.orden"
-                    placeholder="profile_online.placeholder.orden"
-                    name="order"
-                    type="number"
-                ></input-field>
+                <input-field label="profile_online.label.orden" placeholder="profile_online.placeholder.orden"
+                    name="order" type="number"></input-field>
             </div>
         </div>
 
 
-        <button
-            type="button"
-            class="btn btn-success btn-edit"
-            t="btn.add"
-            onclick="addSpecialtyToProfile()"
-        ></button>
+        <button type="button" class="btn btn-success btn-edit" t="btn.save" onclick="send_form_services()"></button>
 
     </form>
-</div>
+</message-pop>
+
+
+<script>
+    (async () => {
+        async function render_all_the_services() {
+            const container = document.getElementById('services-container');
+
+            // Obtenemos la información
+            const infoProfile = await window.get_information_profile();
+            const services = infoProfile?.services;
+
+            // 1. Verificación: Si no hay servicios o está vacío
+            if (!services || services.length === 0) {
+                container.innerHTML = '<p>No hay servicios registrados.</p>';
+                return;
+            }
+
+            // 2. Limpiar el contenedor
+            container.innerHTML = '';
+
+            // 3. Ordenar por el campo 'order' (opcional)
+            services.sort((a, b) => a.order - b.order);
+
+            // 4. Renderizar cada servicio
+            services.forEach(service => {
+                const serviceCard = document.createElement('div');
+                serviceCard.className = 'service-card';
+                serviceCard.setAttribute('id', `service-${service.id}`);
+
+                serviceCard.innerHTML = `
+                        <div class="service-info">
+                            <strong>${service.name}</strong>
+                            <span>${service.price} ${service.currency}</span>
+                            ${!service.is_active ? '<span class="badge-inactive">Inactivo</span>' : ''}
+                        </div>
+                        <div class="service-actions">
+                            <button onclick="editService(${service.id})" class="btn-edit">
+                                Editar
+                            </button>
+                            <button onclick="deleteService(${service.id})" class="btn-delete">
+                                Eliminar
+                            </button>
+                        </div>
+                    `;
+                container.appendChild(serviceCard);
+            });
+        }
+
+
+        async function update_services(services_id){
+            //if the form have an services id is because the user is editing the service
+            const backend=window.send_form_to_the_server('form_add_specialty', `profile_online/update_services/${services_id}/`);    
+            if(backend.success){
+
+            }
+        }
+
+        async function add_services(){
+            //if the form have an services id is because the user is editing the service
+            const backend=window.send_form_to_the_server('form_add_specialty', `profile_online/view_add_services`) 
+            if(backend.success){
+
+            }
+        }
+
+        async function send_form_services(){
+            //1--first we will see if the form have a ID of services
+            const services_id=document.getElementById('services_id').value;
+            if(services_id){
+                //if the form have an services id is because the user is editing the service
+                await update_services(services_id);
+            }else{
+                //if the form not have an services id is because the user is add the service
+                await add_services();
+            }
+
+
+
+            window.restart_form('form_add_specialty');
+        }
+
+        await render_all_the_services();
+    })();
+
+
+
+</script>
