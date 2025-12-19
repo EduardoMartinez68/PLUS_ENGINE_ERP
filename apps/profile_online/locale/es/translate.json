@@ -3,6 +3,7 @@
     "web_profile.module.services": "Servicios",
     "web_profile.module.schedules":"Horarios",
     "web_profile.module.address":"Direccion",
+    "web_profile.module.comment":"Comentarios",
 
     "web_profile.label.see_my_profile":"Ver mi portafolio público",
     "web_profile.label.public_slug": "Enlace público de tu perfil",
@@ -46,6 +47,9 @@
     "web_profile.label.address":"Direccion Fisica",
     "web_profile.placeholder.address":"Ej. Av Plaza Ciudad.",
     "web_profile.label.google_maps_url":"Pega la URL de google maps",
-    "web_profile.placeholder.google_maps_url":"Ej. www.google.com/maps/TU_NEGOCIO/"
+    "web_profile.placeholder.google_maps_url":"Ej. www.google.com/maps/TU_NEGOCIO/",
     
+
+    "web_profile.button.see-in-google-maps":"Ver en Google Maps",
+    "web_profile.button.create-link-google-maps":"Crear URL de Google Maps"
 }
