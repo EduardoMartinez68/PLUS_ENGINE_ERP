@@ -59,5 +59,9 @@
 
 
     "profile_online.title.crear-services":"Datos del Servicio",
-    "profile_online.placeholder.search-a-services":"Escribe el nombre de un servicio"
+    "profile_online.placeholder.search-a-services":"Escribe el nombre de un servicio",
+
+    "profile_online.error.need-add-the-name-of-the-services":"Necesitas agregar el nombre del servicio",
+    "profile_online.error.need-add-the-price-of-the-services":"Necesitas agregar el precio del servicio",
+    "profile_online.success.service-online-add":"El servicio online fue agregado a tu perfil"
 }

@@ -31,7 +31,7 @@
         <div class="col">
             <plus-search input_id="search-services" placeholder="profile_online.placeholder.search-a-services">
                 <search-option>
-                    <button class="btn btn-add" onclick="window.open_my_pop('pop-add-services')">+</button>
+                    <button class="btn btn-add" onclick="window.show_pop('pop-add-services')">+</button>
                 </search-option>
             </plus-search>
         </div>
@@ -39,6 +39,16 @@
 
 
     <div id="container-section">
+
+        <div class="service-card" onclick="">
+            <div class="service-info">
+                <strong>Consulta general online</strong>
+                <span>$500 MXN</span>
+            </div>
+            <div>
+                <span class="badge-active">Activo</span>
+            </div>
+        </div>
 
     </div>
 </div>
@@ -136,35 +146,51 @@
 
         async function update_services(services_id){
             //if the form have an services id is because the user is editing the service
-            const backend=window.send_form_to_the_server('form_add_specialty', `profile_online/update_services/${services_id}/`);    
+            const backend=await window.send_form_to_the_server('form_add_specialty', `profile_online/update_services/${services_id}/`);    
             if(backend.success){
-
+                show_notification('success', result.message || 'info.info-send-with-success');
+                return true;
             }
+
+
+            show_alert('alert', 'Error', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'));
+            return false;
         }
 
         async function add_services(){
             //if the form have an services id is because the user is editing the service
-            const backend=window.send_form_to_the_server('form_add_specialty', `profile_online/view_add_services`) 
+            const backend=await window.send_form_to_the_server('form_add_specialty', `profile_online/view_add_services`) 
             if(backend.success){
-
+                show_notification('success', result.message || 'info.info-send-with-success');
+                return true;
             }
+
+            show_alert('alert', 'Error', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'));
+            return false;
         }
 
         async function send_form_services(){
             //1--first we will see if the form have a ID of services
             const services_id=document.getElementById('services_id').value;
-            if(services_id){
+            let result=false;
+            if(!services_id==''){
                 //if the form have an services id is because the user is editing the service
-                await update_services(services_id);
+                result=await update_services(services_id);
             }else{
                 //if the form not have an services id is because the user is add the service
-                await add_services();
+                result=await add_services();
             }
 
 
-
-            window.restart_form('form_add_specialty');
+            if (result){
+                window.hide_pop('pop-add-services');
+                window.restart_form('form_add_specialty');
+            }
         }
+
+
+
+
 
         await render_all_the_services();
     })();

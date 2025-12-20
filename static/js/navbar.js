@@ -54,6 +54,10 @@ async function load_html_in_the_container(container, html){
 async function nextWeb(url) {
   if (typeof url === 'string' && url.trim() !== '') {
     try {
+      //translate the language of the app
+      const pathTranslate = get_path_of_the_file_translate_of_the_app(url);
+      await load_language(pathTranslate);
+
       const response = await fetch(url, {
         headers: {
           'X-Requested-With': 'XMLHttpRequest'
@@ -104,9 +108,6 @@ async function nextWeb(url) {
 
       //update all the labels that the programmer do with the syntax of the ERP, to the labels that the user can see
       transform_my_labels_erp();
-
-      //translate the language of the app
-      const pathTranslate = get_path_of_the_file_translate_of_the_app(url);
       await load_language(pathTranslate);
 
       closeMenu();

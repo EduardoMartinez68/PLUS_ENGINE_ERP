@@ -203,7 +203,7 @@ def update_profile_online(user, data):
         if not update_fields and not created:
             return {
                 "success": True,
-                "message": "profile.no_changes",
+                "message": "profile_online.success.information-of-the-profle-update",
             }
 
         with transaction.atomic():
@@ -214,7 +214,7 @@ def update_profile_online(user, data):
 
         return {
             "success": True,
-            "message": "profile.created" if created else "profile.updated",
+            "message": "profile_online.success.information-of-the-profle-update",
             "created": created,
             "answer": profile.id,
         }

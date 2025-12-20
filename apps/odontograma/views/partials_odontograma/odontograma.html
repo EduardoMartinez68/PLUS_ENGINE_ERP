@@ -649,7 +649,7 @@
 </div>
 
 
-<script>
+<script defer>
   (async () => {
     //here we will to save all the translate of the status for save and only translate one time
     const translateStatus = {
@@ -2348,7 +2348,7 @@
         const status = window.translateStatus[surfaces[i].status];
         div += `
           <tr>
-            <td>${status}</td>
+            <td t='status'>${status}</td>
             <td class="text-center">
               <button class="btn btn-delete" type='button' onclick="delete_status_tooth(${i})">
                 <i class="fi fi-rr-trash"></i>
@@ -2439,7 +2439,7 @@
 </plus-panel>
 
 
-<script>
+<script defer>
   (() => {
     let estadoSeleccionado = null;
 
@@ -2730,7 +2730,7 @@
         const r = coordinates[id][2];
         const overlay = window.get_svg_activity(tipo, x, y, r);
         const thootSvg = baseSvg.replace('</svg>', `${overlay}</svg>`);
-        return `<div class="container-status-thoo p-2" status='${tipo}'>${thootSvg} <label class='info-status-thoo'> ${window.translateStatus[tipo]} </label> </div>`;
+        return `<div class="container-status-thoo p-2" status='${tipo}'>${thootSvg} <label class='info-status-thoo' t='${window.translateStatus[tipo]}'> ${window.translateStatus[tipo]} </label> </div>`;
       }).join('');
 
 
