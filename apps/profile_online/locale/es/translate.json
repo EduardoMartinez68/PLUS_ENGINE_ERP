@@ -63,5 +63,18 @@
 
     "profile_online.error.need-add-the-name-of-the-services":"Necesitas agregar el nombre del servicio",
     "profile_online.error.need-add-the-price-of-the-services":"Necesitas agregar el precio del servicio",
-    "profile_online.success.service-online-add":"El servicio online fue agregado a tu perfil"
+    "profile_online.success.service-online-add":"El servicio online fue agregado a tu perfil",
+    "profile_online.error.not-exist-info-of-this-services":"No existe informacion de este servicio",
+
+    "profile_online.error.profile-not-exist":"Este perfil no existe",
+    "profile_online.error.service-not-found":"Servicio no encontrado",
+    "profile_online.success.service-online-update":"El servicio fue actualizado con exito",
+    "profile.error.integrity":"Error al intentar actualizar tu servicio",
+
+
+    "profile.question.delete-services":"Eliminar Servicio",
+    "profile.question.do-you-delete-this-services":"Estas seguro de que deseas eliminar el servicio '${name}' ?",
+
+    "profile.success.services-delete":"Servicio eliminado",
+    "profile.success.the-services-was-delete":"El servicio ${name} fue eliminado correctamete"
 }

@@ -17,7 +17,7 @@ def get_information_of_the_profile(user):
             .prefetch_related(
                 Prefetch(
                     "services",
-                    queryset=ProfileService.objects.filter(is_active=True).order_by("order")
+                    queryset=ProfileService.objects.order_by("order")
                 ),
                 "schedules",
                 "locations",
@@ -69,6 +69,7 @@ def get_information_of_the_profile(user):
                     "name": service.name,
                     "price": float(service.price),
                     "currency": service.currency,
+                    "is_active": service.is_active,
                     "order": service.order,
                 }
                 for service in profile.services.all()

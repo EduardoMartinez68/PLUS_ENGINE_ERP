@@ -224,8 +224,6 @@ from django.shortcuts import get_object_or_404, render
 def view_profile(request, slug):
     from apps.profile_online.models import PublicProfile
 
-    from apps.profile_online.models import PublicProfile
-
     profile = (
         PublicProfile.objects
         .select_related("user")
