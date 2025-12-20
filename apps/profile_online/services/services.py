@@ -1,8 +1,5 @@
-from apps.profile_online.models import PublicProfile, ProfileService, ProfileSchedule, ProfileLocation, ProfileReview
-from django.db.models import Prefetch
-from django.db import transaction, IntegrityError
-from django.utils.text import slugify
-from django.forms.models import model_to_dict
+from apps.profile_online.models import PublicProfile, ProfileService
+from django.db import  IntegrityError
 from ..plus_wrapper import Plus
 
 def add_services(user,data):

@@ -1,5 +1,7 @@
 #PLUS Power by {ED} Software Developer
 from django.contrib.auth.decorators import login_required
+from ..services.address import save_profile_location
+from ..services.schedule import update_profile_schedule
 from ..services.services import add_services, update_services
 from ..services.profile import get_information_of_the_profile, update_profile_online
 import json 
@@ -167,5 +169,91 @@ def view_update_services(request, service_id):
             )   
             
         result=update_services(request.user, service_id, data) 
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", 'not exist message'), "answer": result.get("answer", []), 'error':result.get("error", 'not exist error in the return')}, status=200)
+
+@login_required(login_url='login')
+def view_update_schedule(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'POST': 
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        if not Plus.this_user_have_this_permission(request.user, 'add_services_profile_online'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+    
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )   
+    
+        result=update_profile_schedule(request.user, data) 
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", 'not exist message'), "answer": result.get("answer", []), 'error':result.get("error", 'not exist error in the return')}, status=200)
+    else:
+        if request.method != 'POST': 
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        if not Plus.this_user_have_this_permission(request.user, 'add_services_profile_online'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+    
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )   
+    
+        result=update_profile_schedule(request.user, data) 
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", 'not exist message'), "answer": result.get("answer", []), 'error':result.get("error", 'not exist error in the return')}, status=200)
+
+@login_required(login_url='login')
+def view_update_address(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        if request.method != 'POST': 
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        if not Plus.this_user_have_this_permission(request.user, 'add_services_profile_online'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+    
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )   
+    
+        result=save_profile_location(request.user, data) 
+        return JsonResponse({"success": result.get("success", False), "message": result.get("message", 'not exist message'), "answer": result.get("answer", []), 'error':result.get("error", 'not exist error in the return')}, status=200)
+    else:
+        if request.method != 'POST': 
+            return JsonResponse({"success": False, "message": "Method not permitted"}, status=405)
+        
+        if not Plus.this_user_have_this_permission(request.user, 'add_services_profile_online'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+    
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )   
+    
+        result=save_profile_location(request.user, data) 
         return JsonResponse({"success": result.get("success", False), "message": result.get("message", 'not exist message'), "answer": result.get("answer", []), 'error':result.get("error", 'not exist error in the return')}, status=200)
 

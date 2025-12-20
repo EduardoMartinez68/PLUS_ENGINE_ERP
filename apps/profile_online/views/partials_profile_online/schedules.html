@@ -125,7 +125,7 @@
 </div>
 
     <br>
-    <button class="btn btn-edit btn-success" t="btn.save" type="button" onclick="send_form_schedule_branch()"></button>
+    <button class="btn btn-edit btn-success" t="btn.save" type="button" onclick="send_form_schedule_online()"></button>
 </form>
 
 
@@ -174,12 +174,10 @@
         });
     })();
 
+    async function send_form_schedule_online() {
 
-
-    //this is for save the schedule of the branch
-    async function send_form_schedule_branch() {
         //if all is success, now we will send the form
-        const result = await send_form_to_the_server('form_schedule', 'setting/view_update_schedule/');
+        const result = await send_form_to_the_server('form_schedule', 'profile_online/view_update_schedule/');
         if (result.success) {
             show_notification('success', result.message || 'info.info-send-with-success');
         } else {

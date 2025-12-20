@@ -7,4 +7,6 @@ urlpatterns = [
     path('view_update_profile_online/', views.view_update_profile_online, name='view_update_profile_online'),
     path('view_add_services/', views.view_add_services, name='view_add_services'),
     path('view_update_services/<int:service_id>/', views.view_update_services, name='view_update_services'),
+    path('view_update_schedule/', views.view_update_schedule, name='view_update_schedule'),
+    path('view_update_address/', views.view_update_address, name='view_update_address'),
 ]

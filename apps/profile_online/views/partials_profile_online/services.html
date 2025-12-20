@@ -224,15 +224,16 @@
         if (services_id > 0) {
             //if the form have an services id is because the user is editing the service
             result = await update_services(services_id);
+            update_information_services(newService, services_id);
         } else {
             //if the form not have an services id is because the user is add the service
             result = await add_services(); //here return the id if can add the service to the database
             newService.id=result;
+            update_information_services(newService, null);
         }
 
 
         if (result) {
-            update_information_services(newService, services_id);
             render_all_the_services(); //update the list of the services
 
             window.hide_pop('pop-add-services');
@@ -294,6 +295,7 @@
         if(service){
             fill_form_services(service);
             window.show_pop('pop-add-services');
+            document.getElementById('services_id').value=service_id;
         }else{
             window.show_alert('alert', 'Error', 'profile_online.error.not-exist-info-of-this-services','This services not exist in the object <window.infoProfile.services>');
         }

@@ -82,13 +82,13 @@ class ProfileSchedule(models.Model):
 
     day_of_week = models.PositiveSmallIntegerField(
         choices=[
-            (1, "Monday"),
-            (2, "Tuesday"),
-            (3, "Wednesday"),
-            (4, "Thursday"),
-            (5, "Friday"),
-            (6, "Saturday"),
-            (7, "Sunday"),
+            (1, "Lunes"),
+            (2, "Martes"),
+            (3, "Miercoles"),
+            (4, "Jueves"),
+            (5, "Viernes"),
+            (6, "Sabado"),
+            (7, "Domingo"),
         ]
     )
 
