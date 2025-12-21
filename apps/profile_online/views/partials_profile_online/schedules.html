@@ -68,8 +68,6 @@
     }
 </style>
 
-<label for="" t="setting.module.schedule" icon="fi fi-rr-clock-three"></label>
-<hr>
 <form id="form_schedule">
 <div class="container-section section">
 
@@ -159,19 +157,24 @@
 
         //this is for that when the store is close, for default the input be 00:00
         window.activate_check=activate_check;
-        ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].forEach(dayKey => {
-            const checkbox = document.getElementById(`${dayKey}_closed`);
-            if(!checkbox.checked){
-                window.change_plus_time(`${dayKey}_open`,closedTime);
-                window.change_plus_time(`${dayKey}_close`,closedTime);
+        async function initial_schedules(){
+            ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].forEach(dayKey => {
+                const checkbox = document.getElementById(`${dayKey}_closed`);
+                if(!checkbox.checked){
+                    window.change_plus_time(`${dayKey}_open`,closedTime);
+                    window.change_plus_time(`${dayKey}_close`,closedTime);
 
 
-                const pt1 = document.getElementById(`${dayKey}_open`); 
-                pt1.disable(); 
-                const pt2 = document.getElementById(`${dayKey}_close`); 
-                pt2.disable(); 
-            }
-        });
+                    const pt1 = document.getElementById(`${dayKey}_open`); 
+                    pt1.disable(); 
+                    const pt2 = document.getElementById(`${dayKey}_close`); 
+                    pt2.disable(); 
+                }
+            });
+            console.log('entro')
+        }
+
+        window.initial_schedules=initial_schedules;
     })();
 
     async function send_form_schedule_online() {

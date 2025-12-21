@@ -34,10 +34,10 @@
     <plus-module name="web_profile.module.profile" desc="" icon="fi fi-rr-user">
         {% include 'partials_profile_online/info_profile.html' %}
     </plus-module>
-    <plus-module name="web_profile.module.services" desc="" icon="fi fi-rr-briefcase">
+    <plus-module name="web_profile.module.services" desc="" icon="fi fi-rr-briefcase" on-visible="render_all_the_services()">
         {% include 'partials_profile_online/services.html' %}
     </plus-module>
-    <plus-module name="web_profile.module.schedules" desc="" icon="fi fi-rr-clock-three">
+    <plus-module name="web_profile.module.schedules" desc="" icon="fi fi-rr-clock-three" on-visible="initial_schedules()">
         {% include 'partials_profile_online/schedules.html' %}
     </plus-module>
     <plus-module name="web_profile.module.address" desc="" icon="fi fi-rs-marker">

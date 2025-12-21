@@ -1157,6 +1157,7 @@ class KeyBind extends HTMLElement {
   }
 }
 
+
 class PlusModules extends HTMLElement { 
   connectedCallback() {
     const col = parseInt(this.getAttribute('col')) || 4;
@@ -1167,13 +1168,15 @@ class PlusModules extends HTMLElement {
     const names = modules.map(m => m.getAttribute('name'));
     const icons = modules.map(m => m.getAttribute('icon') || '');
     const descs = modules.map(m => m.getAttribute('desc') || '');
+    const onVisibles = modules.map(m => m.getAttribute('on-visible') || null); // Guardamos la función
+    
     const contents = modules.map(m => {
       const clone = m.cloneNode(true);
       return Array.from(clone.children);
     });
 
-
     this.innerHTML = '';
+    let lastWidth = window.innerWidth; // Definimos lastWidth para evitar errores
 
     // Sidebar
     const sidebar = document.createElement('div');
@@ -1253,20 +1256,15 @@ class PlusModules extends HTMLElement {
     content.style.position = 'relative';
     content.style.transition = 'all 0.3s ease';
 
-    // Contenedor de todos los paneles
     const panelContainer = document.createElement('div');
     panelContainer.className = 'plus-modules-module-panel-container';
     content.appendChild(panelContainer);
 
-    // Crear todos los paneles de una vez
     const panels = contents.map((html, i) => {
       const panel = document.createElement('div');
       panel.className = 'plus-modules-module-panel';
       contents[i].forEach(child => panel.appendChild(child));
-
-      // Solo mostrar el primero al inicio
       panel.style.display = i === 0 ? 'block' : 'none';
-
       panelContainer.appendChild(panel);
       return panel;
     });
@@ -1295,6 +1293,23 @@ class PlusModules extends HTMLElement {
     this.appendChild(sidebar);
     this.appendChild(content);
 
+    // --- LÓGICA DE EJECUCIÓN DE FUNCIONES ---
+    const triggerVisibleFunction = (index) => {
+        const scriptStr = onVisibles[index];
+        if (scriptStr) {
+            try {
+                // Esto ejecuta la cadena como código (ej: "initial_schedules(2)")
+                const execute = new Function(scriptStr);
+                execute();
+            } catch (e) {
+                console.error("Error al ejecutar on-visible:", scriptStr, e);
+            }
+        }
+    };
+
+    // Ejecutar para el primer módulo por defecto
+    triggerVisibleFunction(0);
+
     // Funciones móviles
     const showContentMobile = () => {
       if (window.innerWidth < 768) {
@@ -1322,24 +1337,23 @@ class PlusModules extends HTMLElement {
         li.classList.add('active');
         const index = li.dataset.index;
 
-        // Mostrar solo el panel correspondiente
         panels.forEach((p, j) => {
           p.style.display = j == index ? 'block' : 'none';
         });
 
+        // Llamamos a la función cuando se hace click
+        triggerVisibleFunction(index);
         showContentMobile();
       });
     });
 
-    // Click en cerrar
     closeBtn.addEventListener('click', () => {
       showSidebarMobile();
     });
 
-    // Resize
     window.addEventListener('resize', () => {
       const newWidth = window.innerWidth;
-      if (Math.abs(newWidth - lastWidth) < 50) return; // Ignore minor changes
+      if (Math.abs(newWidth - lastWidth) < 50) return;
       lastWidth = newWidth;
 
       if (newWidth >= 768) {
@@ -1353,18 +1367,19 @@ class PlusModules extends HTMLElement {
       }
     });
 
-    // Inicializar estado móvil
     if (window.innerWidth < 768) {
       showSidebarMobile();
     }
   }
 }
 
+
 class PlusModule extends HTMLElement {
   connectedCallback() {
     this.classList.add('plus-modules-module');
   }
 }
+
 
 class PlusSelect extends HTMLElement {
   constructor() {
@@ -5934,6 +5949,14 @@ function openTab(evt, tabId) {
   // Marca el botón presionado como activo
   evt.currentTarget.classList.add('active');
 }
+
+
+
+
+
+
+
+
 /**---------------------------------SHOW MESSAGE POP PERSONALITY----------------------------- */
 function open_my_pop(id) {
   const popElement = document.getElementById(id);
