@@ -29,6 +29,10 @@
     "web_profile.placeholder.about":"Descripcion",
     "web_profile.label.profile_image":"Foto de perfil",
     "web_profile.label.cover_image":"Foto de portada",
+    "web_profile.label.whatsapp":"Numero de WhatsApp",
+    "web_profile.placeholder.whatsapp":"Ej. +5212345678900",
+    "web_profile.label.phone":"Numero de telefono",
+    "web_profile.placeholder.phone":"Ej. +5212345678900",
 
 
     "profile_online.label.name-specialty":"Nombre del servicio *",

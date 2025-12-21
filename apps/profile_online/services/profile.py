@@ -52,6 +52,8 @@ def get_information_of_the_profile(user):
                 "specialty": profile.specialty,
                 "university": profile.university,
                 "about": profile.about,
+                "whatsapp": profile.whatsapp,
+                "phone": profile.phone,
 
                 "cover_image": profile.cover_image.url if profile.cover_image else None,
                 "profile_image": profile.profile_image.url if profile.profile_image else None,
@@ -124,6 +126,29 @@ def get_information_of_the_profile(user):
     return data
 
 
+
+import re
+def normalize_whatsapp(number: str, default_country="52"):
+    """
+    Normalize a number for WhatsApp (E.164 without +)
+    """
+    if not number:
+        return None
+
+    #Remove everything that is not a number
+    digits = re.sub(r"\D", "", number)
+    return digits
+    # If it starts with 52 and has a valid length, we'll leave it.
+    if digits.startswith(default_country):
+        return digits
+
+    # If it is a local Mexican number (10 digits), add country
+    if len(digits) == 10:
+        return f"{default_country}{digits}"
+
+    # Si no cumple, se considera inválido
+    return None
+
 def update_profile_online(user, data):
     """
     Create or update the profile online of the user.
@@ -179,6 +204,8 @@ def update_profile_online(user, data):
             "title",
             "specialty",
             "university",
+            "whatsapp",
+            "phone",
             "about",
         ]
 
@@ -186,6 +213,14 @@ def update_profile_online(user, data):
             if field in data:
                 setattr(profile, field, data.get(field))
                 update_fields.append(field)
+
+        # -------------------------------
+        # Whatsapp normalization
+        # -------------------------------
+        if "whatsapp" in data:
+            normalized_whatsapp = normalize_whatsapp(data.get("whatsapp"))
+            profile.whatsapp = normalized_whatsapp
+            update_fields.append("whatsapp")
 
         # -------------------------------
         # Images

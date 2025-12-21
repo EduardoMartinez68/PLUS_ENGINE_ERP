@@ -64,6 +64,26 @@
 
         <div class="row section">
             <div class="col">
+                <input-field
+                    label="web_profile.label.whatsapp"
+                    placeholder="web_profile.placeholder.whatsapp"
+                    name="whatsapp"
+                    id="input_whatsapp">
+                </input-field>
+            </div>
+            <div class="col">
+                <input-field
+                    label="web_profile.label.phone"
+                    placeholder="web_profile.placeholder.phone"
+                    name="phone"
+                    id="input_phone">
+                </input-field>
+            </div>
+        </div>
+
+
+        <div class="row section">
+            <div class="col">
                 <label t="web_profile.label.about"></label>
                 <textarea
                     t-placeholder="web_profile.placeholder.about"
@@ -118,7 +138,10 @@
         document.getElementById('input_title').value=profile?.title;
         document.getElementById('input_university').value=profile?.university;
         document.getElementById('input_specialty').value=profile?.specialty;
-
+        document.getElementById('input_whatsapp').value=profile?.whatsapp;
+        document.getElementById('input_phone').value=profile?.phone;
+        document.querySelector('textarea[name="about"]').value=profile?.about;
+        
         //update the link of the web
         const link = document.getElementById('a-link-profile-user');
         if (link) {

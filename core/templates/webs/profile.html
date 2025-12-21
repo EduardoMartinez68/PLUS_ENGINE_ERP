@@ -438,11 +438,13 @@
 
 <body>
     <nav class="hospital-navbar">
+        <!--
         <div class="nav-brand">
             <img src="https://marketplace.canva.com/EAFdCebXgRs/1/0/1600w/canva-logotipo-medicina-simple-azul-y-blanco-4UzHG4FY3uw.jpg"
                 alt="Logo Hospital" class="hospital-logo">
             <span class="hospital-name">Hospital General</span>
         </div>
+        --->
 
         <a href="https://www.google.com/maps/search/?api=1&query=HEMS+Hospital+Especialidades+Medicas" target="_blank"
             class="nav-location-btn" title="Ver ubicación en Google Maps">
@@ -489,12 +491,14 @@
                     </div>
                     {% endif %}
 
+                    <!--
                     <a href="#" class="btn-booking">
                         <i class="far fa-calendar-alt"></i> Agendar Cita en Línea
                     </a>
+                    -->
 
                     <!-- WhatsApp -->
-                    <a href="https://wa.me/521{{ profile.user.cellphone }}?text=Hola%20Doctor,%20me%20gustaría%20solicitar%20una%20consulta."
+                    <a href="https://wa.me/{{profile.whatsapp}}?text=Hola%20Doctor,%20me%20gustaría%20solicitar%20una%20consulta."
                         target="_blank" class="btn-message">
                         <i class="fab fa-whatsapp"></i> Enviar mensaje
                     </a>
@@ -507,6 +511,8 @@
                 <div class="card-content">
                     <div class="section-title">Sobre mí</div>
                     <p>{{ profile.about|default:"Información no disponible." }}</p>
+                    <p>Whatsapp: +{{ profile.whatsapp }}</p>
+                    <p>Telefono: {{ profile.phone }}</p>
                 </div>
 
                 <div class="card-content">
@@ -564,7 +570,7 @@
 
 
 
-        <!------------------>
+        <!--------
         <div class="reviews-container">
             <div class="reviews-header">
                 <h2 class="reviews-title">Opiniones de pacientes</h2>
@@ -589,11 +595,11 @@
             </div>
             {% endfor %}
         </div>
-
+        ---------->
         <br><br>
         <footer class="sticky-footer">
             <p class="footer-text">
-                Powered by <strong>plus</strong><a href="https://plus.app" target="_blank" class="brand-link">.app</a>
+                Powered by <strong>softwarclinico</strong><a href="https://softwarclinico.online" target="_blank" class="brand-link">.online</a>
             </p>
         </footer>
     </div>
