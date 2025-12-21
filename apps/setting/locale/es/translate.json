@@ -40,6 +40,7 @@
     "setting.placeholder.name_of_the_person_in_charge": "Ej. Emmanuel López",
     "setting.label.email_of_the_person_in_charge": "Correo electrónico del encargado",
     "setting.placeholder.email_of_the_person_in_charge": "Ej. emmanuel@plus.com",
+    "setting.placeholder.email_branch": "Ej. sucursal@plus.com",
     "setting.label.creation_date": "Fecha de creación",
     "setting.placeholder.creation_date": "Selecciona la fecha de creación",
     "setting.label.phone": "Teléfono fijo",
@@ -92,6 +93,16 @@
     "setting.placeholder.updated_by": "Nombre del usuario que actualizó el registro",
     "setting.label.last_login": "Último acceso",
     "setting.placeholder.last_login": "Selecciona la fecha y hora del último acceso",
+    "setting.label.cologne": "Colonia",
+    "setting.placeholder.cologne": "Ej. Col. Centro",
+    "setting.label.street": "Calle",
+    "setting.placeholder.street": "Ej. Calle Reforma",
+    "setting.label.num_ins": "Número interior y exterior",
+    "setting.placeholder.num_ins": "Ej. #123 Int. 4",
+    "setting.label.num_outs": "Número exterior",
+    "setting.placeholder.num_outs": "Ej. #123",
+    "setting.label.municipality": "Municipio",
+    "setting.placeholder.municipality": "Ej. Cuauhtémoc",
 
     "setting.show.setting-company":"Configuración avanzada de la empresa",
     "setting.info.setting-company":"La información registrada aquí se establecerá como predeterminada para las nuevas sucursales, lo que te permitirá agilizar la configuración inicial de cada una.",
@@ -160,5 +171,12 @@
     "setting.error.slug_already_exists":"Este link ya esta existe en la base de datos",
     "setting.slug.no_changes":"No hubo cambios",
     "setting.slug.updated":"Los datos de tu perfil online fueron actualizados con exito",
-    "setting.error.slug_conflict":"Sucedio un error al intentar actualizar tu perfil"
+    "setting.error.slug_conflict":"Sucedio un error al intentar actualizar tu perfil",
+
+
+
+
+    "setting.language.es":"Español",
+    "setting.language.en":"Inglés",
+    "setting.language.pl":"Polaco"
 }
