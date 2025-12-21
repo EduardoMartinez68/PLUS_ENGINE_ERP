@@ -163,7 +163,7 @@ class MessagePop extends HTMLElement {
 
     //If only exist text, save this in a label <p>
     const wrappedContent = content.startsWith('<') ? content : `<p>${content}</p>`;
-    console.log(wrappedContent);
+
     //here create the internal HTML
     this.innerHTML = `
         <div id="${name}" class="my-pop">

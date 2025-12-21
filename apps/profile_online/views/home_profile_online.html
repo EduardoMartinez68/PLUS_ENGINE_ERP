@@ -34,7 +34,7 @@
     <plus-module name="web_profile.module.profile" desc="" icon="fi fi-rr-user">
         {% include 'partials_profile_online/info_profile.html' %}
     </plus-module>
-    <plus-module name="web_profile.module.services" desc="" icon="fi fi-rr-briefcase" on-visible="render_all_the_services()">
+    <plus-module name="web_profile.module.services" desc="" icon="fi fi-rr-briefcase" on-visible="initialize_services_module()">
         {% include 'partials_profile_online/services.html' %}
     </plus-module>
     <plus-module name="web_profile.module.schedules" desc="" icon="fi fi-rr-clock-three" on-visible="initial_schedules()">

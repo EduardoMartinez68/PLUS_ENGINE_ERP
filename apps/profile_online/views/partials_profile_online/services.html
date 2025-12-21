@@ -131,6 +131,35 @@
         });
     }
 
+    function render_services_list(services) {
+        const container = document.getElementById('services-container');
+
+        container.innerHTML = '';
+
+        services.sort((a, b) => a.order - b.order);
+
+        services.forEach(service => {
+            const serviceCard = document.createElement('div');
+            serviceCard.className = 'service-card';
+            serviceCard.setAttribute('id', `service-${service.id}`);
+
+            serviceCard.innerHTML = `
+                <div class="service-info">
+                    <strong>${service.name}</strong>
+                    <span>${service.price} ${service.currency}</span>
+                    ${!service.is_active ? '<span class="badge-inactive">Inactivo</span>' : ''}
+                </div>
+                <div class="service-actions">
+                    <button onclick="window.open_pop_edit_services(${service.id})" class="btn btn-edit">
+                        Editar
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(serviceCard);
+        });
+    }
+
     async function update_services(services_id) {
         //if the form have an services id is because the user is editing the service
         const backend = await window.send_form_to_the_server('form_add_specialty', `profile_online/view_update_services/${services_id}/`);
@@ -308,4 +337,35 @@
     }
 
 
+    async function filter_services_by_input() {
+        const input = document.getElementById('search-services');
+        const query = input.value.toLowerCase().trim();
+
+        const infoProfile = await window.get_information_profile();
+        const ALL_SERVICES = infoProfile?.services;
+        if (!query) {
+            render_services_list(ALL_SERVICES);
+            return;
+        }
+
+        const filtered = ALL_SERVICES.filter(service =>
+            service.name.toLowerCase().includes(query)
+        );
+
+        render_services_list(filtered);
+    }
+
+
+
+
+    function initialize_services_module() {
+        render_all_the_services();
+
+        //this is for create the event of the input search
+        const input = document.getElementById('search-services');
+        if (input) {
+            input.removeEventListener('input', filter_services_by_input);
+            input.addEventListener('input', filter_services_by_input);
+        }
+    }
 </script>
