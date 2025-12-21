@@ -129,12 +129,25 @@ class InfoLabel extends HTMLElement {
   }
 }
 
+
 class MessagePop extends HTMLElement {
   constructor() {
     super();
+    this._template = ""; //here we will save the original content of the element
+    this._initialized = false;
   }
 
   connectedCallback() {
+    if (!this._initialized) {
+      // 1. save the container original of the event
+      this._template = this.innerHTML.trim();
+      this._initialized = true;
+      this.render();
+    }
+  }
+
+  // This function draw the internal HTML of the element
+  render() {
     const title = this.getAttribute('title') || '';
     const translatedTitle = window.translate_text(title); // Translate the title if needed
 
@@ -150,7 +163,7 @@ class MessagePop extends HTMLElement {
 
     //If only exist text, save this in a label <p>
     const wrappedContent = content.startsWith('<') ? content : `<p>${content}</p>`;
-
+    console.log(wrappedContent);
     //here create the internal HTML
     this.innerHTML = `
         <div id="${name}" class="my-pop">
@@ -167,6 +180,8 @@ class MessagePop extends HTMLElement {
       `;
   }
 }
+
+
 
 class PlusPanel extends HTMLElement {
   constructor() {
@@ -1157,7 +1172,6 @@ class KeyBind extends HTMLElement {
   }
 }
 
-
 class PlusModules extends HTMLElement { 
   connectedCallback() {
     const col = parseInt(this.getAttribute('col')) || 4;
@@ -1168,15 +1182,9 @@ class PlusModules extends HTMLElement {
     const names = modules.map(m => m.getAttribute('name'));
     const icons = modules.map(m => m.getAttribute('icon') || '');
     const descs = modules.map(m => m.getAttribute('desc') || '');
-    const onVisibles = modules.map(m => m.getAttribute('on-visible') || null); // Guardamos la función
-    
-    const contents = modules.map(m => {
-      const clone = m.cloneNode(true);
-      return Array.from(clone.children);
-    });
+    const onVisibles = modules.map(m => m.getAttribute('on-visible') || null); // Save the functions 
 
-    this.innerHTML = '';
-    let lastWidth = window.innerWidth; // Definimos lastWidth para evitar errores
+    let lastWidth = window.innerWidth; // We define lastWidth to avoid errors
 
     // Sidebar
     const sidebar = document.createElement('div');
@@ -1260,16 +1268,21 @@ class PlusModules extends HTMLElement {
     panelContainer.className = 'plus-modules-module-panel-container';
     content.appendChild(panelContainer);
 
-    const panels = contents.map((html, i) => {
-      const panel = document.createElement('div');
-      panel.className = 'plus-modules-module-panel';
-      contents[i].forEach(child => panel.appendChild(child));
-      panel.style.display = i === 0 ? 'block' : 'none';
-      panelContainer.appendChild(panel);
-      return panel;
+    const panels = modules.map((m, i) => {
+        const panel = document.createElement('div');
+        panel.className = 'plus-modules-module-panel';
+        
+        //We move the children of the original to the panel directly.
+        while (m.firstChild) {
+            panel.appendChild(m.firstChild);
+        }
+
+        panel.style.display = i === 0 ? 'block' : 'none';
+        panelContainer.appendChild(panel);
+        return panel;
     });
 
-    // Botón X para móvil
+    // X button for mobile
     const closeBtn = document.createElement('button');
     closeBtn.textContent = 'X';
     closeBtn.style.position = 'absolute';
@@ -1290,15 +1303,15 @@ class PlusModules extends HTMLElement {
     content.appendChild(closeBtn);
 
     this.classList.add('plus-modules-host');
-    this.appendChild(sidebar);
-    this.appendChild(content);
 
-    // --- LÓGICA DE EJECUCIÓN DE FUNCIONES ---
+    this.replaceChildren(sidebar, content);
+
+    // --- FUNCTION EXECUTION LOGIC ---
     const triggerVisibleFunction = (index) => {
         const scriptStr = onVisibles[index];
         if (scriptStr) {
             try {
-                // Esto ejecuta la cadena como código (ej: "initial_schedules(2)")
+                //This executes the string as code (in: "initial schedules(2)")
                 const execute = new Function(scriptStr);
                 execute();
             } catch (e) {
@@ -1307,10 +1320,10 @@ class PlusModules extends HTMLElement {
         }
     };
 
-    // Ejecutar para el primer módulo por defecto
+    //Run for the first default module
     triggerVisibleFunction(0);
 
-    // Funciones móviles
+    // Mobile features
     const showContentMobile = () => {
       if (window.innerWidth < 768) {
         sidebar.style.width = '0';
@@ -1372,7 +1385,6 @@ class PlusModules extends HTMLElement {
     }
   }
 }
-
 
 class PlusModule extends HTMLElement {
   connectedCallback() {
