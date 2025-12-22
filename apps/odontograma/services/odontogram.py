@@ -1,9 +1,8 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from typing import Dict, Any, List
+from typing import Dict, Any
 from apps.customers.models import Customer
 from django.db import transaction, IntegrityError
 from django.core.paginator import Paginator
-import uuid
 from ..models import Odontogram, HistoryOdontogram, Tooth, OdontogramSetting
 from django.db.models import Q
 from ..plus_wrapper import Plus
@@ -516,7 +515,7 @@ def create_odontogram_history_service(user, odontogram_id: int, data: Dict[str, 
     #get the data from the form that send the doctor
     key = data.get("key_odontogram")
     notes = data.get("notes", "")
-    is_kid = data.get("is_kid", False)
+    is_kid = Plus.to_bool(data.get('is_kid', False))
     periodontograma = data.get("periodontograma", {})
     copy = Plus.to_bool(data.get("is_copy", False))
 

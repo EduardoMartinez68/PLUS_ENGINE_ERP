@@ -5,27 +5,25 @@
     "home.input.email": "Correo electrónico",
     "home.input.name": "Nombre",
     "home.input.name_company": "Nombre de tu empresa",
-    "home.input.password":"Contraseña",
+    "home.input.password": "Contraseña",
+    "home.input.cellphone": "Celular",
     "home.btn.inside": "Entrar",
     "home.title.create-new-account": "Crear nueva cuenta",
     "recover-password": "Recuperar contraseña",
     "home.text.do-you-have-account": "¿No tienes cuenta?",
     "home.text.forgot-password": "¿Olvidaste tu contraseña?",
-    "home.input.cellphone": "Celular",
     "home.error.no-can-login": "Correo o contraseña incorrectos. Por favor verifica tus datos e inténtalo de nuevo.",
-    "home.message.the-user-was-register-with-success":"Usuario registrado correctamente, ahora inicia sesión.",
-    "home.error.email-already-exists":"Este email ya existe en el sistema",
-    "home.error.the-password-not-be-equals":"Las contraseñas no coinciden.",
-    "home.error.the-password-is-very-short":"La contraseña debe tener al menos 8 caracteres.",
-    "home.error.the-password-need-more-characteres":"La contraseña debe incluir mayúsculas, minúsculas, números y un carácter especial.",
-    "home.error.the-cellphone-no-exist":"El número de celular no es válido.",
-    "home.error.the-email-no-is-valid":"El email no es válido.",
-
-
-    "home.tilte.do-you-help":"¿Necesitas ayuda? 🤔",
-    "home.text.visit-our-channel-of-youtube":"Visita nuestro canal de YouTube",
-    "home.text.go-channel":"Ir al canal",
-    "home.text.send-a-message-for-whatsapp":"Mándanos un mensaje por WhatsApp",
+    "home.error.email-already-exists": "Este email ya existe en el sistema",
+    "home.error.the-password-not-be-equals": "Las contraseñas no coinciden.",
+    "home.error.the-password-is-very-short": "La contraseña debe tener al menos 8 caracteres.",
+    "home.error.the-password-need-more-characteres": "La contraseña debe incluir mayúsculas, minúsculas, números y un carácter especial.",
+    "home.error.the-cellphone-no-exist": "El número de celular no es válido.",
+    "home.error.the-email-no-is-valid": "El email no es válido.",
+    "home.message.the-user-was-register-with-success": "Usuario registrado correctamente, ahora inicia sesión.",
+    "home.tilte.do-you-help": "¿Necesitas ayuda? 🤔",
+    "home.text.visit-our-channel-of-youtube": "Visita nuestro canal de YouTube",
+    "home.text.go-channel": "Ir al canal",
+    "home.text.send-a-message-for-whatsapp": "Mándanos un mensaje por WhatsApp",
 
     "btn.update": "Actualizar",
     "btn.edit": "Editar",
@@ -39,8 +37,6 @@
     "btn.copy":"Copiar",
     "btn.add":"Agregar",
     "btn.make":"Crear",
-
-    
     "message.title": "Confirmación",
     "message.success": "Aceptar",
     "message.save": "Guardar",
@@ -49,31 +45,26 @@
     "message.search": "Buscar...",
     "message.add": "Agregar",
     "message.error.server": "Ocurrió un error en el servidor",
-
     "success.saved": "Guardado con éxito",
     "success.updated": "Actualizado correctamente",
     "success.deleted": "Eliminado con éxito",
     "success.sent": "Correo enviado",
     "success.added": "Agregado correctamente",
-
-    "description.saved": "Tu información fue guardado con éxito",
-    "description.updated": "Tu información fue actualizado correctamente",
-    "description.deleted": "Tu información fue eliminado con éxito",
-
+    "description.saved": "Tu información fue guardada con éxito",
+    "description.updated": "Tu información fue actualizada correctamente",
+    "description.deleted": "Tu información fue eliminada con éxito",
     "error.failed_delete": "No se pudo eliminar",
     "error.failed_save": "No se pudo guardar",
     "error.not_found": "No encontrado",
     "error.unauthorized": "No autorizado",
     "error.required_fields": "Todos los campos son obligatorios",
     "error.general": "Ocurrió un error",
-    "error.general-description": "Ocurrió un error en el servidor. Intentalo mas tarde.",
+    "error.general_description": "Ocurrió un error en el servidor. Intenta de nuevo más tarde.",
     "error.to_delete": "Ocurrió un error al intentar eliminar",
-    "error.not-send-information-to-the-server": "No enviaste informacion al servidor",
-
+    "error.no_information_sent_to_server": "No enviaste información al servidor",
     "warning.unsaved_changes": "Tienes cambios sin guardar",
-    "warning.permanent_action": "Esta acción es permanente",
+    "warning.permanent_action": "Esta acción es irreversible",
     "warning.no_results": "No se encontraron resultados",
-
     "info.loading": "Cargando...",
     "info.read_most": "Leer más",
     "info.sending": "Enviando...",
@@ -91,9 +82,7 @@
     "info.step":"Paso",
     "info.of":"de",
     "info.select-a-country":"país",
-
     "btn.edit-quantity": "Editar cantidad",
-
     "btn.restart": "Reiniciar",
     "btn.range_date": "Rango de fecha",
     "btn.select_range_date": "Selecciona una fecha",
@@ -102,9 +91,6 @@
     "range.current_month": "Mes actual",
     "range.previous_month": "Mes anterior",
     "range.custom": "Personalizado",
-
-
-
     "sunday": "Domingo",
     "monday": "Lunes",
     "tuesday": "Martes",
@@ -112,7 +98,6 @@
     "thursday": "Jueves",
     "friday": "Viernes",
     "saturday": "Sábado",
-
     "january": "Enero",
     "february": "Febrero",
     "march": "Marzo",
@@ -125,7 +110,6 @@
     "october": "Octubre",
     "november": "Noviembre",
     "december": "Diciembre",
-
     "date.sunday": "Dom",
     "date.monday": "Lun",
     "date.tuesday": "Mar",
@@ -133,7 +117,6 @@
     "date.thursday": "Jue",
     "date.friday": "Vie",
     "date.saturday": "Sáb",
-
     "date.month.january": "Ene",
     "date.month.february": "Feb",
     "date.month.march": "Mar",
@@ -146,7 +129,6 @@
     "date.month.october": "Oct",
     "date.month.november": "Nov",
     "date.month.december": "Dic",
-
     "input.color": "Color",
     "input.speed": "Rápido",
     "input.personalize": "Personalizado",
@@ -157,26 +139,20 @@
     "input.time": "Hora",
     "input.tags":"Agrega un Tag",
     "tag-message-show": "Agrega un tag y presiona Enter, coma o espacio",
-
     "input.write-a-message": "Escribe un mensaje...",
     "ia-not-can-listen":"Reconocimiento de voz no disponible",
-
     "permission.not-have-this-permission":"No dispone de los permisos necesarios para realizar esta acción.",
     "permission.invalid-credentials":"Las credenciales que intentó utilizar no tienen los permisos necesarios para realizar esta acción.",
-
-
-
     "info.info-send-with-success":"información enviada con exitó",
     "info.not-was-can-send-the-information":"No fue posible enviar esta información al servidor",
     "info.error.this-form-not-exit":"El formulario que intentas enviar no existe.",
-
     "gener.label":"Sexo",
     "gender.men":"Hombre",
     "gender.woman":"Mujer",
     "gender.other":"Otros",
-
     "message.this-user-not-have-this-permission":"Este usuario no tiene asignado este permiso",
 
+    
     "menu.search": "Buscar una app...",
     "app.agenda": "Agenda",
     "app.cases": "Casos",
