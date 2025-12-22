@@ -217,10 +217,8 @@ def login_view(request):
 
 
 
-
-
 #---------------------------------------------------------------HERE WE WILL TO CREATE THE WEB PUBLIC---------------------
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 def view_profile(request, slug):
     from apps.profile_online.models import PublicProfile
 

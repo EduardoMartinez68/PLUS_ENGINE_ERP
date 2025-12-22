@@ -1,9 +1,0 @@
-name: "odontograma"
-appName: "odontograma"
-icon: "odontograma/icon.webp"
-path: "/odontograma"
-dbInit: true
-permissionsFile: 'permissions.json'
-dependencies:
-  - "customers"
-  - "files"

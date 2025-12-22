@@ -24,7 +24,6 @@
     "home.text.visit-our-channel-of-youtube": "Visita nuestro canal de YouTube",
     "home.text.go-channel": "Ir al canal",
     "home.text.send-a-message-for-whatsapp": "Mándanos un mensaje por WhatsApp",
-
     "btn.update": "Actualizar",
     "btn.edit": "Editar",
     "btn.save": "Guardar",
@@ -152,7 +151,7 @@
     "gender.other":"Otros",
     "message.this-user-not-have-this-permission":"Este usuario no tiene asignado este permiso",
 
-    
+
     "menu.search": "Buscar una app...",
     "app.agenda": "Agenda",
     "app.cases": "Casos",

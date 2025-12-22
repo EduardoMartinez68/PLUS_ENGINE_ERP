@@ -4643,7 +4643,6 @@ class ShowMore extends HTMLElement {
   }
 }
 
-
 class ImageUploader extends HTMLElement {
   constructor() {
     super();
@@ -4900,8 +4899,6 @@ class ImageUploader extends HTMLElement {
     }
   }
 }
-
-
 
 class PlusPriority extends HTMLElement {
   constructor() {
