@@ -2207,9 +2207,13 @@ class PlusSwitch extends HTMLElement {
   constructor() {
     super();
     this._checkbox = null;
+    this._rendered = false; // Flag for evit the duplicates
   }
 
   connectedCallback() {
+    // if already rendered, do nothing
+    if (this._rendered) return; 
+
     //first we will get the text that the user would like show in the switch 
     const text = this.getAttribute('text') || ''; //first we will get the text that the user have save in the label
     const t = this.getAttribute('t') || text; //if the user would like add the label of translate , else save the text that added in the atributte text
@@ -2228,13 +2232,6 @@ class PlusSwitch extends HTMLElement {
     const wrapper = document.createElement('div');
     wrapper.classList.add('plus-switch');
 
-    //now before creating the label
-    /*
-    let labelText = document.createElement('span');
-    labelText.classList.add('plus-switch-label');
-    labelText.setAttribute('t', t);
-    labelText.textContent = textTranlsate;
-    */
     let labelText = document.createElement('span');
     labelText.classList.add('plus-switch-label');
     labelText.setAttribute('t', t);
@@ -2308,6 +2305,8 @@ class PlusSwitch extends HTMLElement {
         window[eventOnclick](status);
       }
     });
+
+    this._rendered = true; // mark as rendered
   }
 
   setChecked(value) {

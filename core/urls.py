@@ -21,7 +21,6 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
     path('singup/', views.register, name='singup'),
     path('whatsapp/webhook/', setting_views.whatsapp_callback, name='whatsapp_webhook'), #this is for whatsapp webhook
-    path("profile/<slug:slug>/",views.view_profile, name="view_profile"), #this is for the profile of the professionals 
 ]
 
 
