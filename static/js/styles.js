@@ -824,6 +824,196 @@ class PlusTitle extends HTMLElement {
   }
 }
 
+       
+class PlusQuantity extends HTMLElement {
+  static formAssociated = true;
+
+  constructor() {
+    super();
+    this.internals = this.attachInternals();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    this.render();
+  }
+
+  static get observedAttributes() {
+    return ['value', 'min', 'max', 'step', 'label', 'name'];
+  }
+
+  // Getters y Setters
+  get value() { return this.getAttribute('value') || 0; }
+  set value(val) {
+    const min = parseFloat(this.getAttribute('min')) || -Infinity;
+    const max = parseFloat(this.getAttribute('max')) || Infinity;
+
+    // We ensure that the value is within limits and is a number
+    let newValue = Math.max(min, Math.min(max, parseFloat(val) || min));
+    
+    this.setAttribute('value', newValue);
+    if (this.input) this.input.value = newValue;
+    this.internals.setFormValue(newValue);
+
+    // Update the visual state of the buttons
+    this.updateButtonState();
+  }
+
+  updateValue(delta) {
+    const step = parseFloat(this.getAttribute('step')) || 1;
+    this.value = parseFloat(this.value) + (delta * step);
+  }
+
+  // Disable buttons if the limit is reached
+  updateButtonState() {
+    if(!this.btnMinus || !this.btnPlus) return;
+    const min = parseFloat(this.getAttribute('min')) || -Infinity;
+    const max = parseFloat(this.getAttribute('max')) || Infinity;
+    const currentVal = parseFloat(this.value);
+
+    this.btnMinus.classList.toggle('disabled', currentVal <= min);
+    this.btnPlus.classList.toggle('disabled', currentVal >= max);
+  }
+
+  render() {
+    const label = this.getAttribute('label') || 'Cantidad';
+    const min = this.getAttribute('min') || 0;
+    const max = this.getAttribute('max') || 100;
+    const step = this.getAttribute('step') || 1;
+
+    this.shadowRoot.innerHTML = `
+      <style>
+        /* Reset and base styles for adaptability */
+        :host {
+          display: block;
+          width: 100%; /* Ocupa todo el ancho disponible */
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          box-sizing: border-box;
+        }
+        *, *::before, *::after { box-sizing: inherit; }
+
+        /* Main container, white card style */
+        .container {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: #ffffff;
+          padding: 1rem 1.5rem; 
+          border-radius: 12px; 
+          box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
+          transition: box-shadow 0.3s ease;
+        }
+        
+        /* Label text on the left */
+        .label {
+          font-weight: 500;
+          color: #4a4a4a;
+          font-size: 1rem;
+          margin-right: 1rem;
+        }
+
+        /* Container of controls on the right */
+        .controls {
+          display: flex;
+          align-items: center;
+          gap: 1rem; /* Space between icons and number */
+        }
+
+        /* Style the numeric input to look like text on a line */
+        input {
+          width: 40px;
+          border: none;
+          border-bottom: 1px solid #e0e0e0;
+          background: transparent;
+          text-align: center;
+          font-size: 1rem;
+          font-weight: 400;
+          color: #333;
+          padding-bottom: 4px;
+          outline: none;
+          -moz-appearance: textfield;
+        }
+
+        /* Remove native spinners in Webkit/Chrome */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        /* Button (icon) styles */
+        button {
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: ${colors.color_company}; 
+          transition: color 0.2s, transform 0.1s;
+        }
+        button:hover { color: ${colors.color_company_hover}; }
+        button:active { transform: scale(0.95); }
+
+        /* SVG Icons styling */
+        .icon-svg {
+            width: 26px;
+            height: 26px;
+            fill: currentColor;
+        }
+        
+        /* Specific style for the minus button to make it gray as in the photo */
+        #btn-minus { color: #a0a0a0; }
+        #btn-minus:hover { color: #7f7f7f; }
+
+        /* Visually disabled status */
+        button.disabled {
+          color: #e0e0e0 !important;
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+      </style>
+
+      <div class="container">
+        <span class="label">${label}</span>
+        <div class="controls">
+          <button type="button" id="btn-minus" aria-label="Disminuir cantidad">
+            <svg class="icon-svg" viewBox="0 0 24 24">
+              <path d="M12,2A10,10 0 1,0 22,12A10,10 0 0,0 12,2Zm4,11H8a1,1 0 0,1 0-2h8a1,1 0 0,1 0,2Z"/>
+            </svg>
+          </button>
+
+          <input type="number" 
+                 value="${this.value}" 
+                 min="${min}" 
+                 max="${max}" 
+                 step="${step}">
+
+          <button type="button" id="btn-plus" aria-label="Aumentar cantidad">
+             <svg class="icon-svg" viewBox="0 0 24 24">
+               <path d="M12,2A10,10 0 1,0 22,12A10,10 0 0,0 12,2Zm5,11H13v4a1,1 0 0,1-2,0V13H7a1,1 0 0,1 0-2h4V7a1,1 0 0,1 2,0v4h4a1,1 0 0,1 0,2Z"/>
+             </svg>
+          </button>
+        </div>
+      </div>
+    `;
+
+    this.input = this.shadowRoot.querySelector('input');
+    this.btnMinus = this.shadowRoot.getElementById('btn-minus');
+    this.btnPlus = this.shadowRoot.getElementById('btn-plus');
+
+    //Initialize button value and state
+    this.internals.setFormValue(this.value);
+    this.updateButtonState();
+
+    // Event Listeners
+    this.btnMinus.onclick = () => this.updateValue(-1);
+    this.btnPlus.onclick = () => this.updateValue(1);
+    this.input.onchange = (e) => { this.value = e.target.value; };
+  }
+}
+
 class SearchBar extends HTMLElement {
   constructor() {
     super();
@@ -5936,7 +6126,10 @@ function transform_my_labels_erp() {
   if(!customElements.get("plus-panel")){
     customElements.define('plus-panel', PlusPanel);
   }
-  
+
+  if(!customElements.get("plus-quantity")){
+    customElements.define('plus-quantity', PlusQuantity);
+  }
 }
 
 /**---------------------------------TAB----------------------------- */
