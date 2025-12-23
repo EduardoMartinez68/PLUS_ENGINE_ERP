@@ -109,18 +109,7 @@ if TYPE_VERSION=='CLOUD':
     #here we will configure the tasks that will be run in background with celery
     #here after we will to read all the task that exist in all the apps for if one have event that would like meminder
     CELERY_BEAT_SCHEDULE = {
-        # Task 1: send reminders to the customers of the appoints of the user (this run 24/7)
-        "enviar-recordatorios-cada-5-min": {
-            "task": "apps.agenda.tasks.send_reminders",
-            "schedule": 300,  # this is run by 5 minutes
-        },
 
-        
-        # Task 2: Monthly Renewal for can send more message of whatsapp (run only the day 1 of the month to 1:00 AM)
-            "renovar-limites-mensuales": {
-                "task": "apps.agenda.tasks.renovar_limites_mensuales", 
-                "schedule": crontab(day_of_month=1, hour=1, minute=0),
-            },
     }
 
 
@@ -214,7 +203,21 @@ AUTHENTICATION_BACKENDS = [
 'core.backends.EmailHashBackend'
 ]
 
-#this is for added the variable of the path 
+#------------------------------EMAILS---------------------------------------------------
+# Email backend (SMTP real)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'yourservices@example.com') # email that be show like remitent
+
+# setting of the server SMTP
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')        # server SMTP
+EMAIL_PORT = 587                     # port SMTP (587 = STARTTLS, 465 = SSL)
+EMAIL_USE_TLS = True                 # use TLS
+EMAIL_USE_SSL = False                # only if the port is 465
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'youremail@gmail.com')   # your user of email
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'your_password')        # your password or app password
+
+
+#----------------------------configuration of allowed hosts---------------------------------
 from decouple import config
 ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS", default="127.0.0.1,localhost").split(",")
 
