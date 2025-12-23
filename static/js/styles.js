@@ -3849,21 +3849,15 @@ class PlusDate extends HTMLElement {
   }
 
   update_input_form() {
-    this.calendarContainer.querySelectorAll('.plus-calendar-day').forEach(day => {
-      day.onclick = () => {
-        const selectedISO = day.getAttribute('data-date');
-        const newDate = new Date(selectedISO);
-        this.selectedDate = newDate;
-
-        // update display
-        this.display.textContent = this.formatDate(newDate);
-
-        // update input hidden for the form
-        this.hiddenInput.value = selectedISO.split('T')[0];
-
-        this.calendarContainer.style.display = 'none';
-      };
-    });
+    if (this.selectedDate) {
+        //We extract the parts of the LOCAL date
+        const year = this.selectedDate.getFullYear();
+        const month = String(this.selectedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(this.selectedDate.getDate()).padStart(2, '0');
+        
+        //YYYY-MM-DD format based on user view, not UTC
+        this.hiddenInput.value = `${year}-${month}-${day}`;
+    }
   }
 }
 
