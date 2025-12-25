@@ -5423,6 +5423,482 @@ function toggle_switch_column(id, open = true) {
   }
 }
 
+
+/**----------------------------------LABELS OF EXTENSIONS AND PLUGINS----------------------**/
+class PlusExtension extends HTMLElement {
+    connectedCallback() {
+        /**
+         * CONDITIONAL RENDERING
+         * ---------------------
+         * Checks whether the extension should be rendered or not.
+         * The condition is received as a string expression via the `if-condition` attribute.
+         * 
+         * Example:
+         * <plus-extension if-condition="user.isAdmin">
+         * 
+         * ⚠️ WARNING:
+         * Using eval() can be dangerous if the input is not controlled.
+         * This assumes the condition comes from trusted code.
+         */
+        const condition = this.getAttribute('if-condition');
+        if (condition && !eval(condition)) { 
+            this.remove(); 
+            return; 
+        }
+
+        /**
+         * TARGET RESOLUTION
+         * -----------------
+         * Determines the DOM element where the extension will be injected.
+         * Priority:
+         * 1. CSS selector via `target` attribute
+         * 2. Element ID via `extension_id`
+         */
+        const target = document.querySelector(
+            this.getAttribute('target') || `#${this.getAttribute('extension_id')}`
+        );
+
+        /**
+         * INSERTION STRATEGY
+         * ------------------
+         * Defines how the extension content will be inserted relative to the target.
+         * Defaults to 'inside' (appendChild).
+         */
+        const position = this.getAttribute('position') || 'inside';
+        
+        /**
+         * FUNCTION INTERCEPTION (PLUGIN HOOK)
+         * -----------------------------------
+         * Allows this extension to intercept a global function call.
+         * 
+         * - wrap_function: name of the global function to override
+         * - before: name of a validation function executed before the original function
+         * 
+         * This is useful for:
+         * - Permission checks
+         * - Business rules
+         * - Blocking actions dynamically
+         */
+        const functionToWrap = this.getAttribute('wrap_function');
+        const validationFnName = this.getAttribute('before');
+
+        if (functionToWrap && validationFnName) {
+            this.wrapGlobalFunction(functionToWrap, validationFnName);
+        }
+
+        /**
+         * If the target element exists, apply the extension content.
+         */
+        if (target) {
+            this.applyExtension(target, position);
+        }
+    }
+
+    wrapGlobalFunction(originalName, validationName) {
+        /**
+         * FUNCTION WRAPPING LOGIC
+         * ----------------------
+         * Stores a reference to the original global function
+         * and replaces it with a guarded version.
+         * 
+         * Example:
+         * - originalName: "submitForm"
+         * - validationName: "canSubmitForm"
+         */
+        const originalFn = window[originalName];
+        
+        if (typeof originalFn === 'function') {
+            /**
+             * Replace the original function with a proxy function
+             * that runs validation before execution.
+             */
+            window[originalName] = (...args) => {
+                const validationFn = window[validationName];
+                
+                /**
+                 * If validation function exists:
+                 * - Execute it
+                 * - Only call the original function if it returns true
+                 */
+                if (typeof validationFn === 'function') {
+                    if (validationFn()) {
+                        return originalFn(...args);
+                    } else {
+                        console.warn(
+                            `Validation "${validationName}" failed. Blocking "${originalName}".`
+                        );
+                    }
+                } else {
+                    /**
+                     * Fail-safe behavior:
+                     * If the validation function does not exist,
+                     * execute the original function to avoid breaking the app.
+                     */
+                    return originalFn(...args);
+                }
+            };
+        }
+    }
+
+    applyExtension(target, position) {
+        /**
+         * CONTENT EXTRACTION
+         * ------------------
+         * Moves all child nodes of this custom element
+         * into a DocumentFragment for efficient DOM insertion.
+         */
+        const fragment = document.createDocumentFragment();
+        while (this.firstChild) {
+            fragment.appendChild(this.firstChild);
+        }
+
+        /**
+         * INSERTION STRATEGIES
+         * --------------------
+         * Defines how the fragment will be inserted relative to the target element.
+         */
+        const strategy = {
+            'replace': () => target.replaceWith(fragment),
+            'before': () => target.parentNode.insertBefore(fragment, target),
+            'after': () => target.parentNode.insertBefore(fragment, target.nextSibling),
+            'prepend': () => target.insertBefore(fragment, target.firstChild),
+            'inside': () => target.appendChild(fragment)
+        };
+
+        /**
+         * Execute the selected insertion strategy.
+         * Defaults to 'inside' if the position is invalid or missing.
+         */
+        (strategy[position] || strategy['inside'])();
+
+        /**
+         * POST-APPLICATION STATE
+         * ----------------------
+         * The extension element itself remains in the DOM
+         * but is hidden to avoid visual duplication.
+         * 
+         * Metadata attributes are added for debugging or auditing.
+         */
+        this.style.display = 'none'; 
+        this.setAttribute('status', 'applied');
+        this.setAttribute('applied-at', new Date().toISOString());    
+    }
+}
+
+class PlusMove extends HTMLElement {
+    connectedCallback() {
+        /**
+         * SOURCE ELEMENT
+         * --------------
+         * CSS selector that identifies the element to be moved.
+         * Example:
+         * <plus-move source="#saveButton" target="#toolbar" />
+         */
+        const sourceSelector = this.getAttribute('source');
+
+        /**
+         * TARGET ELEMENT
+         * --------------
+         * CSS selector that identifies the destination element.
+         * The source element will be moved relative to this element.
+         */
+        const targetSelector = this.getAttribute('target');
+
+        /**
+         * INSERTION POSITION
+         * ------------------
+         * Defines how the source element will be inserted relative to the target.
+         * Possible values:
+         * - before   → before the target element
+         * - after    → after the target element
+         * - prepend  → as the first child of the target
+         * - inside   → as the last child of the target (default)
+         */
+        const position = this.getAttribute('position') || 'inside';
+
+        const sourceEl = document.querySelector(sourceSelector);
+        const targetEl = document.querySelector(targetSelector);
+
+        /**
+         * VALIDATION
+         * ----------
+         * Ensures both source and target elements exist before attempting the move.
+         */
+        if (sourceEl && targetEl) {
+            this.moveElement(sourceEl, targetEl, position);
+        } else {
+            console.warn(
+                `PlusMove: Source (${sourceSelector}) or target (${targetSelector}) element not found.`
+            );
+        }
+
+        /**
+         * OPTIONAL MUTATIONS
+         * ------------------
+         * Allows the extension to modify the moved element
+         * after relocation.
+         */
+
+        // Replace the element's entire class list
+        if (this.getAttribute('set_class')) {
+            sourceEl.className = this.getAttribute('set_class');
+        }
+
+        // Replace the element's text content
+        if (this.getAttribute('set_text')) {
+            sourceEl.innerText = this.getAttribute('set_text');
+        }
+
+        /**
+         * SELF-DESTRUCTION
+         * ----------------
+         * The <plus-move> element removes itself after execution
+         * to keep the DOM clean and avoid unnecessary nodes.
+         */
+        this.remove();
+    }
+
+    moveElement(source, target, position) {
+        /**
+         * MOVE STRATEGIES
+         * ---------------
+         * Handles different DOM insertion behaviors based on position.
+         */
+        switch (position) {
+            case 'before':
+                target.parentNode.insertBefore(source, target);
+                break;
+
+            case 'after':
+                target.parentNode.insertBefore(source, target.nextSibling);
+                break;
+
+            case 'prepend':
+                target.insertBefore(source, target.firstChild);
+                break;
+
+            case 'inside':
+            default:
+                target.appendChild(source);
+                break;
+        }
+    }
+}
+
+class PlusPatch extends HTMLElement {
+    connectedCallback() {
+        /**
+         * TARGET & PATCH DEFINITION
+         * -------------------------
+         * - target: CSS selector of the element to be patched
+         * - set-attribute: list of attribute mutations to apply
+         *
+         * Example:
+         * <plus-patch
+         *   target="#email"
+         *   set-attribute="required:true; placeholder:Enter your email; class:is-required"
+         * />
+         */
+        const selector = this.getAttribute('target');
+        const attrString = this.getAttribute('set-attribute');
+
+        /**
+         * If no target or patch definition is provided,
+         * there is nothing to apply.
+         */
+        if (!selector || !attrString) return;
+
+        const targetEl = document.querySelector(selector);
+
+        if (targetEl) {
+            this.applyPatch(targetEl, attrString);
+        } else {
+            /**
+             * RENDER DELAY RETRY
+             * ------------------
+             * Some elements may not yet exist in the DOM
+             * (e.g. dynamically rendered views or async components).
+             *
+             * A short retry window is used to apply the patch
+             * once the element becomes available.
+             */
+            setTimeout(() => {
+                const retryTarget = document.querySelector(selector);
+                if (retryTarget) {
+                    this.applyPatch(retryTarget, attrString);
+                }
+            }, 50);
+        }
+
+        /**
+         * SELF-CLEANUP
+         * ------------
+         * The <plus-patch> element removes itself after execution
+         * to avoid polluting the DOM with control-only nodes.
+         */
+        this.remove();
+    }
+
+    applyPatch(element, attrString) {
+        /**
+         * ATTRIBUTE PATCH PARSING
+         * -----------------------
+         * The attribute string is split into attribute:value pairs.
+         *
+         * Format:
+         * "required:true; class:btn primary; placeholder:Your name"
+         */
+        const pairs = attrString.split(';');
+
+        pairs.forEach(pair => {
+            if (!pair.trim()) return;
+
+            /**
+             * Split only on the first ":" to allow values
+             * that may contain colons themselves.
+             */
+            const [attrName, ...valueParts] = pair.split(':');
+            const name = attrName.trim();
+            const value = valueParts.join(':').trim();
+
+            /**
+             * CLASS HANDLING
+             * --------------
+             * Classes are additive and do not override
+             * existing class names.
+             */
+            if (name === 'class') {
+                element.classList.add(...value.split(' '));
+            }
+            /**
+             * BOOLEAN ATTRIBUTES
+             * ------------------
+             * Handles attributes like:
+             * - required
+             * - disabled
+             * - checked
+             */
+            else if (value === 'true' || value === '') {
+                element.setAttribute(name, '');
+            }
+            /**
+             * BOOLEAN REMOVAL
+             * ----------------
+             * Explicitly removes the attribute when set to false.
+             */
+            else if (value === 'false') {
+                element.removeAttribute(name);
+            }
+            /**
+             * STANDARD ATTRIBUTES
+             * -------------------
+             * Applies normal attributes such as:
+             * - placeholder
+             * - name
+             * - value
+             * - aria-*
+             */
+            else {
+                element.setAttribute(name, value);
+            }
+        });
+    }
+}
+
+const ExtensionEngine = {
+    init() {
+        /**
+         * MUTATION OBSERVER
+         * -----------------
+         * Watches the DOM for newly added nodes in order to detect
+         * extensions that are injected dynamically.
+         *
+         * This is essential for:
+         * - AJAX-loaded content
+         * - Modals
+         * - Lazy-rendered views
+         * - SPA-like navigation
+         */
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach(mutation => {
+                mutation.addedNodes.forEach(node => {
+                    /**
+                     * Only process element nodes whose tag name
+                     * starts with "PLUS-" (custom extension elements).
+                     */
+                    if (node.nodeType === 1 && node.tagName.startsWith('PLUS-')) {
+                        this.processExtension(node);
+                    }
+                });
+            });
+        });
+
+        /**
+         * Start observing the entire document body
+         * for child additions at any depth.
+         */
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+        
+        /**
+         * INITIAL PASS
+         * ------------
+         * Process extensions that already exist in the DOM
+         * at initialization time.
+         */
+        this.processAll();
+    },
+
+    processAll() {
+        /**
+         * EXTENSION COLLECTION
+         * --------------------
+         * Collects all known extension types supported
+         * by the engine.
+         */
+        const extensions = Array.from(
+            document.querySelectorAll('plus-extension, plus-move, plus-patch')
+        );
+
+        /**
+         * PRIORITY SORTING
+         * ----------------
+         * Extensions can define an optional `priority` attribute.
+         * Lower values are executed first.
+         *
+         * This allows deterministic execution order
+         * when multiple extensions affect the same area.
+         */
+        extensions.sort(
+            (a, b) =>
+                (a.getAttribute('priority') || 0) -
+                (b.getAttribute('priority') || 0)
+        );
+
+        /**
+         * Execute each extension in order.
+         */
+        extensions.forEach(ext => this.processExtension(ext));
+    },
+
+    processExtension(ext) {
+        /**
+         * EXTENSION EXECUTION
+         * -------------------
+         * Manually triggers the extension logic.
+         *
+         * This design allows:
+         * - Explicit lifecycle control
+         * - Compatibility with dynamically injected elements
+         * - Decoupling from native Custom Element lifecycle
+         */
+        if (typeof ext.execute === 'function') {
+            ext.execute();
+        }
+    }
+};
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
   const tabs = document.querySelectorAll('.tab-content');
@@ -6122,6 +6598,19 @@ function transform_my_labels_erp() {
 
   if(!customElements.get("plus-quantity")){
     customElements.define('plus-quantity', PlusQuantity);
+  }
+
+  /*EXTENSIONS AND PLUGINS*/
+  if(!customElements.get("plus-extension")){
+    customElements.define('plus-extension', PlusExtension);
+  }
+
+  if(!customElements.get("plus-move")){
+    customElements.define('plus-move', PlusMove);
+  }
+
+  if(!customElements.get("plus-patch")){
+    customElements.define('plus-patch', PlusPatch);
   }
 }
 

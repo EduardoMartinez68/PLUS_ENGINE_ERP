@@ -1,0 +1,273 @@
+<style>
+.plus-departament-title {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.plus-departament-dashboard {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+/* Responsividad */
+@media (max-width: 992px) {
+    .plus-departament-dashboard {
+    grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .plus-departament-dashboard {
+    grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+.plus-departament-card {
+    position: relative;
+    background: #fff;
+    padding: 16px 16px 16px 20px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.plus-departament-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: var(--color, #6C63FF);
+    border-radius: 8px 0 0 8px;
+}
+
+.plus-departament-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+}
+
+.plus-departament-card-header h2 {
+    font-size: 1.2rem;
+    margin: 0;
+    color: #222;
+}
+
+.plus-departament-menu-icon {
+    font-size: 18px;
+    color: #888;
+    cursor: pointer;
+}
+
+.plus-departament-description {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 6px 0 12px 0;
+}
+
+.plus-departament-manager {
+    display: flex;
+    align-items: center;
+    margin-top: auto;
+    margin-bottom: 10px;
+}
+
+.plus-departament-manager img {
+width: 40px;
+height: 40px;
+border-radius: 10%;
+margin-right: 10px;
+object-fit: cover;
+object-position: center;
+image-rendering: auto;  
+}
+
+.plus-departament-manager span {
+    font-size: 0.9rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.plus-departament-card-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #444;
+}
+
+.plus-departament-badge {
+    background: #E8EAF6;
+    color: #3F51B5;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+}
+</style>
+
+{% load static %}
+<!---seeker---->
+<div class="row">
+    <div class="col-9">
+
+    </div>
+    <div class="col-3 p-3">
+        <plus-search input_id="search-department">
+            <search-option>
+                <button class="btn btn-add" onclick="window.show_pop('pop-form-departament')">+</button>
+            </search-option>
+        </plus-search>
+    </div>
+</div>
+
+<!---table of the departament--->
+<div class="plus-departament-dashboard p-4" id="department-list">
+    <div class="plus-departament-card" style="--color:#085DA9">
+        <div class="skeleton skeleton-rect" style="width: 40%;"></div>
+        <br>
+        <div class="skeleton skeleton-input"></div>
+        <div class="row">
+            <div class="col-2">
+                <div class="skeleton skeleton-circle"></div>
+            </div>
+            <div class="col-10">
+                <br>
+                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-10">
+                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            </div>
+            <div class="col-2">
+                <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="plus-departament-card" style="--color:#085DA9">
+        <div class="skeleton skeleton-rect" style="width: 40%;"></div>
+        <br>
+        <div class="skeleton skeleton-input"></div>
+        <div class="row">
+            <div class="col-2">
+                <div class="skeleton skeleton-circle"></div>
+            </div>
+            <div class="col-10">
+                <br>
+                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-10">
+                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            </div>
+            <div class="col-2">
+                <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="plus-departament-card" style="--color:#085DA9">
+        <div class="skeleton skeleton-rect" style="width: 40%;"></div>
+        <br>
+        <div class="skeleton skeleton-input"></div>
+        <div class="row">
+            <div class="col-2">
+                <div class="skeleton skeleton-circle"></div>
+            </div>
+            <div class="col-10">
+                <br>
+                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-10">
+                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            </div>
+            <div class="col-2">
+                <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="plus-departament-card" style="--color:#085DA9">
+        <div class="skeleton skeleton-rect" style="width: 40%;"></div>
+        <br>
+        <div class="skeleton skeleton-input"></div>
+        <div class="row">
+            <div class="col-2">
+                <div class="skeleton skeleton-circle"></div>
+            </div>
+            <div class="col-10">
+                <br>
+                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-10">
+                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            </div>
+            <div class="col-2">
+                <div class="skeleton skeleton-rect" style="width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% include "partials_departament_employee/pop_add_and_edit_departament.html" %}
+
+<script>
+    //-------------update container---------------//
+    function get_struct_div(){
+        return `
+            <div class="plus-departament-card" style="--color:{ color }; cursor: pointer;" onclick="get_information_for_edit_departament(' { id } ')">
+                <div class="plus-departament-card-header">
+                    <h2> { name } </h2>
+                </div>
+                <p class="plus-departament-description"> { description } </p>
+                
+                <!-- Manager -->
+                <div class="plus-departament-manager">
+                    <img src=" { manager_photo } " alt="{ name }">
+                    <span>{ manager_name } </span>
+                </div>
+
+                <div class="plus-departament-card-footer">
+                    <span><i class="fi fi-rr-employee-man-alt"></i> { employees_count } </span>
+                    <span class="plus-departament-badge" t="departament_employee.label.activate">Activate</span>
+                </div>
+            </div>
+        `
+    }
+
+    window.update_container_with_seeker(
+        'search-department',
+        'department-list',
+        get_struct_div(),
+        '/departament_employee/search_employee_department/1/',
+        'GET',
+        true
+    );
+
+    async function update_information_container_departament(){
+        await window.update_container_from_the_server(            
+            'search-department',
+            'department-list',
+            get_struct_div(),
+            '/departament_employee/search_employee_department/1/',
+            'GET',
+            true
+        )
+    }
+
+</script>
+
+
+

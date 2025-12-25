@@ -1,0 +1,244 @@
+<style>
+.plus-departament-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  gap: 25px;
+  background-color: #f7f8fa;
+}
+
+.plus-employee-card {
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  border: 1px solid #e8e8e8;
+}
+
+.plus-employee-info-card{
+    padding: 12px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.plus-employee-card:hover {
+    cursor: pointer;
+}
+
+.employee-photo {
+  flex-shrink: 0;
+  margin-right: 22px;
+}
+
+.employee-photo img {
+  width: 100px;
+  height: 100px;
+  border-radius: 10%;
+  object-fit: cover;
+  border: 3px solid #e4e9f2;
+}
+
+.employee-info {
+  flex: 1;
+  margin-top: -18px;
+}
+
+.employee-name {
+  font-size: 1.25rem;
+  color: #1f2937;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.employee-branch {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+.employee-tags {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.employee-tags .tag-department,
+.employee-tags .tag-role {
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #fff;
+  text-transform: capitalize;
+}
+
+/* Colores personalizados */
+.tag-department.dentista { background-color: #10b981; } /* verde profesional */
+.tag-role.dentista { background-color: #34d399; }
+
+.tag-department.medico { background-color: #2563eb; } /* azul médico */
+.tag-role.medico { background-color: #0ea5e9; }
+
+.tag-department.abogado { background-color: #7c3aed; } /* violeta elegante */
+.tag-role.abogado { background-color: #a855f7; }
+
+.employee-contact{
+    width: 100%;
+    background-color: rgb(247, 247, 247);
+    text-align: left;
+}
+
+.employee-contact p {
+  font-size: 0.9rem;
+  color: #374151;
+  margin: 3px 0;
+}
+
+@media (max-width: 600px) {
+  .plus-employee-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .employee-photo {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+
+  .employee-tags {
+    justify-content: center;
+  }
+}
+
+</style>
+
+
+<!---seeker---->
+<div class="row">
+    <div class="col-9">
+        
+    </div>
+    <div class="col-3 p-3">
+        <plus-search input_id="search-employee">
+            <search-option>
+                <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-employee')"><i class="fi fi-rr-settings-sliders"></i></button>
+            </search-option>
+            <search-option>
+                <button class="btn btn-add" onclick="window.nextWeb('employees/add_employee/')">+</button>
+            </search-option>
+        </plus-search>
+    </div>
+</div>
+
+<message-pop title="employees.title.filter-employee" name="pop-filter-employee">
+    <div class="row section">
+        <div class="col">
+            <plus-select label="employees.label.select-the-branch" link="/employees/search_branch/" method="GET" value="{{ request.user.branch.id }}" data-text="{{ request.user.branch }}" id="branch-id-select">
+
+            </plus-select>
+        </div>
+        <div class="col">
+            <plus-select label="employees.label.status-employee" value="true" id="status-employe">
+                <option value="true" t="employees.select.employees-activate"></option>
+                <option value="false" t="employees.select.employees-delete"></option>
+            </plus-select>
+        </div>
+    </div>
+    <button class="btn btn-edit btn-success" t="message.success" onclick="window.hide_pop('pop-filter-employee')"></button>
+</message-pop>
+
+<!---table of the departament--->
+<div class="plus-departament-dashboard p-4" id="employee-list">
+
+    <div class="plus-employee-card">
+        <div class="row p-4">
+            <div class="col-2">
+                <div class="skeleton skeleton-circle"></div>
+            </div>
+            <div class="col-10">
+                <div class="skeleton skeleton-rect" style="width: 90%;"></div><br>
+                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            </div>
+        </div>
+        <div class="employee-contact p-2">
+            <div class="skeleton skeleton-rect" style="width: 90%;"></div><br>
+            <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+        </div>
+    </div>
+
+    <div class="plus-employee-card">
+        <div class="row p-4">
+            <div class="col-2">
+                <div class="skeleton skeleton-circle"></div>
+            </div>
+            <div class="col-10">
+                <div class="skeleton skeleton-rect" style="width: 90%;"></div><br>
+                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            </div>
+        </div>
+        <div class="employee-contact p-2">
+            <div class="skeleton skeleton-rect" style="width: 90%;"></div><br>
+            <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+        </div>
+    </div>
+
+    <div class="plus-employee-card">
+        <div class="row p-4">
+            <div class="col-2">
+                <div class="skeleton skeleton-circle"></div>
+            </div>
+            <div class="col-10">
+                <div class="skeleton skeleton-rect" style="width: 90%;"></div><br>
+                <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+            </div>
+        </div>
+        <div class="employee-contact p-2">
+            <div class="skeleton skeleton-rect" style="width: 90%;"></div><br>
+            <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    function get_struct_div(){
+        return `
+            <div class="plus-employee-card" onclick="window.nextWeb('employees/edit_employee/{id}/')">
+                
+                <div class="plus-employee-info-card">
+                    <div class="employee-photo">
+                        <img src=" { avatar } " alt="photo demployee">
+                    </div>
+                    <div class="employee-info">
+                        <h3 class="employee-name">{name}</h3>
+                        <p class="employee-branch"><i class="fi fi-rs-building"></i> { branch }</p>
+                        <div class="employee-tags">
+                            <span class="tag-department dentista" style="background: { department_color } ">{ department }</span>
+                            <span>● { role }</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="employee-contact p-2">
+                    <p> <i class="fi fi-rr-envelope"></i> { email } </p>
+                    <p><i class="fi fi-brands-whatsapp"></i> { cellphone }</p>
+                    <p><i class="fi fi-rr-phone-flip"></i> { phone }</p>
+                </div>
+            </div>
+        `
+    }
+
+
+
+
+
+    //here we will to start the container dynamic of the employees
+    window.update_container_with_seeker(
+        ['search-employee', 'branch-id-select', 'status-employe'],
+        'employee-list',
+        get_struct_div(),
+        '/employees/search_employee/1/',
+        'GET'
+    );
+
+
+</script>

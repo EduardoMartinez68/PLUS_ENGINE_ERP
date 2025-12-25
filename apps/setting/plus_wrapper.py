@@ -95,7 +95,7 @@ class Plus:
             - True and empty string if permission is granted
             - False and an error message if permission is denied
         """
-        return True
+
         from core.models import Role
         # 1️⃣ Check permission of the main user
         # related to the intermediate user-role table

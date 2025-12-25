@@ -1,4 +1,31 @@
-<div class=container-section><plus-search input_id=seacrh> <search-option> <button class="btn btn-add" onclick="nextWeb('rolesAndPermissions/add_a_new_rol/')">+</button> </search-option> <search-option> <plus-actions> <plus-action icon="fi fi-br-refresh" combo=Shift+r onclick=open_pop_restart text=rolesAndPermissions.option.restart-role></plus-action> </plus-actions> </search-option> </plus-search><table class=section><thead><tr><th style=width:30%>Nombre del Rol<th style=width:80%>Descripción<th style=width:10%><tbody id=table-role></table></div><script>(() => {
+<div class="container-section">
+    <plus-search input_id="seacrh">
+        <search-option>
+            <button  class="btn btn-add" onclick="nextWeb('rolesAndPermissions/add_a_new_rol/')">+</button>
+        </search-option>
+        <search-option>
+            <plus-actions>
+                <plus-action text="rolesAndPermissions.option.restart-role" onclick="open_pop_restart" combo="Shift+r" icon="fi fi-br-refresh"></plus-action>
+            </plus-actions>
+        </search-option>
+    </plus-search>
+
+
+    <table class="section">
+        <thead>
+            <tr>
+                <th style="width: 30%;">Nombre del Rol</th>
+                <th style="width: 80%;">Descripción</th>
+                <th style="width: 10%;"></th>
+            </tr>
+        </thead>
+        <tbody id="table-role">
+        </tbody>
+    </table>
+</div>
+
+<script>
+    (() => {
         const divHtml = `
             <tr>
                 <td> { name } </td>
@@ -54,7 +81,34 @@
         }else{
             show_alert('error', 'Error', backend.message || 'rolesAndPermissions.message.error.unexpected-error', backend.error || '');
         }
-    }</script><message-pop name=restart-role title=rolesAndPermissions.pop.title-restart-role> <div class=search-container><i class="fi fi-rs-search search-icon"></i><input class=search-input id=seacrh-role-delete t-placeholder=message.search></div> <div class=container-pop><table class=section><thead><tr><th style=width:30%>Nombre del Rol<th style=width:80%>Descripción<th style=width:10%><tbody id=table-role-delete></table></div> </message-pop><script>function create_new_role(){
+    }
+
+</script>
+
+
+
+<message-pop title="rolesAndPermissions.pop.title-restart-role" name="restart-role">
+    <div class="search-container">
+        <i class="fi fi-rs-search search-icon"></i>
+        <input type="text" class="search-input" t-placeholder="message.search" id="seacrh-role-delete">
+    </div>
+
+    <div class="container-pop">
+        <table class="section">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Nombre del Rol</th>
+                    <th style="width: 80%;">Descripción</th>
+                    <th style="width: 10%;"></th>
+                </tr>
+            </thead>
+            <tbody id="table-role-delete">
+            </tbody>
+        </table>
+    </div>
+</message-pop>
+<script>
+    function create_new_role(){
         nextWeb('rolesAndPermissions/add_a_new_rol/');
     }
 
@@ -111,4 +165,5 @@
                 show_alert('error', 'Error', backend.message || 'rolesAndPermissions.message.error.unexpected-error', backend.error || '');
             }
         }
-    }</script>
+    }
+</script>

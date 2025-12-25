@@ -1,0 +1,329 @@
+{% load static %}
+{% include 'partialsCustomers/navbarHome.html' %}
+
+<style>
+    .img-upload{
+        width: 28%;
+        height: auto;
+    }
+
+    .text-description{
+        width: 50%; text-align: left;
+    }
+
+    @media (max-width: 768px) {
+        .text-description {
+            width: 100%;
+            text-align: center;
+        }
+
+        .img-upload{
+            width: 100%;
+            height: auto;
+        }
+    }
+
+    /*upload excel*/
+    .progress-bar {
+        width: 0%;
+        height: 6px;
+        background-color: #28a745;
+        border-radius: 5px;
+        transition: width 0.3s ease;
+    }
+
+    .progress-container {
+        width: 100%;
+        background: #eee;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-top: 1rem;
+    }
+
+    .file-info {
+        font-size: 0.9rem;
+        color: #555;
+        margin-top: 10px;
+    }
+
+    /* hidden the container to start */
+    #container-file-excel {
+        display: none;
+    }
+
+    /* container fot the table preview */
+    .table-preview {
+        margin-top: 1rem;
+    }
+
+    .table-preview .table-responsive {
+        max-height: 420px;
+        overflow: auto;
+    }
+</style>
+
+
+<!---container for upload the file excel--->
+<div class="container-section" id="container-info-excel">
+    <center>
+        <label t="customers.tutorial.title-upload-excel"></label>
+        <br>
+        <div class="text-description">
+            <label t="customers.tutorial.steps-for-upload-customer-with-excel"></label>
+            <br>
+            <b t="customers.note.steps-for-upload-customer-with-excel" class="text-alert"></b>
+            <br>
+        </div>
+        <img src="{% static 'img/upload-home.webp' %}" alt="Customer Home" loading="lazy" class="img-upload">
+        <br><br><br><br><br><br>
+
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-info btn-success" t="customers.btn.download-excel" id="btn-download"></button>
+            </div>
+            <div class="col">
+                <button class="btn btn-edit btn-success" t="customers.btn.upload-excel" id="btn-upload"></button>
+            </div>
+        </div>
+
+    </center>
+</div>
+
+
+
+<!---container for show the preview of the excel--->
+<div class="container-section" id="container-file-excel">    
+    <form id="form-file-excel">
+        {% csrf_token %}
+        <input type="file" id="file-input" accept=".xlsx,.xls" style="display: none;" name="file">
+        <div class="file-info" id="file-info"><p t="customers.button.nothing-file-selected"></p></div>
+        <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+
+
+        <!---preview container of the excel--->
+        <div class="section">
+            <div class="table-preview">
+                <div id="preview-meta" class="mb-2 text-muted"></div>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered" id="container-table-customers">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-10">
+                <button id="btn-send" class="btn btn-add btn-success" t="customers.button.import" disabled type="button"></button>
+            </div>
+            <div class="col-2">
+                <button id="btn-send" class="btn btn-delete-tr btn-success" type="button" t="customers.button.delete-file" onclick="delete_file_excel()"></button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // load the library SheetJS for read the files of excel
+    load_script("{% static 'js/library/xlsx.full.min.js' %}");
+
+    function delete_file_excel(){
+        /*
+        this script is for return the the view of load for that the user 
+        can load other excel file and clear the input of the excel
+        */
+        const divUploadFile=document.getElementById('container-info-excel')
+        const divContainerExcel=document.getElementById('container-file-excel')
+        divContainerExcel.style.display = 'none';
+        divUploadFile.style.display = 'block';
+        selectedFile = null;
+        document.getElementById("file-input").value = "";
+    }
+
+    (()=>{
+        const input = document.getElementById('file-input');
+        const btnDownload = document.getElementById('btn-download');
+        const btnUpload = document.getElementById('btn-upload');
+        const btnSend = document.getElementById('btn-send');
+        const fileInfo = document.getElementById('file-info');
+        const progressBar = document.getElementById('progress-bar');
+        const containerInfo = document.getElementById('container-info-excel');
+        const containerFile = document.getElementById('container-file-excel');
+        const containerTable = document.getElementById('container-table-customers');
+        const previewMeta = document.getElementById('preview-meta');
+
+        let selectedFile = null;
+
+        // Helper: esperar a que XLSX esté disponible (SheetJS)
+        function ensureXLSXLoaded(timeout = 5000) {
+            return new Promise((resolve, reject) => {
+                if (window.XLSX) return resolve();
+                const start = Date.now();
+                const intv = setInterval(() => {
+                    if (window.XLSX) {
+                        clearInterval(intv);
+                        return resolve();
+                    }
+                    if (Date.now() - start > timeout) {
+                        clearInterval(intv);
+                        return reject(new Error('La librería XLSX no se cargó a tiempo.'));
+                    }
+                }, 100);
+            });
+        }
+
+        // Parsear y previsualizar primeras 100 filas
+        function parseAndPreview(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    try {
+                        const data = new Uint8Array(evt.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const sheetName = workbook.SheetNames[0];
+                        const sheet = workbook.Sheets[sheetName];
+                        // header:1 para obtener arrays de filas
+                        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+                        const totalRows = rows.length;
+                        const totalCols = rows[0] ? rows[0].length : 0;
+                        const sample = rows.slice(0, 100); // primeras 100 filas
+
+                        // Construir tabla HTML
+                        let html = '';
+                        if (sample.length === 0) {
+                            html = '<tbody><tr><td>Archivo vacío o hoja sin datos</td></tr></tbody>';
+                        } else {
+                            // Usamos la primera fila como encabezado visual (si parece headers)
+                            const firstRow = sample[0];
+                            html += '<thead class="thead-light"><tr>';
+                            for (let c = 0; c < Math.max(...sample.map(r => r.length)); c++) {
+                                const cell = firstRow[c] ?? (`Col ${c+1}`);
+                                html += `<th scope="col">${cell}</th>`;
+                            }
+                            html += '</tr></thead><tbody>';
+                            // Resto de filas (si solo hay 1 fila, tbody quedará vacío)
+                            for (let r = 1; r < sample.length; r++) {
+                                html += '<tr>';
+                                const row = sample[r];
+                                for (let c = 0; c < Math.max(...sample.map(r => r.length)); c++) {
+                                    html += `<td>${(row && row[c]) != null ? row[c] : ''}</td>`;
+                                }
+                                html += '</tr>';
+                            }
+                            html += '</tbody>';
+                        }
+
+                        containerTable.innerHTML = html;
+                        previewMeta.innerHTML = `<strong>Hoja:</strong> ${sheetName} — <strong>Filas totales (estimadas):</strong> ${totalRows} — <strong>Columnas:</strong> ${totalCols} — <small>(mostrando primeras ${Math.min(100, totalRows)} filas)</small>`;
+
+                        resolve({ totalRows, totalCols });
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+
+                reader.onerror = (e) => {
+                    reject(e);
+                };
+
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        //download the file from the backend
+        btnDownload.addEventListener('click', () => {
+            window.location.href = "{% url 'download_excel_template' %}";
+        });
+
+        // open the input to do click
+        btnUpload.addEventListener('click', () => {
+            input.click();
+        });
+
+        // select the file in the computer: validate size, preview and show the container of the excel
+        input.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            containerTable.innerHTML = ''; // clear the table of preview
+            previewMeta.innerHTML = '';
+            
+            //if not exist a file we will to show a message of error 
+            if (!file) {
+                show_alert('alert', 'customers.title.the-file-not-was-upload-with-sueccess', 'customers.button.nothing-file-selected');
+                fileInfo.textContent = '';
+                btnSend.disabled = true;
+                return;
+            }
+
+            //here we will see if the file that the user would like upload not be very big
+            const maxSizeMB = 5;
+            const fileSizeMB = (file.size / (1024 * 1024));
+            const fileSizeMBRounded = fileSizeMB.toFixed(2);
+            if (fileSizeMB > maxSizeMB) {
+                //create a message of alert for show to the user the value that the file need have for be send to the backend 
+                const text=`${window.translate_text('customers.message.the-file-is-very-heavy')}: ${fileSizeMBRounded}. ${window.translate_text('customers.message.the-maximum-allowed-is')} ${maxSizeMB} MB.`;
+                show_alert('alert', 'customers.title.the-file-not-was-upload-with-sueccess', text);
+                fileInfo.innerHTML = text;
+                btnSend.disabled = true;
+                selectedFile = null;
+                return;
+            }
+
+            //save the file excel that be send after to the server and activate the button for send the file to the server
+            selectedFile = file;
+            fileInfo.innerHTML = `✅ <b>${file.name}</b> (${fileSizeMBRounded} MB)`;
+            btnSend.disabled = false;
+            progressBar.style.width = '0%';
+
+            //show a message of preview
+            previewMeta.innerHTML = window.translate_text('customers.message.load-preview');
+            try {
+                await ensureXLSXLoaded(7000);
+                await parseAndPreview(file);
+
+                //show the container of the table and hidden the load info
+                containerInfo.style.display = 'none';
+                containerFile.style.display = 'block';
+            } catch (err) {
+                previewMeta.innerHTML = '';
+                show_alert('error', 'customers.title.the-file-not-was-upload-with-sueccess', 'customers.error.load-preview', err);
+            }
+        });
+
+
+
+
+        // send the file to the server when the user do a click in the button of import 
+        btnSend.addEventListener('click', async () => {
+            if (!selectedFile) return;
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            btnSend.disabled = true;
+            fileInfo.textContent = window.translate_text('customers.message.upload-file');
+
+            try {
+                const response = await fetch("{% url 'upload_excel_customers' %}", {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                    body: formData
+                });
+
+                //we will see if can add all the customer
+                if (response.ok) {
+                    fileInfo.textContent = '';
+                    progressBar.style.width = '100%';
+                    delete_file_excel();
+                    show_alert('success', 'customers.title.the-file-was-upload-with-sueccess', 'customers.message.the-file-was-upload-with-sueccess');
+                } else {
+                    progressBar.style.width = '0%';
+                    show_alert('error', 'customers.title.the-file-not-was-upload-with-sueccess', 'customers.message.the-file-not-was-upload-with-sueccess');
+                }
+            } catch (error) {
+                fileInfo.textContent = '';
+                show_alert('error', 'customers.title.the-file-not-was-upload-with-sueccess', 'customers.error.upload-file', error);
+                progressBar.style.width = '0%';
+            } finally {
+                btnSend.disabled = false;
+            }
+        });
+
+    })();
+</script>

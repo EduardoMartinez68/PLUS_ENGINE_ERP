@@ -79,6 +79,10 @@ for app_name in os.listdir(apps_dir):
                 # Esto evita error si la tabla aún no está creada (ej. antes de migraciones)
                 pass
         '''
+#---------------------------------------------------------------LOAD ALL THE PLUGINS IN THE ERP FOR CREATE THE NEW VIEWS-----------------------------------
+from extensions import load_plugins_and_extensions
+load_plugins_and_extensions()
+
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -80,12 +80,12 @@ def build_app_views(app_path):
         with open(final_output_path, 'w', encoding='utf-8') as f_out:
             f_out.write(optimized_html)
             
-        print(f"Successfully built view: {view_name} -> {final_output_path}")
 
-# --- Execution ---
-# Set the root path of your application module
-folders_apps=get_plugin_directories('apps')
-for app in folders_apps:
-    build_app_views(app) 
+def load_plugins_and_extensions():
+    # --- Execution ---
+    # Set the root path of your application module
+    folders_apps=get_plugin_directories('apps')
+    for app in folders_apps:
+        build_app_views(app) 
 
-print('All the plugins was upload with success')
+    print('All the plugins was upload with success')
