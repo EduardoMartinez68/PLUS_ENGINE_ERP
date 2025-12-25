@@ -26,3 +26,5 @@ openpyxl==3.1.5
 
 celery==5.6.0
 redis==4.6.0
+
+minify_html==0.18.1
