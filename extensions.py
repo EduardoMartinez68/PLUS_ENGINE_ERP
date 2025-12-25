@@ -84,5 +84,8 @@ def build_app_views(app_path):
 
 # --- Execution ---
 # Set the root path of your application module
-app_root = "apps/customers"
-build_app_views(app_root)
+folders_apps=get_plugin_directories('apps')
+for app in folders_apps:
+    build_app_views(app) 
+
+print('All the plugins was upload with success')
