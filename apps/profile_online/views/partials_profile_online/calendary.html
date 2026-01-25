@@ -1,0 +1,487 @@
+
+<style>
+    :root {
+        --primary-color: #085DA8;
+        --secondary-color: #6e84a3;
+        --success-color: #00d97e;
+        --bg-light: #f9fbfd;
+        --border-color: #e3ebf6;
+        --text-main: #12263f;
+        --white: #ffffff;
+    }
+
+    .card-content {
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        padding: 24px;
+        max-width: 1000px;
+        margin: 20px auto;
+        color: var(--text-main);
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .calendar-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        background: var(--bg-light);
+        padding: 10px 15px;
+        border-radius: 8px;
+    }
+
+    #week-label {
+        font-weight: 600;
+        color: var(--secondary-color);
+        font-size: 0.95rem;
+    }
+
+    .btn-nav {
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+        color: var(--primary);
+    }
+
+    .btn-nav:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    /* Grid del Calendario */
+    #calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 12px;
+    }
+
+    .day-column {
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 12px;
+        min-height: 150px;
+        transition: transform 0.2s;
+    }
+
+    .day-column:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 8px rgba(44, 123, 229, 0.1);
+    }
+
+    .day-header {
+        display: block;
+        text-align: center;
+        border-bottom: 2px solid var(--bg-light);
+        padding-bottom: 8px;
+        margin-bottom: 10px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--secondary-color);
+    }
+
+    /* Slots de tiempo */
+    .time-slot {
+        display: block;
+        width: 100%;
+        margin-bottom: 8px;
+        padding: 8px 4px;
+        border: 1px solid var(--primary-color);
+        background: transparent;
+        color: var(--primary-color);
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+    }
+
+    .time-slot:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .no-slots {
+        color: #95aac9;
+        font-size: 0.75rem;
+        text-align: center;
+        font-style: italic;
+        margin-top: 10px;
+    }
+
+    /* Loader */
+    #loading {
+        font-weight: 600;
+        color: var(--primary-color);
+        padding: 20px;
+    }
+
+    /* Adaptabilidad Móvil */
+    @media (max-width: 900px) {
+        #calendar-days {
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        }
+    }
+
+    @media (max-width: 600px) {
+        #calendar-days {
+            grid-template-columns: 1fr;
+        }
+        .day-column {
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .time-slot {
+            max-width: 200px;
+        }
+    }
+</style>
+
+<div class="card-content">
+    <div class="section-title">
+        <span>🗓</span> Horarios Disponibles
+    </div>
+    
+    <div class="calendar-nav">
+        <button id="prev-week" class="btn-nav">← Anterior</button>
+        <span id="week-label">Cargando fechas...</span>
+        <button id="next-week" class="btn-nav">Siguiente →</button>
+    </div>
+
+    <div id="calendar-container">
+        <div id="loading" style="display:none; text-align:center;">
+            <div class="spinner"></div> Cargando disponibilidad...
+        </div>
+        <div id="calendar-days"></div>
+    </div>
+</div>
+
+<script>
+    const calendarContainer = document.getElementById("calendar-days");
+    const loadingIndicator = document.getElementById("loading");
+    const weekLabel = document.getElementById("week-label");
+
+    let currentMonday = null;
+
+    function getMonday(d) {
+        d = new Date(d);
+        const day = d.getDay() || 7; // domingo=0
+        if (day !== 1)
+            d.setHours(-24 * (day - 1));
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+    
+    async function loadWeek(date) {
+        currentMonday = getMonday(date);
+        const startDateStr = currentMonday.toISOString().split('T')[0];
+
+        // mostrar carga
+        loadingIndicator.style.display = "block";
+        calendarContainer.innerHTML = "";
+
+        const url = "{% url 'view_schedules_online_json' profile.public_slug %}?start_date=" + startDateStr;
+        const res = await fetch(url);
+        const data = await res.json();
+        loadingIndicator.style.display = "none";
+
+        if (!data.success) {
+            calendarContainer.innerHTML = "<p>Error al obtener horarios</p>";
+            return;
+        }
+
+        const days = data.days;
+        weekLabel.textContent = `${data.start_date} → ${data.end_date}`;
+
+        calendarContainer.innerHTML = "";
+
+        const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        const dayNamesS = {
+            "Monday":"Lunes", 
+            "Tuesday":"Martes", 
+            "Wednesday":"Miercoles", 
+            "Thursday":"Jueves", 
+            "Friday":"Viernes", 
+            "Saturday":"Sabado",
+             "Sunday":"Domingo"
+        };
+        dayNames.forEach(day => {
+            
+            const dayDiv = document.createElement("div");
+            dayDiv.style.border = "1px solid #ddd";
+            dayDiv.style.borderRadius = "6px";
+            dayDiv.style.padding = "10px";
+            dayDiv.style.background = "#f9f9f9";
+
+            const title = document.createElement("strong");
+            title.textContent = dayNamesS[day];
+            dayDiv.appendChild(title);
+
+            const slots = days[day] || [];
+            if (slots.length === 0) {
+                const p = document.createElement("p");
+                p.textContent = "No disponible";
+                p.style.fontSize = "0.85rem";
+                dayDiv.appendChild(p);
+            } else {
+                slots.forEach(slot => {
+                    const btn = document.createElement("button");
+                    btn.textContent = slot.start_time + " - " + slot.end_time;
+                    btn.style.display = "block";
+                    btn.style.width = "100%";
+                    btn.style.marginTop = "5px";
+                    btn.style.padding = "6px 0";
+                    btn.style.borderRadius = "4px";
+                    btn.style.border = "1px solid #3d7cc9";
+                    btn.style.background = "white";
+                    btn.style.cursor = "pointer";
+
+                    btn.addEventListener("click", () => {
+                        const modal = document.getElementById("appointment-modal");
+                        modal.style.display = "flex";
+
+                        // llenar campos ocultos
+                        const slotDate = slot.date instanceof Date 
+                            ? slot.date.toISOString().slice(0,10) 
+                            : slot.date; 
+                        document.getElementById("form-date").value = slotDate;
+                        document.getElementById("form-start-time").value = slot.start_time;
+                        document.getElementById("form-end-time").value = slot.end_time;
+                    });
+
+                    dayDiv.appendChild(btn);
+                });
+            }
+
+            calendarContainer.appendChild(dayDiv);
+        });
+    }
+    
+    document.getElementById("prev-week").addEventListener("click", () => {
+        const prev = new Date(currentMonday);
+        prev.setDate(prev.getDate() - 7);
+        loadWeek(prev);
+    });
+
+    document.getElementById("next-week").addEventListener("click", () => {
+        const next = new Date(currentMonday);
+        next.setDate(next.getDate() + 7);
+        loadWeek(next);
+    });
+
+    // inicializar calendario con la semana actual
+    loadWeek(new Date());
+</script>
+
+
+
+<!-------------------------------------->
+<style>
+/* Estilos del Modal */
+#appointment-modal {
+    display: none; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(18, 38, 63, 0.6); /* Azul oscuro traslúcido */
+    backdrop-filter: blur(4px); /* Efecto desenfoque al fondo */
+    justify-content: center; 
+    align-items: center; 
+    z-index: 9999;
+    transition: all 0.3s ease;
+}
+
+.modal-content {
+    background: white; 
+    border-radius: 16px; 
+    padding: 30px; 
+    max-width: 450px; 
+    width: 90%; 
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.close-modal {
+    position: absolute; 
+    top: 20px; 
+    right: 20px; 
+    cursor: pointer; 
+    font-size: 1.5rem;
+    color: var(--secondary-color);
+    transition: color 0.2s;
+}
+
+.close-modal:hover { color: var(--text-main); }
+
+/* Detalles de la cita seleccionada */
+.appointment-details-summary {
+    background: var(--bg-light);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.appointment-details-summary p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+/* Campos del Formulario */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin-bottom: 5px;
+}
+
+.form-input {
+    width: 100%; 
+    padding: 12px; 
+    border: 1px solid var(--border-color); 
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    box-sizing: border-box; /* Importante para el padding */
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(44, 123, 229, 0.1);
+}
+
+.btn-submit {
+    width: 100%; 
+    padding: 14px; 
+    background: var(--primary-color); 
+    color: white; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.2s;
+    margin-top: 10px;
+}
+
+.btn-submit:hover {
+    background: #1a68d1;
+}
+</style>
+<div id="appointment-modal">
+    <div class="modal-content">
+        <span id="close-modal" class="close-modal">&times;</span>
+        
+        <h2 style="text-align:center; margin-top:0; color: var(--text-main);">Confirmar Cita</h2>
+        
+        <div class="appointment-details-summary">
+            <p id="summary-text"><strong>Fecha:</strong> Seleccionando...</p>
+        </div>
+
+        <form id="appointment-form">
+            <input type="hidden" name="date" id="form-date">
+            <input type="hidden" name="start_time" id="form-start-time">
+            <input type="hidden" name="end_time" id="form-end-time">
+
+            <div class="form-group">
+                <label>Nombre Completo</label>
+                <input type="text" name="customer_name" class="form-input" placeholder="Ej. Juan Pérez" required>
+            </div>
+
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <input type="email" name="customer_email" class="form-input" placeholder="juan@ejemplo.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>Teléfono Móvil</label>
+                <input type="tel" name="customer_phone" class="form-input" placeholder="+56 9 1234 5678" required>
+            </div>
+
+            <div class="form-group">
+                <label>Servicio Requerido</label>
+                <select name="service" id="form-service" class="form-input" required style="appearance: auto;">
+                    <option value="">Selecciona un servicio</option>
+                    {% for service in services %}
+                        <option value="{{ service.id }}">{{ service.name }} - ${{ service.price }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit">Confirmar Reserva</button>
+        </form>
+
+        <div id="form-message" style="margin-top:15px; text-align:center; font-size: 0.9rem;"></div>
+    </div>
+</div>
+
+<script>
+document.getElementById("close-modal").addEventListener("click", () => {
+    document.getElementById("appointment-modal").style.display = "none";
+});
+
+
+document.getElementById("appointment-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+
+    const responseDiv = document.getElementById("form-message");
+    responseDiv.textContent = "Reservando cita...";
+    
+    //profile_online/view_profile
+    const res = await fetch("{% url 'reserve_appointment' profile.public_slug %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: formData
+    });
+
+    const data = await res.json();
+    if(data.success){
+        responseDiv.textContent = "¡Cita reservada con éxito!";
+        setTimeout(() => {
+            document.getElementById("appointment-modal").style.display = "none";
+            form.reset();
+            loadWeek(currentMonday); // actualizar slots disponibles
+        }, 1500);
+    } else {
+        responseDiv.textContent = data.message || "Ocurrió un error";
+    }
+});
+</script>

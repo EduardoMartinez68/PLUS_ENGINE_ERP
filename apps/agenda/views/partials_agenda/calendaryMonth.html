@@ -1,0 +1,533 @@
+<style>
+    .calendar {
+        background-color: transparent;
+        border-radius: 20px;
+        padding: 20px;
+        max-width: 420px;
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .calendar-header h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        color: var(--primary);
+    }
+
+    .nav-buttons button {
+        background-color: transparent;
+        color: var(--primary);
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 8px;
+        transition: background 0.2s;
+    }
+
+    .nav-buttons button:hover {
+        background-color: #f0f0f0;
+    }
+
+    .day-names,
+    .days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+        gap: 10px;
+    }
+
+    .day-names div {
+        font-weight: bold;
+        color: #888;
+    }
+
+    .days div {
+        padding: 10px 0;
+        border-radius: 10px;
+        transition: all 0.2s;
+        cursor: default;
+    }
+
+    .days div.today {
+        background-color: var(--primary);
+        color: white;
+        font-weight: bold;
+    }
+
+    .days div:hover {
+        background-color: #f0f0f5;
+    }
+
+    .days div.empty {
+        visibility: hidden;
+    }
+
+    .title-number-day {
+        font-size: 5rem;
+    }
+
+    .title-day {
+        font-size: 2.5rem;
+    }
+
+   /* 📱 Media Queries para celulares */
+    @media (max-width: 768px) {
+        .calendar {
+            padding: 15px;
+        }
+
+        .day-names div,
+        .days div {
+            font-size: 0.8rem;
+        }
+
+        .title-number-day {
+            font-size: 4rem;
+        }
+
+        .title-day {
+            font-size: 2rem;
+        }
+
+        .nav-buttons button {
+            font-size: 1rem;
+            padding: 4px 8px;
+        }
+
+        .calendar-header h2 {
+            font-size: 1.2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .calendar {
+            padding: 10px;
+        }
+
+        .day-names,
+        .days {
+            gap: 5px;
+        }
+
+        .day-names div,
+        .days div {
+            font-size: 0.7rem;
+            padding: 6px 0;
+        }
+
+        .title-number-day {
+            font-size: 3rem;
+        }
+
+        .title-day {
+            font-size: 1.5rem;
+        }
+
+        .nav-buttons button {
+            font-size: 0.9rem;
+            padding: 3px 6px;
+        }
+
+        .calendar-header h2 {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .container-calendary-month {
+            display: none;
+        }
+    }
+
+
+    /*CELLPHONE*/
+    .container-calendary-month.only-mobile {
+    position: fixed;
+    z-index: 1000;
+
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 45px rgba(0,0,0,.25);
+
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px) scale(.98);
+
+    transition: all .25s cubic-bezier(.4,0,.2,1);
+    display:block;
+    }
+    .container-calendary-month.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    }
+
+/* Contenedor de los indicadores */
+.event-dots {
+    display: flex;
+    flex-wrap: wrap;   
+    justify-content: center;
+    gap: 1px;        
+    margin-top: 3px;
+    padding: 0 1px;
+}
+
+.event-dot {
+    width: 7px;
+    height: 7px;
+    display: inline-block;
+}
+</style>
+<div class="container-calendary-month" id="container-calendary-month">
+    <br>
+    <label class="title-number-day" id="numberDay">1</label>
+    <label class="title-day" id="textDay">FRI</label>
+    <button class="btn btn-normal" id="btnTodayCalendaryMonth" t="range.today">Today</button>
+
+
+    <div class="calendar">
+        <div class="calendar-header">
+            <div class="nav-buttons">
+                <button onclick="window.changeMonth(-1)">❮</button>
+            </div>
+            <h2 id="month-year"></h2>
+            <div class="nav-buttons">
+                <button onclick="window.changeMonth(1)">❯</button>
+            </div>
+        </div>
+        <div class="day-names">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+        </div>
+        <div class="days" id="calendar-days"></div>
+    </div>
+</div>
+
+
+<script>
+    (async () => {
+        let currentDate = new Date(); // Global variable for know in that date be
+        let userSelectDay = new Date();
+
+        //here we will to save all the range of date that the user already load in the frontend
+        window.loadedRanges = [
+        //{ start: '2026-01-01', end: '2026-03-31' }
+        ];
+
+        function change_info_language() {
+            //get the days in his language
+            const dayNames = [
+                window.translate_text('date.sunday'),
+                window.translate_text('date.monday'),
+                window.translate_text('date.tuesday'),
+                window.translate_text('date.wednesday'),
+                window.translate_text('date.thursday'),
+                window.translate_text('date.friday'),
+                window.translate_text('date.saturday')
+            ];
+
+            //her get the divs where is the days
+            const dayNamesDivs = document.querySelectorAll('.day-names div');
+            for (let i = 0; i < dayNamesDivs.length; i++) {
+                dayNamesDivs[i].textContent = dayNames[i]; //update the text
+            }
+        }
+
+        function update_text_day(numberDay) {
+            document.getElementById('numberDay').textContent = numberDay;
+            document.getElementById('textDay').textContent = ''
+        }
+
+        function renderCalendar(date) {
+            const monthYearText = document.getElementById('month-year');
+            const daysContainer = document.getElementById('calendar-days');
+
+            const year = date.getFullYear();
+            const month = date.getMonth();
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const today = new Date();
+
+            monthYearText.textContent = date.toLocaleDateString('es-MX', {
+                month: 'long',
+                year: 'numeric'
+            });
+
+            daysContainer.innerHTML = '';
+
+            const startDay = firstDay.getDay();
+            for (let i = 0; i < startDay; i++) {
+                const empty = document.createElement('div');
+                empty.classList.add('empty');
+                daysContainer.appendChild(empty);
+            }
+
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const dayElement = document.createElement('div');
+                dayElement.textContent = day;
+
+                // show the day current
+                if (
+                    today.getFullYear() === year &&
+                    today.getMonth() === month &&
+                    today.getDate() === day
+                ) {
+                    dayElement.classList.add('today');
+                }
+
+                //here we will see if in this day exist a event in the calendary for show that this day exist a event
+                const currentIterationDate = new Date(year, month, day); //create the day
+                const eventsOfDay = get_first_4_appointments_of_day(currentIterationDate);
+
+                if (eventsOfDay.length > 0) {
+                    const eventDotContainer = document.createElement('div');
+                    eventDotContainer.classList.add('event-dots');
+                    
+                    eventsOfDay.forEach(event => {
+                        const dataAppoints = event.appoints[0]; // Asumiendo que esta es tu estructura
+                        const dot = document.createElement('span');
+
+                        dot.classList.add('event-dot');
+                        
+                        // Asignamos el color dinámico del tipo de cita
+                        if (dataAppoints.type_appoint && dataAppoints.type_appoint.color) {
+                            dot.style.backgroundColor = dataAppoints.type_appoint.color;
+                        } else {
+                            dot.style.backgroundColor = '#ccc'; // Color gris por defecto si no hay uno
+                        }
+
+                        eventDotContainer.appendChild(dot);
+                    });
+                    
+                    dayElement.appendChild(eventDotContainer);
+                }
+                
+
+                // ✅ event clic when the user do click in a day
+                dayElement.addEventListener('click', () => {
+                    const clickedDate = new Date(year, month, day);
+                    renderWeek(clickedDate);
+                    update_text_day(day)
+                });
+
+                daysContainer.appendChild(dayElement);
+            }
+
+        }
+
+        async function changeMonth(step) {
+            currentDate.setMonth(currentDate.getMonth() + step); // We use the global variable
+            await get_the_information_of_the_calendary();
+            renderCalendar(currentDate);
+        }
+
+        function get_month_current() {
+            return currentDate.getMonth();
+        }
+
+        function reset_appoint_in_the_calendar(){
+            window.loadedRanges=[]
+            window.listAppoints=[]
+        }
+        window.reset_appoint_in_the_calendar=reset_appoint_in_the_calendar;
+
+        document.getElementById('btnTodayCalendaryMonth').addEventListener('click', () => {
+            currentDate = new Date(); // restart to the day
+            update_text_day(currentDate.getDate())
+            renderCalendar(currentDate);
+            window.render_this_day();
+        });
+
+
+
+        //---------------------------------------------------now get information of the agenda in the backend--------------------------------------
+        function is_range_loaded(startDate, endDate) {
+            return window.loadedRanges.some(range => {
+                return new Date(startDate) >= new Date(range.start) &&
+                    new Date(endDate)   <= new Date(range.end);
+            });
+        }
+
+        function remove_duplicate_appointments() {
+            if (!window.listAppoints || !Array.isArray(window.listAppoints)) return [];
+
+            // We create a Map using the ID as the key
+            // This ensures that only the last element found for each ID remains
+            const uniqueMap = new Map();
+
+            window.listAppoints.forEach(item => {
+                if (item.id) {
+                    uniqueMap.set(item.id, item);
+                }
+            });
+
+            // convert the map to an array
+            window.listAppoints=Array.from(uniqueMap.values());
+        }
+
+        async function get_the_information_of_the_calendary(date=null){
+            //first we will get the range of date that need get
+            const { startDate, endDate } = get_month_range(date);
+
+            //now need see if exist the data in the list for render in the agenda
+            const existDataCurrentMonth=is_range_loaded(startDate, endDate);
+            if(existDataCurrentMonth){
+                return;
+            }
+
+            //if need get the new information from the server, now we will to create a screen load in the calendar
+            show_calendar_loader(); //show the loader in the calendar while we load the information
+
+            //if not exist appoints of this month now we will to get the information from teh server
+            //now with the information of the next and the previous month we can get the events from the server
+            const response = await send_message_to_the_server('/agenda/get_events_by_date_range/', {
+                start_date: startDate,
+                end_date: endDate
+            }, false, 'GET');
+            
+            if (response.success) {
+                add_this_information_to_the_appointments_list(response.data); //update the list with the new information
+
+                //when the new appoints was add to the list also delete all the appoints that be duplicate
+                remove_duplicate_appointments();
+
+                //save the range of date that the user already visit
+                window.loadedRanges.push({
+                    start: startDate,
+                    end: endDate
+                });
+
+
+                //render the week
+                renderWeek(currentDate)
+            } else {
+                console.error('Error al obtener la información del calendario:', response.error);
+            }
+        }
+
+        //this function is for create the range of date use a month and get the start and end date
+        //of the next month and the after month
+        function get_month_range(date=null) {
+            //const currentDate = currentDate;
+            if(date==null){
+                date=currentDate; //if not have a date now we will get the date global
+            }
+            
+            const year = date.getFullYear();
+            const month = date.getMonth();
+
+            //first day of the month after
+            const startDate = new Date(year, month - 1, 1);
+
+            // last day of the month after
+            const endDate = new Date(year, month + 2, 0);
+
+            return { startDate, endDate };
+        }
+
+        //this functions is for update the list of appointments when need update a month in the calendar
+        function update_appointments_list(date, appointments) {
+            // Extract month and year from the date
+            const month = date.getMonth();
+            const year = date.getFullYear();
+
+            // Find the month entry in the list
+            const monthEntry = window.listAppoints.find(item => item.month === month && item.year === year);
+
+            if (monthEntry) {
+                monthEntry.appoints = appointments;
+            } else {
+                // If the month entry doesn't exist, create a new one
+                window.listAppoints.push({
+                    month,
+                    year,
+                    appoints: appointments
+                });
+            }
+        }
+
+        function add_this_information_to_the_appointments_list(appointments) {
+            //now we will to read all the information of the list and add the new appointments with his month
+            appointments.forEach(appointment => {
+                const { date, ...rest } = appointment;
+
+                //here we get the start and finish date
+                const date_start = new Date(rest.date_start);
+                const date_finish = new Date(rest.date_finish);
+                const id=rest.id;
+                
+                //now we will see if the appointment already exists
+                window.listAppoints.push({ id, date_start, date_finish, appoints: [rest] });
+            });
+        }
+
+        function get_the_list_of_appointments() {
+            return window.listAppoints;
+        }
+
+        function get_first_4_appointments_of_day(targetDate) {
+            // 1. Definir el inicio del día (00:00:00.000)
+            const startOfDay = new Date(targetDate);
+            startOfDay.setHours(0, 0, 0, 0);
+
+            // 2. Definir el fin del día (23:59:59.999)
+            const endOfDay = new Date(targetDate);
+            endOfDay.setHours(23, 59, 59, 999);
+
+            return window.listAppoints
+                .filter(item => {
+                    const date_start = new Date(item.date_start);
+                    // Verificamos que el evento comience dentro de ese día específico
+                    return date_start >= startOfDay && date_start <= endOfDay;
+                })
+                // 3. Opcional: Ordenar por hora de inicio (para asegurar que sean los "primeros")
+                .sort((a, b) => new Date(a.date_start) - new Date(b.date_start))
+                // 4. Tomar solo los primeros 4
+                .slice(0, 4);
+        }
+        ////-------------------------------------------------
+        change_info_language(); //second we will translate the text of the agenda
+        update_text_day( currentDate.getDate())
+        
+        async function update_all_the_information_of_my_calendary() {
+            window.reset_appoint_in_the_calendar();
+            await get_the_information_of_the_calendary(); //first get the information of the calendar
+            renderCalendar(currentDate); // ✅ Start with the global variable
+            
+
+
+            
+            window.changeMonth = changeMonth;
+            window.get_the_list_of_appointments = get_the_list_of_appointments;
+            window.get_month_current = get_month_current;
+
+
+            window.render_this_day();
+        }
+
+        await update_all_the_information_of_my_calendary();
+
+        function refresh_calendar(){
+            window.renderCalendar(currentDate);
+        }
+
+        window.update_all_the_information_of_my_calendary=update_all_the_information_of_my_calendary;
+        window.renderCalendar=renderCalendar;
+        window.refresh_calendar=refresh_calendar;
+        window.get_the_information_of_the_calendary=get_the_information_of_the_calendary;
+    })();
+</script>

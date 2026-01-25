@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SingUp</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+  <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+</head>
+<body>
+  {% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <br>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <h2>Crear cuenta</h2>
+    {{ form.non_field_errors }}
+    {{ form.as_p }}
+
+    <button type="submit" t="register">register</button>
+    <br><br>
+    <div class="extra-link">
+    <center><a href="/login" t="have-you-a-account">have you a account?</a></center>
+    </div>
+  </form>
+  <script src="{% static 'js/translate.js' %}" ></script>
+</body>
+</html>

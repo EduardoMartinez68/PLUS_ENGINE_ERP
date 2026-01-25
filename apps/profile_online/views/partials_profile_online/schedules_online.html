@@ -1,0 +1,293 @@
+
+<button class="btn btn-add" t="profile_online.btn.add-schedule-online" onclick="open_pop_form_schedule_online()"></button>
+<message-pop name="pop_form_schedules_online" title="Cita Online">
+    <form id="form_schedules_online">
+        <input type="hidden" id="id_schedules_online">
+        <div class="row section">
+            <div class="col">
+                <plus-select name="day_of_week" label="Selecciona el dia *" id="day" required>
+                    <option value="0">Lunes</option>
+                    <option value="1">Martes</option>
+                    <option value="2">Miércoles</option>
+                    <option value="3">Jueves</option>
+                    <option value="4">Viernes</option>
+                    <option value="5">Sábado</option>
+                    <option value="6">Domingo</option>
+                </plus-select>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col">
+                <label t="Hora inicial *"></label>
+                <plus-time required name="start_time" id="schedules_online_start_time"></plus-time>
+            </div>
+            <div class="col">
+                <label t="Hora final *"></label>
+                <plus-time required name="end_time" id="schedules_online_end_time"></plus-time>
+            </div>
+        </div>
+        <plus-switch text="Horario activo" id="switch-schedules-online" name="is_active"></plus-switch>
+        <br>
+        <br>
+        <button class="btn btn-success btn-edit" t="btn.save" type="button" onclick="send_form_schedule_online()"></button>
+    </form>
+</message-pop>
+
+
+<hr>
+<doctor-online-schedule id="schedule"></doctor-online-schedule>
+
+
+<script>
+    function open_pop_form_schedule_online(){
+        window.restart_form('form_schedules_online');
+        document.getElementById('switch-schedules-online').setChecked(true);
+        window.show_pop('pop_form_schedules_online');
+    }
+
+    async function send_form_schedule_online(){
+        const id=document.getElementById('id_schedules_online');
+        if(id.value){
+            await update_form_schedule_online(id.value)
+        }else{
+            await add_form_schedule_online()
+        }
+    }
+
+    async function update_form_schedule_online(id){
+        const backend=await window.send_form_to_the_server('form_schedules_online', `profile_online/view_update_schedule_online/${id}/`)
+        if(backend.success){
+            //if the schedule can was added to we will to restart the form
+            window.hide_pop('pop_form_schedules_online');
+            window.restart_form('form_schedules_online');
+
+            await initial_schedules_online();
+
+            window.show_notification('success', backend.message || 'info.info-send-with-success');
+        }else{
+            window.show_alert('alert', 'Error', backend.message || 'info.not-was-can-send-the-information', (backend.error || 'info.not-was-can-send-the-information'))
+        }
+    }
+
+    async function add_form_schedule_online(){
+        const backend=await window.send_form_to_the_server('form_schedules_online', 'profile_online/view_add_schedule_online/')
+        if(backend.success){
+            //if the schedule can was added to we will to restart the form
+            window.hide_pop('pop_form_schedules_online');
+            window.restart_form('form_schedules_online');
+
+            //here we will to update the list of the schedules and after we will to render the container
+            //const scheduleElement = document.getElementById("schedule");
+            //scheduleElement.addOrUpdateSchedule(backend.answer);
+            await initial_schedules_online();
+
+            window.show_notification('success', backend.message || 'info.info-send-with-success');
+        }else{
+            window.show_alert('alert', 'Error', backend.message || 'info.not-was-can-send-the-information', (backend.error || 'info.not-was-can-send-the-information'))
+        }
+    }
+</script>
+<script>
+    if (!customElements.get("doctor-online-schedule")) {
+    class DoctorOnlineSchedule extends HTMLElement {
+        constructor() {
+            super();
+            this.attachShadow({ mode: "open" });
+            this._data = [];
+        }
+
+        get data() {
+            return this._data;
+        }
+
+        set data(answer) {
+            this._data = answer || [];
+            this.render();
+        }
+
+        render() {
+            const schedules = this._data;
+            const grouped = {};
+
+            schedules.forEach(s => {
+                if (!grouped[s.day_name]) {
+                    grouped[s.day_name] = [];
+                }
+                grouped[s.day_name].push(s);
+            });
+
+            this.shadowRoot.innerHTML = `
+            <style>
+                :host {
+                    display: block;
+                    font-family: system-ui, -apple-system, sans-serif;
+                }
+
+                .schedule-card {
+                    background: #ffffff;
+                    border-radius: 12px;
+                    padding: 16px;
+                    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+                    max-width: 500px;
+                }
+
+                .day {
+                    margin-bottom: 14px;
+                }
+
+                .day-title {
+                    font-weight: 600;
+                    font-size: 15px;
+                    margin-bottom: 6px;
+                    color: #1f2937;
+                }
+
+                .slot {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 8px 10px;
+                    background: #f9fafb;
+                    border-radius: 8px;
+                    margin-bottom: 6px;
+                }
+
+                .time {
+                    font-size: 14px;
+                    color: #374151;
+                }
+
+                .duration {
+                    font-size: 12px;
+                    color: #6b7280;
+                }
+
+                .actions {
+                    display: flex;
+                    gap: 6px;
+                }
+
+                button {
+                    border: none;
+                    padding: 5px 8px;
+                    border-radius: 6px;
+                    font-size: 12px;
+                    cursor: pointer;
+                }
+
+                .edit {
+                    background: #e0f2fe;
+                    color: #0369a1;
+                }
+
+                .disable {
+                    background: #fee2e2;
+                    color: #991b1b;
+                }
+
+                button:hover {
+                    opacity: 0.85;
+                }
+            </style>
+
+            <div class="schedule-card">
+                ${Object.keys(grouped).length === 0 ? `
+                    <p>No hay horarios configurados</p>
+                ` : `
+                    ${Object.entries(grouped).map(([day, slots]) => `
+                        <div class="day">
+                            <div class="day-title">${day}</div>
+
+                            ${slots.map(slot => `
+                                <div class="slot">
+                                    <div>
+                                        <div class="time">
+                                            🕒 ${slot.start_time} - ${slot.end_time}
+                                        </div>
+                                        <div class="duration">
+                                            ${slot.slot_duration} min por cita
+                                        </div>
+                                    </div>
+
+                                    <div class="actions">
+                                        <button class="edit" data-id="${slot.id}">
+                                            Editar
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join("")}
+                        </div>
+                    `).join("")}
+                `}
+            </div>
+        `;
+
+            this.addEvents();
+        }
+
+        addEvents() {
+            this.shadowRoot.querySelectorAll(".edit").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    this.dispatchEvent(new CustomEvent("edit-schedule", {
+                        detail: { id: btn.dataset.id },
+                        bubbles: true
+                    }));
+                });
+            });
+
+        }
+
+        addOrUpdateSchedule(schedule) {
+            const index = this._data.findIndex(s => s.id === schedule.id);
+
+            if (index !== -1) {
+                // actualizar
+                this._data[index] = schedule;
+            } else {
+                // agregar nuevo
+                this._data.push(schedule);
+            }
+
+            this.render();
+        }
+    }
+
+    customElements.define("doctor-online-schedule", DoctorOnlineSchedule);
+    }
+
+    async function initial_schedules_online() {
+        //here we will to get all the information from the server fro after show in the screen
+        const scheduleElement = document.getElementById("schedule");
+        fetch("/profile_online/view_get_information_about_appoints_online/")
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    scheduleElement.data = data.answer;
+                }
+            });
+
+
+        scheduleElement.addEventListener("edit-schedule", e => {
+            const scheduleId = e.detail.id;
+            const schedule = scheduleElement.data.find(s => s.id == scheduleId);
+
+            // Reiniciar formulario
+            window.restart_form('form_schedules_online');
+
+            // Rellenar campos
+            document.getElementById('day').setValue(schedule.day_of_week);
+            change_plus_time('schedules_online_start_time',schedule.start_time)
+            change_plus_time('schedules_online_end_time',schedule.end_time)
+            document.getElementById('switch-schedules-online').setChecked(schedule.is_active);
+            document.getElementById('id_schedules_online').value=scheduleId;
+
+            // Abrir popup
+            window.show_pop('pop_form_schedules_online');
+        });
+
+
+        scheduleElement.addEventListener("disable-schedule", e => {
+            console.log("Desactivar horario ID:", e.detail.id);
+        });
+    }
+</script>

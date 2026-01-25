@@ -1,0 +1,26 @@
+{
+  "character": {
+    "icon": "fi-rr-address-book"
+  },
+
+
+  "permissions": [
+    "add_appointment",
+    "view_appointment",
+    "update_appointment",
+    "delete_appointment"
+  ],
+
+
+  "translate": {
+    "es": {
+      "app_name": "Agenda",
+      "description": "Gestiona tus citas y eventos desde la app de agenda.",
+
+      "add_appointment": "Crear un nuevo evento",
+      "view_appointment": "Ver eventos agendados",
+      "update_appointment": "Actualizar los detalles de un evento",
+      "delete_appointment": "Eliminar un evento"
+    }
+  }
+}

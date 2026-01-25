@@ -1,0 +1,790 @@
+<!-----this is the weeker of------>
+<!---show the table of the customers and his information--->
+{% load static %}
+<style>
+/* === Tarjeta principal === */
+.info-customer-card {
+  padding: 28px 32px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+  margin: 20px auto;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+/* === Encabezado del cliente === */
+.customer-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 28px;
+  border-bottom: 2px solid #f0f0f5;
+  padding-bottom: 20px;
+}
+
+.customer-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 10%;
+  object-fit: cover;
+  border: 4px solid #e6ebf2;
+}
+
+.customer-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1c1e21;
+}
+
+.status {
+  margin-left: auto;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.status.active {
+  background: #e6f9f0;
+  color: #219150;
+  border: 1px solid #a8e5c1;
+}
+
+.fi-whatsapp{
+  color: #219150;
+}
+
+.status.inactive {
+  background: #fdecec;
+  color: #d93025;
+  border: 1px solid #f5b9b9;
+}
+
+/* === Detalles del cliente === */
+.customer-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px 24px;
+  margin-top: 10px;
+}
+
+.customer-details .detail-box {
+  background: #ffffff;
+  border: 1px solid #f0f2f6;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  transition: all 0.2s ease;
+}
+
+.customer-details .detail-box:hover {
+  background: #f8faff;
+  border-color: #d9e4f5;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.detail-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.4;
+}
+
+
+/* === Mensaje de error elegante === */
+.error-message {
+  background: #fff2f2;
+  color: #b91c1c;
+  padding: 16px;
+  border-radius: 14px;
+  text-align: center;
+  font-weight: 600;
+  border: 1px solid #f5c2c2;
+}
+
+
+.stars {
+    color: #FFD700; /* amarillo brillante para estrellas */
+    font-size: 1.4rem;
+}
+
+.star.filled {
+    color: #FFD700;
+}
+
+.star {
+    color: #ccc;
+}
+
+.status-points {
+    display: flex;
+    gap: 10px; /* Espacio entre tags */
+    margin: 10px 0;
+    font-weight: 500;
+    align-items: center;
+}
+
+/* Estilo común para los tags */
+.status-points span {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px; /* Redondeado completo */
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Tag de puntos */
+.status-points .points {
+    background: #4c7faf; /* Verde agradable */
+}
+
+/* Tag de crédito */
+.status-points .credit {
+    background: #798ebb; /* Naranja cálido */
+}
+
+.customers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  padding-right: 2.5rem;
+  box-sizing: border-box; 
+}
+
+.container-padding {
+  padding-top: 0px;
+  padding-right: 30px;
+  padding-bottom: 0px;
+  padding-left: 30px;
+}
+
+
+.info-customer{
+  margin-top: -58px;
+}
+
+
+/**/
+
+/**/
+.btn-mobile {
+  display: none;
+}
+
+/**/
+.input-actions-wrapper {
+  display: flex;
+  align-items: center; /* centra verticalmente */
+  gap: 8px; /* espacio entre elementos */
+  padding: 0px 32px; /* espacio interno: 8px arriba/abajo, 12px izquierda/derecha */
+  box-sizing: border-box; /* asegura que el padding no rompa el ancho */
+  width: 50%;
+}
+
+.input-actions-wrapper input {
+  flex: 1; /* ocupa todo el espacio restante */
+}
+
+.input-actions-wrapper button,
+.input-actions-wrapper plus-actions {
+  flex: 0 0 auto; /* tamaño según su contenido */
+}
+
+#customer-list {
+  max-height: 83vh;
+  overflow-y: auto;  /* Scroll vertical */
+  overflow-x: hidden; /* Evita scroll horizontal */
+}
+
+
+@media (max-width: 768px) {
+  .btn-mobile {
+    display: inline-block;
+  }
+
+  .input-actions-wrapper {
+    width: 100%;
+  }
+}
+</style>
+
+<!---this is the pop for filter the customer that the user would like search---->
+<message-pop title="title-filter" name="pop-filter-customer">
+    <div class="row">
+        <div class="col">
+            <label t="select-priority"></label>
+            <select label="select-priority" id="filter-priority-customer">
+                <option value="" t="select-priority-0"></option>
+                <option value="1" t="select-priority-1"></option>
+                <option value="2" t="select-priority-2"></option>
+                <option value="3" t="select-priority-3"></option>
+            </select>
+        </div>
+        <div class="col">
+            <label t="customers.options.status-customer"></label>
+            <select label="customers.options.status-customer" id="status-customer">
+                <option value="true" t="option-status-activated">Activate</option>
+                <option value="false" t="option-status-deleted">Delete</option>
+                <option value="" t="option-status-all">All</option>
+            </select>
+        </div>
+    </div>
+
+    <button t="message.success" class="btn btn-edit btn-success" onclick="hide_pop('pop-filter-customer')">Search</button>
+</message-pop>
+<br>
+<plus-switch-column id="customers-switch">
+  <div slot="col1">
+    <plus-search input_id="search-customer">
+      <search-option>
+        <button class="btn btn-add" onclick="nextWeb('customers/add_customer')">+</button>
+      </search-option>
+      <search-option>
+        <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-customer')"><i class="fi fi-rr-settings-sliders"></i></button>
+      </search-option>
+      <search-option>
+          <plus-actions>
+            <plus-action text="title-source" onclick="open_pop_table_source" icon="fi-rr-filter"></plus-action>
+            <plus-action text="title-type-customer" onclick="open_pop_table_type_customer" icon="fi-rs-category"></plus-action>
+            <plus-action text="customers.module.upload-customer-with-excel" onclick="change_web" icon="fi-rr-upload"></plus-action>
+          </plus-actions>
+      </search-option>
+    </plus-search>
+    <br>
+    <!---here is for update the container of the table---->
+    <div class="customers-list" id="customer-list">
+      <div class="section skeleton-container">
+        <div class="skeleton skeleton-circle"></div>
+        <div class="skeleton skeleton-rect"></div>
+        <div class="skeleton skeleton-rect" style="width: 80%;"></div>
+        <div class="skeleton skeleton-input"></div>
+      </div>
+
+      <br>
+      <div class="section skeleton-container">
+        <div class="skeleton skeleton-circle"></div>
+        <div class="skeleton skeleton-rect"></div>
+        <div class="skeleton skeleton-rect" style="width: 80%;"></div>
+        <div class="skeleton skeleton-input"></div>
+      </div>
+    </div>  
+  </div>
+
+  <div slot="col2">
+    <button class="btn btn-edit btn-mobile" onclick="toggle_switch_column('customers-switch',false)">×</button>
+    <div class="info-customer" id="info-customer">
+        <div class="full-center">
+            <img src="{% static 'img/customer_home.webp' %}" alt="Customer Home" loading="lazy">
+            <h3 t="dashboard-no-customer-selected">No customer selected</h3>
+        </div>
+    </div>
+  </div>
+</plus-switch-column>
+
+
+
+<script>
+  function change_web(){
+    window.nextWeb('customers/upload_customer_with_excel/');
+  }
+
+  async function clear_div_data_customer(){
+    // Render of the template
+    const container = document.getElementById('info-customer');
+    container.innerHTML = ""; //clear the container
+    container.innerHTML = `
+      <center>
+        <img src="{% static 'img/customer_home.webp' %}" alt="Customer Home">
+        <h3 t="dashboard-no-customer-selected">No customer selected</h3>
+      </center>
+    `;
+    
+    //update the table of the customers
+    const divHtml = `
+    <plus-customers 
+        id-customer="{ id }" 
+        name="{ name }" 
+        email="{ email }" 
+        phone="{ phone }"
+        tag="{ tag }" 
+        points="{ points }" 
+        credit="{ credit }" 
+        priority="{ priority }"
+        image="{ avatar }"
+        status="{ activated }"
+        customer_type="{ customer_type }"
+        country="{ country }"
+        address="{ address }"
+        city="{ city }"
+        state="{ state }"
+        postal_code="{ postal_code }"
+        num_ext="{ num_ext }"
+        num_int="{ num_int }"
+        reference="{ reference }"
+        this_customer_is_a_company="{ this_customer_is_a_company }"
+        source=" { source } "
+        onclick="window.update_information_div_customer('{ id }')">
+    </plus-customers>
+    `;
+
+    update_container_from_the_server(
+      ['search-customer', 'filter-priority-customer', 'status-customer'],
+      'customer-list',
+      divHtml,
+      '/customers/customers_search',
+      'GET'
+    )
+  }
+
+  function render_stars(priority) {
+        let stars = '';
+        const maxStars = 3;
+        for (let i = 1; i <= maxStars; i++) {
+            if (i <= priority) {
+                stars += '<span class="star filled">★</span>';
+            } else {
+                stars += '<span class="star">☆</span>';
+            }
+        }
+        return stars;
+    }
+  
+  async function open_pop_delete_customer(customer_id){
+    //here we will do a question to the user, if the would like desactivate the customer
+    if (await show_message_question('customer.question.title.do-you-delete-this-customer', 'customer.question.description.do-you-delete-this-customer')) {
+
+      //send the information to the server for know if can desactivate the customer
+      const answer = await send_message_to_the_server('/customers/change_status_customer/', {customer_id: customer_id, status:false}, true);
+      if (answer.success) {
+        await clear_div_data_customer();
+        show_alert('success', 'customer.message.title.delte-customer', 'customer.message.description.delte-customer')
+      } else {
+        show_alert('alert', window.t('error.general'), answer.message, answer.error);
+      }
+    }
+  }
+  
+  async function open_pop_recover_customer(customer_id){
+    //here we will do a question to the user, if the would like desactivate the customer
+    if (await show_message_question('customer.button.recover-customer', 'customer.message.description.recover-customer')) {
+
+      //send the information to the server for know if can desactivate the customer
+      const answer = await send_message_to_the_server('/customers/change_status_customer/', {customer_id: customer_id, status:true}, true);
+      if (answer.success) {
+        await clear_div_data_customer();
+        show_alert('success', 'customers.message.title.the-customer-was-recover', 'customers.message.description.the-customer-was-recover')
+      } else {
+        show_alert('alert', window.t('error.general'), answer.message, answer.error);
+      }
+    }
+  }
+
+  function format_whatsApp_number(phone, extension='52') {
+      // 1. Eliminar todo lo que no sea un número (espacios, +, -, paréntesis)
+      let cleaned = phone.replace(/\D/g, '');
+
+      // 2. Si el número tiene 10 dígitos, asumimos que es México (sin código de país)
+      // Ejemplo: "444 357 9030" -> "4443579030" -> le falta el 52
+      if (cleaned.length === 10) {
+          cleaned = extension + cleaned;
+      }
+
+      // 3. Si el número ya tiene 12 o más dígitos (como 52 1 ... o 52 ...), 
+      // lo dejamos como está tras la limpieza.
+      
+      return cleaned;
+  }
+
+  async function update_information_div_customer(id_customer){
+    //this function is for update the div information use the information that the user selected 
+    const answer=await send_message_to_the_server('/customers/get_information_of_the_customer/', {id_customer}, true, 'GET');
+    if(answer.success){
+        //if get a answer of the server, we will get his data and update the div <info-customer> with all the information of the server
+        const data=answer.answer;
+
+        // Render of the template
+        const container = document.getElementById('info-customer');
+        container.innerHTML = ""; //clear the container
+        
+        //here we will get a image beta if the customer not have a photo
+        let image="{% static '/img/profile.webp' %}";
+        if(data.avatar){
+          image = data.avatar;
+          if(image=='None' || image==null || image=='null'){
+            image="{% static '/img/profile.webp' %}";
+          }    
+        }
+
+        //here we will see if this customer is activated in the database. 
+        //when the user is activate we will show two button, the button for edit and the button for delete
+        let buttonEdit=`
+          <div class="col-8 d-flex justify-content-start">
+              <button class="btn btn-edit btn-success" t='btn.edit' onclick=nextWeb('/customers/edit_customer/${id_customer}')>${window.translate_text('btn.edit')}</button>
+          </div>
+          <div class="col-4 d-flex justify-content-end">
+              <button class="btn btn-delete btn-success" onclick="window.open_pop_delete_customer('${id_customer}')"><i class="fi fi-sr-trash"></i></button>
+          </div>
+        `
+
+        //when the customer not is activate we will to show only a button for recover the customer
+        if(!window.is_true(data.activated)){
+          buttonEdit=`
+          <div class="col d-flex justify-content-start">
+              <button class="btn btn-edit btn-success" t='customer.button.recover-customer' onclick="window.open_pop_recover_customer('${id_customer}')"><i class="fi fi-sr-trash-restore-alt"></i> ${window.translate_text('customer.button.recover-customer')}</button>
+          </div>
+          `
+        }
+
+        //now we will show all the information of the customer for that the user know the information that need
+        const textEmail=data.email || window.translate_text('customers.info.without-email');
+        const textCellphone=data.cellphone || window.translate_text('customers.info.without-cellphone');
+        const textPhone=data.phone || window.translate_text('customers.info.without-phone');
+        const textDataTypeCustomer = data.customer_type?.customer ?? window.translate_text('customers.info.customer');
+        const dataTypeCustomerColor = data.customer_type?.color ?? '#3B82F6';
+        const textSource = data.source?.name ?? '';
+
+        //here we will see if this customer is a company or is a person with help of a icon
+        let iconCompany=`<i class="fi fi-rr-building"></i>`;
+        if(window.is_true(data.this_customer_is_a_company)){
+          iconCompany=`<i class="fi fi-ss-building"></i>`;
+        }
+
+        container.innerHTML = `
+        <div class="info-customer-card">
+            <div class="customer-header section">
+                <img src="${image}" alt="Photo of ${data.name}" class="customer-avatar">
+                <div>
+                    <h2>${data.name}</h2>
+                    <br>
+                    <span class="detail-value stars">${render_stars(data.priority)}</span>
+                    <br>
+                    <div class="status-points">
+                        <span class="points">${data.points} pts</span>
+                        <span class="credit">$${data.credit}</span>
+                        ${iconCompany}
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <span class="detail-label">${window.translate_text('table-home-email')}</span>
+                <span class="detail-value">${textEmail}</span>
+            </div>
+
+            <div class="customer-details">
+                <a href="https://wa.me/${format_whatsApp_number(textCellphone)}" target="_blank" style="cursor: pointer; text-decoration: none; color: inherit;">
+                <div class="detail-box">
+                    <span class="detail-label">${window.translate_text('table-home-cellphone')}</span>
+                    <span class="detail-value fi-whatsapp">
+                        <i class="fi-whatsapp fi-brands-whatsapp"></i>   
+                        ${textCellphone}
+                    </span>
+                </div>
+                </a>
+                <div class="detail-box">
+                    <span class="detail-label">${window.translate_text('table-home-phone')}</span>
+                    <span class="detail-value">
+                      ${textPhone}
+                    </span>
+                </div>
+            </div>
+
+            <div class="customer-details">
+                <div class="detail-box">
+                    <span class="detail-value">${textDataTypeCustomer}</span>
+                </div>
+                <div class="detail-box">
+                    <span class="detail-value">${textSource}</span>
+                </div>
+            </div>
+
+            <br>
+            <show-more text='Numero de precio' description='${data.number_of_price_of_sale}'></show-more>
+            <br>
+            <show-more text='Domicilio' description='(${data.state} ${data.city}. ${data.country})'></show-more>
+            <br>
+            <div class="row">
+              ${buttonEdit}
+            </div>
+        </div>
+        `;
+    }else{
+        //if not can get the information of the customer, we will show a pop error and clear the div <info-customer>
+      document.getElementById('info-customer').innerHTML = `
+        <div class="full-center">
+          <img src="{% static 'img/customer_home.webp' %}" alt="Customer Home">
+          <h3 t="dashboard-no-customer-selected">No customer selected</h3>
+        </div>
+      `;
+    }
+
+
+    window.toggle_switch_column('customers-switch'); //show the div that is hidden if the user is in cellphone
+  }
+  
+
+  //save the function in the global windows
+  window.open_pop_delete_customer=open_pop_delete_customer;
+  window.update_information_div_customer=update_information_div_customer;
+  window.open_pop_recover_customer=open_pop_recover_customer;
+  if (!customElements.get("plus-customers")) {
+  class PlusCustomers extends HTMLElement {
+      constructor() {
+          super();
+          this.attachShadow({ mode: "open" });
+      }
+
+      connectedCallback() {
+          if (this._rendered) return;
+          this._rendered = true;
+
+          // atributos recibidos
+          const customerId = this.getAttribute("customer-id") || "";
+          const name = this.getAttribute("name") || window.translate_text('customers.info.without-name');
+          const email = this.getAttribute("email") || window.translate_text('customers.info.without-email');
+          const cellphone = this.getAttribute("cellphone") || window.translate_text('customers.info.without-cellphone');
+          const phone = this.getAttribute("phone") || window.translate_text('customers.info.without-phone');
+
+          const tag = this.getAttribute("tag") || "";
+          const customer_type=this.getAttribute('customer_type');
+          const customerTypeName=this.getAttribute('customer_type').name || window.translate_text('customers.info.customer');
+          const colorTypeCustomer = customer_type.color || '#3B82F6';
+          const points = this.getAttribute("points") || "0";
+          const credit = this.getAttribute("credit") || "0";
+
+          let image = this.getAttribute("image");
+          if(this.hasAttribute("image")){
+            image = this.getAttribute("image");
+            if(image=='None' || image==null || image=='null'){
+              image="{% static '/img/profile.webp' %}";
+            }    
+          }
+
+         
+
+          const status = this.getAttribute("status") || "active"; // active | inactive
+          const priority = parseInt(this.getAttribute("priority")) || 0; // 0-3
+          
+          // estilos
+          const style = document.createElement("style");
+          style.textContent = `
+    .card-customer {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: all 0.3s ease-in-out;
+      width:100%;
+    }
+
+    .card-customer:hover{
+      cursor:pointer;
+    }
+
+    .card-customer.inactive {
+      opacity: 0.6;
+      filter: grayscale(60%);
+    }
+
+    .customer-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .customer-img {
+      width: 96px;
+      height: 96px;
+      border-radius: 10%;
+      object-fit: cover;
+      border: 2px solid #e5e7eb;
+    }
+
+    .customer-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #111827;
+      margin: 0;
+    }
+
+    .customer-info {
+      font-size: 0.9rem;
+      color: #374151;
+    }
+
+    .customer-tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background-color: var(--tag-color, #3B82F6);
+      color: var(--tag-text-color, #ffffff);       
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-top: 4px;
+      width: auto;          
+      max-width: 100px;
+      text-align: center;   
+    }
+
+    .customer-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .customer-stat {
+      background: #f9fafb;
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
+    .priority {
+      display: flex;
+      gap: 4px;
+      font-size: 1.2rem;
+      margin-top: 6px;
+    }
+
+    .star {
+      color: #d1d5db; 
+    }
+
+    .star.filled {
+      color: #fbbf24; 
+      text-shadow: 0px 2px 6px rgba(0,0,0,0.15);
+    }
+  `;
+
+          // generar estrellas según prioridad
+          const renderStars = () => {
+              let starsHTML = "";
+              for (let i = 1; i <= 3; i++) {
+                  starsHTML += `<span class="star ${i <= priority ? "filled" : ""}">★</span>`;
+              }
+              return starsHTML;
+          };
+
+          // estructura HTML
+          const wrapper = document.createElement("div");
+          wrapper.classList.add("card-customer");
+          if (status === "inactive") wrapper.classList.add("inactive");
+
+
+          wrapper.innerHTML = `
+    <div class="customer-header">
+      <img class="customer-img" src="${image}" alt="${name}">
+      <div>
+        <p class="customer-name">${name}</p>
+        <div class="customer-info">${email}</div>
+        <div class="customer-info">${phone}</div>
+      </div>
+    </div>
+    <span class="customer-tag" style="background-color: ${colorTypeCustomer};">${customerTypeName}</span>
+    <div class="priority">${renderStars()}</div>
+    <div class="customer-stats">
+      <div class="customer-stat" t='card-points'>${window.translate_text('card-points')}: ${points}</div>
+      <div class="customer-stat" t='card-credit'>${window.translate_text('card-credit')}: $${credit}</div>
+    </div>
+    <input type="hidden" name="customer_id" value="${customerId}">
+  `;
+
+          this.shadowRoot.append(style, wrapper);
+
+          const onClickFunction = this.getAttribute("onclick") || null;
+          if (onClickFunction) {
+              wrapper.style.cursor = "pointer"; // opcional: mostrar que es clickable
+              wrapper.addEventListener("click", () => {
+                  if (typeof window[onClickFunction] === "function") {
+                      window[onClickFunction]();
+                  }
+              });
+          }
+      }
+  }
+
+  
+    customElements.define("plus-customers", PlusCustomers);
+  }
+
+</script>
+<script>
+(() => {
+  const divHtml = `
+  <plus-customers 
+      id-customer="{ id }" 
+      name="{ name }" 
+      email="{ email }" 
+      phone="{ phone }"
+      tag="{ tag }" 
+      points="{ points }" 
+      credit="{ credit }" 
+      priority="{ priority }"
+      image="{ avatar }"
+      status="{ activated }"
+      customer_type="{ customer_type }"
+      country="{ country }"
+      address="{ address }"
+      city="{ city }"
+      state="{ state }"
+      postal_code="{ postal_code }"
+      num_ext="{ num_ext }"
+      num_int="{ num_int }"
+      reference="{ reference }"
+      this_customer_is_a_company="{ this_customer_is_a_company }"
+      source=" { source } "
+      onclick="window.update_information_div_customer('{ id }')">
+  </plus-customers>
+  `;
+
+  update_container_with_seeker(
+    ['search-customer', 'filter-priority-customer', 'status-customer'],
+    'customer-list',
+    divHtml,
+    '/customers/customers_search',
+    'GET'
+  );
+
+
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!---show the partials of type customers and the partials source-->
+{% include 'partialsCustomers/typeCustomer.html' %}
+{% include 'partialsCustomers/source.html' %}
+
+
+
+

@@ -1,0 +1,169 @@
+<div class="container-section">
+    <plus-search input_id="seacrh">
+        <search-option>
+            <button  class="btn btn-add" onclick="nextWeb('rolesAndPermissions/add_a_new_rol/')">+</button>
+        </search-option>
+        <search-option>
+            <plus-actions>
+                <plus-action text="rolesAndPermissions.option.restart-role" onclick="open_pop_restart" combo="Shift+r" icon="fi fi-br-refresh"></plus-action>
+            </plus-actions>
+        </search-option>
+    </plus-search>
+
+
+    <table class="section">
+        <thead>
+            <tr>
+                <th style="width: 30%;">Nombre del Rol</th>
+                <th style="width: 80%;">Descripción</th>
+                <th style="width: 10%;"></th>
+            </tr>
+        </thead>
+        <tbody id="table-role">
+        </tbody>
+    </table>
+</div>
+
+<script>
+    (() => {
+        const divHtml = `
+            <tr>
+                <td> { name } </td>
+                <td> { description } </td>
+                <td>
+                    <button onclick="duplicate_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-duplicate"></i></button>
+                    <button onclick="edit_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-pencil"></i></button>
+                    <button onclick="delete_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-trash"></i></button>
+                </td>
+            </tr>
+        `
+        update_container_with_seeker('seacrh', 'table-role', divHtml, 'rolesAndPermissions/get_information_of_the_role/1/', 'GET');
+    })();
+
+
+    async function edit_role(rol_id) {
+        rol_id = String(rol_id).trim();
+        await nextWeb(`rolesAndPermissions/edit_rol/${rol_id}/`);
+    }
+
+    async function delete_role(role_id) {
+        
+        if (await show_message_question(window.translate_text('rolesAndPermissions.message.question.title.do-you-like-delete-this-role'), 
+        window.translate_text('rolesAndPermissions.message.question.description.do-you-like-delete-this-role'))) {
+            role_id = String(role_id).trim();
+            const backend = await send_message_to_the_server('rolesAndPermissions/change_status/', { role_id: role_id, status: false }, true);
+            if (backend.success) {
+                const divHtml = `
+                    <tr>
+                        <td> { name } </td>
+                        <td> { description } </td>
+                        <td>
+                            <button onclick="duplicate_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-duplicate"></i></button>
+                            <button onclick="edit_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-pencil"></i></button>
+                            <button onclick="delete_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-trash"></i></button>
+                        </td>
+                    </tr>
+                `
+                update_container_from_the_server('seacrh', 'table-role', divHtml, 'rolesAndPermissions/get_information_of_the_role/1/', 'GET'); //update the table
+                show_alert('success', 'rolesAndPermissions.message.success.title.the-rol-was-deactivated', 'rolesAndPermissions.message.success.the-rol-was-deactivated', backend.error || '');
+            } else {
+                show_alert('error', 'Error', backend.message || 'rolesAndPermissions.message.error.unexpected-error', backend.error || '');
+            }
+        }
+    }
+
+    async function duplicate_role(role_id){
+        role_id = String(role_id).trim();
+        const backend=await send_message_to_the_server(`rolesAndPermissions/duplicate_rol_in_the_company/${role_id}/`,{});
+        if(backend.success){
+            const new_role_id=backend.answer;
+            await edit_role(new_role_id+'');
+        }else{
+            show_alert('error', 'Error', backend.message || 'rolesAndPermissions.message.error.unexpected-error', backend.error || '');
+        }
+    }
+
+</script>
+
+
+
+<message-pop title="rolesAndPermissions.pop.title-restart-role" name="restart-role">
+    <div class="search-container">
+        <i class="fi fi-rs-search search-icon"></i>
+        <input type="text" class="search-input" t-placeholder="message.search" id="seacrh-role-delete">
+    </div>
+
+    <div class="container-pop">
+        <table class="section">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Nombre del Rol</th>
+                    <th style="width: 80%;">Descripción</th>
+                    <th style="width: 10%;"></th>
+                </tr>
+            </thead>
+            <tbody id="table-role-delete">
+            </tbody>
+        </table>
+    </div>
+</message-pop>
+<script>
+    function create_new_role(){
+        nextWeb('rolesAndPermissions/add_a_new_rol/');
+    }
+
+    function open_pop_restart() {
+        window.show_pop('restart-role')
+        const divHtml = `
+            <tr>
+                <td> { name } </td>
+                <td> { description } </td>
+                <td>
+                    <button onclick="restart_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-trash-restore-alt"></i></button>
+                </td>
+            </tr>
+        `
+        update_container_with_seeker('seacrh-role-delete', 'table-role-delete', divHtml, 'rolesAndPermissions/get_information_of_the_role/0/', 'GET');
+    }
+
+    async function restart_role(role_id) {
+        if (await show_message_question('rolesAndPermissions.message.question.restart.title', 'rolesAndPermissions.message.question.restart.description')) {
+            role_id = String(role_id).trim();
+
+            const backend = await send_message_to_the_server('rolesAndPermissions/change_status/', { role_id: role_id, status: true }, true);
+            if (backend.success) {
+                //update the table of role delete
+                const divHtml = `
+                    <tr>
+                        <td> { name } </td>
+                        <td> { description } </td>
+                        <td>
+                            <button onclick="restart_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-trash-restore-alt"></i></button>
+                        </td>
+                    </tr>
+                `
+                update_container_from_the_server('seacrh-role-delete', 'table-role-delete', divHtml, 'rolesAndPermissions/get_information_of_the_role/0/', 'GET'); //update the table
+
+
+                //update the container of the table of roles activates
+                const divHtml2 = `
+                    <tr>
+                        <td> { name } </td>
+                        <td> { description } </td>
+                        <td>
+                            <button onclick="edit_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-pencil"></i></button>
+                            <button onclick="delete_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-trash"></i></button>
+                        </td>
+                    </tr>
+                `
+                update_container_from_the_server('seacrh', 'table-role', divHtml2, 'rolesAndPermissions/get_information_of_the_role/1/', 'GET'); //update the table
+
+
+
+                show_alert('success', 'rolesAndPermissions.message.success.restart.title', 'rolesAndPermissions.message.success.restart.description', backend.error || '');
+            } else {
+                show_alert('error', 'Error', backend.message || 'rolesAndPermissions.message.error.unexpected-error', backend.error || '');
+            }
+        }
+    }
+</script>

@@ -1,0 +1,35 @@
+<a href="{% url 'view_profile' request.user.public_slug %}" t="setting.label.see_my_profile" target="_blank" id="a-link-profile-user"></a>
+<br><br>
+<form id="form_profile_online">
+<input-field 
+    label="setting.label.public_slug" 
+    placeholder="setting.placeholder.public_slug" 
+    value="{{ request.user.public_slug }}" 
+    name="public_slug"
+    id="public_slug">
+</input-field>
+<plus-switch text="setting.label.is_public" value="{{ request.user.is_public }}" name="is_public"></plus-switch>
+<button class="btn btn-success btn-edit" t="btn.update" onclick="send_form_profile_online()" type="button"></button>
+</form>
+
+<script type="module">
+async function send_form_profile_online(){
+        //here we will to update the information of the link of the profile 
+        const backend=await send_form_to_the_server('form_profile_online', 'setting/view_update_profile_user/');
+
+        //we will see if we can add the new customer
+        if (backend.success) {
+            
+            //here we will update the link of the profile
+            const input_public_slug=document.getElementById('public_slug').value;
+            const link = document.getElementById('a-link-profile-user');
+            if (link) {
+                link.href = `/profile/${input_public_slug}/`;
+            }
+
+            show_notification('success', backend.message || 'info.info-send-with-success');
+        } else {
+            show_alert('alert', 'Error', backend.message || 'info.not-was-can-send-the-information', (backend.error || 'info.not-was-can-send-the-information'))
+        }
+}
+</script>

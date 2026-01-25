@@ -1,0 +1,389 @@
+{% include 'partials_employees/navbarEmployee.html' %}
+<form id="form-employee">
+<div class="container-section">
+    <div class="row section">
+        <div class="col-2">
+            <image-uploader 
+                id="avatar" 
+                name="avatar"
+                {% if employee and employee.employee.avatar %}
+                    value-1="{{ employee.employee.avatar }}"
+                {% endif %}
+            ></image-uploader>
+        </div>
+        <div class="col-10">
+            <plus-title name="name" label="employees.label.name-employee" placeholder="employees.placeholder.name-employee" required value="{{ employee.employee.name }}"></plus-title>
+            <div class="row">
+              <div class="col">
+                <plus-select
+                  id="user_role"
+                  name="user_role"
+                  label="employees.label.user-role"
+                  link="/rolesAndPermissions/get_information_of_the_role/1/"
+                  add="open_pop_role"
+                  edit_data="open_pop_edit_role"
+                  method="GET"
+                  delete_data="/rolesAndPermissions/change_status/"
+                  value="{{employee.employee.user_role.id}}"
+                  data-text="{{employee.employee.user_role.name}}"
+                  >
+                </plus-select>
+              </div>
+
+              <div class="col">
+                <plus-select
+                  id="user_department"
+                  name="user_department"
+                  label="employees.label.user-department"
+                  link="/departament_employee/search_employee_department/1/"
+                  add="open_pop_add_departament"
+                  edit_data="open_pop_edit_departament"
+                  delete_data="/departament_employee/delete_departament/"
+                  method="GET"
+                  value="{{employee.employee.user_department.id}}"
+                  data-text="{{employee.employee.user_department.name}}"
+                  >
+                </plus-select>
+              </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row section">
+        <div class="col">
+            <input-field name="username"  label="employees.label.username" placeholder="employees.placeholder.username" required value="{{ employee.employee.username }}"></input-field>
+        </div>
+    </div>
+
+    <div class="row section">
+        <div class="col">
+            <input-field name="email" type="email" label="employees.label.email" placeholder="employees.placeholder.email" required value="{{ employee.employee.email }}"></input-field>
+        </div>
+    </div>
+
+
+    <!--here we will see if the user is editing a employee, if the use is edititng a employee, not can show the inputs of password--->
+    {% if employee %}
+
+    {% else %}
+    <div class="row section">
+      <div class="col">
+        <input-field
+          id="password"
+          name="password"
+          type="password"
+          label="employees.label.password"
+          placeholder="employees.placeholder.password"
+          required>
+        </input-field>
+      </div>
+      <div class="col">
+        <input-field
+          id="confirm-password"
+          name="confirm-password"
+          type="password"
+          label="employees.label.confirm-password"
+          placeholder="employees.placeholder.confirm-password"
+          required>
+        </input-field>     
+      </div>
+    </div>
+    {% endif %}
+
+    <show-more text="employees.showmore.more-information" onclick="window.show_pop('pop-more-information')" description='({{employee.employee.phone}} {{employee.employee.cellphone}}.{{employee.employee.language}})'></show-more>
+
+    <show-more text="employees.showmore.address" onclick="window.show_pop('pop-data-address')" description='({{employee.employee.address}}.{{employee.employee.postal_code}}.{{employee.employee.country}})'></show-more>
+
+
+
+
+    <!---here we will see the style of the button that show in the frontend--->
+    {% if employee %}
+    {% if employee.employee.is_active %}
+        <div class="row">
+            <div class="col-8">
+                <button class="btn btn-edit btn-success" t="btn.update" type="button" onclick="update_employee('{{employee.employee.id}}')"></button>
+            </div>
+            <div class="col-4">
+                <button class="btn btn-delete btn-success" t="btn.delete" type="button" onclick="delete_employee('{{employee.employee.id}}')"></button>
+            </div>
+        </div>
+    {% else %}
+        <button class="btn btn-delete-tr btn-success" t="btn.recover" type="button" onclick="recover_employee('{{employee.employee.id}}')"></button>
+    {% endif %}
+    {% else %}
+      <button class="btn btn-add btn-success" t="btn.save" type="button" onclick="save_data_of_the_employee()"></button>
+    {% endif %}
+</div>
+
+<message-pop title="employees.title.more-information" name="pop-more-information">
+    <div class="container-pop">
+        <div class="row section">
+          <div class="col">
+            <label t="employees.label.date_of_birth"></label>
+            {% if employee %}
+              <plus-date value="{{employee.employee.date_of_birth}}" name="date_of_birth"></plus-date>
+            {% else %}
+              <plus-date name="date_of_birth"></plus-date>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row section">
+          <div class="col">
+            <input-field
+              name="phone"
+              type="text"
+              label="employees.label.phone"
+              placeholder="employees.placeholder.phone"
+              value="{{employee.employee.phone}}"
+              >
+            </input-field>
+          </div>
+          <div class="col">
+            <input-field
+              name="cellphone"
+              type="text"
+              label="employees.label.cellphone"
+              placeholder="employees.placeholder.cellphone"
+              value="{{employee.employee.cellphone}}"
+              >
+            </input-field>
+          </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+              <plus-select label="employees.label.language" value="{{ request.user.language }}">
+                <option value="es" t="Español" required></option>
+              </plus-select>
+            </div>
+            <div class="col">
+              <plus-select label="employees.label.timezone" name="timezone" required value="{{request.user.timezone}}">
+                {% include 'core/option_timezone.html' %}
+              </plus-select>
+            </div>
+        </div>
+        <br>
+    </div>
+
+
+    <button class="btn btn-edit btn-success" t="message.success" onclick="hide_pop('pop-more-information')"
+        type="button"></button>
+</message-pop>
+
+<message-pop title="employees.title.address-of-the-employee" name="pop-data-address">
+    <div class="container-pop">
+        <div class="row section">
+            <div class="col">
+                <input-field type="text" label="employees.label.address" placeholder="employees.placeholder.address" name="address"
+                    value="{{employee.employee.address}}"></input-field>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col">
+                <plus-country value="{{request.user.country}}"></plus-country>
+            </div>
+            <div class="col">
+                <input-field type="text" label="employees.label.postal_code" placeholder="employees.placeholder.postal_code" name="postal_code"
+                    value="{{employee.employee.postal_code}}"></input-field>         
+            </div>
+        </div>
+        <br>
+    </div>
+
+
+    <button class="btn btn-edit btn-success" t="message.success" onclick="hide_pop('pop-data-address')"
+        type="button"></button>
+</message-pop>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</form>
+
+
+
+<!---here we will to create the pop for edit and add new departament for the employees--->
+{% include "partials_departament_employee/pop_add_and_edit_departament.html" %}
+
+<!---here we will to create the pop for edit and add new role and permissions for the employees--->
+<message-pop title="employees.title.role" name="pop-role-and-permissions">
+  {% include 'partials_rolesAndPermissions/from_role.html' %}
+</message-pop>
+
+<script>
+  //this script is for save the form in the server
+  async function save_data_of_the_employee(){
+    //first we will see if all the information is correct
+    if(all_the_information_of_the_form_is_success()){
+      const backend=await send_form_to_the_server('form-employee','employees/add_employee/');
+      if(backend.success){
+        restart_form('form-employee');
+        window.show_alert('success', 'employees.title.the-employee-was-added-with-success', 'employees.message.the-employee-was-added-with-success');
+        window.nextWeb('employees/employees/');
+      }else{
+        window.show_alert('alert', 'employees.message.error-in-the-form', backend.message, backend.error)
+      }
+    }
+  }
+
+  async function update_employee(employee_id){
+    //first we will see if all the information is correct
+    if(all_the_information_of_the_form_is_success()){
+      const backend=await send_form_to_the_server('form-employee',`employees/edit_employee/${employee_id}/`);
+      if(backend.success){
+        window.show_alert('success', 'employees.title.the-employee-was-update-with-success', 'employees.message.the-employee-was-update-with-success');
+        window.nextWeb('employees/employees/');
+      }else{
+        window.show_alert('alert', 'employees.message.error-in-the-form', backend.message, backend.error)
+      }
+    }
+  }
+
+  async function delete_employee(employee_id){
+    //here we will see if the user would like delete this employee
+    if(await show_message_question('employees.title.delete-employee', 'employees.message.delete-employee')){
+      //if the user would like delete this customer we will send this information to the backend
+      const backend=await send_message_to_the_server(`employees/change_status/${employee_id}/`,{status:false});
+      if(backend.success){
+        //if can delete this employee, now we will to rederict to the user to the dashboard of employees
+        window.show_alert('success', 'employees.title.delete-employee-success', 'employees.message.delete-employee-success')
+        window.nextWeb('employees/employees/');
+      }else{
+        window.show_alert('alert', 'employees.message.delete-employee-error', backend.message, backend.error);
+      }
+    }
+  }
+
+  async function recover_employee(employee_id) {
+    //here we will see if the user would like delete this employee
+    if(await show_message_question('employees.title.recover-employee', 'employees.message.recover-employee')){
+      //if the user would like delete this customer we will send this information to the backend
+      const backend=await send_message_to_the_server(`employees/change_status/${employee_id}/`,{status:true});
+      if(backend.success){
+        //if can delete this employee, now we will to rederict to the user to the dashboard of employees
+        window.show_alert('success', 'employees.title.recover-employee-success', 'employees.message.recover-employee-success')
+        window.nextWeb('employees/employees/');
+      }else{
+        window.show_alert('alert', 'employees.error.recover-employee', backend.message, backend.error);
+      }
+    }
+  }
+
+
+  function all_the_information_of_the_form_is_success(){
+    //first we will see if the employee have a name 
+    const name=document.getElementById('name');
+    if(name?.value==''){
+      window.show_alert('alert', 'employees.message.error-in-the-form', 'employees.message.the-name-is-need')
+      return false;
+    }
+
+
+    //second we will see if the user have a email valid
+    const email=document.getElementById('email');
+    if (!email?.value.trim()) {
+      window.show_alert('alert', 'employees.message.error-in-the-form', 'employees.message.the-email-is-need');
+      return false;
+    }
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email.value.trim())) {
+      window.show_alert('alert', 'employees.message.error-in-the-form', 'employees.message.the-email-is-not-valid');
+      return false;
+    }
+
+    //now by last we will see if the password is success and return the value
+    return valid_password();
+  }
+
+  function valid_password(){
+    const password=document.getElementById('password');
+    const confirm_password=document.getElementById('confirm-password');
+
+    //we will see if exist the both inputs of the password, if not exist is because the user is editing the employee
+    if(!password && !confirm_password){
+      return true;
+    }
+
+
+    //now if exist the inputs of the passwod is because the user would like add a new employee and need see if the password is valid
+    if (password.value === '' && confirm_password.value === '') {
+      password.style.borderColor = '';
+      confirm_password.style.borderColor = '';
+      window.show_alert('alert', 'employees.message.error-in-the-form', 'employees.message.the-password-is-need')
+      return false;
+    }
+
+    if (password.value === confirm_password.value) {
+      password.style.borderColor = 'green';
+      confirm_password.style.borderColor = 'green';
+    } else {
+      password.style.borderColor = 'red';
+      confirm_password.style.borderColor = 'red';
+      window.show_alert('alert', 'employees.message.error-in-the-form', 'employees.message.the-password-is-need')
+      return false;
+    }
+
+    return true;
+  }
+  (()=>{
+    //here we will get the information of the inputs of the password for
+    //comparer if both password and if both password are equals we will to marker the inputs of a color green
+    //else if the password not be equals we will to marker the input of color red
+    const password=document.getElementById('password')
+    const confirm_password=document.getElementById('confirm-password')
+
+    if (!password || !confirm_password) return; //if not exist the input exit of the function
+
+    function check_passwords() {
+      if (password.value === '' && confirm_password.value === '') {
+        password.style.borderColor = '';
+        confirm_password.style.borderColor = '';
+        return;
+      }
+
+      if (password.value === confirm_password.value) {
+        password.style.borderColor = 'green';
+        confirm_password.style.borderColor = 'green';
+      } else {
+        password.style.borderColor = 'red';
+        confirm_password.style.borderColor = 'red';
+      }
+    }
+
+    // liseningh both change in the inputs
+    password.addEventListener('input', check_passwords);
+    confirm_password.addEventListener('input', check_passwords);
+  })()
+</script>
+<script>
+  //this scripts is for create the form for role and departament of the employees in the company
+  function open_pop_role(){
+    window.show_pop('pop-role-and-permissions')
+  }
+
+  async function open_pop_edit_role(id){
+    await update_form_for_edit_role(id);
+    window.show_pop('pop-role-and-permissions')
+  }
+
+  (async ()=>{
+    await create_form_of_the_role(); //first we will to create all the form
+  })()
+</script>

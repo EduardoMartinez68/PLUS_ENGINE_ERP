@@ -1,0 +1,372 @@
+<style>
+    .services-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .service-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        margin-bottom: 10px;
+    }
+
+    .service-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .badge-inactive {
+        color: red;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+</style>
+<div class="container-section">
+    <div class="row">
+        <div class="col">
+            <plus-search input_id="search-services" placeholder="profile_online.placeholder.search-a-services">
+                <search-option>
+                    <button class="btn btn-add" onclick="open_pop_add_services()">+</button>
+                </search-option>
+            </plus-search>
+        </div>
+    </div>
+
+
+    <div id="services-container">
+
+    </div>
+</div>
+
+
+<message-pop title="profile_online.title.crear-services" name="pop-add-services">
+    <form id="form_add_specialty">
+        <input type="hidden" name="services_id" id="services_id">
+        <div class="row">
+            <div class="col">
+                <plus-switch text="profile_online.label.the_specialty_is_activate" value="true"
+                    name="is_active" id="form-switch-services"></plus-switch>
+            </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+                <plus-title label="profile_online.label.name-specialty"
+                    placeholder="profile_online.placeholder.name-specialty" required name="name" id="name-form-services"></plus-title>
+            </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+                <input-field label="profile_online.label.price-specialty"
+                    placeholder="profile_online.placeholder.price-specialty" name="price" type="number" id="price-form-services"></input-field>
+            </div>
+            <div class="col">
+                <plus-select value="mxn" label="profile_online.label.currency-specialty" name="currency" id="currency-form-services">
+                    <option value="mxn" t="mxn"></option>
+                </plus-select>
+            </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+                <input-field label="profile_online.label.orden" placeholder="profile_online.placeholder.orden" id="order-form-services"
+                    name="order" type="number"></input-field>
+            </div>
+        </div>
+
+
+        <button type="button" class="btn btn-success btn-edit" t="btn.save" onclick="send_form_services()"></button>
+
+    </form>
+</message-pop>
+
+
+<script>
+
+    async function render_all_the_services() {
+        const container = document.getElementById('services-container');
+
+        // Obtenemos la información
+        const infoProfile = await window.get_information_profile();
+        const services = infoProfile?.services;
+
+        // 1. Verificación: Si no hay servicios o está vacío
+        if (!services || services.length === 0) {
+            container.innerHTML = '<p>No hay servicios registrados.</p>';
+            return;
+        }
+
+        // 2. Limpiar el contenedor
+        container.innerHTML = '';
+
+        // 3. Ordenar por el campo 'order' (opcional)
+        services.sort((a, b) => a.order - b.order);
+
+        // 4. Renderizar cada servicio
+        services.forEach(service => {
+            const serviceCard = document.createElement('div');
+            serviceCard.className = 'service-card';
+            serviceCard.setAttribute('id', `service-${service.id}`);
+
+            serviceCard.innerHTML = `
+                        <div class="service-info">
+                            <strong>${service.name}</strong>
+                            <span>${service.price} ${service.currency}</span>
+                            ${!service.is_active ? '<span class="badge-inactive">Inactivo</span>' : ''}
+                        </div>
+                        <div class="service-actions">
+                            <button onclick="window.open_pop_edit_services(${service.id})" class="btn btn-edit">
+                                Editar
+                            </button>
+                        </div>
+                    `;
+            container.appendChild(serviceCard);
+        });
+    }
+
+    function render_services_list(services) {
+        const container = document.getElementById('services-container');
+
+        container.innerHTML = '';
+
+        services.sort((a, b) => a.order - b.order);
+
+        services.forEach(service => {
+            const serviceCard = document.createElement('div');
+            serviceCard.className = 'service-card';
+            serviceCard.setAttribute('id', `service-${service.id}`);
+
+            serviceCard.innerHTML = `
+                <div class="service-info">
+                    <strong>${service.name}</strong>
+                    <span>${service.price} ${service.currency}</span>
+                    ${!service.is_active ? '<span class="badge-inactive">Inactivo</span>' : ''}
+                </div>
+                <div class="service-actions">
+                    <button onclick="window.open_pop_edit_services(${service.id})" class="btn btn-edit">
+                        Editar
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(serviceCard);
+        });
+    }
+
+    async function update_services(services_id) {
+        //if the form have an services id is because the user is editing the service
+        const backend = await window.send_form_to_the_server('form_add_specialty', `profile_online/view_update_services/${services_id}/`);
+        if (backend.success) {
+            show_notification('success', backend.message || 'info.info-send-with-success');
+            return true;
+        }
+
+
+        show_alert('alert', 'Error', backend.message || 'info.not-was-can-send-the-information', (backend.error || 'info.not-was-can-send-the-information'));
+        return false;
+    }
+
+    async function add_services() {
+        //if the form have an services id is because the user is editing the service
+        const backend = await window.send_form_to_the_server('form_add_specialty', `profile_online/view_add_services/`)
+        if (backend.success) {
+            show_notification('success', backend.message || 'info.info-send-with-success');
+            //here we will to add the event 
+            const services_id=backend.answer;
+            return services_id;
+        }
+
+        show_alert('alert', 'Error', backend.message || 'info.not-was-can-send-the-information', (backend.error || 'info.not-was-can-send-the-information'));
+        return false;
+    }
+
+    function get_service_by_id(services, id) {
+        for (const key in services) {
+            if (services[key].id === id) {
+                return services[key];
+            }
+        }
+        return null; // when not exist
+    }
+
+    function delete_service_by_id(services, id) {
+        for (const key in services) {
+            if (services[key].id === id) {
+                delete services[key];
+                return true; // delete
+            }
+        }
+        return false; //when not exist
+    }
+
+    function update_information_services(newService, services_id = null) {
+        if (!window.infoProfile?.services) return false;
+ 
+        for (const key in window.infoProfile.services) {
+            const service = window.infoProfile.services[key];
+            if (service.id == services_id) {
+                //update all the information
+                window.infoProfile.services[key] = {
+                    ...service,
+                    ...newService
+                };
+
+                return true; // service update
+            }
+        }
+
+        //if not send a id is beacuse is add a new service and not be update the information 
+        if (services_id==null) {
+            const key = `service_${newService.id}`;
+            window.infoProfile.services[key] = {
+                ...newService
+            };
+            return true;
+        }
+
+        return false; // when not was found
+    }
+
+    function create_service() {
+        return{
+            "name":document.getElementById('name-form-services').value,
+            "price":document.getElementById('price-form-services').value,
+            "order":document.getElementById('order-form-services').value,
+            "currency":document.getElementById('currency-form-services').getValue() ,
+            "is_active":document.getElementById('form-switch-services').getChecked(),
+        }
+    }
+
+    async function send_form_services() {
+        //1--first we will see if the form have a ID of services
+        const services_id = Number(document.getElementById('services_id').value);
+        const newService = create_service(); //this is the new service that the user create of the form
+        
+        let result = false;
+        if (services_id > 0) {
+            //if the form have an services id is because the user is editing the service
+            result = await update_services(services_id);
+            update_information_services(newService, services_id);
+        } else {
+            //if the form not have an services id is because the user is add the service
+            result = await add_services(); //here return the id if can add the service to the database
+            newService.id=result;
+            update_information_services(newService, null);
+        }
+
+
+        if (result) {
+            render_all_the_services(); //update the list of the services
+
+            window.hide_pop('pop-add-services');
+            window.restart_form('form_add_specialty');
+        }
+    }
+
+    function fill_form_services(service) {
+        const form = document.getElementById("form_add_specialty");
+
+        // hidden id
+        const inputId = form.querySelector("#services_id");
+        if (inputId) {
+            inputId.value = service.id ?? "";
+        }
+
+        // is_active (plus-switch)
+        const switchActive =  document.getElementById('form-switch-services') //form.querySelector('[name="is_active"]');
+        if (switchActive) {
+            switchActive.setChecked(window.is_true(service.is_active));
+        }
+
+        // name (plus-title)
+        const inputName = form.querySelector('[name="name"]');
+        if (inputName) {
+            inputName.value = service.name ?? "";
+        }
+
+        // price (input-field)
+        const inputPrice = form.querySelector('[name="price"]');
+        if (inputPrice) {
+            inputPrice.value = service.price ?? "";
+        }
+
+        // currency (plus-select)
+        const selectCurrency = form.querySelector('[name="currency"]');
+        if (selectCurrency) {
+            selectCurrency.setValue(service.currency ?? "mxn", service.currency ?? "mxn");
+        }
+
+        // order (input-field)
+        const inputOrder = form.querySelector('[name="order"]');
+        if (inputOrder) {
+            inputOrder.value = service.order ?? "";
+        }
+    }
+
+    async function delete_services(services_id){
+        const service=get_service_by_id(window.infoProfile.services,services_id);
+       if(await plus_delete_with_help_button(services_id, `/profile_online/view_delete_services/`, 'profile.question.delete-services', ['profile.question.do-you-delete-this-services', {name:service.name}] ,'profile.success.services-delete', ['profile.success.the-services-was-delete', {name:service.name}])){
+            delete_service_by_id(window.infoProfile?.services, services_id);
+            render_all_the_services();
+       }
+    }
+
+    function open_pop_edit_services(service_id){
+        if (!window.infoProfile?.services) return false;
+        const service=get_service_by_id(window.infoProfile.services,service_id);
+        if(service){
+            fill_form_services(service);
+            window.show_pop('pop-add-services');
+            document.getElementById('services_id').value=service_id;
+        }else{
+            window.show_alert('alert', 'Error', 'profile_online.error.not-exist-info-of-this-services','This services not exist in the object <window.infoProfile.services>');
+        }
+    }
+
+    function open_pop_add_services(){
+        window.restart_form('form_add_specialty');
+        document.getElementById('form-switch-services').setChecked(true);
+        window.show_pop('pop-add-services');
+        document.getElementById('services_id').value='';
+    }
+
+
+    async function filter_services_by_input() {
+        const input = document.getElementById('search-services');
+        const query = input.value.toLowerCase().trim();
+
+        const infoProfile = await window.get_information_profile();
+        const ALL_SERVICES = infoProfile?.services;
+        if (!query) {
+            render_services_list(ALL_SERVICES);
+            return;
+        }
+
+        const filtered = ALL_SERVICES.filter(service =>
+            service.name.toLowerCase().includes(query)
+        );
+
+        render_services_list(filtered);
+    }
+
+
+
+
+    function initialize_services_module() {
+        render_all_the_services();
+
+        //this is for create the event of the input search
+        const input = document.getElementById('search-services');
+        if (input) {
+            input.removeEventListener('input', filter_services_by_input);
+            input.addEventListener('input', filter_services_by_input);
+        }
+    }
+</script>

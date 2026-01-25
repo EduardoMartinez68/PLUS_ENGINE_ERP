@@ -1,0 +1,65 @@
+<plus-modules>
+    {% if permissions.edit_system %}
+    <plus-module name="setting.module.system" desc="" icon="fi fi-rs-settings">
+        {% include 'partials_setting/system.html' %}
+    </plus-module>
+    {% endif %}
+
+
+    {% if permissions.edit_company %}
+    <plus-module name="setting.module.company" desc="" icon="fi fi-rs-building">
+        {% include 'partials_setting/company.html' %}
+        {% include 'partials_setting/company_setting.html' %}
+    </plus-module>
+    {% endif %}
+
+    {% if permissions.edit_branch %}
+    <plus-module name="setting.module.branch" desc="" icon="fi fi-rr-store-alt">
+        {% include 'partials_setting/branch.html' %}
+        {% include 'partials_setting/branch_setting.html' %}
+    </plus-module>
+    {% endif %}
+
+    <!--
+    {% if permissions.edit_drivers %}
+    <plus-module name="setting.module.drives" desc="" icon="fi fi-rr-plug-connection">
+        {% include 'partials_setting/drivers.html' %}
+    </plus-module>
+    {% endif %}
+    --->
+
+    {% if permissions.edit_schedule %}
+    <plus-module name="setting.module.schedule" desc="" icon="fi fi-rr-clock-three">
+        {% include 'partials_setting/schedule.html' %}
+    </plus-module>
+    {% endif %}
+
+    <!---
+    {% if permissions.edit_email %}
+    <plus-module name="setting.module.google" desc="" icon="fi fi-rr-envelope">
+        {% include 'partials_setting/email.html' %}
+    </plus-module>
+    {% endif %}
+
+    {% if permissions.edit_email %}
+    <plus-module name="setting.module.whatsapp" desc="" icon="fi fi-brands-whatsapp">
+        {% include 'partials_setting/whatsapp.html' %}
+    </plus-module>
+    {% endif %}
+    --->
+    <!---
+    <plus-module name="ERP" desc="" icon="fi-rr-vector">
+    </plus-module>
+
+    <plus-module name="setting.module.plus" desc="" icon="fi fi-rs-rocket-lunch">
+
+    </plus-module>
+    <plus-module name="setting.module.apps" desc="" icon="fi fi-rs-apps">
+        
+    </plus-module>
+    --->
+</plus-modules>
+
+
+
+

@@ -1,0 +1,10 @@
+
+name: "profile_online"
+appName: "profile_online"
+icon: "profile_online/icon.webp"
+path: "/profile_online"
+dbInit: true
+permissionsFile: 'permissions.json'
+dependencies:
+  - "agenda"
+  - "customers"

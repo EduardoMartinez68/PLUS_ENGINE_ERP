@@ -1,0 +1,211 @@
+<style>
+.only-desktop {
+  display: block;
+}
+@media (max-width: 768px) {
+  .only-desktop {
+    display: none !important;
+  }
+}
+</style>
+<button class="btn btn-add btn-success only-mobile" t="btn.save" onclick="send_new_event_to_the_server()" type="button"></button>
+<div class="container-pop">
+    <form  id="formCreateNewEvent">
+    <plus-tabs>
+        <plus-tab text="Description">
+            <div class="section">
+                <label t="label-input-title">Title of the event</label>
+                <input type="text" name="name_event" class="case-title-input" placeholder="Title"
+                    t-placeholder="placeholder-input-title" required maxlength="300" />
+            </div>
+
+            <div class="section">
+                <div class="row">
+                    <div class="col">
+                        <plus-select label="agenda.label.select-customer" name="customer" id="customer"
+                            link="customers/customers_search/">
+                        </plus-select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="row">
+                    <div class="col">
+                        <plus-switch text="all-day" name="activate_event_all_the_day" onclick="activate_event_all_the_day"></plus-switch>
+                        <label t="starts" style="margin-bottom: -24px; display: block;"></label>
+                        <div class="row section">
+                            <plus-date label="starts" name="start_date" id="start_date"></plus-date>
+                            <plus-time label="min-start" name="start_time" id="start_time"></plus-time>
+                        </div>
+
+                        <label t="ends" style="margin-bottom: -24px; display: block;"></label>
+                        <div class="row section">
+                            <plus-date label="ends" name="end_date" id="end_date"></plus-date>
+                            <plus-time label="min-end" name="end_time" id="end_time"></plus-time>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <plus-select label="time-of-alert" name="alert_time" required id="alert_time">
+                    <option selected t="alert.none" value="0"></option>
+                    <option t="alert.5min" value="5"></option>
+                    <option t="alert.10min" value="10"></option>
+                    <option t="alert.15min" value="15"></option>
+                    <option t="alert.30min" value="30"></option>
+                    <option t="alert.1hr" value="60"></option>
+                    <option t="alert.2hr" value="120"></option>
+                    <option t="alert.1day" value="1440"></option>
+                    <option t="alert.2day" value="2880"></option>
+                    <option t="alert.1week" value="10080"></option>
+                </plus-select>
+            </div>
+
+            <div class="section">
+                <div class="row m-1">
+                    <div class="col">
+                        <plus-select label="priority" name="priority" required id="priority">
+                            <option selected t="priority.low" value="0"></option>
+                            <option t="priority.normal" value="1"></option>
+                            <option t="priority.high" value="2"></option>
+                        </plus-select>
+                    </div>
+                    <div class="col">
+                        <plus-select label="search-type-event" name="type_event" required id="type_event"
+                            link="agenda/get_the_first_type_events/" add="open_pop_new_type_event" edit_data="edit_type_event_for_select"
+                            delete_data="agenda/delete_type_event/" btn_delete_title="message.delte-type-event-title" btn_delete_text="message.delte-type-event-description">
+                        </plus-select>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="section">
+                <info-label label="emails-guests"
+                    message="email-message-show"></info-label>
+                <plus-tags id="emails_guests" name="emails_guests" label="emails-guests" message="email-message-show" t="input.add-most-email"></plus-tags>
+            </div>
+
+            <div class="section">
+                <label for="description" t="label-description">Description</label>
+                <textarea name="description" id="description" rows="4"
+                    t-placeholder="placeholder-description"></textarea>
+            </div>
+
+
+        </plus-tab>
+
+
+        <plus-tab text="More options">
+            <div class="section">
+                <input-field label="label-input-address" name="location"
+                    placeholder="placeholder-input-address"></input-field>
+            </div>
+
+            <div class="section">
+                <input-field label="label-link" type="text" name="link" placeholder="www/..."></input-field>
+            </div>
+
+
+            <plus-switch text="repeat_this_event" name="repeat_this_event" id="repeat_this_event"
+                onclick="hidden_input_repet"></plus-switch>
+
+            <div class="section" id="input_repet" style="display: none;">
+                <div class="row m-1">
+                    <plus-select label="repeat" name="time_repeat" requerid id="time_repeat">
+                        <option selected t="option.never" value="0"></option>
+                        <option t="option.every_day" value="1"></option>
+                        <option t="option.every_week" value="7"></option>
+                        <option t="option.every_2_weeks" value="15"></option>
+                        <option t="option.every_month" value="30"></option>
+                        <option t="option.every_year" value="365"></option>
+                    </plus-select>
+
+
+                    <plus-select label="endRepeat" name="time_end_repeat" requerid id="time_end_repeat">
+                        <option selected t="option.never" value="0">Never</option>
+                        <option t="option.on_day" value="1">On Day</option>
+                        <option t="option.on_week" value="7">A week</option>
+                        <option t="option.on_2_weeks" value="15">Two week</option>
+                        <option t="option.on_month" value="30">A Month</option>
+                        <option t="option.on_year" value="365">A Year</option>
+                    </plus-select>
+                </div>
+
+            </div>
+
+            <plus-switch text="send_notification" name="send_notification" checked="true" id="send_notification"></plus-switch>
+
+            <plus-switch text="i_am_free" name="i_am_free" checked="true" id="i_am_free"></plus-switch>
+        </plus-tab>
+    </plus-tabs>
+    </form>
+</div>
+
+<button class="btn btn-add btn-success only-desktop" t="btn.save" onclick="send_new_event_to_the_server()" type="button">Save</button>
+
+
+<script>
+    //her we will send the new event to the server 
+    async function send_new_event_to_the_server() {
+        //get the information from the form 
+        const form = document.getElementById('formCreateNewEvent');
+        const formData = new FormData(form);
+
+        //convert the formData to a json object
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
+        //send the information to the server 
+        const answer = await window.send_message_to_the_server('/agenda/create_event/', data);
+
+        //if can added the new event, now we will show a message of confirmation and clear the form 
+        if (answer.success) {
+            //hide the pop and refresh the calendar 
+            hide_pop('pop-data-event');
+
+            //show a message of success 
+            clear_form_create_a_new_event();
+
+            if (typeof update_all_the_information_of_my_calendary === 'function') {
+                window.update_all_the_information_of_my_calendary();
+            }
+
+            //update the table appoints if be open 
+            if (typeof filter_table_appoints === 'function') {
+                filter_table_appoints('');
+            }
+            
+            show_alert('success', window.translate_text('message.add-new-event.success'), window.translate_text('message.add-new-event.success.description'));
+        } else {
+            //show a message of error 
+            console.log(answer)
+            show_alert('error', window.translate_text("message.error_in_server"), window.translate_text(answer.message), answer.error);
+        }
+    }
+
+    function clear_form_create_a_new_event() {
+        //restart all the inputs of the form
+        const form = document.getElementById('formCreateNewEvent');
+        form.reset();
+
+        //reset the tags
+        document.getElementById('emails_guests').setTags([]);
+
+        //restart all the selects
+        window.set_value_plus_select('priority', '0');
+        window.set_value_plus_select('time_end_repeat', '0');
+        window.set_value_plus_select('time_repeat', '0');
+        window.set_value_plus_select('alert_time', '0');
+        window.set_value_plus_select('type_event', '0');
+
+        //restart all the switch 
+        window.set_status_plus_switch('repeat_this_event', false);
+        window.set_status_plus_switch('send_notification', true);
+        window.set_status_plus_switch('i_am_free', true);
+    }
+</script>

@@ -1,0 +1,3 @@
+pip install python-dotenv
+pip install weasyprint ---desistalar
+pip install xhtml2pdf

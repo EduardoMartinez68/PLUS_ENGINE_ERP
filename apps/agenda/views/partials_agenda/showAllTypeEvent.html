@@ -1,0 +1,178 @@
+<style>
+/*----------------------------*/
+.color-box {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.table-type-event{
+    max-height:50%; 
+    overflow-y:auto;
+}
+</style>
+<!----->
+<message-pop title="type-events" name="pop-show-all-the-type-event">
+</message-pop>
+<div class="row">
+    <div class="col">
+        <plus-search input_id="input-search-type-event" placeholder="message.search">
+            <search-option>
+                <button class="btn btn-add" onclick="open_pop_new_type_event()">+</button>
+            </search-option>
+        </plus-search>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col">
+        <table>
+            <thead style="border-collapse: white; border: none;">
+                <tr style="background-color: white; border: none;">
+                    <th style="width:5%;"></th>
+                    <th style="width:75%;">
+                        
+                    </th>
+                    <th style="width:10%;"></th>
+                    <th style="width:10%;"></th>
+                </tr>
+            </thead>
+            <tbody id="body-table-type-event" class="table-type-event">
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+
+
+
+<!---------this is for when the user would like edit this event---------->
+<message-pop title="title.edit-type-of-event" name="pop-edit-data-type-event">
+    <input type="hidden" id="id-type-event">
+    <div class="section">
+        <label t="new-type-event">Title of the event</label>
+        <input type="text" name="title-type-event" class="case-title-input" t-placeholder="new-type-event" required
+            maxlength="300" id="title-type-event-edit" />
+    </div>
+
+    <div class="section">
+        <label for="">Color</label>
+        <input-color id="color-type-event-edit" name="color-type-event"></input-color>
+    </div>
+
+    <button t="btn.update" class="btn btn-success btn-edit" onclick="edit_type_event()">Update</button>
+</message-pop>
+
+
+
+
+<script>
+    function filter_table_type_event(text){
+        const divHtml = `
+            <td><span class="color-box" style="background:{ color };"></span></td>
+            <td>{ text }</td>
+            <td>
+                <button class="btn btn-transparent" onclick="show_information_type_event({ id }, '{ text }', '{ color }')"><i class="fi fi-sr-pencil"></i></button>
+            </td>
+            <td>
+                <button class="btn btn-transparent" onclick="delete_type_event({ id })"><i class="fi fi-sr-trash"></i></button>
+            </td>    
+        `;
+
+        window.update_container_with_seeker(
+        ['input-search-type-event'], // id of the input of the seeker
+        'body-table-type-event',  // id of the container to update
+        divHtml,            // template with placeholders
+        'agenda/get_the_first_type_events/', // url for the search
+        'POST'
+        );
+    }
+    
+    function show_information_type_event(id, title, color){
+        //first we will get the information of this type event from the server
+        document.getElementById('id-type-event').value=id; 
+        document.getElementById('title-type-event-edit').value=title;
+        const colorInput=document.getElementById('color-type-event-edit');
+        colorInput.updateColor(color);
+        show_pop('pop-edit-data-type-event');
+    }
+
+    async function edit_type_event(){
+        //get the value of the inputs
+        const id=document.getElementById('id-type-event').value;
+        const title = document.getElementById("title-type-event-edit").value;
+        const color = document.getElementById("color-type-event-edit").value;
+       
+
+        if(!id){
+            return;
+        }
+
+        //this is for know if exist a title in <input>
+        if(title.trim() === ''){
+            show_alert('alert', window.translate_text("message.need_most_data"), window.translate_text("message.need_a_name_for_the_type_event"));
+            return;
+        }
+
+        //her we will see that asnwer send of the server
+        const response = await send_message_to_the_server('/agenda/update_type_event/',{
+            id:id,
+            title: title,
+            color: color
+        })
+
+        //we will see if can added the new type of event in the server
+        if(response.success){
+            window.reset_appoint_in_the_calendar();
+            
+            //hide the pop
+            hide_pop('pop-show-all-the-type-event')
+            hide_pop('pop-edit-data-type-event');
+            await window.update_all_the_information_of_my_calendary(); //update the event that exist in our calendary 
+            open_pop_show_all_type_event();
+            show_alert('success', window.translate_text('message.update-edit-type-event'), window.translate_text('message.update-edit-type-event-description'));
+        }else{
+            //if not can save the new event in the server, show a message of error and show the code of error 
+            show_alert('error', window.translate_text("message.error_in_server"), window.translate_text(response.message), response.error);
+        }
+    }
+
+    async function delete_type_event(id){
+        if (await show_message_question('message.delete.title', 'message.delete.description')) {
+            const answer = await send_message_to_the_server('agenda/delete_type_event/', {id}, true);
+            if (answer.success) {
+                window.reset_appoint_in_the_calendar();
+                if (typeof refresh_calendar === 'function') {
+                    refresh_calendar();
+                }
+                await window.update_all_the_information_of_my_calendary(); //update the event that exist in our calendary 
+                hide_pop('pop-show-all-the-type-event')
+                open_pop_show_all_type_event();
+                show_alert('success', window.t('success.deleted'), window.t('description.deleted'))
+            } else {
+                show_alert('alert', window.t('error.general'), window.t('error.to_delete'), answer.error)
+                console.error(answer.message || 'Error to delete the item in the server');
+                console.error(answer.error);
+            }
+        }
+    }
+
+    async function edit_type_event_for_select(id){
+        const answer=await window.send_message_to_the_server('/agenda/get_type_event_for_id/', {id}, true, 'GET')
+        if(answer.success){
+            const title=`${answer.answer.text}`;
+            const color=`${answer.answer.color}`;
+            show_information_type_event(id,title,color)
+        }
+    }
+
+    open_pop_show_all_type_event();
+
+</script>

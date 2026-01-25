@@ -1,0 +1,134 @@
+<div class="container-section">
+
+    <form id="form_profile_address_online">
+        <!--
+        <plus-switch
+            name="is_main"
+            value="true"
+            text="web_profile.label.show_address">
+        </plus-switch>
+        --->
+
+        <div class="row section">
+            <div class="col">
+                <input-field
+                    label="web_profile.label.address"
+                    placeholder="web_profile.placeholder.address"
+                    name="address"
+                >
+                </input-field>
+                <button type="button" onclick="open_in_maps()" t="web_profile.button.see-in-google-maps"></button>
+                <button type="button" onclick="vincule_with_maps()" t="web_profile.button.create-link-google-maps"></button>
+            </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+                <input-field
+                    label="web_profile.label.google_maps_url"
+                    placeholder="web_profile.placeholder.google_maps_url"
+                    name="google_maps_url"
+                    id="google_maps_url"
+                >
+                </input-field>
+                <div style="margin-top:10px;">
+                    <iframe
+                        id="map-preview"
+                        width="100%"
+                        height="250"
+                        style="border:0; border-radius:8px;"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <button
+                    class="btn btn-success btn-edit"
+                    t="btn.update"
+                    type="button"
+                    onclick="send_form_address_online()">
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+
+<script>
+    async function send_form_address_online() {
+
+        //if all is success, now we will send the form
+        const result = await send_form_to_the_server('form_profile_address_online', 'profile_online/view_update_address/');
+        if (result.success) {
+            show_notification('success', result.message || 'info.info-send-with-success');
+        } else {
+            show_alert(
+                'Error',
+                result.message || 'info.not-was-can-send-the-information',
+                result.error || 'info.not-was-can-send-the-information'
+            );
+        }
+    }
+
+    function open_in_maps() {
+        const address = document.getElementById("address").value.trim();
+
+        if (!address) {
+            alert("Escribe una dirección primero");
+            return;
+        }
+
+        const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+        window.open(url, "_blank");
+    }
+
+    function vincule_with_maps() {
+        const address = document.getElementById("address").value.trim();
+
+        if (!address) {
+            alert("Escribe una dirección primero");
+            return;
+        }
+
+        const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+        document.getElementById('google_maps_url').value=url;
+
+        const src = `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
+        document.getElementById("map-preview").src = src;
+    }
+
+    (async()=>{
+        const informationProfile=await window.get_information_profile();
+        const locations=informationProfile?.locations;
+        if(locations){
+            const location=locations.find(loc=>loc.is_main);
+            if(location){
+                document.querySelector('input[name="address"]').value=location.address || '';
+                document.querySelector('input[name="google_maps_url"]').value=location.google_maps_url || '';
+
+                if(location.google_maps_url){
+                    const src = location.google_maps_url.replace('/maps/search/?api=1&query=', '/maps?q=') + '&output=embed';
+                    document.getElementById("map-preview").src = src;
+                }
+            }
+        }
+    })();
+</script>
+<script type="module">
+    function open_in_maps() {
+        const address = document.getElementById("address").value.trim();
+
+        if (!address) {
+            alert("Escribe una dirección primero");
+            return;
+        }
+
+        const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+        window.open(url, "_blank");
+    }
+</script>

@@ -1,0 +1,9 @@
+name: "employees"
+appName: "employees"
+icon: "employees/icon.webp"
+path: "/employees"
+dbInit: true
+permissionsFile: 'permissions.json'
+dependencies:
+  - "departament_employee"
+  - "rolesAndPermissions"

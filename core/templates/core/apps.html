@@ -1,0 +1,632 @@
+
+{% load static %}
+
+<style>
+  .menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #DCDAE8;
+      background: linear-gradient(135deg, #e7e0f2 0%, #f8f9fa 100%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10000;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      opacity: 0;
+      transform: translateY(-100%);
+      padding-top: 40px;
+  }
+
+  .menu.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+  }
+
+  .close-menu {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, .5);
+      color: black;
+      border: none;
+      border-radius: 5px;
+      padding: 10px;
+      cursor: pointer;
+      z-index: 1000;
+  }
+
+  .close-menu:hover {
+      background-color: rgba(255, 255, 255, .8);
+  }
+
+  .container-app {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      grid-auto-rows: minmax(120px, auto);
+      gap: 20px;
+      max-width: 1000px;
+      padding: 20px;
+      grid-template-columns: repeat(7, 1fr);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+  }
+
+  .menu.active .container-app {
+      opacity: 1;
+  }
+
+  .app-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: white;
+      border-radius: 10px;
+      padding: 10px;
+      transition: transform 0.3s ease;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 100px;
+      /* Adjust the size here */
+      height: 100px;
+      /* Adjust the size here */
+  }
+
+  .app-icon img {
+      width: 40px;
+      /* Adjust the size here */
+      height: 40px;
+      /* Adjust the size here */
+      margin-bottom: 5px;
+  }
+
+  .app-icon span {
+      font-size: 12px;
+      /* Adjust the font size here */
+      font-weight: bold;
+      color: #333;
+  }
+
+  .app-icon:hover {
+      transform: scale(1.1);
+      cursor: pointer;
+  }
+  .shortcuts-label {
+      display: none;
+      position: absolute;
+      transform: translateY(280%);
+      font-size: 0.8rem;
+      pointer-events: none;
+      opacity: 0.7;
+  }
+
+
+  /* 📱 Tablets */
+  @media (max-width: 1024px) {
+      .container-app {
+          grid-template-columns: repeat(5, 1fr);
+      }
+
+      .app-icon {
+          width: 85px;
+          height: 85px;
+      }
+
+      .app-icon img {
+          width: 40px;
+          height: 40px;
+      }
+
+      .app-icon span {
+          font-size: 13px;
+      }
+  }
+
+  /* 📱 Celulares (4 columnas) */
+  @media (max-width: 768px) {
+      .menu {
+          padding-top: 60px;
+      }
+
+      .container-app {
+          grid-template-columns: repeat(4, 1fr); /* ✅ Cuatro íconos por fila */
+          gap: 15px;
+          width: 95%;
+      }
+
+      .app-icon {
+          width: 80px;
+          height: 80px;
+          border-radius: 12px;
+      }
+
+      .app-icon img {
+          width: 38px;
+          height: 38px;
+      }
+
+      .app-icon span {
+          font-size: 11px;
+      }
+  }
+
+  /* 📱 Teléfonos pequeños */
+  @media (max-width: 480px) {
+      .container-app {
+          grid-template-columns: repeat(4, 1fr); /* Mantén 4 íconos pero más compactos */
+          gap: 10px;
+      }
+
+      .app-icon {
+          width: 70px;
+          height: 70px;
+          padding: 10px;
+      }
+
+      .app-icon img {
+          width: 32px;
+          height: 32px;
+      }
+
+      .app-icon span {
+          font-size: 10px;
+      }
+  }
+
+  .shortcuts-label {
+      display: none;
+      position: absolute;
+      transform: translateY(280%);
+      font-size: 0.8rem;
+      pointer-events: none;
+      opacity: 0.7;
+  }
+
+  .form-control{
+    background-color: white;
+    padding: .5rem;
+  }
+
+        /* Estilo de cada App */
+        .app-item {
+            width: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Contenedor del Icono (Cuadrado Odoo) */
+        .app-icon {
+            width: 70px;
+            height: 70px;
+            background-color: #ffffff;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 8px;
+            position: relative;
+            transition: box-shadow 0.2s;
+        }
+
+        .app-item .app-icon {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .app-item:hover .app-icon {
+            transform: translateY(-2px);
+        }
+
+        /* Imagen del Icono */
+        .app-icon img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+        }
+
+        /* Etiquetas de Texto */
+        .app-label {
+            font-size: 13px;
+            color: #333333;
+            text-align: center;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+        }
+
+</style>
+
+
+<div class="plus-app-modal" id="appMenu">
+  <ul class="ul-menu-bar">
+      <label for="check" class="btn-menu-bar">
+          <i class="fi-des fi-br-menu-burger menu-toggle" id="btn-navbar-open" step="btnNavBar"></i>
+          <i class="fi-des fi-br-cross" id="btn-navbar-cancel"></i>
+      </label>
+  </ul>
+
+  <div class="menu">
+      <input type="text" placeholder="Search an App" class="form-control" style="width: 25%;" id="searchInput" t="menu.search">
+      <button class="close-menu" onclick="window.closeModalApp()">×</button>
+
+      <div class="container-app" id="plus-appGrid">
+          {% for app in apps %}
+          <div class="app-item" data-name="discusiones" onclick="nextWeb('{{ app.path }}{{ app.path }}')" data-id="{{ app.name }}">
+              <div class="app-icon"><img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy"></div>
+              <div class="app-label"><span class="app-name">{{ app.name }}</span></div>
+          </div>
+          {% endfor %}
+
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+
+            <button class="app-item" style="border:none; background-color: transparent;" data-id="app-plus-exit">
+                <div class="app-icon"><img src="{% static 'img/icons/exit1.webp' %}" alt="{{ app.name }}" loading="lazy"></div>
+                <div class="app-label">SALIDA</div>
+            </button>
+          </form>
+      </div>
+  </div>
+  
+</div>
+
+
+<script>
+  const typeMenu=2; //1=apps , 2=navbar
+  function openModalApp() {
+    if (typeMenu==1) {
+      const appMenu = document.getElementById("appMenu");
+      appMenu.style.display = "flex";
+      appMenu.querySelector(".menu").classList.add("active");
+    } else {
+      openSideMenu();
+    }
+
+  }
+  function closeModalApp() {
+    if (typeMenu==1) {
+      const appMenu = document.getElementById("appMenu");
+      appMenu.style.display = "none";
+      appMenu.querySelector(".menu").classList.remove("active"); 
+    } else {
+      closeSideMenu();
+    }
+  }
+
+  const searchInput = document.getElementById('searchInput');
+  const appContainers = document.querySelectorAll('.plus-app-app');
+
+  searchInput.addEventListener('input', function() {
+    const filter = this.value.toLowerCase();
+
+    appContainers.forEach(app => {
+      const appName = app.querySelector('.app-name').textContent.toLowerCase();
+      if (appName.includes(filter)) {
+        app.style.display = '';
+      } else {
+        app.style.display = 'none';
+      }
+    });
+  });
+
+  window.openModalApp = openModalApp;
+  window.closeModalApp = closeModalApp;
+</script>
+
+
+
+
+
+
+
+
+
+<style>
+  /* Fondo desenfocado cuando el menú está abierto */
+  .menu-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(6px);
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 9998;
+    transition: opacity 0.3s ease;
+    
+  }
+
+  /* Menú lateral */
+  .side-menu {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 300px;
+    height: 100%;
+    background: white;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 9999;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+  }
+
+  /* Menú activo */
+  .side-menu.active {
+    left: 0;
+  }
+
+  /* Botón de cierre */
+  .side-menu .close-btn {
+    align-self: flex-end;
+    font-size: 22px;
+    background: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s;
+  }
+
+  /* Links del menú */
+  .side-menu a {
+    text-decoration: none;
+    color: #222;
+    font-weight: 500;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background 0.2s;
+  }
+
+  .side-menu a:hover {
+    background: #E6EFF6;
+    color:var(--primary);
+  }
+  .image-icon-user-menu{
+    border-radius: 15px;
+    width: 70px;
+    height: 70px;
+  }
+
+/* Logo empresa */
+.info-branch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.icon-company-menu {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.name_company {
+  font-weight: 600;
+  font-size: 16px;
+  color: #222;
+}
+/* Info empleado */
+.info-employee {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.image-icon-user-menu {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+}
+
+.employee-details {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  color: #222;
+}
+
+.name-menu {
+  font-weight: 600;
+}
+.departament-menu, .area-menu {
+  font-weight: 400;
+  color: #555;
+}
+
+.menu-links {
+  flex: 1; /* ocupa espacio disponible */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.menu-links a {
+  text-decoration: none;
+  color: #222;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.menu-links a:hover{
+  cursor: pointer;
+}
+
+/* Scroll personalizado */
+.menu-links::-webkit-scrollbar {
+  width: 6px;
+}
+.menu-links::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+.menu-links::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.35);
+}
+
+/* Botón salir siempre abajo */
+.btn-exit {
+  margin-top: auto;
+  background: #075EAB;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.2s;
+  width: 100%;
+}
+
+.btn-exit:hover {
+  background: #054a87;
+}
+
+
+
+/* ✅ Adaptación para celulares */
+@media (max-width: 768px) {
+  .side-menu {
+    width: 80%;
+    max-width: 270px;
+    left: -100%;
+    padding: 18px 16px;
+    border-radius: 0;
+  }
+
+  .side-menu.active {
+    left: 0;
+  }
+
+  .menu-links a {
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .info-branch {
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .name_company {
+    font-size: 15px;
+  }
+
+  .image-icon-user-menu {
+    width: 44px;
+    height: 44px;
+  }
+
+  .employee-details {
+    font-size: 12px;
+  }
+
+  .btn-exit {
+    font-size: 15px;
+    padding: 10px;
+  }
+}
+
+/* ✅ Ultra compacto para móviles muy pequeños */
+@media (max-width: 480px) {
+  .side-menu {
+    width: 85%;
+    max-width: 250px;
+    padding: 14px;
+  }
+
+  .menu-links a {
+    font-size: 14px;
+  }
+
+  .icon-company-menu {
+    width: 42px;
+    height: 42px;
+  }
+
+  .name_company {
+    font-size: 14px;
+  }
+}
+</style>
+<!-- Fondo desenfocado -->
+<div class="menu-overlay" id="menuOverlay" onclick="closeSideMenu()"></div>
+
+<!-- Menú lateral -->
+<div class="side-menu" id="sideMenu">
+  <button class="close-btn" onclick="closeSideMenu()">✕</button>
+
+  <!-- Logo empresa -->
+  <div class="info-branch">
+    {% if request.user.company.logo %}
+      <img src="{{ request.user.company.logo.url }}" alt="{{ request.user.company.company_name }}" class="icon-company-menu">
+    {% else %}
+      <img src="{% static 'img/logo.png' %}?v=1.1" alt="icon for default" class="icon-company-menu">
+    {% endif %}
+    <span class="name_company">{{ request.user.branch.branch_name }}</span>
+  </div>
+
+
+  <!-- Menú módulos -->
+  <div class="menu-links">
+    {% for app in apps %}
+    <a onclick="nextWeb('{{ app.path }}{{ app.path }}')" class="app-name-2">{{ app.name }}</a>
+    {% endfor %}
+  </div>
+
+  <div class="info-employee">
+    {% if request.user.avatar %}
+      <img src="{{ request.user.avatar.url }}" alt="Avatar de {{ request.user.username }}" class="image-icon-user-menu">
+    {% else %}
+      <img src="{% static 'img/photo-profile.webp' %}" alt="avatar for default" class="image-icon-user-menu">
+    {% endif %}
+
+    <div class="employee-details">
+      <label class="name-menu">{{ request.user.username }}</label>
+      <label class="departament-menu">{{ request.user.user_department.name }}</label>
+      <label class="area-menu">{{ request.user.user_role.name }}</label>
+    </div>
+  </div>
+
+  <!-- Botón salir -->
+  <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button class="btn-exit" type="submit">Salir</button>
+  </form>
+</div>
+
+<script>
+  function openSideMenu() {
+    document.getElementById("sideMenu").classList.add("active");
+    document.getElementById("menuOverlay").style.display = "block";
+  }
+
+  function closeSideMenu() {
+    document.getElementById("sideMenu").classList.remove("active");
+    document.getElementById("menuOverlay").style.display = "none";
+  }
+</script>

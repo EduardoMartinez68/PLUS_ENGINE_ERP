@@ -1,0 +1,66 @@
+<label t="setting.module.google" icon="fi fi-rr-envelope"></label>
+<hr>
+<form id="form_email_branch">
+<div class="row section">
+    <div class="col">
+        <input-field label="setting.label.google_user" placeholder="setting.placeholder.google_user"
+            value="{{ branch.google_user }}" name="google_user" type="email" id="google_user">
+        </input-field>
+    </div>
+</div>
+<div class="row section">
+    <div class="col">
+        <input-field label="setting.label.google_password" placeholder="setting.placeholder.google_password"
+            value="{{ branch.google_password }}" name="google_password" type="password" id="google_password">
+        </input-field>
+    </div>
+</div>
+<button class="btn btn-edit btn-success" t="btn.save" type="button" onclick="send_form_email_branch()"></button>
+
+<br><br><br><br>
+<a href="https://accounts.google.com/lifecycle/steps/signup/name?continue=https://myaccount.google.com?utm_source%3Daccount-marketing-page%26utm_medium%3Dcreate-account-button&dsh=S1577965271:1765045401700255&flowEntry=SignUp&flowName=GlifWebSignIn&TL=ANzgctRWFoTM6o-UL1rG47JU9q8yGWXDEbv2fboobSTwbYsMW-SQ9y0avmUdLQIg" t="setting.btn.do-you-not-a-count-google" target="_blank"></a>
+
+</form>
+
+
+<script>
+    async function send_form_email_branch(){
+        const emailInput = document.getElementById('google_user');
+        const passwordInput = document.getElementById('google_password');
+
+        const email = emailInput?.value.trim();
+        const password = passwordInput?.value.trim();
+
+        if (!email) {
+            show_alert('alert', 'setting.error.the-email-is-requerid', 'you need add a email');
+            emailInput.focus();
+            return;
+        }
+
+        //we will see if the user write a email valid
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            show_alert('alert', 'setting.error.the-email-is-requerid', 'you need add a email');
+            emailInput.focus();
+            return;
+        }
+
+        if (!password) {
+            show_alert('alert', 'setting.error.the-password-is-requerid', 'you need add a password');
+            passwordInput.focus();
+            return;
+        }
+
+        //if all is success, now we will send the form
+        const result = await send_form_to_the_server('form_email_branch', 'setting/view_update_branch/');
+        if (result.success) {
+            show_notification('success', result.message || 'info.info-send-with-success');
+        } else {
+            show_alert(
+                'Error',
+                result.message || 'info.not-was-can-send-the-information',
+                result.error || 'info.not-was-can-send-the-information'
+            );
+        }
+    }
+</script>

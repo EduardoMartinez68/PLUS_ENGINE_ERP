@@ -1,0 +1,9 @@
+name: "agenda"
+appName: "agenda"
+icon: "agenda/static/icon.webp"
+iconF: "fi-rs-address-book"
+path: "/agenda"
+dbInit: true
+permissionsFile: 'permissions.json'
+dependencies:
+  - "customers"

@@ -1,0 +1,176 @@
+<label t="setting.module.company" desc="" icon="fi fi-rs-building"></label>
+<hr>
+<form id="form_company">
+    {% csrf_token %}
+    <div class="row section">
+        <!---
+        <div class="col-3">
+            <image-uploader name="logo" value="{{ company.logo }}"></image-uploader>
+        </div>
+        --->
+        <div class="col">
+            <plus-title 
+                label="setting.label.company_name" 
+                placeholder="setting.placeholder.company_name" 
+                value="{{ company.company_name }}" 
+                name="company_name">
+            </plus-title>
+        </div>
+    </div>
+
+    <plus-tabs>
+        <plus-tab text="setting.tag.info-basic">
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.name_of_the_person_in_charge" 
+                        placeholder="setting.placeholder.name_of_the_person_in_charge" 
+                        value="{{ company.name_of_the_person_in_charge }}" 
+                        name="name_of_the_person_in_charge">
+                    </input-field>
+                </div>
+                <div class="col">
+                    <input-field 
+                        label="setting.label.email_of_the_person_in_charge" 
+                        placeholder="setting.placeholder.email_of_the_person_in_charge" 
+                        value="{{ company.email_of_the_person_in_charge }}" 
+                        name="email_of_the_person_in_charge" 
+                        type="email">
+                    </input-field>
+                </div>
+            </div>
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.phone" 
+                        placeholder="setting.placeholder.phone" 
+                        value="{{ company.phone }}" 
+                        name="phone" 
+                        type="tel">
+                    </input-field>
+                </div>
+                <div class="col">
+                    <input-field 
+                        label="setting.label.cellphone" 
+                        placeholder="setting.placeholder.cellphone" 
+                        value="{{ company.cellphone }}" 
+                        name="cellphone" 
+                        type="tel">
+                    </input-field>
+                </div>
+            </div>
+            <show-more onclick="window.show_pop('address_company')" description="( {{ company.address }}.{{ company.country }}.{{ company.postal_code }} )" label="setting.label.address"></show-more>
+            <show-more onclick="window.show_pop('config_company')" description="" label="setting.show.setting-company"></show-more>
+        </plus-tab>
+        <plus-tab text="setting.tag.info-contact">
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.support_email" 
+                        placeholder="setting.placeholder.support_email" 
+                        value="{{ company.support_email }}" 
+                        name="support_email" 
+                        type="email">
+                    </input-field>
+                </div>
+            </div>
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.website" 
+                        placeholder="setting.placeholder.website" 
+                        value="{{ company.website }}" 
+                        name="website" 
+                        type="url">
+                    </input-field>
+                </div>
+            </div>
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.whatsapp_number" 
+                        placeholder="setting.placeholder.whatsapp_number" 
+                        value="{{ company.whatsapp_number }}" 
+                        name="whatsapp_number" 
+                        type="tel">
+                    </input-field>
+                </div>
+            </div>
+        </plus-tab>
+        <plus-tab text="setting.tag.info-bank">
+
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.tax_id" 
+                        placeholder="setting.placeholder.tax_id" 
+                        value="{{ company.tax_id }}" 
+                        name="tax_id" 
+                        type="text">
+                    </input-field>
+                </div>
+            </div>
+
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.bank_account" 
+                        placeholder="setting.placeholder.bank_account" 
+                        value="{{ company.bank_account }}" 
+                        name="bank_account" 
+                        type="text">
+                    </input-field>
+                </div>
+            </div>
+
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.bank_name" 
+                        placeholder="setting.placeholder.bank_name" 
+                        value="{{ company.bank_name }}" 
+                        name="bank_name">
+                    </input-field>
+                </div>
+            </div>
+
+
+
+        </plus-tab>
+    </plus-tabs>
+    <br>
+    <button class="btn btn-edit btn-success" t="btn.save" type="button" onclick="send_form_company()"></button>
+</form>
+
+
+<script>
+    async function send_form_company(){
+        //send the information to the server and get his answer
+        const result = await send_form_to_the_server('form_company', 'setting/view_update_company/');
+
+        //we will see if we can add the new customer
+        if (result.success) {
+            show_notification('success', result.message || 'info.info-send-with-success');
+        } else {
+            show_alert('alert', 'Error', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'))
+        }
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

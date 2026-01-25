@@ -1,0 +1,28 @@
+#for run the server 
+#---SETP 1 RUN THIS COMMAND FOR CREATE THE MODELS OF THE DATABASE
+python manage.py makemigrations core
+
+#---SETP 2 RUN THIS COMMAND FOR LOAD AND CREATE THE STRUCT OF THE DATABASE
+python manage.py migrate
+
+
+#---SETP 3 RUN THIS COMMAND FOR RUN THE SERVER
+python manage.py runserver
+python manage.py runserver 0.0.0.0:8000
+
+
+------------------------------------------------------------------------------------------------------------------
+python manage.py qcluster --this is for run the server of notifications
+
+python manage.py makemigrations [NAME APP]--this is for create a new database
+python manage.py migrate --this is for create a new database
+
+celery -A core worker -l info
+
+
+-------------------------CELERY EN SERVIDOR------------------- concurrency=1 O concurrency=2 MAXIMO
+celery -A worker worker --loglevel=info --concurrency=1 -Ofair
+
+
+--esto es bueno para solo 1 nucleo
+celery -A proyecto worker --concurrency=1 -P solo 

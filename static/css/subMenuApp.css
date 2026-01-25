@@ -1,0 +1,72 @@
+    .sub-menu-app-body {
+        margin: 0;
+        font-family: 'Helvetica Neue', sans-serif;
+        background-color: #ffffff;
+        color: #333;
+    }
+
+    .sub-menu-app-nav {
+        background-color: transparent;
+        padding: 0 30px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .sub-menu-app-nav-container {
+        display: flex;
+        gap: 24px;
+    }
+
+    .sub-menu-app-nav-item {
+        position: relative;
+    }
+
+    .sub-menu-app-nav-link {
+        color: #444;
+        text-decoration: none;
+        font-size: 15px;
+        padding: 20px 0;
+        display: block;
+        transition: color 0.2s ease;
+    }
+
+    .sub-menu-app-nav-link:hover {
+        color: var(--primary-light);
+        /* Acento moderno, puedes usar #3B82F6 (azul Odoo-like) si prefieres */
+    }
+
+    .sub-menu-app-submenu {
+        position: absolute;
+        top: 60px;
+        left: 0;
+        background-color: #f9f9f9;
+        min-width: 180px;
+        display: none;
+        flex-direction: column;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        padding: 5px 0;
+        z-index: 10;
+    }
+
+    .sub-menu-app-submenu a {
+        padding: 10px 16px;
+        text-decoration: none;
+        color: #333;
+        font-size: 14px;
+        transition: background-color 0.2s ease;
+    }
+
+    .sub-menu-app-submenu a:hover {
+        background-color: #e7e7e7;
+    }
+
+    .sub-menu-app-nav-item:hover .sub-menu-app-submenu {
+        display: flex;
+    }
+
+    .sub-menu-app-link-base {
+        cursor: pointer;
+    }

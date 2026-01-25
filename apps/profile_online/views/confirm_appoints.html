@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Cita - DentyCloud</title>
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7fb; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .confirm-card { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); max-width: 400px; width: 90%; text-align: center; }
+        .icon-box { width: 60px; height: 60px; background: #e0e7ff; color: #4f46e5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 24px; }
+        h2 { color: #1e293b; margin-bottom: 8px; }
+        p { color: #64748b; font-size: 15px; line-height: 1.5; }
+        .details { background: #f8fafc; padding: 15px; border-radius: 12px; margin: 25px 0; text-align: left; border: 1px solid #edf2f7; }
+        .details-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 14px; color: #475569; }
+        .actions { display: flex; flex-direction: column; gap: 12px; }
+        .btn { padding: 14px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 16px; text-decoration: none; }
+        .btn-confirm { background: #10b981; color: white; }
+        .btn-confirm:hover { background: #059669; }
+        .btn-cancel { background: #fee2e2; color: #dc2626; }
+        .btn-cancel:hover { background: #fecaca; }
+        .status-msg { padding: 15px; border-radius: 10px; font-weight: 500; }
+        .success { background: #d1fae5; color: #065f46; }
+.footer-brand {
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid #f1f5f9; /* Línea divisoria suave */
+}
+
+.footer-brand p {
+    font-size: 12px !important;
+    color: #94a3b8 !important;
+    margin: 0;
+}
+
+.footer-brand a {
+    color: #4f46e5; /* Color de tu marca */
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.footer-brand a:hover {
+    color: #4338ca;
+    text-decoration: underline;
+}
+    </style>
+    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+</head>
+<body>
+
+<div class="confirm-card" id="main-card">
+    <div class="icon-box"><i class="fi fi-rr-calendar-check"></i></div>
+    <h2>Confirmar Asistencia</h2>
+    <p>Hola, por favor confirma si podrás asistir a tu cita con el <strong>Dr. {{ appointment.user.get_full_name }}</strong>.</p>
+
+    <div class="details">
+        <div class="details-item"><i class="fi fi-rr-info"></i> {{ appointment.title }}</div>
+        <div class="details-item"><i class="fi fi-rr-clock"></i> {{ appointment.date_start|date:"d/m/Y - H:i" }}</div>
+    </div>
+
+    {% if is_pending %}
+    <div class="actions" id="action-buttons">
+        <button class="btn btn-confirm" onclick="processAction('confirm')">Sí, asistiré</button>
+        <button class="btn btn-cancel" onclick="processAction('cancel')">No puedo asistir</button>
+    </div>
+    {% else %}
+    <div class="status-msg success">
+        Esta cita ya ha sido procesada anteriormente.
+    </div>
+    {% endif %}
+
+<div class="footer-brand">
+    <p>Powered by <a href="https://denty.cloud" target="_blank" rel="noopener noreferrer">denty.cloud</a></p>
+</div>
+</div>
+
+<script>
+function processAction(action) {
+    const card = document.getElementById('action-buttons');
+    const csrfToken = "{{ csrf_token }}";
+
+    // Simulación de carga
+    card.innerHTML = "<p>Procesando...</p>";
+
+    fetch(window.location.href, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken
+        },
+        body: `action=${action}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        const mainCard = document.getElementById('main-card');
+        if (data.success) {
+            mainCard.innerHTML = `
+                <div class="icon-box" style="background:#d1fae5; color:#10b981;"><i class="fi fi-rr-check"></i></div>
+                <h2>¡Listo!</h2>
+                <p>${data.message}</p>
+                <br>
+                <small style="color:#94a3b8">Ya puedes cerrar esta pestaña.</small>
+            `;
+        } else {
+            alert(data.message);
+            location.reload();
+        }
+    })
+    .catch(error => {
+        alert("Hubo un error al procesar tu solicitud.");
+        location.reload();
+    });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,52 @@
+<div class="section">
+    <label t="new-type-event">Title of the event</label>
+    <input type="text" name="title-type-event" class="case-title-input" t-placeholder="new-type-event" required
+        maxlength="300" id="title-type-event" />
+</div>
+
+<div class="section">
+    <label for="">Color</label>
+    <input-color id="color-type-event" name="color-type-event"></input-color>
+</div>
+
+<button t="message.success" class="btn btn-success btn-add" onclick="create_new_type_event()">Success</button>
+
+
+
+
+
+
+<script>
+    async function create_new_type_event() {
+        //get the value of the inputs
+        const title = document.getElementById("title-type-event").value;
+        const color = document.getElementById("color-type-event").value;
+
+        //this is for know if exist a title in <input>
+        if(title.trim() === ''){
+            show_alert('alert', window.translate_text("message.need_most_data"), window.translate_text("message.need_a_name_for_the_type_event"));
+            return;
+        }
+
+        //her we will see that asnwer send of the server
+        const response = await send_message_to_the_server('/agenda/create_type_event/',{
+            title: title,
+            color: color
+        })
+
+        //we will see if can added the new type of event in the server
+        if(response.success){
+            //hide the pop
+            hide_pop('pop-new-data-event')
+            hide_pop('pop-show-all-the-type-event')
+            hide_pop('pop-edit-data-type-event');
+            open_pop_show_all_type_event();
+            show_alert('success', window.translate_text('message.add-new-type-event.success'), window.translate_text('message.add-new-type-event.success.description'));
+        }else{
+            //if not can save the new event in the server, show a message of error and show the code of error 
+            show_alert('error', window.translate_text("message.error_in_server"), window.translate_text(response.message), response.error);
+        }
+    }
+
+
+</script>

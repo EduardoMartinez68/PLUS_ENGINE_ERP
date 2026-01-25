@@ -1,0 +1,182 @@
+<div class="container-section" id="container-form-profile">
+
+    <a 
+        href="#"
+        t="web_profile.label.see_my_profile"
+        icon="fi fi-br-arrow-up-right"
+        target="_blank"
+        id="a-link-profile-user"
+    ></a>
+
+    <hr>
+
+    <form id="form_profile_online">
+
+        <plus-switch
+            id="switch_is_public"
+            name="is_public"
+            value="false"
+            text="web_profile.label.is_public">
+        </plus-switch>
+
+        <div class="row section">
+            <div class="col">
+                <input-field
+                    label="web_profile.label.public_slug"
+                    placeholder="web_profile.placeholder.public_slug"
+                    name="public_slug"
+                    id="public_slug"
+                    autocomplete="off">
+                </input-field>
+            </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+                <plus-title
+                    label="web_profile.label.profile_title"
+                    placeholder="web_profile.placeholder.profile_title"
+                    name="title"
+                    id="input_title"
+                    autocomplete="off">
+                </plus-title>
+            </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+                <input-field
+                    label="web_profile.label.university"
+                    placeholder="web_profile.placeholder.university"
+                    name="university"
+                    id="input_university">
+                </input-field>
+            </div>
+            <div class="col">
+                <input-field
+                    label="web_profile.label.specialty"
+                    placeholder="web_profile.placeholder.specialty"
+                    name="specialty"
+                    id="input_specialty">
+                </input-field>
+            </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+                <input-field
+                    label="web_profile.label.whatsapp"
+                    placeholder="web_profile.placeholder.whatsapp"
+                    name="whatsapp"
+                    id="input_whatsapp">
+                </input-field>
+            </div>
+            <div class="col">
+                <input-field
+                    label="web_profile.label.phone"
+                    placeholder="web_profile.placeholder.phone"
+                    name="phone"
+                    id="input_phone">
+                </input-field>
+            </div>
+        </div>
+
+
+        <div class="row section">
+            <div class="col">
+                <label t="web_profile.label.about"></label>
+                <textarea
+                    t-placeholder="web_profile.placeholder.about"
+                    name="about"
+                    rows="4"></textarea>
+            </div>
+        </div>
+
+        <!-- Imagen de perfil
+        <div class="row section">
+            <div class="col">
+                <file-field
+                    label="web_profile.label.profile_image"
+                    name="profile_image"
+                    accept="image/*">
+                </file-field>
+            </div>
+            <div class="col">
+                <file-field
+                    label="web_profile.label.cover_image"
+                    name="cover_image"
+                    accept="image/*">
+                </file-field>
+            </div>
+        </div>
+         -->
+
+        <div class="row">
+            <div class="col">
+                <button
+                    id="button-for-send-form"
+                    class="btn btn-success btn-edit"
+                    t="btn.update"
+                    type="button"
+                    onclick="send_form_profile()">
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+<script>
+(()=>{
+    async function get_information_of_the_form(){
+        const infoProfile=await window.get_information_profile();
+        const profile=window.infoProfile?.profile;
+        if(!profile) return; //see if exist information from the server
+
+        //here we will to update all the information of the form
+        document.getElementById('switch_is_public').setChecked(profile?.is_public);
+        document.getElementById('public_slug').value=profile?.public_slug;
+        document.getElementById('input_title').value=profile?.title;
+        document.getElementById('input_university').value=profile?.university;
+        document.getElementById('input_specialty').value=profile?.specialty;
+        document.getElementById('input_whatsapp').value=profile?.whatsapp;
+        document.getElementById('input_phone').value=profile?.phone;
+        document.querySelector('textarea[name="about"]').value=profile?.about;
+        
+        //update the link of the web
+        const link = document.getElementById('a-link-profile-user');
+        if (link) {
+            link.href = `/profile_online/view_profile/${profile?.public_slug}/`;
+        }
+
+        const btnSend = document.getElementById('button-for-send-form');
+        
+    }
+
+    async function send_form_profile(){
+        //here we will to update the information of the link of the profile 
+        const backend=await window.send_form_to_the_server('form_profile_online', 'profile_online/view_update_profile_online/');
+
+        //we will see if we can add the new customer
+        if (backend.success) {
+            //here we will update the link of the profile
+            const input_public_slug=document.getElementById('public_slug').value;
+            const link = document.getElementById('a-link-profile-user');
+            if (link) {
+                link.href = `/profile_online/view_profile/${input_public_slug}/`;
+            }
+
+
+            window.infoProfile.profile=backend.answer; //update the information that send the server
+            window.show_notification('success', 'profile_online.success.information-of-the-profle-update'); //show a message
+        } else {
+            window.show_alert('alert', 'Error', backend.message || 'info.not-was-can-send-the-information', (backend.error || 'info.not-was-can-send-the-information'))
+        }
+    }
+    
+
+    get_information_of_the_form();
+    window.send_form_profile=send_form_profile;
+})();
+
+
+</script>

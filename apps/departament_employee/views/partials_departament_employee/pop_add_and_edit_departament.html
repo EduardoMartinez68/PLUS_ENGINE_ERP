@@ -1,0 +1,169 @@
+<!---pop for add a new departament--->
+<message-pop title="departament_employee.title.create-new-departament" name="pop-form-departament">
+    <form id="form-departament">
+        <plus-title label="departament_employee.label.name-departament" placeholder="departament_employee.input.name-departament" name="name-departament" id="name-departament" required></plus-title>
+        <label t="departament_employee.input.description"></label>
+        <textarea name="description-departament" id="description-departament"></textarea>
+
+        <div class="row">
+            <div class="col">
+                <plus-select name="id_manager" id="id_manager" label="departament_employee.label.manager" 
+                link="/departament_employee/search_employee/" method="GET"
+                ></plus-select>
+            </div>
+            <div class="col">
+                <label t="departament_employee.label.color"></label>
+                <input-color  id="color-departament" name="color-departament"></input-color>
+            </div>
+        </div>
+
+        <button class="btn btn-success btn-add" t="btn.save" type="button" onclick="send_form_departament_to_the_server()"></button>
+    </form>
+</message-pop>
+
+<message-pop title="departament_employee.title.edit-departament" name="pop-form-edit-departament">
+    <form id="form-departament-edit">
+        <input type="hidden" id="departament_id" name="departament_id">
+        <plus-title label="departament_employee.label.name-departament" placeholder="departament_employee.input.name-departament" name="edit-name-departament" id="edit-name-departament" required></plus-title>
+        <label t="departament_employee.input.description"></label>
+        <textarea name="edit-description-departament" id="edit-description-departament"></textarea>
+
+        <div class="row">
+            <div class="col">
+                <plus-select name="edit-id_manager" id="edit-id_manager" label="departament_employee.label.manager" 
+                link="/departament_employee/search_employee/" method="GET"
+                ></plus-select>
+            </div>
+            <div class="col">
+                <label t="departament_employee.label.color"></label>
+                <input-color  id="edit-color-departament" name="edit-color-departament"></input-color>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-8">
+                <button class="btn btn-success btn-edit" t="btn.update" type="button" onclick="update_a_departament()"></button>
+            </div>
+            <div class="col-4">
+                <button class="btn btn-success btn-delete-tr" type="button" onclick="delete_departament()">
+                    <i class="fi fi-rr-trash"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+</message-pop>
+
+
+<script>
+    //------------update, add or delete departament----------------//
+    async function add_a_new_departament(){
+        //here we will send the form to the server for try add a new departament in the company
+        //if the departament was added we will show a message of success or a message of error 
+        const backend=await window.send_form_to_the_server('form-departament', 'departament_employee/add_new_departament/');
+        if(backend.success){
+            window.hide_pop('pop-form-departament')
+            window.restart_form('form-departament') //restart the form
+            if (typeof update_information_container_departament === "function") {
+                await update_information_container_departament();
+            }
+            window.show_alert('success', 'departament_employee.title.the-departament-was-added-with-success', 'departament_employee.message.the-departament-was-added-with-success', backend.error || '')
+        }else{
+            window.show_alert('error', 'departament_employee.error.the-departament-not-was-added-with-success', backend.message, backend.error || '')
+        }
+    }
+
+    async function update_a_departament(){
+        //first we will see if the form have name
+        if(document.getElementById('edit-name-departament').value==''){
+            window.show_alert('alert', 'departament_employee.error.the-departament-not-was-update-with-sucees', 'departament_employee.error.the-departament-need-name')
+        }else{
+            //here we will see if exist a id for edit the departament
+            if(document.getElementById('departament_id').value==''){
+                show_alert('alert', window.t('error.general'), window.t('error.to_delete'), 'Not exist the input <departament_id>')
+                return;
+            }
+
+            //here we will send the form to the server for try update a departament of the company
+            //if the departament was update we will show a message of success or a message of error 
+            const backend=await window.send_form_to_the_server('form-departament-edit', 'departament_employee/edit_departament/');
+            if(backend.success){
+                //this is for know if this be in like a message pop in other app or is in the app father 
+                if (typeof update_information_container_departament === "function") {
+                    await update_information_container_departament();
+                }
+                window.restart_form('form-departament-edit') //restart the form
+                window.hide_pop('pop-form-edit-departament')
+                window.show_alert('success', 'departament_employee.title.departament-update', 'departament_employee.message.the-departament-was-update', backend.error || '')
+            }else{
+                window.show_alert('error', 'departament_employee.error.the-departament-not-was-update-with-sucees', backend.message, backend.error || '')
+            }  
+        }
+    }
+
+    async function send_form_departament_to_the_server(){
+        //first we will see if the form have name
+        if(document.getElementById('name-departament').value==''){
+            window.show_alert('alert', 'departament_employee.error.the-departament-not-was-added-with-success', 'departament_employee.error.the-departament-need-name')
+        }else{
+            //now we will see if the user would like update the departament or need add a new departament in the company
+            //if the input of the <departament_id> is null is because the user would like add a new departament
+            await add_a_new_departament();
+        }
+    }
+
+    async function get_information_for_edit_departament(departament_id){
+        //this function is for get the information of the departament from the backend 
+        //and update the inputs of the <pop-form-departament> 
+        departament_id=departament_id.trim()
+        const backend=await send_message_to_the_server(`departament_employee/get_information_of_the_departament/${departament_id}/`, {}, true, 'GET');
+        if(backend.success){
+            //if we can get the information of the server, now we will update the information of the form and show in the screen
+            const dataDepartament=backend.answer;
+            document.getElementById('departament_id').value=dataDepartament.id;
+            document.getElementById('edit-name-departament').value=dataDepartament.name;
+            document.getElementById('edit-description-departament').value=dataDepartament.description;
+
+            if(dataDepartament.manager){
+                document.getElementById('edit-id_manager').setValue(dataDepartament.manager.id, dataDepartament.manager.name);
+            }
+            else{
+                document.getElementById('edit-id_manager').setValue('', '');
+            }
+
+            document.getElementById('edit-color-departament').updateColor(dataDepartament.color);
+
+            window.show_pop('pop-form-edit-departament');
+        }else{
+            window.show_alert('error', 'departament_employee.error.the-departament-not-was-added-with-success', backend.message, backend.error || '')
+        }
+    }
+
+    async function delete_departament(){
+        const departament_id=document.getElementById('departament_id').value;
+        if(departament_id.value!=''){
+            if(await plus_delete_with_help_button(departament_id, 'departament_employee/delete_departament/', 
+            'departament_employee.question.delete-departament', 'departament_employee.question.do-you-like-delete-this-departament',
+            'departament_employee.success.departament-delete','departament_employee.success.the-departament-was-delete-with-success')){
+
+                //here we will see if exit the function for update the container of the table of the departament, 
+                //if not exist is because the user be use only the pop for edit, add and delete a departament from a select maybe
+                if (typeof update_information_container_departament === "function") {
+                    await update_information_container_departament();
+                }
+                window.hide_pop('pop-form-edit-departament')
+                window.restart_form('form-departament-edit') //restart the form
+            }
+        }else{
+            show_alert('alert', window.t('error.general'), window.t('error.to_delete'), 'Not exist the input <departament_id>')
+        }
+    }
+
+    function open_pop_add_departament(){
+        window.show_pop('pop-form-departament')
+    }
+
+    async function open_pop_edit_departament(id){
+        await get_information_for_edit_departament(id+'')
+        window.show_pop('pop-form-edit-departament')
+    }
+</script>

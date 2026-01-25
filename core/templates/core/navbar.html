@@ -1,0 +1,158 @@
+<style>
+.navbar-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.hamburger-btn {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.assistant-icon {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.assistant-icon:hover {
+  transform: scale(1.05) translateY(-50%);
+}
+
+/* panel of the assistant */
+.assistant-panel {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  width: 320px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 999;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.assistant-panel input {
+  flex: 1;
+  border: 1px solid #d1d1d1;
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-size: 14px;
+  outline: none;
+  font-family: 'San Francisco', sans-serif;
+  background-color: #f9f9f9;
+  transition: 0.2s ease;
+}
+
+.assistant-panel input:focus {
+  background-color: #fff;
+  border-color: #999;
+  box-shadow: 0 0 0 2px #007aff33;
+}
+
+.assistant-panel button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--primary);
+}
+
+/* hidden for defect purposes */
+.hidden {
+  display: none;
+}
+</style>
+
+{% load static %}
+<header class="top-navbar">
+  <div class="navbar-content">
+    <button id="openSidebarBtn2" class="hamburger-btn" onclick="openModalApp()">☰</button>
+    <h1 class="logo-title">PLUS</h1>
+    <!--
+    <img src="{% static '/img/icons/donna.webp' %}" 
+         alt="Asistente" 
+         id="assistantBtn" 
+         class="assistant-icon">
+    --->
+  </div>
+</header>
+<div id="overlay" class="overlay"></div>
+
+
+<!---container of DONNA--->
+<div id="assistantPanel" class="assistant-panel hidden">
+  <input type="text" id="assistantInput" placeholder="Write a message..." t-placeholder="input.write-a-message"/>
+  <button id="voiceBtn" title="Talk to the assistant">
+    <i class="fi fi-ss-circle-microphone"></i>
+  </button>
+</div>
+
+
+<!-- Script -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Show / hide assistant
+  //document.getElementById("assistantBtn").addEventListener("click", () => {
+    //document.getElementById("assistantPanel").classList.toggle("hidden");
+  //});
+
+  // Voice recognition
+  const voiceBtn = document.getElementById("voiceBtn");
+  const input = document.getElementById("assistantInput");
+
+  if ('webkitSpeechRecognition' in window) {
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = window.get_language_of_the_system();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    voiceBtn.addEventListener("click", () => {
+      recognition.start();
+    });
+
+    recognition.onresult = (event) => {
+      const result = event.results[0][0].transcript;
+      input.value = result;
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Error al reconocer voz:", event.error);
+    };
+  } else {
+    voiceBtn.disabled = true;
+    voiceBtn.title = window.t('ia-not-can-listen');
+  }
+
+  // Enter to send text
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleAssistantMessage();
+    }
+  });
+
+  // Function to process and clean input
+  function handleAssistantMessage() {
+    const message = input.value.trim();
+    if (!message) return;
+    console.log("Message send with success:", message);
+    // Aquí puedes llamar a tu API del backend de la IA
+    input.value = "";
+  }
+});
+</script>

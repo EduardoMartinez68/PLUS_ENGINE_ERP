@@ -1,0 +1,61 @@
+<label t="setting.module.system" icon="fi fi-rs-settings"></label>
+<hr>
+<form id="form_setting_user">
+<div class="row section">
+    <div class="col-6">
+        <plus-select label="setting.label.default_language" value="{{ user.language }}"
+            name="language">
+            <option value="es" t="setting.language.es"></option>
+            <option value="en" t="setting.language.en"></option>
+            <option value="pl" t="setting.language.pl"></option>
+        </plus-select>
+    </div>
+</div>
+
+<div class="row section">
+    <div class="col-6">
+        <plus-select label="setting.label.decimal_separator" name="decimal_separator" value="{{ user.decimal_separator }}" >
+            <option value="," t="setting.option.decimal_separator2"></option>
+            <option value="." t="setting.option.decimal_separator1"></option>
+        </plus-select>
+    </div>
+    <div class="col-6">
+        <plus-select label="setting.label.thousands_separator" name="thousands_separator" value="{{ user.thousands_separator }}" >
+            <option value="," t="setting.option.thousands_separator2"></option>
+            <option value="." t="setting.option.thousands_separator1"></option>
+        </plus-select>
+    </div>
+</div>
+
+<div class="row section">
+    <div class="col-6">
+        <plus-select label="setting.label.timezone" name="timezone" required value="{{ user.timezone }}">
+            {% include 'core/option_timezone.html' %}
+        </plus-select>
+    </div>
+</div>
+
+<div class="row section">
+    <div class="col">
+        <plus-select label="setting.label.date_format" name="date_format" value="{{ user.date_format }}">
+            {% include 'core/option_data_format.html' %}
+        </plus-select>
+    </div>
+</div>
+<button class="btn btn-edit btn-success" t="btn.save" type="button" onclick="send_form_setting_user()"></button>
+</form>
+
+
+<script>
+    async function send_form_setting_user() {
+        //send the information to the server and get his answer
+        const result = await send_form_to_the_server('form_setting_user', 'setting/view_update_setting_user/');
+
+        //we will see if we can add the new customer
+        if (result.success) {
+            show_notification('success', result.message || 'info.info-send-with-success');
+        } else {
+            show_alert('alert', 'Error', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'))
+        }
+    }
+</script>

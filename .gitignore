@@ -1,0 +1,25 @@
+.env
+.env.*
+media/*
+templates/*
+views/*
+
+apps/agenda/config/credentials.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entornos virtuales
+venv/
+env/
+
+# Base de datos local
+db.sqlite3
+
+# Archivos de medios (imágenes subidas por usuarios)
+media/
+
+staticfiles/

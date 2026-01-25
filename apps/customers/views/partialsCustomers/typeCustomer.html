@@ -1,0 +1,187 @@
+<message-pop title="title-type-customer" name="pop-type-customer">
+    <div class="container-pop">
+        <plus-search placeholder="search-type-customer" input_id="serach-type-customer">
+            <search-option>
+                <button class="btn btn-add" onclick="open_pop_create_type_customer()">+</button>
+            </search-option>
+        </plus-search>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 10%;"></th>
+                    <th t="table-name-source" style="width: 20%;">Name</th>
+                    <th t="table-description-source" style="width: 50%;">Description</th>
+                    <th style="width: 5%;"></th>
+                    <th style="width: 5%;"></th>
+                </tr>
+            </thead>
+            <tbody id="container-table-type-customer">
+            </tbody>
+        </table>
+    </div>
+</message-pop>
+
+<message-pop title="title-create-type-customer" name="pop-create-type-customer">
+    <div class="section">
+        <plus-title label="label-type-customer" placeholder="title-type-customer" required id="title-customer-add"></plus-title>
+    </div>
+    <div class="section">
+        <label t="description-type-customer"></label>
+        <textarea id="description-customer-add"></textarea>
+    </div>
+    <div class="section">
+        <input-color required id="color-customer-add"></input-color>
+    </div>
+    <br>
+    <button t="btn.save" class="btn btn-add btn-success" onclick="create_type_customer()">Search</button>
+</message-pop>
+
+<message-pop title="title-edit-type-customer" name="pop-edit-type-customer" >
+    <input type="hidden" id="id-type-customer">
+    <div class="section">
+        <plus-title label="label-type-customer" placeholder="title-type-customer" required id="title-customer-edit"></plus-title>
+    </div>
+    <div class="section">
+        <label t="description-type-customer"></label>
+        <textarea id="description-customer-edit"></textarea>
+    </div>
+    <div class="section">
+        <input-color required id="color-customer-edit"></input-color>
+    </div>
+    <br>
+    <button t="btn.update" class="btn btn-edit btn-success" onclick="edit_type_customer()">Edit</button>
+</message-pop>
+
+
+<script>
+(() => {
+    const divHtml=`
+        <td style="background-color: { color } ;"> </td>
+        <td> { name } </td>
+        <td> { description } </td>
+        <td> <button onclick='open_pop_edit_type_customer( { id } )' class='btn btn-transparent'><i class="fi fi-sr-user-pen"></i></button></td>
+        <td><button onclick='delete_button_type_customer( { id } )' class='btn btn-transparent'><i class="fi fi-sr-trash"></i></button></td>
+    `
+
+    function open_pop_create_type_customer(){
+        window.show_pop('pop-create-type-customer')
+    }
+
+    function open_pop_table_type_customer(){
+        window.show_pop('pop-type-customer')
+        window.update_container_with_seeker('serach-type-customer', 'container-table-type-customer', divHtml, '/customers/search_type_customer', 'GET');
+    }
+
+    async function open_pop_edit_type_customer(id){
+        //first we will get the information of the type customer for show in the form of edit type customer 
+        const server=await send_message_to_the_server('/customers/search_type_customer_for_id/',{id: id}, true, 'GET') 
+        if(server.success){
+            //get the information that we get from the server and update the input of the form
+            const data=server.answer;
+            document.getElementById('id-type-customer').value=data.id;
+            document.getElementById('title-customer-edit').value=data.name;
+            document.getElementById('description-customer-edit').value=data.description;
+            document.getElementById(`color-customer-edit`).updateColor(data.color);
+
+            window.show_pop('pop-edit-type-customer') //show the form
+        }else{
+            //if nor can save this type customer we will to show a message of error
+            show_alert('error', 'message.no-can-add-this-type-of-customer', server.message, server.error)
+        }
+    }
+
+    function get_information_of_the_form_type_customer(typeForm){
+        //her we define the input that need get
+        const fields = ["title", "description", "color"];
+
+        //We iterate through the fields and build the object with the values.
+        const data = fields.reduce((acc, field) => {
+            const el = document.getElementById(`${field}-customer-${typeForm}`);
+            acc[field] = el ? el.value.trim() : "";
+            return acc;
+        }, {});
+
+        return data;
+    }
+
+    function clear_form_type_customer(typeForm) {
+        //We define the same fields that we use to obtain information.
+        const fields = ["title", "description", "color"];
+
+        fields.forEach(field => {
+            const el = document.getElementById(`${field}-customer-${typeForm}`);
+            if (el) el.value = ""; // clear the input
+        });
+
+        //here we will clear the input type color
+        document.getElementById(`color-customer-${typeForm}`).updateColor('#3b82f6');
+    }
+
+    async function create_type_customer(){
+        //here we will to get all the information of the form create type customer
+        const form=get_information_of_the_form_type_customer('add');
+        if (form.title && form.title.trim() !== '') { //here we will see if exist a data in the title field 
+            //when get the information of the form we will send this information to the server for save this information
+            const server=await send_message_to_the_server('/customers/add_type_customer/',form) 
+            if(server.success){
+                await update_table_type_customer();
+                clear_form_type_customer('add') //here clear the form 
+                close_my_pop('pop-create-type-customer')
+                show_alert('success', 'message.the-type-customer-can-added-with-success-title', 'message.the-type-customer-can-added-with-success-description')
+            }else{
+                //if nor can save this type customer we will to show a message of error
+                show_alert('error', 'message.no-can-add-this-type-of-customer', server.message, server.error)
+            }
+        } else {
+            show_alert('alert', 'message.need-all-the-field', 'message.need-the-name-of-the-type-event')
+        }
+    }
+
+    async function edit_type_customer(){
+        //here we will to get all the information of the form create type customer
+        const form=get_information_of_the_form_type_customer('edit');
+        form.id=document.getElementById('id-type-customer').value; //save the id of the type customer that the user would like edit 
+
+        if (form.title && form.title.trim() !== '') {
+            if(form.id){
+                //when get the information of the form we will send this information to the server for save this information
+                const server=await send_message_to_the_server('/customers/edit_type_customer/',form) 
+                if(server.success){
+                    await update_table_type_customer();
+                    clear_form_type_customer('edit') //here clear the form 
+                    close_my_pop('pop-edit-type-customer')
+                    show_alert('success', 'type-customer-edit', 'message.type-customer-edit-description')
+                }else{
+                    //if nor can save this type customer we will to show a message of error
+                    show_alert('error', 'message.no-can-edit-this-type-of-customer', server.message, server.error)
+                }
+            }else{
+                show_alert('alert', 'message.need-all-the-field', 'message.need-the-id-of-the-source')
+            }
+        } else {
+            show_alert('alert', 'message.need-all-the-field', 'message.need-the-name-of-the-type-event')
+        }
+    }
+
+    async function update_table_type_customer(){
+        window.update_container_from_the_server('serach-type-customer', 'container-table-type-customer', divHtml, '/customers/search_type_customer', 'GET')
+    }
+
+
+    async function delete_button_type_customer(id){
+        if(await window.plus_delete_with_help_button( id , '/customers/delete_type_customer/' ,'message.do-you-like-delete-this-type-customer', 'message.description-delete-type-customer')){
+            await update_table_type_customer();
+        }
+    }
+
+
+    //do this function global for that can use in other scripts
+    window.open_pop_table_type_customer=open_pop_table_type_customer;
+    window.create_type_customer=create_type_customer;
+    window.edit_type_customer=edit_type_customer;
+    window.open_pop_create_type_customer=open_pop_create_type_customer;
+    window.open_pop_edit_type_customer=open_pop_edit_type_customer;
+    window.delete_button_type_customer=delete_button_type_customer;
+
+})();
+</script>

@@ -1,0 +1,28 @@
+{
+    "character":{
+        "icon":"fi-rr-shield-check"
+    },
+    "permissions": [
+        "add_rol",
+        "duplicate_role",
+        "view_rol",
+        "update_rol",
+        "delete_rol",
+        "recover_rol",
+        "clone_rol"
+    ], 
+    "translate":{
+        "es": {
+            "app_name": "Roles y Permisos",
+            "description": "Administra los roles de usuario y los permisos asociados dentro del sistema, asegurando que cada empleado tenga acceso adecuado según su función y responsabilidad.",
+
+            "add_rol": "Permite crear un nuevo rol dentro de la empresa, definiendo sus permisos y responsabilidades específicas.",
+            "duplicate_role": "Permite copiar y duplicar un rol dentro de la empresa, copiando todos sus permisos y responsabilidades específicas.",
+            "view_rol": "Permite visualizar la lista completa de roles existentes y sus detalles, incluyendo permisos asignados.",
+            "update_rol": "Permite modificar la información de un rol existente y actualizar sus permisos según las necesidades de la empresa.",
+            "delete_rol": "Permite eliminar un rol del sistema de manera permanente, restringiendo los permisos asociados a los usuarios asignados.",
+            "recover_rol": "Permite restaurar roles previamente eliminados, recuperando su información y permisos originales.",
+            "clone_rol": "Permite duplicar un rol existente, creando una copia con los mismos permisos y configuración para agilizar la creación de nuevos roles."
+        }
+    }
+}

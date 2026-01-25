@@ -1,0 +1,156 @@
+<message-pop title="title-source" name="pop-data-source">
+    <div class="container-pop">
+        <plus-search placeholder="search-source" input_id="serach-source">
+            <search-option>
+                <button class="btn btn-add" onclick="open_pop_create_source()">+</button>
+            </search-option>
+        </plus-search>
+        <table>
+            <thead>
+                <tr>
+                    <th t="table-name-source" style="width: 20%;">Name</th>
+                    <th t="table-description-source" style="width: 60%;">Description</th>
+                    <th style="width: 5%;"></th>
+                    <th style="width: 5%;"></th>
+                </tr>
+            </thead>
+            <tbody id="container-table-source">
+            </tbody>
+        </table>
+    </div>
+</message-pop>
+
+<message-pop title="title-pop-create-a-new-source" name="pop-create-source">
+    <div class="section">
+        <plus-title label="label-name-source" placeholder="placeholder-name-source" required  message="message-name-source" id="title-source-add"></plus-title>
+    </div>
+    <div class="section">
+        <label t="description-type-customer"></label>
+        <textarea id="description-source-add"></textarea>
+    </div>
+    <br>
+    <button t="btn.save" class="btn btn-add btn-success" onclick="create_a_new_source()">Search</button>
+</message-pop>
+
+<message-pop title="title-pop-create-a-new-source" name="pop-edit-source">
+    <input type="hidden" id="id-source">
+    <div class="section">
+        <plus-title label="label-name-source" placeholder="placeholder-name-source" required  message="message-name-source" id="title-source-edit"></plus-title>
+    </div>
+    <div class="section">
+        <label t="description-type-customer"></label>
+        <textarea id="description-source-edit"></textarea>
+    </div>
+    <br>
+    <button t="btn.update" class="btn btn-edit btn-success" onclick="edit_source()">Edit</button>
+</message-pop>
+
+<script>
+(() => {
+    //here is for update the table of source 
+    const divHtml=`
+        <td> { name } </td>
+        <td> { description } </td>
+        <td> <button onclick='open_pop_edit_source( { id } )' class='btn btn-transparent'><i class="fi fi-sr-user-pen"></i></button></td>
+        <td><button onclick='delete_button_source( { id } )' class='btn btn-transparent'><i class="fi fi-sr-trash"></i></button></td>
+    `
+
+    function clear_the_form_source(type){
+        document.getElementById(`title-source-${type}`).value='';
+        document.getElementById(`description-source-${type}`).value='';
+    }
+
+    function get_the_information_of_the_form(type){
+        const name=document.getElementById(`title-source-${type}`).value;
+        const description=document.getElementById(`description-source-${type}`).value;
+
+        return {
+            name,
+            description
+        }
+    }
+
+    function open_pop_create_source(){
+        clear_the_form_source('add');
+        window.show_pop('pop-create-source')
+    }
+
+    async function create_a_new_source(){
+        //get the information of the form and see if the user added the name of the source
+        const form=get_the_information_of_the_form('add');
+        if (form.name && form.name.trim() !== '') {
+            //when get the information of the form we will send this information to the server for save this information
+            const server=await send_message_to_the_server('/customers/add_source/',form) 
+            if(server.success){
+                await update_table_source();
+                close_my_pop('pop-create-source')
+                show_alert('success', 'message.the-source-can-added-with-success-title', 'message.the-source-can-added-with-success-description')
+            }else{
+                //if nor can save this type customer we will to show a message of error
+                show_alert('error', 'message.no-can-add-this-source', server.message, server.error)
+            }
+        } else {
+            show_alert('alert', 'message.need-all-the-field', 'message.need-the-name-of-the-source')
+        }
+    }
+
+    async function open_pop_edit_source(id){
+        //get the information of this source from the server
+        const server=await send_message_to_the_server('/customers/search_source_by_id/',{id}, true, 'GET') 
+        if(server.success){
+            //update the information of the form for after open the pop 
+            const source=server.answer;
+            document.getElementById('id-source').value=source.id;
+            document.getElementById('title-source-edit').value=source.name;
+            document.getElementById('description-source-edit').value=source.description;
+            window.show_pop('pop-edit-source')
+        }else{
+            //if nor can save this type customer we will to show a message of error
+            show_alert('error', 'message.error-to-get-the-information-of-the-source', server.message, server.error)
+        }
+    }
+
+    async function edit_source(){
+        //get the information of the form and see if the user added the name of the source
+        const form=get_the_information_of_the_form('edit');
+        form.id=document.getElementById('id-source').value;
+        if (form.name && form.name.trim() !== '') {
+            //when get the information of the form we will send this information to the server for save this information
+            const server=await send_message_to_the_server('/customers/edit_source/',form) 
+            if(server.success){
+                await update_table_source();
+                close_my_pop('pop-edit-source')
+                show_alert('success', 'message.the-source-can-edited-with-success-title', 'message.the-source-can-edited-with-success-description')
+            }else{
+                //if nor can save this type customer we will to show a message of error
+                show_alert('error', 'message.no-can-add-this-source', server.message, server.error)
+            }
+        } else {
+            show_alert('alert', 'message.need-all-the-field', 'message.need-the-name-of-the-source')
+        }
+    }
+
+    async function update_table_source(){
+        window.update_container_from_the_server('serach-source', 'container-table-source', divHtml, '/customers/get_customers_with_seeker', 'GET')
+    }
+
+    async function delete_button_source(id){
+        if(await window.plus_delete_with_help_button( id , '/customers/delete_source/' ,'message.do-you-like-delete-this-source', 'message.description-delete-source')){
+            await update_table_source();
+        }
+    }
+
+    async function open_pop_table_source(){
+        window.show_pop('pop-data-source')
+        window.update_container_with_seeker('serach-source', 'container-table-source', divHtml, '/customers/get_customers_with_seeker', 'GET');
+    }
+
+    window.open_pop_create_source=open_pop_create_source;
+    window.open_pop_edit_source=open_pop_edit_source;
+    window.create_a_new_source=create_a_new_source;
+    window.edit_source=edit_source;
+    window.delete_button_source=delete_button_source;
+    window.update_table_source=update_table_source;
+    window.open_pop_table_source=open_pop_table_source;
+})();
+</script>

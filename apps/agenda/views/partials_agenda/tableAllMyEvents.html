@@ -1,0 +1,528 @@
+<style>
+    .badge-type {
+        display: inline-block;
+        padding: 4px 12px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 20px;
+        /* más redondeado estilo "tag" */
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        /* sutil borde */
+        text-transform: capitalize;
+        white-space: nowrap;
+        transition: all 0.2s ease-in-out;
+        color: rgba(0, 0, 0, 0.8);
+    }
+
+    .btn-add-f {
+        color: white;
+        font-size: 22px;
+        font-weight: 400;
+        border: none;
+        border-radius: 8px;
+        /* esquinas suaves */
+        width: 45px;
+        height: 45px;
+        cursor: pointer;
+        margin-top: 15px;
+        /* lo baja más */
+        transition: background 0.3s ease;
+    }
+
+
+    table {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-collapse: collapse;
+    }
+
+    table th,
+    table td {
+        padding: 8px 12px;
+        text-align: left;
+        white-space: nowrap;
+        /* evita que se rompan los textos */
+    }
+
+    .btn-whatsapp {
+        color: #1d8631;
+    }
+
+    .btn-whatsapp:hover {
+        color: #1d8631;
+    }
+
+    .btn-email {
+        color: var(--primary);
+    }
+
+    .btn-email:hover {
+        color: var(--secondary);
+    }
+
+    /* Estilo base de la etiqueta (Badge) */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        gap: 8px;
+    }
+
+    /* El círculo indicador */
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    /* Variantes de Color */
+    .status-confirmed {
+        background-color: #D1FAE5;
+        color: #065F46;
+    }
+
+    .status-confirmed .status-dot {
+        background-color: #10B981;
+    }
+
+    .status-pending {
+        background-color: #FEF3C7;
+        color: #92400E;
+    }
+
+    .status-pending .status-dot {
+        background-color: #F59E0B;
+    }
+
+    .status-cancelled {
+        background-color: #FEE2E2;
+        color: #991B1B;
+    }
+
+    .status-cancelled .status-dot {
+        background-color: #EF4444;
+    }
+
+    .status-attended { background-color: #cce5ff; color: #004085; }
+    .status-noshow { background-color: #e2e3e5; color: #383d41; }
+
+    /*-----------------------------*/
+    .appoint-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .card-title {
+        margin: 0 0 4px 0;
+        font-size: 1.1rem;
+        color: #1e293b;
+    }
+
+    .card-desc {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin-bottom: 12px;
+    }
+
+    .card-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 0.85rem;
+        color: #475569;
+        margin-bottom: 16px;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 12px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .action-group {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-icon {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 8px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #64748b;
+        transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+        background: #f1f5f9;
+        color: #4f46e5;
+    }
+
+    .btn-icon.btn-whatsapp:hover {
+        color: #10b981;
+        background: #d1fae5;
+    }
+
+    .btn-icon.btn-delete:hover {
+        color: #ef4444;
+        background: #fee2e2;
+    }
+
+    .badge-type {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding-left: 8px;
+        color: #64748b;
+        text-transform: uppercase;
+    }
+
+    #body-table-my-events {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    appointment-card {
+        display: block;
+        /* ¡Esto es lo más importante! */
+        width: 100%;
+        /* Ahora sí ocupará todo el ancho del div rojo */
+        margin-bottom: 15px;
+    }
+
+    .appointment-card {
+        display: block;
+        /* Crucial para que acepte width: 100% */
+        width: 100%;
+    }
+</style>
+{% load static %}
+
+<message-pop title="title.show-all-my-appoints" name="pop-show-all-my-events" style="width: 80%;">
+    <div class="row">
+        <div class="col">
+            <plus-search input_id="input-search-all-my-event" placeholder="search.seacrh-all-my-events">
+                <search-option>
+                    <button class="btn btn-add" onclick="open_type_pop()">+</button>
+                </search-option>
+                <!--
+                <search-option>
+                    <search-option>
+                        <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-appoint')"><i class="fi fi-rr-settings-sliders"></i></button>
+                    </search-option>
+                </search-option>
+                --->
+            </plus-search>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div id="table-my-events">
+                <div id="body-table-my-events">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</message-pop>
+
+<message-pop title="agenda.title.filter-appoint" name="pop-filter-appoint">
+    <div class="row section">
+        <div class="col">
+            <plus-date label="starts" name="start_date" id="start_date"></plus-date>
+        </div>
+        <div class="col">
+            <plus-select label="search-type-event" name="type_event" required id="type_event">
+                <option t="agenda.status.pending" value=""></option>
+                <option t="agenda.status.confirmed" value=""></option>
+                <option t="agenda.status.cancelled" value=""></option>
+                <option t="agenda.status.attended" value=""></option>
+                <option t="agenda.status.noshow" value=""></option>
+            </plus-select>
+        </div>
+        <div class="col">
+            <plus-select label="search-type-event" name="type_event" required id="type_event"
+                link="agenda/get_the_first_type_events/" add="open_pop_new_type_event" edit_data="edit_type_event_for_select"
+                delete_data="agenda/delete_type_event/" btn_delete_title="message.delte-type-event-title" btn_delete_text="message.delte-type-event-description">
+            </plus-select>
+        </div>
+        <div class="col">
+            <plus-select label="priority" name="priority" required id="priority">
+                <option selected t="priority.low" value="0"></option>
+                <option t="priority.normal" value="1"></option>
+                <option t="priority.high" value="2"></option>
+            </plus-select>
+        </div>
+    </div>
+    <div class="row">
+        <button class="btn btn-success btn-edit" t="btn.save"></button>
+    </div>
+</message-pop>
+
+<script>
+    function generate_whatsapp_reminder(id, patientName, title, description, whatsappNumber) {
+        // URL for confirm the appointment
+        const PLUS_URL = "{{ PLUS_URL }}";
+        const confirmationLink = `https://${PLUS_URL}/profile_online/guest_confirm_appointment/${id}/`;
+
+        // Here we will to construct the message to send by whatsapp
+        const message = window.translate_text('agenda.whatsapp-message',{
+            patientName,
+            title,
+            description,
+            confirmationLink
+        });
+
+
+        // Encode the message so that it is valid in a URL
+        const encodedMessage = encodeURIComponent(message);
+
+        // Clean up the phone number (remove spaces or hyphens if any)
+        const cleanNumber = whatsappNumber.replace(/\D/g, '');
+
+        // return the link of whatsapp
+        return `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
+    }
+
+
+    function open_whatsapp_customer(object, id, patientName, title, description, whatsappNumber) {
+        //clear the cellphone
+        const cleanNumber = (whatsappNumber || "").replace(/\D/g, '');
+
+        // 2. Evaluate if the number is valid (e.g., minimum 10 digits)
+        // You can adjust the "10" according to the numbers you use (Mexico is usually 12 with 52)
+        if (!cleanNumber || cleanNumber.length < 10) {
+
+            // show alert to the user
+            window.show_alert('alert','agenda.title.invalid-whatsapp-number',['agenda.errror.invalid-whatsapp-number', {patientName}])
+
+            // 3. Remove the button from the interface to avoid further clicks
+            if (btnElement) {
+                btnElement.style.transition = "opacity 0.3s ease";
+                btnElement.style.opacity = "0"; // Visual effect of fading
+                setTimeout(() => {
+                    btnElement.remove(); //Remove the button from the DOM permanently
+                }, 300);
+            }
+            return;
+        }
+
+
+        //if the cellphone is success now we will to create the link and open the whatsapp
+        const url = generate_whatsapp_reminder(id, patientName, title, description, whatsappNumber);
+        window.open(url, '_blank');
+    }
+
+    if (!customElements.get("appointment-card")) {
+        class AppointmentCard extends HTMLElement {
+            constructor() {
+                super();
+                this.statusMap = {
+                    'P': { class: 'status-pending', text: window.translate_text('agenda.status.pending') },
+                    'C': { class: 'status-confirmed', text: window.translate_text('agenda.status.confirmed') },
+                    'X': { class: 'status-cancelled', text: window.translate_text('agenda.status.cancelled') },
+                    'A': {class: 'status-attended', text:window.translate_text('agenda.status.attended') },
+                    'N': {class: 'status-noshow', text:window.translate_text('agenda.status.noshow') }
+                };
+            }
+
+            connectedCallback() {
+                this.render();
+            }
+
+            render() {
+                const id = this.getAttribute('id-appoint');
+                const title = this.getAttribute('title');
+                const description = this.getAttribute('description') || 'Sin descripción';
+                const date_start = this.getAttribute('date-start');
+                const date_finish = this.getAttribute('date-finish');
+                const priority = this.getAttribute('priority');
+                const type_color = this.getAttribute('type-color') || '#6366f1';
+                const type_name = this.getAttribute('type-name');
+                const status = this.getAttribute('status');
+                const customer_name = this.getAttribute('customer-name');
+                const customer_whatsapp = this.getAttribute('customer-whatsapp');
+                const customer_email = this.getAttribute('customer-email');
+
+                const config = this.statusMap[status] || this.statusMap['P'];
+                let infoWhatsapp='';
+                if(customer_whatsapp){
+                    infoWhatsapp=`
+                        <button class="btn-icon btn-whatsapp" onclick='open_whatsapp_customer(this, "${id}", "${customer_name}", "${title}", "${description}", "${customer_whatsapp}")'>
+                            <i class="fi fi-brands-whatsapp"></i>
+                        </button>
+                    `
+                }
+
+                let infoEmail='';
+                if(customer_email){
+                    infoEmail=`
+                        <button class="btn-icon" onclick='send_email_to_the_customer_by_appoint("${id}", "${customer_email}")'>
+                            <i class="fi fi-ss-paper-plane"></i>
+                        </button>
+                    `
+                }
+
+                this.innerHTML = `
+                <div class="appoint-card">
+                    <div class="card-header">
+                        <div class="status-badge ${config.class}">
+                            <div class="status-dot"></div>
+                            <span>${config.text}</span>
+                            ${priority}
+                        </div>
+                        <span class="badge-type" style="border-left: 3px solid ${type_color};">
+                            ${type_name}
+                        </span>
+                    </div>
+
+                    <div class="card-body">
+                        <h4 class="card-title">${title}</h4>
+                        <p class="card-desc">${description}</p>
+                        
+                        <div class="card-meta">
+                            <div class="meta-item">
+                                <i class="fi fi-rr-calendar"></i>
+                                <span>${date_start} - ${date_finish}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fi fi-rr-user"></i>
+                                <span>${customer_name}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="action-group">
+                            ${infoWhatsapp}
+                            ${infoEmail}
+                        </div>
+                        
+                        <div class="action-group">
+                            <button class="btn-icon" onclick='show_character_appoint("${id}")'>
+                                <i class="fi fi-sr-pencil"></i>
+                            </button>
+                            <button class="btn-icon btn-delete" onclick="delete_event('${id}')">
+                                <i class="fi fi-sr-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }
+        }
+
+        customElements.define('appointment-card', AppointmentCard);
+    }
+    
+    function get_div_table_events(){
+        return `
+            <appointment-card
+                id-appoint="{id}"
+                title="{title}"
+                description="{description}"
+                status="{status}"
+                date-start="{date_start}"
+                date-finish="{date_finish}"
+                type-color="{type_appoint_color}"
+                type-name="{type_appoint_name}"
+                customer-name="{customer_name}"
+                customer-email="{customer_email}"
+                customer-whatsapp="{customer_whatsapp}"
+                priority="{priority}">
+                ></appointment-card>
+            `
+    }
+    
+    function filter_table_appoints(text) {
+        //here we will see if the pop is visible for the user, if not is visible, we not need update the information
+        const table = document.getElementById('table-my-events');
+        if (table && table.offsetParent !== null) {
+            window.update_container_with_seeker(
+                ['input-search-all-my-event'], // id of the input of the seeker
+                'body-table-my-events',  // id of the container to update
+                get_div_table_events(),            // template with placeholders
+                'agenda/search_events/', // url for the search
+                'GET'
+            );
+        }
+    }
+
+    async function delete_event(id) {
+        id = String(id).trim();
+        if (await show_message_question('question.delete-event', 'question.delete-event-description')) {
+            const answer = await window.send_message_to_the_server('/agenda/delete_event/', { id_event: id })
+            if (answer.success) {
+
+                //refresh the calendar 
+                if (typeof refresh_calendar === 'function') {
+                    refresh_calendar();
+                }
+
+                //create a metod for that the script not have a error if the web not can load all the script
+                if (typeof update_all_the_information_of_my_calendary === 'function') {
+                    await window.update_all_the_information_of_my_calendary();
+                }
+
+                filter_table_appoints('');
+                window.update_container_from_the_server(
+                    ['input-search-all-my-event'], // id of the input of the seeker
+                    'body-table-my-events',  // id of the container to update
+                    get_div_table_events(),            // template with placeholders
+                    'agenda/search_events/', // url for the search
+                    'GET'
+                )
+
+                window.hide_pop('pop-edit-event'); //close the pop if the user have open the pop of edit 
+                show_alert('success', window.translate_text('message.delte-event-title'), window.t('message.delte-event-description'))
+            } else {
+                show_alert('alert', window.translate_text('message.delete-event-fail'), window.t('error.to_delete'), answer.error)
+                console.error(answer.message || 'Error to delete the item in the server');
+                console.error(answer.error);
+            }
+        }
+    }
+
+    async function send_email_to_the_customer_by_appoint(id, email){
+        //here we will to send the email to the customer
+        const backend=await send_message_to_the_server(`/agenda/send_reminder_for_email_to_customer/${id}/`, {id}, true, 'POST')
+        if(backend.success){
+            window.show_alert('success',  'agenda.title.email_sened', ['agenda.message.email_sened', {email}])
+        }else{
+            window.show_alert('alert',  'Error', backend.message || 'agenda.error.email_sened', backend.error || '')
+        }
+    }
+</script>
+<script>
+    //if delete this the web not can work
+    /*--------------------NOT DELETE THIS--------------------*/
+    (async () => {
+
+    })();
+</script>

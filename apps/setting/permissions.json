@@ -1,0 +1,32 @@
+{
+    "character":{
+        "icon":"fi fi-rs-settings"
+    },
+    "permissions": [
+        "view_settings",
+        "edit_system",
+        "edit_company",
+        "edit_branch",
+        "edit_drivers",
+        "edit_schedule",
+        "edit_email",
+        "edit_setting_user",
+        "edit_data_facture"
+    ], 
+    "translate":{
+        "es": {
+            "app_name": "Ajustes",
+            "description": "Administra las configuraciones de la empresa y sus sucursales, incluyendo datos de facturación, logos, ajustes online, etc.",
+
+            "view_settings": "Permite visualizar todas las configuraciones posibles del sistema",
+            "edit_system": "El usuario pdora editar caracteristicas y configuraciones de su propio sistema como idioma, zona horaria, formato de fecha, etc.",
+            "edit_company": "Permite actualizar la información de la empresa como logo, nombre, etc.",
+            "edit_branch": "Permite actualizar la información de la sucursal en la que trabaja el empleado como logo, nombre, etc.",
+            "edit_drivers": "Editar dirección de puertos de conexión de dispositivos locales como impresoras, basculas, etc.",
+            "edit_schedule":"Editar horario de la sucursal",
+            "edit_email":"Editar el email para enviar mensajes en nuestro servicio de correo electronico.",
+            "edit_setting_user":"El usuario podra editar sus propias configuraciones del sistema como zona horaria, vistas, formato de fecha, etc.",
+            "edit_data_facture":"Editar datos de facturación de la sucursal"
+        }
+    }
+}

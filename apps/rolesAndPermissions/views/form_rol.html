@@ -1,0 +1,18 @@
+
+{% include 'partials_rolesAndPermissions/navbarHome.html' %}
+{% include 'partials_rolesAndPermissions/from_role.html' %}
+
+<script>
+  (async()=>{
+    await create_form_of_the_role(); //first we will to create all the form
+
+    //now we will see if exist a rol for update
+    const rol_input=document.getElementById('rol_id');
+    if(rol_input){
+      if (rol_input && rol_input.value.trim() !== '') {
+        await update_form_for_edit_role(rol_input.value);
+      }
+    }
+
+  })();
+</script>

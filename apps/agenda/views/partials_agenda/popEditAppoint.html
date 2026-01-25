@@ -1,0 +1,405 @@
+<style>
+/* Contenedor principal */
+.appointment-actions {
+    display: flex;       /* Alinea los hijos en fila */
+    gap: 12px;           /* Espacio exacto entre los dos botones */
+    width: 100%;         /* Se ajusta al ancho de la card */
+    margin-top: 15px;    /* Separación con el contenido superior */
+}
+
+/* Estilo base de ambos botones */
+.btn-pop-edit-action {
+    flex: 1;             /* Hace que ambos botones tengan el mismo ancho (50/50) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;            /* Espacio entre icono y texto */
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+/* Colores específicos para WhatsApp (Verde) */
+.btn-pop-edit-whatsapp {
+    background-color: #D1FAE5; /* Verde menta muy suave */
+    color: #065F46;           /* Verde bosque oscuro para legibilidad */
+}
+
+.btn-pop-edit-whatsapp:hover {
+    background-color: #A7F3D0;
+    border-color: #10B981;
+}
+
+/* Colores específicos para Email (Azul/Gris) */
+.btn-pop-edit-email {
+    background-color: #DBEAFE; /* Azul suave */
+    color: #1E40AF;           /* Azul fuerte */
+}
+
+.btn-pop-edit-email:hover {
+    background-color: #BFDBFE;
+    border-color: #3B82F6;
+}
+
+/* Ajuste para iconos (si usas Flaticon/FontAwesome) */
+.btn-action i {
+    font-size: 16px;
+}
+</style>
+<message-pop title="title-pop-edit-event" name="pop-edit-event">
+<button class="btn btn-edit btn-success only-mobile" t="btn.update" onclick="update_event()" type="button"></button>
+<div class="container-pop">
+    <div class="appointment-actions">
+        <button class="btn-pop-edit-action btn-pop-edit-whatsapp" id="btn-edit-appoint-send-whatsapp">
+            <i class="fi fi-brands-whatsapp"></i>
+            <span>WhatsApp</span>
+        </button>
+
+        <button class="btn-pop-edit-action btn-pop-edit-email" id="btn-edit-appoint-send-email">
+            <i class="fi fi-ss-paper-plane"></i>
+            <span>Email</span>
+        </button>
+    </div>
+
+    <form  id="formEditEvent">
+    <plus-tabs>
+        <plus-tab text="Description">
+            <input type="hidden" name="id_event" id="id_event"/>
+            <div class="section">
+                <label t="label-input-title">Title of the event</label>
+                <input type="text" name="name_event" class="case-title-input" placeholder="Title"
+                    t-placeholder="placeholder-input-title" required maxlength="300" id="title_event"/>
+            </div>
+
+            <div class="section">
+                <div class="row">
+                    <div class="col">
+                        <plus-select label="agenda.label.select-customer" name="customer" id="edit_customer"
+                            link="customers/customers_search/">
+                        </plus-select>
+                    </div>
+                    <div class="col">
+                        <plus-select label="agenda.select.status" name="status" id="edit_status">
+                            <option t="agenda.status.pending" value="P"></option>
+                            <option t="agenda.status.confirmed" value="C"></option>
+                            <option t="agenda.status.cancelled" value="X"></option>
+                        </plus-select>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="section">
+                <plus-switch text="all-day" id="activate_event_all_the_day_edit" name="activate_event_all_the_day_edit" onclick="activate_event_all_the_day_edit"></plus-switch>
+                <label t="starts" style="margin-bottom: -24px; display: block;"></label>
+                <div class="row section">
+                    <plus-date label="starts" name="start_date_edit" id="start_date_edit"></plus-date>
+                    <plus-time label="min-start" name="start_time_edit" id="start_time_edit"></plus-time>
+                </div>
+
+                <label t="ends" style="margin-bottom: -24px; display: block;"></label>
+                <div class="row section">
+                    <plus-date label="ends" name="end_date_edit" id="end_date_edit"></plus-date>
+                    <plus-time label="min-end" name="end_time_edit" id="end_time_edit"></plus-time>
+                </div>
+
+            </div>
+
+            <div class="section">
+                <plus-select label="time-of-alert" name="alert_time" required id="alert_time_edit">
+                    <option selected t="alert.none" value="0"></option>
+                    <option t="alert.5min" value="5"></option>
+                    <option t="alert.10min" value="10"></option>
+                    <option t="alert.15min" value="15"></option>
+                    <option t="alert.30min" value="30"></option>
+                    <option t="alert.1hr" value="60"></option>
+                    <option t="alert.2hr" value="120"></option>
+                    <option t="alert.1day" value="1440"></option>
+                    <option t="alert.2day" value="2880"></option>
+                    <option t="alert.1week" value="10080"></option>
+                </plus-select>
+            </div>
+
+            <div class="section">
+                <div class="row m-1">
+                    <div class="col">
+                        <plus-select label="priority" name="priority" id="priority_edit"  required>
+                            <option selected t="priority.low" value="0"></option>
+                            <option t="priority.normal" value="1"></option>
+                            <option t="priority.high" value="2"></option>
+                        </plus-select>
+                    </div>
+                    <div class="col">
+                        <plus-select label="search-type-event" name="type_event" required id="type_appoint_edit"
+                            link="agenda/get_the_first_type_events/" add="open_pop_new_type_event" edit_data="edit_type_event_for_select"
+                            delete_data="agenda/delete_type_event/" btn_delete_title="message.delte-type-event-title" btn_delete_text="message.delte-type-event-description">
+                        </plus-select>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <info-label label="emails-guests"
+                    message="email-message-show"></info-label>
+                <plus-tags id="emails_guests_edit" name="emails_guests" label="emails-guests" message="email-message-show" t-placeholder="input.add-most-email"></plus-tags>
+            </div>
+
+            <div class="section">
+                <label for="description" t="label-description">Description</label>
+                <textarea name="description" id="edit_description" rows="4"
+                    t-placeholder="placeholder-description"></textarea>
+            </div>
+
+
+        </plus-tab>
+
+
+        <plus-tab text="More options">
+            <div class="section">
+                <input-field label="label-input-address" name="location" id="edit_location"
+                    placeholder="placeholder-input-address"></input-field>
+            </div>
+
+            <div class="section">
+                <input-field label="label-link" type="text" name="link" id="edit_link" placeholder="www/..."></input-field>
+            </div>
+
+
+            <plus-switch text="repeat_this_event" name="repeat_this_event" id="repeat_this_event_edit"
+                onclick="hidden_input_repet_edit"></plus-switch>
+
+            <div class="section" id="hidden_input_repet_edit" style="display: none;">
+                <div class="row m-1">
+                    <plus-select label="repeat" name="time_repeat" requerid id="time_repeat_edit">
+                        <option selected t="option.never" value="0"></option>
+                        <option t="option.every_day" value="1"></option>
+                        <option t="option.every_week" value="7"></option>
+                        <option t="option.every_2_weeks" value="15"></option>
+                        <option t="option.every_month" value="30"></option>
+                        <option t="option.every_year" value="365"></option>
+                    </plus-select>
+
+
+                    <plus-select label="endRepeat" name="time_end_repeat" requerid id="time_end_repeat_edit">
+                        <option selected t="option.never" value="0">Never</option>
+                        <option t="option.on_day" value="1">On Day</option>
+                        <option t="option.on_week" value="7">A week</option>
+                        <option t="option.on_2_weeks" value="15">Two week</option>
+                        <option t="option.on_month" value="30">A Month</option>
+                        <option t="option.on_year" value="365">A Year</option>
+                    </plus-select>
+                </div>
+
+            </div>
+
+            <plus-switch text="send_notification" name="send_notification" checked="true"></plus-switch>
+
+            <plus-switch text="i_am_free" name="i_am_free" checked="true"></plus-switch>
+        </plus-tab>
+    </plus-tabs>
+    </form>
+</div>
+
+<div class="row">
+    <div class="col-8">
+        <button class="btn btn-edit btn-success only-desktop" t="btn.update" onclick="update_event()" type="button">Save</button>
+    </div>
+    <div class="col-4">
+        <button class="btn btn-delete btn-success only-desktop" t="btn.delete" type="button" id="btn-edit-appoint-delete"></button>
+    </div>
+</div>
+</message-pop>
+
+
+
+<script>
+    //this functions is for update the event when the user do click on the button save
+    async function update_event() {
+        //first we will get all the information from the form
+        const form = document.getElementById('formEditEvent');
+        const formData = new FormData(form);
+
+        //convert the formData to a json object
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+        //console.log(JSON.stringify(data, null, 2));
+
+        //send the information to the server for update the event
+        const answer = await window.send_message_to_the_server('/agenda/edit_event/', data);
+
+        //if can added the new event, now we will show a message of confirmation and clear the form 
+        if (answer.success) {
+            //hide the pop and refresh the calendar 
+            hide_pop('pop-edit-event');
+            window.reset_appoint_in_the_calendar();
+
+            //refresh the calendar 
+            if (typeof refresh_calendar === 'function') {
+                refresh_calendar();
+            }
+
+            await window.update_all_the_information_of_my_calendary();
+
+            //update the table appoints if be open 
+            if (typeof filter_table_appoints === 'function') {
+                filter_table_appoints('');
+                window.update_container_from_the_server(
+                    ['input-search-all-my-event'], // id of the input of the seeker
+                    'body-table-my-events',  // id of the container to update
+                    get_div_table_events(),            // template with placeholders
+                    'agenda/search_events/', // url for the search
+                    'GET'
+                )
+            }
+
+            //show a message of success 
+            show_alert('success', window.translate_text('message.update-new-event.success'), window.translate_text('message.update-new-event.success.description'));
+        } else {
+            //show a message of error 
+            show_alert('error', window.translate_text("message.error_in_server"), window.translate_text(answer.message), answer.error);
+        }
+    }
+
+    //this functions is call when the user do click in the switch for activate the appoint all the day 
+    function activate_event_all_the_day_edit(status) {
+        //her also update the information of the minutes for get the time 
+        window.change_plus_time('start_time_edit', '00:00');
+        window.change_plus_time('end_time_edit', '23:59');
+    }
+
+    function this_event_is_activate_all_the_day(date_start, date_finish) {
+        const start = new Date(date_start);
+        const finish = new Date(date_finish);
+
+        // mismo día (año, mes, día)
+        const sameDay = start.getFullYear() === finish.getFullYear() &&
+                        start.getMonth() === finish.getMonth() &&
+                        start.getDate() === finish.getDate();
+
+        // inicio a las 00:00
+        const startsAtMidnight = start.getHours() === 0 && start.getMinutes() === 0 && start.getSeconds() === 0;
+
+        // fin a las 23:59 (o 23:59:59)
+        const endsAtEndOfDay = 
+            (finish.getHours() === 23 && finish.getMinutes() === 59) ||
+            (finish.getHours() === 23 && finish.getMinutes() === 59 && finish.getSeconds() === 59);
+
+        return sameDay && startsAtMidnight && endsAtEndOfDay;
+    }
+
+    function hidden_input_repet_edit(status) {
+        const inputRepet = document.getElementById('hidden_input_repet_edit');
+        if (status) {
+        inputRepet.style.display = 'block';
+        } else {
+        inputRepet.style.display = 'none';
+        }
+    }
+
+    function day_for_finish_the_event(date1,date2){
+        const dateStart = new Date(date1);
+        const finishRepeatDate = new Date(date2);
+
+        // get the difference in milliseconds
+        const diffMs = finishRepeatDate - dateStart;
+
+        //convert to days
+        const diffDays = diffMs / (1000 * 60 * 60 * 24);
+        return diffDays;
+    }
+
+    //this functions is for show the character of the appointment when the user do click on a event
+    window.show_character_appoint = async function(id) {
+        const answer=await window.send_message_to_the_server(`/agenda/get_appointment_by_id/`,{id}, true, 'GET');
+
+        if(answer.success){
+            const dataAppoints=answer.data;
+            //console.log(JSON.stringify(dataAppoints, null, 2));
+            
+            //update the information of the appoint 
+            document.getElementById('id_event').value=dataAppoints.id || '';
+            document.getElementById('title_event').value=dataAppoints.title || '';
+            window.set_value_plus_select('priority_edit', dataAppoints.priority || '0');
+
+            
+            window.set_value_plus_select('type_appoint_edit', dataAppoints.type_appoint.id || '', dataAppoints.type_appoint.name || '');
+
+            //here we will to update the format date in the form
+            const date_start=dataAppoints.date_start || '';
+            const date_finish=dataAppoints.date_finish || '';
+
+            const statusActivateAllTheDay=this_event_is_activate_all_the_day(date_start, date_finish) || false;
+            window.set_status_plus_switch('activate_event_all_the_day_edit',statusActivateAllTheDay);
+            activate_event_all_the_day_edit(statusActivateAllTheDay);
+
+
+            const customer=dataAppoints.customer;
+            window.set_value_plus_select('edit_customer', customer.id, customer.name)
+            window.update_input_date_and_time('start_date_edit','start_time_edit',date_start)
+            window.update_input_date_and_time('end_date_edit','end_time_edit',date_finish)
+            window.set_value_plus_select('alert_time_edit', dataAppoints.time_alert || '0');
+
+            //her update the information of contact of the appointment
+            document.getElementById('edit_description').value=dataAppoints.description || '';
+            document.getElementById('edit_location').value=dataAppoints.location || '';
+            document.getElementById('edit_link').value=dataAppoints.link || '';
+
+            window.set_status_plus_switch('repeat_this_event_edit',dataAppoints.repeat_this_event || false);
+            hidden_input_repet_edit(dataAppoints.repeat_this_event || false);
+
+            window.set_value_plus_select('time_repeat_edit', dataAppoints.time_repeat || '0');
+            window.set_value_plus_select('time_end_repeat_edit', day_for_finish_the_event(dataAppoints.date_start, dataAppoints.finish_repeat_date));
+
+            document.getElementById('emails_guests_edit').setTags(Array.isArray(dataAppoints.emails_guests) ? dataAppoints.emails_guests : JSON.parse(dataAppoints.emails_guests || '[]'));
+            
+            //here we will get the status of the event for show in the screen 
+            window.set_value_plus_select('edit_status', dataAppoints.status)
+            
+            //here we will get the data of the customer for send reminders for email or for whatsapp
+            const btnWhatsapp=document.getElementById('btn-edit-appoint-send-whatsapp');
+            const btnEmail=document.getElementById('btn-edit-appoint-send-email');
+
+            //first we will see if exist this customer 
+            const appoint_id=dataAppoints.id;
+            const customer_whatsapp = dataAppoints.customer_whatsapp;
+            const customer_email = dataAppoints.customer_email;
+            
+            //first we will see if exist information for create the event
+            btnWhatsapp.style.display = 'none';
+            btnEmail.style.display = 'none';
+
+            if(customer_whatsapp!==''){
+                btnWhatsapp.style.display = 'inline-block';
+                btnWhatsapp.onclick = function () {
+                    open_whatsapp_customer(this, appoint_id, dataAppoints.customer_name, dataAppoints.title, dataAppoints.description, customer_whatsapp)
+                };
+            }
+            
+            if(customer_email!==''){
+                btnEmail.style.display = 'inline-block';
+                btnEmail.onclick = function () {
+                    send_email_to_the_customer_by_appoint(appoint_id, customer_email)
+                };
+            }
+
+            //update the information of the btn for delete this appoint of the database
+            const btnDelete=document.getElementById('btn-edit-appoint-delete')
+            btnDelete.onclick = function () {
+                delete_event(appoint_id)
+            };
+            
+            show_pop('pop-edit-event');
+        }
+  };
+
+
+
+</script>

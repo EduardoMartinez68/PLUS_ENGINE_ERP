@@ -1,0 +1,312 @@
+
+<!-------address company-->
+{% if permissions.edit_branch %}
+<message-pop name="address_branch" title="setting.label.address">
+    <form id="form_address_branch">
+    <div class="row section">
+        <div class="col">
+            <plus-country label="setting.label.country" name="country"  value="{{ branch.country }}"></plus-country>
+        </div>
+        <div class="col">
+            <input-field 
+                label="setting.label.postal_code" 
+                placeholder="setting.placeholder.postal_code" 
+                value="{{ branch.postal_code }}" 
+                name="postal_code" 
+                type="text">
+            </input-field>
+        </div>
+    </div>
+
+    <div class="row section">
+        <div class="col">
+            <input-field 
+                label="setting.label.address" 
+                placeholder="setting.placeholder.address" 
+                value="{{ branch.address }}" 
+                name="address">
+            </input-field>
+        </div>
+    </div>
+    <br>
+    <button class="btn btn-edit btn-success" t="message.success" onclick="send_form_pop_branch('form_address_branch', 'address_branch')" type="button"></button>
+    </form>
+</message-pop>
+
+
+<!-------address company-->
+<message-pop name="config_branch" title="setting.show.setting-branch">
+    <form id="form_config_branch">
+    <label t="setting.info.setting-branch"></label>
+
+    <div class="row section">
+        <div class="col-6">
+            <plus-select label="setting.label.default_currency" name="default_currency" value="{{ branch.default_currency }}" >
+                {% include 'core/option_currency.html' %}
+            </plus-select>
+        </div>
+        <div class="col-6">
+            <plus-select label="setting.label.date_format" name="date_format" value="{{ branch.date_format }}">
+                {% include 'core/option_data_format.html' %}
+            </plus-select>
+        </div>
+    </div>
+    <div class="row section">
+        <div class="col-6">
+            <plus-select label="setting.label.decimal_separator" name="decimal_separator" value="{{ branch.decimal_separator }}" >
+                <option value="," t="setting.option.decimal_separator2"></option>
+                <option value="." t="setting.option.decimal_separator1"></option>
+            </plus-select>
+        </div>
+        <div class="col-6">
+            <plus-select label="setting.label.thousands_separator" name="thousands_separator" value="{{ branch.thousands_separator }}" >
+                <option value="," t="setting.option.thousands_separator2"></option>
+                <option value="." t="setting.option.thousands_separator1"></option>
+            </plus-select>
+        </div>
+    </div>
+    <div class="row section">
+        <div class="col-6">
+            <plus-select label="setting.label.date_format" name="timezone" value="{{ branch.timezone }}" >
+                {% include 'core/option_timezone.html' %}
+            </plus-select>
+        </div>
+    </div>
+    <br>
+    <button class="btn btn-edit btn-success" t="message.success" onclick="send_form_pop_branch('form_config_branch', 'config_branch')" type="button"></button>
+    </form>
+</message-pop>
+
+
+<script>
+    async function send_form_pop_branch(form_id, pop){
+        //send the information to the server and get his answer
+        const result = await send_form_to_the_server(form_id, 'setting/view_update_branch/');
+
+        //we will see if we can add the new customer
+        if (result.success) {
+            show_notification('success', result.message || 'info.info-send-with-success');
+            window.hide_pop(pop);
+        } else {
+            show_alert('alert', 'Error', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'))
+        }
+    }
+</script>
+{% endif %}
+
+
+
+{% if permissions.edit_data_facture %}
+<!-------data of facture of branch-->
+<message-pop name="facture_branch" title="setting.title.billing-data">
+    
+    <div class="container-pop">
+    <form id="form_facture_branch">
+    <!-----Número de identificación fiscal (RFC)-->
+    <div class="row section">
+        <div class="col">
+            <input-field 
+                label="setting.label.tax_id" 
+                placeholder="setting.placeholder.tax_id" 
+                value="{{ billing_data.tax_id }}" 
+                name="tax_id" 
+                type="text" required
+                id="tax_id_form">
+            </input-field>
+        </div>
+    </div>
+
+    <!-----RAZON SOCIAL-->
+    <div class="row section">
+        <div class="col">
+            <input-field 
+                label="setting.label.billing-data-company-name" 
+                placeholder="setting.placeholder.billing-data-company-name" 
+                value="{{ billing_data.legal_name }}" 
+                name="legal_name" 
+                type="text" required>
+            </input-field>
+        </div>
+    </div>
+
+    <!-----REGIMEN FISCAL (en polonia no existe)-->
+    <div class="row section">
+        <div class="col">
+            <plus-select label="setting.label.fiscalRegime" name="secondary_id" value="{{billing_data.secondary_id}}">
+                {% include 'core/regimen_mx.html' %}
+            </plus-select>
+        </div>
+    </div>
+
+    <div class="row section">
+        <div class="col">
+            <input-field 
+                label="setting.label.postal_code" 
+                placeholder="setting.placeholder.postal_code" 
+                value="{{ billing_data.postal_code }}" 
+                name="postal_code" 
+                type="text"
+                required>
+            </input-field>
+        </div>
+    </div>
+
+    <!-----address-->
+    <div class="section">
+    <div class="row">
+        <div class="col">
+            <plus-country label="setting.label.country" name="country"  value="{{ billing_data.country }}"></plus-country>
+        </div>
+        <div class="col">
+            <input-field 
+                label="setting.label.city" 
+                placeholder="setting.placeholder.city" 
+                value="{{ billing_data.city }}" 
+                name="city" 
+                type="text">
+            </input-field>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <input-field 
+                label="setting.label.street" 
+                placeholder="setting.placeholder.street" 
+                value="{{ billing_data.street }}" 
+                name="street">
+            </input-field>
+        </div>
+        <div class="col">
+            <input-field 
+                label="setting.label.cologne" 
+                placeholder="setting.placeholder.cologne" 
+                value="{{ billing_data.cologne }}" 
+                name="cologne">
+            </input-field>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <input-field 
+                label="setting.label.num_ins" 
+                placeholder="setting.placeholder.num_ins" 
+                value="{{ billing_data.num_ins }}" 
+                name="num_ins">
+            </input-field>
+        </div>
+        <div class="col">
+            <input-field 
+                label="setting.label.num_out" 
+                placeholder="setting.placeholder.num_out" 
+                value="{{ billing_data.num_out }}" 
+                name="num_out">
+            </input-field>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <input-field 
+                label="setting.label.state" 
+                placeholder="setting.placeholder.state" 
+                value="{{ billing_data.state }}" 
+                name="state">
+            </input-field>
+        </div>
+        <div class="col">
+            <input-field 
+                label="setting.label.municipality" 
+                placeholder="setting.placeholder.municipality" 
+                value="{{ billing_data.municipality }}" 
+                name="municipality">
+            </input-field>
+        </div>
+    </div>
+    </div>
+    </form>
+    </div>
+    <br>
+    <button class="btn btn-edit btn-success" t="btn.save" onclick="send_form_pop_facture_branch()" type="button"></button>
+    <br>
+    
+</message-pop>
+
+
+<script>
+    async function send_form_pop_facture_branch(){
+        //send the information to the server and get his answer
+        const result = await send_form_to_the_server('form_facture_branch', 'setting/view_update_data_facture_branch/');
+
+        //we will see if we can add the new customer
+        if (result.success) {
+            show_notification('success', result.message || 'info.info-send-with-success');
+            window.hide_pop('facture_branch');
+        } else {
+            show_alert('alert', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'))
+        }     
+    }
+
+
+    async function get_info_facturation() {
+        //first we will see if already information in the form 
+        if(document.getElementById('tax_id_form').value!=''){
+            window.show_pop('facture_branch');
+            return; //if exist information is because the user already get the information of the server
+        }
+
+        const backend = await window.send_message_to_the_server(
+            'setting/view_get_branch_billing_data/', 
+            {}, 
+            true, 
+            'GET'
+        );
+
+        if (!backend.success) {
+            show_alert('alert', backend.message || 'info.not-was-can-send-the-information', (backend.error || 'info.not-was-can-send-the-information'))
+            return;
+        }
+
+        const answer = backend.answer;
+        if (!answer) {
+            show_alert('alert', backend.message || 'info.not-was-can-send-the-information', (backend.error || 'info.not-was-can-send-the-information'))
+            return;
+        }
+
+        // Seleccionamos el formulario
+        const form = document.getElementById("form_facture_branch");
+
+        // Recorremos cada campo del JSON
+        Object.entries(answer).forEach(([key, value]) => {
+            if (value === null || value === undefined) value = "";
+
+            // Buscamos el elemento con name="key"
+            const element = form.querySelector(`[name="${key}"]`);
+            if (!element) return; // si no existe, continuamos
+
+            // Detectamos el tipo de componente
+            const tag = element.tagName.toLowerCase();
+
+            // --- Manejo para tus componentes personalizados ---
+            if (tag === "input-field" || tag === "plus-select" || tag === "plus-country") {
+                // Actualiza el atributo value
+                element.setAttribute("value", value);
+
+                // Si el componente tiene una propiedad interna reactiva, también la actualizamos
+                if ("value" in element) {
+                    element.value = value;
+                }
+
+                // Dispara un evento de cambio (por si el componente lo usa)
+                element.dispatchEvent(new Event("change"));
+            } 
+            // --- Si en algún caso hay inputs normales ---
+            else if (element.tagName === "INPUT" || element.tagName === "SELECT" || element.tagName === "TEXTAREA") {
+                element.value = value;
+            }
+        });
+
+        window.show_pop('facture_branch');
+    }
+</script>
+{% endif %}

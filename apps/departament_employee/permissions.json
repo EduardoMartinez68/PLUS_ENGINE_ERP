@@ -1,0 +1,22 @@
+{
+    "character":{
+        "icon":"fi fi-rs-department-structure"
+    },
+    "permissions": [
+        "add_departament_employee",
+        "view_departament_employee",
+        "update_departament_employee",
+        "delete_departament_employee"
+    ], 
+    "translate":{
+        "es": {
+            "app_name": "Departamentos de la Empresa",
+            "description": "Gestiona la información de los departamentos de los empleados de la empresa.",
+
+            "add_departament_employee": "Agregar un nuevo Departamento",
+            "view_departament_employee": "Ver detalles y la lista de los empleados del departamento",
+            "update_departament_employee": "Actualizar información de un departamento de la empresa",
+            "delete_departament_employee": "Eliminar un departamento del sistema"
+        }
+    }
+}

@@ -1,0 +1,2434 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Denty.Cloud - Software Odontológico</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel='stylesheet'
+        href='https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+    <link rel='stylesheet'
+        href='https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-straight/css/uicons-solid-straight.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-brands/css/uicons-brands.css'>
+    <link rel='stylesheet'
+        href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+
+    <link rel="icon" type="image/x-icon" href="{% static 'img-ad/favicon.ico' %}?v=1.1">
+    <link rel='stylesheet'
+        href='css/Styles.css?v=1.2'>
+    <style>
+/* ================================================= */
+/* === 1. VARIABLES GLOBALES Y ESTILOS BASE === */
+/* ================================================= */
+:root {
+    /* Colores de Marca (Salud, Confianza, Tecnología) */
+    --azul-oscuro: #212529;
+    --azul-principal: #0879CA;
+    /* Usado en botones y acentos */
+    --azul-profundo: #004AAD;
+    /* Usado en la tarjeta de soporte */
+    --verde-acento: #42C79E;
+    /* Usado en degradado de CTA */
+    --fondo-claro: #FFFFFF;
+    --texto-parrafo: #6c757d;
+    --borde-claro: #ced4da;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--fondo-claro);
+    color: var(--texto-parrafo);
+    line-height: 1.6;
+}
+
+/* Encabezado */
+header {
+    background-color: var(--azul-profundo);
+    padding: 1px 5%;
+    text-align: center;
+}
+
+header p {
+    font-size: 1rem;
+    opacity: 0.9;
+    color: white;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 40px 0;
+}
+
+h1,
+h2,
+h3 {
+    color: var(--azul-oscuro);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Estilo General de Botón Principal */
+.btn-primary {
+    background-color: var(--azul-principal);
+    color: white;
+    padding: 15px 30px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    border: 2px solid var(--azul-principal);
+    transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* Estilo General de Botón Secundario */
+.btn-secondary {
+    background-color: transparent;
+    color: var(--azul-oscuro);
+    padding: 15px 30px;
+    text-decoration: none;
+    border: 2px solid var(--borde-claro);
+    border-radius: 5px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    transition: border-color 0.3s, color 0.3s;
+}
+
+.btn-secondary:hover {
+    border-color: var(--azul-principal);
+    color: var(--azul-principal);
+}
+
+.btn-secondary i,
+.btn-primary i {
+    margin-left: 10px;
+}
+
+
+/* ================================================= */
+/* === 2. ESTILOS SECCIÓN HERO PRINCIPAL (82093e.jpg) === */
+/* ================================================= */
+#hero-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 80px 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.hero-main-content {
+    flex: 1;
+    max-width: 600px;
+    padding-right: 50px;
+}
+
+.hero-main-content h1 {
+    font-size: 2.8em;
+    line-height: 1.1;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.hero-main-image {
+    flex: 1;
+    position: relative;
+    min-height: 500px;
+    max-width: 600px;
+    /* Usar imagen de fondo o un <img> para el mockup complejo */
+    background: url('placeholder-dentist-agenda.jpg') center center no-repeat;
+    background-size: contain;
+}
+
+/* Nota: Para la implementación real, la imagen compleja se manejaría con un solo <img> o SVG. */
+
+/* ================================================= */
+/* === 3. ESTILOS SECCIÓN VALOR (828935.jpg) === */
+/* ================================================= */
+#hero-value {
+    padding: 80px 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.value-image-container {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    max-width: 550px;
+}
+
+.value-image-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    opacity: 0.95;
+}
+
+.value-content {
+    flex: 1;
+    padding-left: 50px;
+    max-width: 600px;
+}
+
+.value-content h2 {
+    font-size: 2.2em;
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px 15px;
+    margin-bottom: 40px;
+}
+
+.feature-item {
+    color: var(--azul-oscuro);
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+}
+
+.feature-item i {
+    color: var(--azul-profundo);
+    margin-right: 8px;
+    font-size: 1.1em;
+}
+
+/* ================================================= */
+/* === 4. ESTILOS SECCIÓN SOLUCIONES (820178.jpg) === */
+/* ================================================= */
+#solutions-list {
+    background-color: #F8F9FA;
+    /* Fondo muy claro para diferenciar */
+    padding: 80px 0;
+}
+
+.solutions-content {
+    display: flex;
+    gap: 50px;
+    align-items: flex-start;
+}
+
+.solutions-image-container {
+    flex: 1.2;
+    position: relative;
+    width: 100%;
+}
+
+.solutions-image-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.solutions-list-items {
+    flex: 2;
+}
+
+.solution-item {
+    padding: 20px 0;
+    border-bottom: 1px solid #E9ECEF;
+}
+
+.solution-item:last-child {
+    border-bottom: none;
+}
+
+.solution-item h3 {
+    display: flex;
+    align-items: center;
+    font-size: 1.3em;
+    color: var(--azul-oscuro);
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.solution-item i {
+    font-size: 1.5em;
+    margin-right: 15px;
+    color: var(--azul-principal);
+    /* O usar un icono de línea como en la imagen */
+}
+
+.solution-item p {
+    margin-left: 45px;
+    /* Para alinear el texto con el título */
+    font-size: 0.95em;
+}
+
+
+/* ================================================= */
+/* === 5. ESTILOS SECCIÓN VENTAS (827a36.png) === */
+/* ================================================= */
+#sales-easy {
+    padding: 80px 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    /* Para el fondo decorativo */
+}
+
+.sales-content {
+    flex: 1;
+    max-width: 550px;
+    padding-right: 50px;
+}
+
+.sales-content h2 {
+    font-size: 2.8em;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.sales-content h2 strong {
+    color: var(--azul-principal);
+}
+
+.sales-feature {
+    margin-bottom: 25px;
+}
+
+.sales-feature h3 {
+    display: flex;
+    align-items: center;
+    font-size: 1.2em;
+    margin: 0;
+}
+
+.sales-feature i {
+    color: var(--azul-principal);
+    margin-right: 10px;
+}
+
+.sales-feature p {
+    margin-left: 30px;
+    font-size: 0.95em;
+}
+
+.btn-sales-gradient {
+    background: linear-gradient(to right, #42C79E, #2AB478);
+    color: white;
+    padding: 15px 35px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 20px;
+}
+
+.sales-mockup-area {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+/* Las imágenes de mockup deben simular la composición de la imagen 827a36.png */
+
+/* ================================================= */
+/* === 6. ESTILOS TARJETA DE SOPORTE (821bfc.png) === */
+.support-card {
+    background-color: var(--azul-profundo);
+    color: var(--blanco);
+    padding: 40px;
+    border-radius: 15px;
+    background-image: radial-gradient(circle at 90% 50%, #0056b3 10%, var(--azul-profundo) 60%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.support-card h2 {
+    color: var(--blanco);
+    font-size: 2.2em;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 25px;
+}
+
+.schedule p {
+    font-size: 1.1em;
+    margin: 8px 0;
+    color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+}
+
+.schedule p i {
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+.contact-area {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 15px;
+}
+
+.phone-button-support {
+    background-color: #0C87F4;
+    color: white;
+    text-decoration: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.3em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.ticket-link {
+    color: white;
+    text-decoration: none;
+    font-size: 1em;
+    opacity: 0.9;
+}
+
+/* ================================================= */
+/* === 7. ESTILOS FOOTER === */
+/* ================================================= */
+footer {
+    background-color: #002D5B;
+    /* Mismo que el fondo de la sección de soporte para continuidad */
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    padding: 20px 0;
+    font-size: 0.9em;
+}
+
+/* ================================================= */
+/* === 8. MEDIA QUERIES (RESPONSIVIDAD) === */
+/* ================================================= */
+@media (max-width: 1000px) {
+
+    #hero-main,
+    #hero-value,
+    #sales-easy {
+        flex-direction: column;
+        padding: 40px 5%;
+    }
+
+    .hero-main-content,
+    .value-content,
+    .sales-content {
+        padding-right: 0;
+        padding-left: 0;
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .hero-main-image,
+    .value-image-container,
+    .sales-mockup-area {
+        order: -1;
+        /* Mueve la imagen arriba en móvil */
+        min-height: 400px;
+        margin-bottom: 40px;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .solutions-content {
+        flex-direction: column;
+    }
+
+    .solutions-image-container {
+        order: -1;
+        min-width: 100%;
+    }
+
+    .solution-item p {
+        margin-left: 0;
+    }
+
+    .solution-item h3 {
+        justify-content: center;
+    }
+
+    .support-card {
+        flex-direction: column;
+    }
+
+    .contact-area {
+        width: 100%;
+        margin-top: 30px;
+        align-items: center;
+    }
+}
+
+.card-content {
+    color: white;
+}
+
+.card-content h2 {
+    color: white;
+}
+
+.color-destacado {
+    color: var(--azul-principal);
+    /* Color Azul de Acento */
+    font-weight: bold;
+    /* Opcional: Para mantener el énfasis que daban las negritas */
+}
+
+
+/* === ESTILOS DEL HEADER DE LA SECCIÓN === */
+#pricing-section {
+    text-align: center;
+    background-color: var(--fondo-gris);
+}
+
+#pricing-section h2 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    color: var(--azul-oscuro);
+}
+
+#pricing-section p {
+    font-size: 1.1em;
+    color: var(--texto-parrafo);
+    margin-bottom: 40px;
+}
+
+/* === TOGGLE DE MODALIDAD (Mensual/Anual) === */
+.billing-toggle {
+    display: inline-flex;
+    background-color: #E9ECEF;
+    border-radius: 50px;
+    padding: 5px;
+    margin-bottom: 40px;
+}
+
+.toggle-btn {
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--texto-parrafo);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.toggle-btn.active {
+    background-color: var(--azul-principal);
+    color: var(--fondo-claro);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Etiqueta de Ahorro (Solo para modalidad Anual) */
+.save-tag {
+    background-color: var(--verde-acento);
+    color: var(--fondo-claro);
+    font-size: 0.8em;
+    padding: 3px 8px;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+/* === TABLA DE PRECIOS === */
+.pricing-table {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    align-items: stretch;
+    text-align: left;
+}
+
+.price-card {
+    flex: 1;
+    background-color: var(--fondo-claro);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+}
+
+.price-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para el paquete Pro (Destacado) */
+.price-card.pro {
+    box-shadow: 0 0 0 3px var(--azul-principal), 0 10px 30px rgba(0, 0, 0, 0.15);
+    transform: scale(1.05);
+    padding-top: 50px;
+    /* Espacio extra para la etiqueta */
+}
+
+.price-card.pro h3 {
+    color: var(--azul-principal);
+}
+
+.price-card.pro .tag-pro {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--azul-principal);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.card-header {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.card-header h3 {
+    font-size: 1.8em;
+    margin: 0;
+}
+
+.card-header p {
+    font-size: 1em;
+    color: var(--texto-parrafo);
+    min-height: 40px;
+    /* Evita que el contenido salte */
+}
+
+.price-display {
+    margin: 20px 0;
+    min-height: 80px;
+}
+
+.price-display span {
+    display: block;
+}
+
+.price-value {
+    font-size: 3em;
+    font-weight: 700;
+    color: var(--azul-oscuro);
+}
+
+.price-period {
+    font-size: 0.9em;
+    color: var(--texto-parrafo);
+    margin-top: -10px;
+}
+
+/* Características */
+.features-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 30px;
+    flex-grow: 1;
+}
+
+.features-list li {
+    padding: 8px 0;
+    font-size: 1em;
+    color: var(--azul-oscuro);
+    display: flex;
+    align-items: flex-start;
+}
+
+.features-list i {
+    color: var(--verde-acento);
+    margin-right: 10px;
+    margin-top: 3px;
+}
+
+/* Botón de la Tarjeta */
+.card-button {
+    display: block;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-weight: 600;
+    margin-top: auto;
+    /* Empuja el botón hacia abajo */
+    transition: background-color 0.3s;
+}
+
+.btn-demo {
+    background-color: #E9ECEF;
+    color: var(--azul-oscuro);
+}
+
+.btn-demo:hover {
+    background-color: #d8dce0;
+}
+
+.btn-buy {
+    background-color: var(--azul-principal);
+    color: var(--fondo-claro);
+}
+
+.btn-buy:hover {
+    background-color: #0056b3;
+}
+
+/* Ocultar precios según la modalidad */
+.mensual {
+    display: block;
+}
+
+.anual {
+    display: none;
+}
+
+/* === MEDIA QUERIES === */
+@media (max-width: 900px) {
+    .pricing-table {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .price-card {
+        max-width: 90%;
+        width: 100%;
+    }
+
+    .price-card.pro {
+        transform: none;
+    }
+}
+
+.div-whatsapp {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.div-whatsapp label {
+    margin-right: 18px;
+    /* separa solo el label */
+    color: black;
+}
+
+.div-whatsapp i {
+    color: #25D366;
+    margin-right: 5px;
+}
+
+
+.demo-register-section {
+    padding: 80px 5%;
+    background-color: #F8F9FA;
+}
+
+.demo-register-container {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    background: white;
+    border-radius: 15px;
+    padding: 50px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* LADO IZQUIERDO */
+.demo-info h2 {
+    font-size: 2.2em;
+    margin-bottom: 20px;
+    color: var(--azul-oscuro);
+}
+
+.demo-info p {
+    font-size: 1.05em;
+    margin-bottom: 15px;
+    color: var(--texto-parrafo);
+}
+
+.demo-benefits {
+    list-style: none;
+    padding: 0;
+    margin-top: 25px;
+}
+
+.demo-benefits li {
+    margin-bottom: 12px;
+    font-size: 1em;
+    color: var(--azul-oscuro);
+}
+
+/* LADO DERECHO */
+.demo-form h3 {
+    font-size: 1.8em;
+    margin-bottom: 25px;
+    color: var(--azul-oscuro);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--azul-oscuro);
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid var(--borde-claro);
+    font-size: 1em;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--azul-principal);
+}
+
+.form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+    font-size: 0.95em;
+}
+
+.form-checkbox a {
+    color: var(--azul-principal);
+    text-decoration: none;
+}
+
+.btn-demo-submit {
+    width: 100%;
+    background-color: var(--azul-principal);
+    color: white;
+    padding: 14px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.btn-demo-submit:hover {
+    background-color: #0056b3;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .demo-register-container {
+        grid-template-columns: 1fr;
+        padding: 30px;
+    }
+}
+
+
+
+.apps-wrapper {
+    max-width: 1200px;
+    /* controla qué tan centrado se ve */
+    margin: 0 auto;
+    /* centra horizontalmente */
+    padding: 40px 60px;
+    /* separación de los bordes */
+}
+
+
+.apps-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 22px;
+    padding: 30px;
+}
+
+.app-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 25px 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.app-card img {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+}
+
+.app-card span {
+    display: block;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #212529;
+}
+
+
+.hero-video {
+    width: 100%;
+    max-width: 1000px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.odonto-section {
+    padding: 80px 40px;
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at top left, #d9cfff, transparent 40%),
+        radial-gradient(circle at bottom right, #b3e5ff, transparent 40%),
+        #eaf6ff;
+}
+
+.odonto-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.odonto-container h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1f2937;
+    max-width: 700px;
+    margin-bottom: 60px;
+}
+
+.odonto-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+}
+
+.odonto-item {
+    text-align: center;
+}
+
+.odonto-line {
+    width: 60px;
+    height: 2px;
+    background: #1d4ed8;
+    margin: 0 auto 20px;
+}
+
+.odonto-item img {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 20px;
+}
+
+.odonto-item p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #374151;
+}
+
+/* 📱 Responsive */
+@media (max-width: 992px) {
+    .odonto-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .odonto-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .odonto-container h2 {
+        font-size: 26px;
+    }
+}
+
+
+/* Estilo Principal del Navbar */
+.navbar {
+    display: flex;
+    position: sticky;
+    z-index: 1000;
+    top: 0;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 10px 30px;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Logo de la Izquierda */
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #007bff;
+    /* Color azul primario */
+    text-decoration: none;
+}
+
+.navbar-logo span {
+    font-size: 14px;
+    font-weight: normal;
+    margin-top: 5px;
+    color: #555;
+}
+
+/* Contenedor de Menú de Navegación */
+.navbar-menu {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar-menu li {
+    position: relative;
+    margin: 0 15px;
+}
+
+.navbar-menu li a {
+    color: #333;
+    text-decoration: none;
+    padding: 8px 0;
+    display: block;
+    font-size: 14px;
+}
+
+/* Estilo del elemento "Novedades" con borde azul */
+.navbar-menu li.highlighted-item a {
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    padding: 8px 12px;
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* Indicador de Desplegable (triángulo/flecha) */
+.navbar-menu li a:after {
+    content: ' ▾';
+    margin-left: 3px;
+    font-size: 10px;
+}
+
+.navbar-menu li:nth-child(-n+4) a:not(.highlighted-item a):after {
+    /* Solo a los primeros 4 elementos (Funcionalidades, Novedades, Recursos) */
+    content: ' ▾';
+}
+
+.navbar-menu li:nth-child(5) a:after,
+/* Planes */
+.navbar-menu li:nth-child(6) a:after,
+/* Sobre nosotros */
+.navbar-menu li:nth-child(7) a:after {
+    /* Blog */
+    content: '';
+    /* Quitamos el triángulo a los que no tienen submenú en la imagen */
+}
+
+/* Contenedor de Acciones a la Derecha */
+.navbar-actions {
+    display: flex;
+    align-items: center;
+}
+
+/* Estilo del selector de país */
+.country-selector {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    font-size: 14px;
+    color: #333;
+}
+
+.country-selector img {
+    width: 18px;
+    height: 12px;
+    margin-right: 5px;
+}
+
+/* Botón de Ingreso */
+.btn-ingresar {
+    background-color: #ffffff;
+    color: #0879CA;
+    border: 1px solid #0879CA;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s;
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.btn-ingresar:hover {
+    background-color: #f0f0f0;
+}
+
+
+/* Botón de Demo */
+.btn-demo-navbar {
+    background-color: #0879CA;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.btn-demo-navbar:hover {
+    background-color: #0056b3;
+}
+
+
+
+
+
+
+
+
+@media (max-width: 768px) {
+    /* 1. Forzar que no haya scroll horizontal */
+    body, html {
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    /* 2. Ajustar Grids a 1 sola columna */
+    .features-grid {
+        grid-template-columns: 1fr; /* De 3 a 1 */
+    }
+
+    .pricing-table {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* 3. El contenedor principal */
+    .container {
+        width: 95%; /* Un poco más de aire */
+        padding: 20px 0;
+    }
+    
+    /* 4. Support Card (El degradado y los botones) */
+    .support-card {
+        padding: 20px;
+        text-align: center;
+    }
+}
+
+.container-home{
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 30px;
+    max-width: 1200px;
+    padding: 40px;
+    background-color: white;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Estilos para los círculos de fondo */
+.bubble {
+    position: absolute;
+    background-color: rgba(220, 230, 255, 0.5);
+    /* Color azul claro semitransparente */
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.bubble:nth-child(1) {
+    width: 150px;
+    height: 150px;
+    top: -50px;
+    right: 150px;
+}
+
+.bubble:nth-child(2) {
+    width: 80px;
+    height: 80px;
+    top: 100px;
+    right: 0px;
+}
+
+/* Columna Izquierda */
+.left-column {
+    padding-right: 20px;
+    z-index: 1;
+    /* Para estar sobre los círculos */
+}
+
+/* Insignias */
+.badges {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.badge {
+    background-color: #e6f0ff;
+    color: #2a64c4;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Título */
+.hero-title {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    color: #212121;
+}
+
+.hero-title .highlight {
+    color: #2a64c4;
+    /* Color azul para "Healthcare" */
+    border-bottom: 4px solid #2a64c4;
+    /* Subrayado */
+    padding-bottom: 5px;
+}
+
+/* Descripción */
+.hero-description {
+    color: #6c757d;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+/* Estadísticas */
+.stats {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.stat-item {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2a64c4;
+}
+
+.stat-item span {
+    display: block;
+    font-size: 16px;
+    font-weight: 400;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+/* Botones de acción */
+.action-buttons {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.btn {
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.3s, opacity 0.3s;
+}
+
+.btn-primary {
+    background-color: #2a64c4;
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #20509a;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: #2a64c4;
+    border: 2px solid #2a64c4;
+}
+
+.btn-secondary:hover {
+    opacity: 0.8;
+}
+
+/* Contacto de Emergencia */
+.emergency-contact {
+    display: flex;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid #e9ecef;
+}
+
+.contact-icon {
+    background-color: #2a64c4;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+    font-size: 20px;
+}
+
+/* Columna Derecha */
+.right-column {
+    position: relative;
+}
+
+
+
+/* Contenedor de Valoración (Estrellas) */
+.rating-box {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background-color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+.stars {
+    color: gold;
+    /* O el color de las estrellas en la imagen */
+    font-size: 22px;
+    margin-bottom: 5px;
+}
+
+.rating-box p {
+    margin: 0;
+    font-weight: 600;
+    color: #212121;
+}
+
+/* Contenedor de Horario (Meet Availability) */
+.availability-box {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    z-index: 2;
+}
+
+.availability-box .header {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.availability-box .time {
+    font-size: 16px;
+    font-weight: 600;
+    color: #212121;
+    margin-bottom: 5px;
+}
+
+.availability-box .doctor {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.availability-box .icon {
+    color: #2a64c4;
+    margin-right: 5px;
+}
+
+/* Media Queries para Responsividad */
+@media (max-width: 992px) {
+.action-buttons {
+        flex-direction: column;
+        align-items: center; /* Esto evita que se estiren al 100% */
+        gap: 15px;
+        padding-right: 1rem;
+        
+    }
+    .container-home{
+        grid-template-columns: 1fr;
+        padding: 30px;
+        box-sizing: border-box;
+        padding-right: 20px !important;
+    }
+
+    .left-column {
+        padding-right: 0;
+    }
+
+    .hero-title {
+        font-size: 38px;
+    }
+
+    .stats {
+        flex-wrap: wrap;
+    }
+
+    .right-column {
+        min-height: 400px;
+    }
+}
+
+@media (max-width: 600px) {
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .hero-title {
+        font-size: 30px;
+    }
+
+    .badge {
+        font-size: 12px;
+    }
+}
+
+/* Iconos (Simulados con texto o usando una fuente de iconos como Font Awesome) */
+.icon-star:before {
+    content: '★';
+}
+
+.icon-calendar:before {
+    content: '📅';
+}
+
+.icon-phone:before {
+    content: '📞';
+}
+
+
+.image-container {
+    width: 100%;
+    height: 100%; 
+
+    background-size: cover;
+    background-position: center;
+    border-radius: 15px;
+    position: relative; /* Asegura que las tarjetas sigan flotando correctamente */
+    overflow: hidden; /* Para contener la imagen y darle el border-radius */
+}
+
+.image-home-doctore {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Asegura que la imagen cubra el contenedor sin distorsionarse, recortando si es necesario */
+    display: block; /* Elimina posibles espacios en blanco debajo de la imagen */
+    border-radius: 15px; /* Para que la imagen herede el borde redondeado */
+}
+
+.title-one{
+    font-size: .8rem;
+}
+
+.highlight2 {
+    color: #2a64c4;
+}
+
+.hero-title .highlight {
+    /* 1. Asegurar que tenga una transición base */
+    transition: 
+        opacity 0.3s ease-in-out,
+        border-bottom 0.3s ease-in-out; 
+    
+    /* Nota: Mantiene los estilos de color y subrayado que ya tenías */
+    color: #2a64c4;
+    border-bottom: 4px solid #2a64c4;
+    padding-bottom: 5px;
+}
+
+/* 2. Clase para forzar la desaparición (usada por JavaScript) */
+.hero-title .highlight.fade-out {
+    opacity: 0;
+}
+
+
+
+
+
+
+/* ================================================= */
+/* === OPTIMIZACIÓN MÓVIL: CONTAINER-HOME === */
+/* ================================================= */
+
+@media (max-width: 992px) {
+    .right-column{
+        display: none !important;
+    }
+    .container-home {
+        /* Eliminamos el padding excesivo que quita espacio en móvil */
+        padding: 20px !important;
+        margin: 10px auto;
+        width: 95%;
+        gap: 20px;
+    }
+
+    .hero-title {
+        /* Evita que el título sea gigantesco en tablets */
+        font-size: 2.2rem !important;
+        line-height: 1.2;
+    }
+
+    .right-column {
+        /* Ajustamos altura para que la imagen no sea eterna */
+        min-height: 350px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero-title {
+        font-size: 1.8rem !important;
+        text-align: center;
+    }
+
+    .badges {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .hero-description {
+        text-align: center;
+        font-size: 15px;
+    }
+
+    /* --- AJUSTE DE ESTADÍSTICAS --- */
+    .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Dos columnas en lugar de una fila larga */
+        gap: 20px;
+        justify-items: center;
+        text-align: center;
+    }
+
+    /* --- TARJETAS FLOTANTES (El mayor problema en móvil) --- */
+    .rating-box, .availability-box {
+        position: relative !important; /* Dejan de flotar sobre la imagen */
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        margin: 10px auto;
+        width: 90%;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+
+    .image-container {
+        height: 250px !important; /* Imagen más pequeña en celulares */
+        margin-bottom: 20px;
+    }
+
+    /* --- BOTONES --- */
+    .action-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px;
+    }
+
+    /* --- CONTACTO EMERGENCIA --- */
+    .emergency-contact {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .contact-icon {
+        margin-right: 0;
+    }
+
+    /* --- BUBBLES (Círculos de fondo) --- */
+    .bubble {
+        display: none; /* Los ocultamos en móvil para evitar scroll horizontal raro */
+    }
+}
+
+/* Fix para evitar que el subrayado del highlight rompa el flujo */
+.hero-title .highlight {
+    display: inline-block;
+    white-space: nowrap; /* Evita que el subrayado se corte a la mitad */
+}
+    </style>
+</head>
+
+<body>
+    <!------------HECHOS------------->
+<nav class="navbar">
+    <a href="/" class="navbar-logo">
+        <div style="line-height: 1.2;">
+            <img src="{% static 'img-ad/logo.webp' %}?v=1.2" style="width: 10%; height: auto;">
+        </div>
+    </a>
+
+    <ul class="navbar-menu">
+        <!--
+            <li><a href="#">Funcionalidades</a></li>
+            <li class="highlighted-item"><a href="#">Novedades 14</a></li>
+            <li><a href="#">Planes</a></li>
+            <li><a href="#">Sobre nosotros</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Recursos</a></li>
+            ---->
+    </ul>
+
+    <div class="navbar-actions">
+        <div class="country-selector">
+            <img src="https://flagcdn.com/mx.svg" alt="Bandera de México">
+            México
+        </div>
+
+        <a href="https://denty.cloud/login/" class="btn-ingresar">
+            Ingresar
+        </a>
+
+        <a href="https://wa.me/524446316677?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20PLUS%20Denty" target="_blank" class="btn-demo-navbar">
+            Solicita tu demo
+        </a>
+    </div>
+</nav>
+    <header>
+        <p><i class="fi fi-sr-tooth"></i> Control total en una clínica online fácil de usar <i
+                class="fi fi-sr-tooth"></i></p>
+    </header>
+<link rel='stylesheet'
+    href='css/container_home.css?v=1.8'>
+<div class="container container-home">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+
+    <div class="left-column">
+        <div class="badges">
+            <div class="badge">Accesible</div>
+            <div class="badge">Soporte 24/7</div>
+            <div class="badge">Facil y Rapido</div>
+        </div>
+        <h1 class="title-one">
+            EL MEJOR SOFTWARE <span class="highlight2">ODONTOLOGICO</span> DE MEXICO
+        </h1>
+
+
+        <h2 class="hero-title">
+            Denty.Cloud GESTIONA <span class="highlight">PACIENTES</span>
+        </h2>
+
+        <p class="hero-description">
+            <p>
+                Nuestro software dental <strong>100% online</strong> te ayuda a manejar las tareas
+                administrativas y clínicas con total facilidad, permitiéndote dedicarte a lo más importante:
+                <strong class="color-destacado">cuidar de tus pacientes</strong>.
+            </p>
+        </p>
+
+        <div class="stats">
+            <div class="stat-item">
+                1+
+                <span>años de Experiencia</span>
+            </div>
+            <div class="stat-item">
+                250+
+                <span>Pacientes Atendidos</span>
+            </div>
+            <div class="stat-item">
+                12+
+                <span>Expertos Medicos</span>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="https://wa.me/524446316677?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20PLUS%20Denty" target="_blank" class="btn btn-primary">Probar Demo Gratis</a>
+            <a href="#pricing-section" class="btn btn-secondary">Ver Planes</a>
+        </div>
+        <!---
+        <div class="emergency-contact">
+        </div>
+        --->
+    </div>
+
+    <div class="right-column">
+        <div class="image-container">
+            <div class="availability-box">
+                <div class="header">Cita Registrada</div>
+                <div class="time"><span class="icon-calendar"></span> Hoy 3:30 PM</div>
+                <div class="doctor">Dr. Sarah Johnson</div>
+            </div>
+            <img src="{% static 'img-ad/home_1.png' %}" alt="" class="image-home-doctore">
+            <div class="rating-box">
+                <div class="stars">★★★★★</div>
+                <p>4.9/5</p>
+                <p style="font-size: 12px; color: #6c757d; font-weight: 400;">(5000+ Ratings)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. CONFIGURACIÓN DEL CAMBIADOR DE TEXTO ---
+        
+        // 1.1 Lista de palabras o frases para el carrusel
+        const rotatingTexts = [
+            'LA AGENDA',
+            'LOS EMPLEADOS',
+            'RECORDATORIOS',
+            'PACIENTES',
+            'TUS TAREAS'
+        ];
+        
+        // 1.2 Selecciona el elemento que vamos a cambiar
+        const highlightElement = document.querySelector('.hero-title .highlight');
+        
+        // Si el elemento no existe, detenemos el script
+        if (!highlightElement) return;
+
+        let currentIndex = 0;
+        const intervalTime = 2500; // Tiempo que cada texto se mostrará (2.5 segundos)
+
+        // --- 2. FUNCIÓN DE ANIMACIÓN Y CAMBIO ---
+        function changeText() {
+            // A) Aplicar animación de fade-out (desaparecer)
+            highlightElement.classList.add('fade-out');
+            
+            // Esperar un poco para que el fade-out termine (300ms, ver CSS)
+            setTimeout(() => {
+                // B) Cambiar el texto
+                currentIndex = (currentIndex + 1) % rotatingTexts.length;
+                highlightElement.textContent = rotatingTexts[currentIndex];
+
+                // C) Quitar la clase fade-out y añadir fade-in (aparecer)
+                highlightElement.classList.remove('fade-out');
+                // Nota: La clase 'highlight' ya debería tener la transición CSS
+
+            }, 300); // El tiempo debe coincidir con la duración de la transición CSS
+        }
+
+        // --- 3. INICIO ---
+        // Asegurar que el texto inicial sea uno de la lista (opcional)
+        highlightElement.textContent = rotatingTexts[currentIndex]; 
+
+        // Iniciar el ciclo de cambio de texto
+        setInterval(changeText, intervalTime);
+    });
+</script>
+<section id="hero-main" data-aos="fade-up">
+    <div class="hero-main-content">
+        <p style="text-transform: uppercase; font-size: 0.8em; font-weight: bold; color: var(--azul-principal);">
+            SOFTWARE PARA ODONTOLOGOS</p>
+        <h1>
+            Gestiona tu clínica dental de manera
+            <span class="color-destacado">facil</span> y <span class="color-destacado">rapido</span>
+        </h1>
+        <p>
+            Con una interfaz amigable y diseñada para la máxima eficiencia, llevar a cabo tus consultas nunca ha
+            sido tan sencillo y rápido.
+        </p>
+        <a href="https://wa.me/524446316677?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20PLUS%20Denty" target="_blank" class="btn-sales-gradient"><i class="fi fi-brands-whatsapp"></i> HABLA CON UN ASESOR</a>
+    </div>
+    <div class="hero-main-image">
+        <img src="{% static 'img-ad/1.webp' %}?v=1.1" style="width:100%; height: auto;">
+    </div>
+</section>
+<section id="hero-value" data-aos="fade-up">
+    <div class="value-image-container">
+        <img src="{% static 'img-ad/3.webp' %}" alt="" style="width:100%;height:auto;">
+        <!---
+        <video class="hero-video" autoplay muted loop playsinline class="view_video">
+            <source src="https://download.odoocdn.com/videos/odoo_com/video_homepage.webm" type="video/mp4">
+            Tu navegador no soporta video.
+        </video>
+        --->
+    </div>
+
+    <div class="value-content">
+        <p style="text-transform: uppercase; font-size: 0.9em; font-weight: 600; color: var(--texto-secundario);">
+            ENTREGA UNA EXPERIENCIA DE PRIMER NIVEL</p>
+        <h2>Descubre todo lo que puedes hacer con nuestro sistema</h2>
+
+        <div class="features-grid">
+            <p class="feature-item"><i class="fas fa-notes-medical"></i> Historia clínica</p>
+            <p class="feature-item"><i class="fi fi-ss-user-md"></i> Empleados</p>
+            <p class="feature-item"><i class="fas fa-tooth"></i> Odontograma y periodontograma</p>
+
+            <p class="feature-item"><i class="fas fa-user-friends"></i> Pacientes</p>
+            <p class="feature-item"><i class="fi fi-sr-folder-open"></i> Archivos</p>
+            <p class="feature-item"><i class="fas fa-calendar-check"></i> Control de la agenda</p>
+        </div>
+
+        <div class="cta-buttons">
+            <a href="https://wa.me/524446316677?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20PLUS%20Denty" target="_blank" class="btn-primary" style="margin-right: 15px;">Solicita tu demo <i
+                    class="fas fa-arrow-right"></i></a>
+            <a href="#pricing-section" class="btn-secondary">Planes y características <i
+                    class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+</section>
+    <!------------------------->
+
+    <section id="sales-easy" data-aos="fade-up">
+        <div class="sales-content">
+            <h2>Crea tu <span class="color-destacado">web</span> en cuestión de minutos</h2>
+            <p>
+                Facilita tu presentacion para tus pacientes y aumenta tus citas con la versatilidad de tener un
+                consultorio
+                físico y en línea en un solo sistema.
+            </p>
+
+            <div class="sales-feature">
+                <h3><i class="fas fa-check-circle"></i> Profesionalismo</h3>
+                <p>Tus clientes podrán consultar los horarios que tengas disponibles.</p>
+            </div>
+            <div class="sales-feature">
+                <h3><i class="fas fa-check-circle"></i> Accede Fácilmente</h3>
+                <p>Podrán acceder desde cualquier dispositivo con conexión a internet.</p>
+            </div>
+            <label for="">Visita el link de ejemplo para ver como se vería tu consultorio en línea:</label>
+            <br><br>
+            <a href="https://denty.cloud/profile_online/view_profile/eduardo-ejemplo/" target="_blank" class="btn-primary">Ver Consultorio<i class="fas fa-arrow-right"></i></a>
+        </div>
+
+        <div class="sales-mockup-area">
+            <img src="{% static 'img-ad/web.png' %}?v=1.0">
+        </div>
+    </section>
+<section id="sales-easy" data-aos="fade-up">
+    <div class="sales-mockup-area">
+        <img src="{% static 'img-ad/calendarios.png' %}?v=1.0" alt="" style="width: 100%; height: auto;">
+    </div>
+    <div class="sales-content">
+        <h2><span class="color-destacado">Denty</span>.Cloud es la mejor <span class="color-destacado">Agenda</span> para odontologos</h2>
+        <p>
+            Tus pacientes disfrutan de citas puntuales, recordatorios,
+            historiales claros y atención continua.
+        </p>
+
+        <div class="sales-feature">
+            <h3><i class="fas fa-check-circle"></i> Google Calendar</h3>
+            <p>Conecta tu cuenta de Google Calendar para sincronizar eventos con tu cuenta de google.</p>
+        </div>
+        <div class="sales-feature">
+            <h3><i class="fas fa-check-circle"></i> Recordatorios</h3>
+            <p>Envia recordatorios a a tus pacientes por email o whatsapp.</p>
+        </div>
+        <div class="sales-feature">
+            <h3><i class="fas fa-check-circle"></i> Horarios Personalizados</h3>
+            <p>Haz que tus pacientes puedan eleguir el mejor horario para ellos desde tu web</p>
+        </div>
+    </div>
+</section>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+<style>
+/* 1. Contenedor como punto de referencia */
+.solutions-image-container {
+    position: relative;
+    display: inline-block; /* Ocupa solo el ancho de la imagen */
+}
+
+/* 2. Estilo base para todas las imágenes flotantes */
+.img-floating {
+    position: absolute;
+    z-index: 10; /* Asegura que estén por encima de la principal */
+    width: 100px !important; /* Prueba con un tamaño visible como 150px */
+    height: auto !important;
+    height: auto;
+    /* Suaviza el movimiento si decides animarlas después */
+    transition: transform 0.3s ease;
+    background:transparent;
+    border: none;
+
+/* ELIMINAR EFECTOS */
+    background: none !important;      /* Quita fondos accidentales */
+    border: none !important;          /* Quita bordes */
+    box-shadow: none !important;      /* Quita sombras de caja */
+    filter: none !important;          /* Quita sombras de filtro (drop-shadow) */
+    outline: none !important;         /* Quita contornos de enfoque */
+    padding: 0 !important;            /* Quita espacios internos que parecen bordes */
+    border-radius: 0 !important;      /* Por si tienen un redondeado con color de fondo */
+}
+
+/* 3. Posiciones individuales (ajusta estos valores a tu gusto) */
+.float-1 {
+    top: -20px;
+    left: 350px;
+}
+
+.float-2 {
+    bottom: 10%;
+    left: 80%;
+}
+
+.float-3 {
+    top: 50%;
+    left: 5%;
+    transform: translate(-50%, -50%); /* Centrado respecto a un punto */
+}
+
+/* Opcional: Un efecto de levitación suave */
+@keyframes levitar {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+.img-floating {
+    animation: levitar 3s ease-in-out infinite;
+}
+</style>
+<section id="solutions-list" data-aos="fade-up">
+    <div class="container solutions-content">
+        <div class="solutions-image-container">
+            <img src="{% static 'img-ad/3.jpg' %}" alt="Dentista usando IA en una tablet" class="img-main">
+            
+            <img src="{% static 'img-ad/im2.png' %}" alt="Flotante 1" class="img-floating float-1">
+            <img src="{% static 'img-ad/im1.png' %}" alt="Flotante 2" class="img-floating float-2">
+            <img src="{% static 'img-ad/im3.png' %}" alt="Flotante 3" class="img-floating float-3">
+        </div>
+
+        <div class="solutions-list-items">
+            <h2>
+                Brinda una atención
+                <span class="color-destacado">impecable</span> y <span class="color-destacado">segura</span>
+                en cada visita.
+            </h2>
+            <div class="solution-item">
+                <h3><i class="fi fi-sr-lock"></i> Permisos</h3>
+                <p>
+                    Cada miembro del consultorio tiene su propio acceso, con permisos definidos según su rol para
+                    que nadie espie lo que no debe de ver.
+                </p>
+            </div>
+
+            <div class="solution-item">
+                <h3><i class="fi fi-sr-plug-connection"></i> Conexiones seguras</h3>
+                <p>
+                    Todas las comunicaciones se realizan mediante conexiones seguras (HTTPS).
+                </p>
+            </div>
+
+            <div class="solution-item">
+                <h3><i class="fi fi-sr-shield-check"></i> Encriptacion</h3>
+                <p>
+                    Los archivos que se suben al sistema (radiografías, documentos, Excel, imágenes y reportes) se
+                    almacenan de forma segura y protegida mediante encriptación avanzada, evitando accesos no
+                    autorizados..
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.5.1/uicons-solid-straight/css/uicons-solid-straight.css">
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-straight/css/uicons-regular-straight.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-chubby/css/uicons-regular-chubby.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-thin-straight/css/uicons-thin-straight.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-thin-rounded/css/uicons-thin-rounded.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-thin-straight/css/uicons-thin-straight.css'>
+
+
+<style>
+.health {
+  padding: 90px 20px;
+  background: #ffffff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.health-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.health-title {
+  font-size: 2.4rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.health-underline {
+  position: relative;
+  color: #2563eb;
+}
+
+.health-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 0;
+  height: 2px;
+  background: #2563eb;
+  transition: width 0.25s ease;
+}
+
+.health-underline:hover::after {
+  width: 100%;
+}
+
+.health-description {
+  margin-bottom: 50px;
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+/* GRID */
+.health-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 24px;
+}
+
+/* ITEM */
+.health-item {
+  padding: 28px 10px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.health-item i {
+  font-size: 22px;
+  color: #2563eb;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.health-item span {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+/* HOVER */
+.health-item:hover {
+  border-color: #2563eb;
+  background: #f8fafc;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .health-title {
+    font-size: 1.9rem;
+  }
+}
+
+</style>
+
+
+<!---
+<section class="health">
+  <div class="health-container">
+
+    <h2 class="health-title">
+      Compatible con cualquier
+      <span class="health-underline">Rama de la Salud</span>
+    </h2>
+
+    <p class="health-description">
+      Un sistema diseñado para adaptarse a profesionales y clínicas de la salud.
+    </p>
+
+    <div class="health-grid">
+
+      <div class="health-item">
+        <i class="fi fi-rr-tooth"></i>
+        <span>Dentista</span>
+      </div>
+
+      <div class="health-item">
+        <i class="fi fi-br-female"></i>
+        <span>Ginecólogo</span>
+      </div>
+
+      <div class="health-item">
+        <i class="fi fi-rs-child-head"></i>
+        <span>Pediatra</span>
+      </div>
+
+      <div class="health-item">
+        <i class="fi fi-rc-brain"></i>
+        <span>Psicólogo</span>
+      </div>
+
+      <div class="health-item">
+        <i class="fi fi-sr-plate-utensils"></i>
+        <span>Cardiólogo</span>
+      </div>
+
+      <div class="health-item">
+        <i class="fi fi-ts-user-md"></i>
+        <span>Médico General</span>
+      </div>
+      <div class="health-item">
+        <i class="fi fi-br-eye"></i>
+        <span>Oftalmólogo</span>
+      </div>
+      <div class="health-item">
+        <i class="fi fi-tr-bone"></i>
+        <span>Ortopedista</span>
+      </div>
+      <div class="health-item">
+        <i class="fi fi-ts-flask"></i>
+        <span>Laboratorio</span>
+      </div>
+
+
+      <div class="health-item">
+        <i class="fi fi-ts-hospital"></i>
+        <span>Clínica</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+-->
+    
+    
+    
+
+
+    <!------------HECHOS------------->
+<section id="pricing-section" data-aos="fade-up">
+    <div class="container">
+        <h2>Planes hechos para el crecimiento de tu clínica</h2>
+        <p>Elige el plan que mejor se adapte a tus necesidades, desde el dentista independiente hasta la clínica con
+            múltiples sucursales.</p>
+        <!---
+        <div class="billing-toggle">
+            <div class="toggle-btn" data-period="mensual">
+                Pago Mensual
+            </div>
+            <div class="toggle-btn active" data-period="anual">
+                Pago Anual
+                <span class="save-tag">Ahorra 16%</span>
+            </div>
+        </div>
+        -->
+        <div class="pricing-table">
+            <!--
+            <div class="price-card demo">
+                <div class="card-header">
+                    <h3>Demo 30 Días</h3>
+                    <p>Prueba la plataforma sin compromiso y explora todas las funciones Pro.</p>
+                </div>
+
+                <div class="price-display">
+                    <span class="price-value" style="font-size: 2.5em;">GRATIS</span>
+                    <span class="price-period">Por 30 días</span>
+                </div>
+
+                <ul class="features-list">
+                    <li><i class="fas fa-check-circle"></i> 1 Usuario (Doctor)</li>
+                    <li><i class="fas fa-check-circle"></i> Odontograma y Periodontograma.</li>
+                    <li><i class="fas fa-check-circle"></i> Cursos en Línea ilimitados.</li>
+                    <li><i class="fas fa-check-circle"></i> Pacientes Ilimitados</li>
+                    <li><i class="fas fa-check-circle"></i> Agenda y Citas Ilimitados</li>
+                    <li><i class="fas fa-check-circle"></i> Expediente Clínico Completo</li>
+                    <li><i class="fas fa-check-circle"></i> 3 Dispositivo simultáneos</li>
+                    <li><i class="fas fa-times-circle" style="color: var(--texto-parrafo);"></i> 0GB para
+                        fotos/archivos</li>
+                    <li><i class="fas fa-times-circle" style="color: var(--texto-parrafo);"></i> Soporte Tecnico
+                    </li>
+                    <li><i class="fas fa-times-circle" style="color: var(--texto-parrafo);"></i> Perfil y Citas Online</li>
+                </ul>
+                <div class="div-whatsapp">
+                    <label><i class="fi fi-brands-whatsapp"></i> 0 Recordatorios por mes</label>
+                </div>
+                <br>
+                <a href="https://denty.cloud" class="card-button btn-demo">
+                    <center>Comenzar Prueba Gratuita</center>
+                </a>
+            </div>
+            --->
+            <div class="price-card basico">
+                <div class="card-header">
+                    <h3>DEMO</h3>
+                    <p>
+                        15 Días de prueba. Organiza tu clínica dental, gestiona pacientes y agenda citas reales
+                        desde el primer día, sin compromisos.
+                    </p>
+                </div>
+
+                <div class="price-display">
+                    <span class="price-value mensual">$0 MXN</span>
+                    <span class="price-value anual">$0 MXN</span>
+                    <span class="price-period mensual">/mes (pago mensual)</span>
+                    <span class="price-period anual">/15 Días</span>
+                </div>
+
+                <ul class="features-list">
+                    <li><i class="fas fa-check-circle"></i> 1 Usuario (Doctor)</li>
+                    <li><i class="fas fa-check-circle"></i> Odontograma y Periodontograma.</li>
+                    <li><i class="fas fa-check-circle"></i> Cursos en Línea ilimitados.</li>
+                    <li><i class="fas fa-check-circle"></i> Pacientes Ilimitados</li>
+                    <li><i class="fas fa-check-circle"></i> Agenda y Citas Ilimitados</li>
+                    <li><i class="fas fa-check-circle"></i> Expediente Clínico Completo</li>
+                    <li><i class="fas fa-check-circle"></i> 1 Dispositivo Simultáneo</li>
+                    <li><i class="fas fa-check-circle"></i> 0.5GB para fotos/archivos</li>
+                    <li><i class="fas fa-times-circle" style="color: var(--texto-parrafo);"></i>  Soporte Tecnico</li>
+                    <li><i class="fas fa-times-circle" style="color: var(--texto-parrafo);"></i> Perfil y Citas Online</li>
+                </ul>
+                <!----
+                <div class="div-whatsapp">
+                    <label><i class="fi fi-brands-whatsapp"></i> 50 Recordatorios por mes</label>
+                </div>
+                --->
+                <br>
+                <a href="https://wa.me/524446316677?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20PLUS%20Denty" target="_blank" class="card-button btn-buy">
+                    <center>PROBAR DEMO</center>
+                </a>
+            </div>
+
+            <div class="price-card pro">
+                <div class="card-header">
+                    <span class="tag-pro">Más Popular</span><br>
+                    <h3>Profesional</h3>
+                    <p>Para clínicas en crecimiento o con múltiples colaboradores, maximizando eficiencia y orden.
+                    </p>
+                </div>
+
+                <div class="price-display">
+                    <span class="price-value mensual"></span>
+                    <span class="price-value anual">$2,999 MXN</span>
+                    <span class="price-period mensual">/mes (pago mensual)</span>
+                    <span class="price-period anual">/pago anual</span>
+                </div>
+
+                <ul class="features-list">
+                    <li><i class="fas fa-check-circle"></i> 1 Usuario (Doctor)</li>
+                    <li><i class="fas fa-check-circle"></i> Odontograma y Periodontograma.</li>
+                    <li><i class="fas fa-check-circle"></i> Cursos en Línea ilimitados.</li>
+                    <li><i class="fas fa-check-circle"></i> Pacientes Ilimitados</li>
+                    <li><i class="fas fa-check-circle"></i> Agenda y Citas Ilimitados</li>
+                    <li><i class="fas fa-check-circle"></i> Expediente Clínico Completo</li>
+                    <li><i class="fas fa-check-circle"></i> 5 Dispositivo Simultáneo</li>
+                    <li><i class="fas fa-check-circle"></i> 5GB para fotos/archivos</li>
+                    <li><i class="fas fa-check-circle"></i> Soporte Tecnico</li>
+                    <li><i class="fas fa-check-circle"></i> Perfil y Citas Online</li>
+                </ul>
+                <!----
+                <div class="div-whatsapp">
+                    <label><i class="fi fi-brands-whatsapp"></i> 100 Recordatorios por mes</label>
+                </div>
+                ---->
+                <br>
+                <a href="https://wa.me/524446316677?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20PLUS%20Denty" target="_blank" class="card-button btn-buy">
+                    <center>Cotizar Plan</center>
+                </a>
+            </div>
+
+            <div class="price-card basico">
+                <div class="card-header">
+                    <h3>Individual</h3>
+                    <p>
+                        Ideal para dentistas independientes que buscan digitalizar su consulta y organizarse.
+                    </p>
+                </div>
+
+                <div class="price-display">
+                    <span class="price-value mensual"></span>
+                    <span class="price-value anual">$299 MXN</span>
+                    <span class="price-period mensual"></span>
+                    <span class="price-period anual">/pago mensual</span>
+                </div>
+
+                <ul class="features-list">
+                    <li><i class="fas fa-check-circle"></i> 1 Usuario (Doctor)</li>
+                    <li><i class="fas fa-check-circle"></i> Odontograma y Periodontograma.</li>
+                    <li><i class="fas fa-check-circle"></i> Cursos en Línea ilimitados.</li>
+                    <li><i class="fas fa-check-circle"></i> 100 Pacientes</li>
+                    <li><i class="fas fa-check-circle"></i> 50 Agenda y Citas</li>
+                    <li><i class="fas fa-check-circle"></i> Expediente Clínico Completo</li>
+                    <li><i class="fas fa-check-circle"></i> 3 Dispositivo Simultáneo</li>
+                    <li><i class="fas fa-check-circle"></i> 1GB para fotos/archivos</li>
+                    <li><i class="fas fa-check-circle"></i> Soporte Tecnico</li>
+                    <li><i class="fas fa-times-circle" style="color: var(--texto-parrafo);"></i>  Perfil y Citas Online</li>
+                </ul>
+                <!----
+                <div class="div-whatsapp">
+                    <label><i class="fi fi-brands-whatsapp"></i> 50 Recordatorios por mes</label>
+                </div>
+                --->
+                <br>
+                <a href="https://wa.me/524446316677?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20PLUS%20Denty" target="_blank" class="card-button btn-buy">
+                    <center>Cotizar Plan</center>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggleBtns = document.querySelectorAll('.billing-toggle .toggle-btn');
+        const monthlyPrices = document.querySelectorAll('.mensual');
+        const annualPrices = document.querySelectorAll('.anual');
+
+        // Función para actualizar la vista
+        function updatePricing(period) {
+            if (period === 'mensual') {
+                monthlyPrices.forEach(el => el.style.display = 'block');
+                annualPrices.forEach(el => el.style.display = 'none');
+            } else {
+                monthlyPrices.forEach(el => el.style.display = 'none');
+                annualPrices.forEach(el => el.style.display = 'block');
+            }
+        }
+
+        // Manejar los clics en el toggle
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                // Remover 'active' de todos
+                toggleBtns.forEach(b => b.classList.remove('active'));
+                // Añadir 'active' al seleccionado
+                this.classList.add('active');
+                // Actualizar precios
+                updatePricing(this.getAttribute('data-period'));
+            });
+        });
+
+        // Inicializar al cargar la página (muestra anual por defecto)
+        updatePricing('anual');
+    });
+
+
+</script>
+
+
+    <section id="support-card-section">
+        <div class="support-card container">
+            <div class="card-content">
+                <h2>¿Necesitas Soporte?, contáctanos</h2>
+                <div class="schedule">
+                    <p><i class="fas fa-clock"></i> Lunes - Viernes: 9:00 a.m. - 6:00 p.m.</p>
+                    <p><i class="fas fa-clock"></i> Sábados: 9:00 a.m. - 2:00 p.m.</p>
+                </div>
+            </div>
+
+            <div class="contact-area">
+                <a href="https://wa.me/524446316677?text=Hola,%20me%20gustaría%20obtener%20más%20información%20sobre%20PLUS%20Denty" target="_blank" class="phone-button-support">
+                    <i class="fi fi-brands-whatsapp"></i> +52 444 631 6677
+                </a>
+            </div>
+        </div>
+    </section>
+    <br><br>
+    <!------------------------->
+
+    <footer>
+        <div class="container" style="padding: 10px 0;">
+            <p>© 2025 {ED} SOFTWARE DEVELOPER. Todos los derechos reservados. | Aviso de Privacidad</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const questions = document.querySelectorAll('.faq-question');
+
+            questions.forEach(question => {
+                question.addEventListener('click', function () {
+                    // Selecciona la respuesta y el icono
+                    const answer = this.nextElementSibling;
+                    const icon = this.querySelector('.faq-icon');
+
+                    // Cierra otros acordeones abiertos (opcional, pero buena práctica)
+                    questions.forEach(q => {
+                        if (q !== this && q.classList.contains('active')) {
+                            q.classList.remove('active');
+                            q.nextElementSibling.classList.remove('open');
+                            q.querySelector('.faq-icon').textContent = '+';
+                        }
+                    });
+
+                    // Alternar la clase 'active' en la pregunta
+                    this.classList.toggle('active');
+
+                    // Alternar la clase 'open' en la respuesta para activar la animación
+                    answer.classList.toggle('open');
+
+                    // Cambiar el icono
+                    if (answer.classList.contains('open')) {
+                        icon.textContent = '+'; // El CSS se encargará de rotarlo a una 'x'
+                    } else {
+                        icon.textContent = '+';
+                    }
+                });
+            });
+        });
+    </script>
+
+
+
+
+
+
+
+    
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script>
+    AOS.init({
+        duration: 800,
+        once: true
+    });
+    </script>
+</body>
+
+</html>

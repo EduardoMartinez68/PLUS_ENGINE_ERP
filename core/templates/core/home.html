@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="{{currentLocale}}">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>Denty.Cloud</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <!--icons-->
+    <link rel='stylesheet' href="{% static 'css/icons/uicons-bold-rounded.css' %}">
+    <link rel='stylesheet'
+        href="{% static 'css/icons/uicons-solid-straight.css' %}">
+    <link rel='stylesheet'
+        href="{% static 'css/icons/uicons-regular-rounded.css' %}">
+    <link rel='stylesheet'
+        href="{% static 'css/icons/uicons-solid-rounded.css' %}">
+        
+    <link rel="stylesheet" href="{% static 'css/icons/uicons-regular-rounded2.css' %}">
+    <link rel="stylesheet" href="{% static 'css/icons/uicons-regular-straight.css' %}">
+    <link rel='stylesheet' href="{% static 'css/icons/uicons-brands.css' %}">
+    <link rel='stylesheet' href="{% static 'css/icons/uicons-regular-rounded3.css' %}">
+    <link rel='stylesheet' href="{% static 'css/icons/uicons-thin-straight.css' %}">
+    <link rel='stylesheet' href="{% static 'css/icons/uicons-solid-straight2.css' %}">
+    
+    <!--our styles-->
+    <link rel="icon" href="{% static 'img/favicon.ico' %}?v=1.1" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=2.23">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}?v=2.1">
+    <link rel="stylesheet" href="{% static 'css/subMenuApp.css' %}?v=2.0">
+    <link rel="stylesheet" href="{% static 'css/tableAndSearch.css' %}?v=2.0">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+</head>
+
+<body>
+    <!--this is for transform the date to lenguace human and get the language of the buttons and other message in the web-->
+    <script src="{% static 'js/languaceUI.js' %}?v=2.0"></script>
+
+
+    <!--this is for load the input of text
+    <script src="https://cdn.tiny.cloud/1/{{ KEY_TINYMCE }}/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    -->
+
+    <!---her we will load the UI basic-->
+    {% include 'core/navbar.html' %}
+    {% include 'core/apps.html' %}
+    {% include 'core/messagePop.html' %}
+
+    <!----load screen---->
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+    
+
+    <br><br>
+
+    <!---her is the container of all the apps-->
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+
+    <!---library-->
+    <script src="{% static 'js/library/js-yaml.min.js' %}" defer></script>
+    <script src="{% static 'js/library/pdf.min.js' %}" defer></script>
+    <!--<script src="{% static 'js/library/Sortable.min.js' %}" defer></script>-->
+
+    <!---js for the UI-->
+    <script>
+        //this variable be use for default in the UI
+        window.STATIC_URLS = {
+            emptyImage: "{% static 'img/info/empty.webp' %}",
+            imageDefault:"{% static '/img/imageDefault.webp' %}"
+        };
+    </script>
+
+    
+    <script src="{% static 'js/translate.js' %}?v=2.42"></script>
+    <script src="{% static 'js/sendDataToTheServer.js' %}?v=2.0" defer></script>
+    <script src="{% static 'js/navbar.js' %}?v=2.23" defer></script>
+    <script src="{% static 'js/shortcuts.js' %}?v=2.1" defer></script>
+    <script src="{% static 'js/styles.js' %}?v=2.67" defer></script>
+    <script src="{% static 'js/selectStatus.js' %}?v=2.0" defer></script>
+    <script src="{% static 'js/search.js' %}?v=2.0" defer></script>
+    <script src="{% static 'js/currency.js' %}?v=2.0" defer></script>
+
+    <script>
+        //here we will to translate the ads 
+        window.translate_dynamic_content(document.getElementById('main-content'));
+    </script>
+</body>
+
+</html>

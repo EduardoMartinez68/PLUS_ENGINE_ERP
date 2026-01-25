@@ -1,0 +1,289 @@
+<form id="form_create_customer" method="post">
+    {% csrf_token %}
+    <div class="container-section">
+        <plus-tabs>
+            <plus-tab text="info-general">
+                <div class="row section">
+                    <div class="col-2">
+                        <image-uploader max="1" name="avatar" value-1="{{customer.avatar}}"></image-uploader>
+                    </div>
+
+                    <div class="col-10">
+                        <plus-title label="form1-label-name" type="text" name="name" t-placeholder="form1-placeholder-name"
+                            required value="{{customer.name}}" maxlength="300">
+                        </plus-title>
+
+                        <plus-priority name="priority" id="priority" allow-none value="{{customer.priority}}"></plus-priority>
+                    </div>
+                </div>
+
+                <div class="row section">
+                    <div class="col">
+                        <input-field type="email" label="form1-label-email" name="email"
+                            placeholder="form1-placeholder-email" value="{{customer.email}}"></input-field>
+                    </div>
+                </div>
+
+                <div class="row section">
+                    <div class="col">
+                        <input-field type="text" label="form1-label-phone" name="phone" placeholder="123 456 789"
+                            maxlength="15" value="{{customer.phone}}"></input-field>
+                    </div>
+                    <div class="col">
+                        <input-field type="text" label="form1-label-cellphone" name="cellphone"
+                            placeholder="+52 444 444 444" value="{{customer.cellphone}}" maxlength="15"></input-field>
+                    </div>
+                </div>
+                
+                <div class="row section">
+                    <div class="col">
+                        <plus-select name="gender" value="{{customer.gender}}" label="gener.label" id="gender">
+                            <option value="M" t="gender.men"></option>
+                            <option value="F" t="gender.woman"></option>
+                            <option value="O" t="gender.other"></option>
+                        </plus-select>
+                    </div>
+                </div>
+
+                <show-more text="add-info-address-customer" onclick="show_pop('pop-data-address')" description='({{customer.state}} {{customer.city}}.{{customer.country}})'></show-more>
+
+                <show-more text="advanced-information" onclick="show_pop('pop-advanced-information')"></show-more>
+
+
+
+
+
+
+            </plus-tab>
+            <plus-tab text="info-empresa">
+                <plus-switch text="form2-label-is_company" name="this_customer_is_a_company" id="this_customer_is_a_company" checked="{{customer.this_customer_is_a_company}}"></plus-switch>
+                <div class="row section">
+                    <div class="col">
+                        <input-field type="text" label="form2-label-company_name"
+                            placeholder="form2-placeholder-company_name" name="company_name"
+                            value="{{customer.company_name}}" maxlength="255"></input-field>
+                    </div>
+                </div>
+                <div class="row section">
+                    <div class="col">
+                        <input-field type="text" label="form2-label-contact" placeholder="form2-contact-placeholder"
+                            name="contact_name" value="{{customer.contact_name}}" maxlength="150"></input-field>
+                    </div>
+                </div>
+
+                <div class="row section">
+                    <div class="col">
+                        <input-field type="email" label="form2-label-contact-email"
+                            placeholder="form2-placeholder-contact-email" name="contact_email"
+                            value="{{customer.contact_email}}"></input-field>
+                    </div>
+                </div>
+
+                <div class="row section">
+                    <div class="col">
+                        <input-field type="text" label="form2-label-contact-phone"
+                            placeholder="form2-placeholder-contact-phone" name="contact_phone"
+                            value="{{customer.contact_phone}}" maxlength="20"></input-field>
+                    </div>
+                    <div class="col">
+                        <input-field type="text" label="form2-label-contact-cellphone"
+                            placeholder="form2-placeholder-contact-phone" name="contact_cellphone"
+                            value="{{customer.contact_cellphone}}" maxlength="20"></input-field>
+                    </div>
+                </div>
+
+                <div class="row section">
+                    <div class="col">
+                        <input-field type="url" label="form2-label-website" placeholder="form2-placeholder-website"
+                            name="website" value="{{customer.website}}"></input-field>
+                    </div>
+                </div>
+            </plus-tab>
+
+
+            {% if customer.id %}
+                <!--here is for when the user would like edit a customer--->
+                <input type="hidden" id="customer_id" name="customer_id" value="{{customer.id}}">
+                <button class="btn btn-edit btn-success" style="width: 100%;" t="btn.update">Update</button>
+            {% else %}
+                <button class="btn btn-add btn-success" style="width: 100%;" t="save">Save</button>
+            {% endif %}
+        </plus-tabs>
+    </div>
+
+
+
+
+
+
+
+    <!--this is for save the information advanced or the information of the address of the customer --->
+    <message-pop title="title-pop-info-address" name="pop-data-address">
+        <div class="container-pop">
+            <div class="row section">
+                <div class="col">
+                    <input-field type="text" label="label-address" placeholder="placeholder-address" name="address"
+                        value="{{customer.address}}"></input-field>
+                </div>
+            </div>
+            <div class="row section">
+                <div class="col">
+                    <input-field type="text" label="label-num_ext" placeholder="placeholder-num_ext" name="num_ext"
+                        value="{{customer.num_ext}}" maxlength="5"></input-field>
+                </div>
+                <div class="col">
+                    <input-field type="text" label="label-num_int" placeholder="placeholder-num_int" name="num_int"
+                        value="{{customer.num_int}}" maxlength="5"></input-field>
+                </div>
+            </div>
+
+            <div class="row section">
+                <div class="col">
+                    <input-field type="text" label="label-city" placeholder="placeholder-city" name="city"
+                        value="{{customer.city}}" maxlength="100"></input-field>
+                </div>
+                <div class="col">
+                    <input-field type="text" label="label-estate" placeholder="placeholder-estate" name="state"
+                        value="{{customer.state}}" maxlength="100"></input-field>
+                </div>
+            </div>
+
+
+            <div class="row section">
+                <div class="col">
+                    <plus-country name="country" requerid value="{{customer.country}}"></plus-country>
+                </div>
+                <div class="col">
+                    <input-field type="text" label="label-postal_code" placeholder="placeholder-postal_code"
+                        name="postal_code" value="{{customer.postal_code}}" maxlength="20"></input-field>
+                </div>
+            </div>
+
+            <div class="row section">
+                <label for="" t="label-reference"></label>
+                <textarea name="reference">{{customer.reference}}</textarea>
+            </div>
+            <br>
+        </div>
+        <button class="btn btn-edit btn-success" t="message.success" onclick="hide_pop('pop-data-address')"
+            type="button"></button>
+    </message-pop>
+
+    <message-pop title="advanced-information" name="pop-advanced-information">
+        <div class="container-pop">
+            <plus-switch text="form1-label-status" checked="True" name="activated" id="activated" checked="{{customer.activated}}"></plus-switch>
+
+            <div class="row section">
+                <div class="col">
+                    <plus-select label="select-type-customer" name="customer_type" id="type_event"
+                        link="/customers/search_type_customer/" add="open_pop_create_type_customer"
+                        edit_data="open_pop_edit_type_customer" delete_data="/customers/delete_type_customer/"
+                        btn_delete_title="message.do-you-like-delete-this-type-customer"
+                        btn_delete_text="message.description-delete-type-customer" method="GET" value="{{customer.customer_type.id}}" data-text="{{customer.customer_type.name}}">
+                    </plus-select>
+                </div>
+                <div class="col">
+                    <plus-select label="select-source-customer" name="source" id="source" link="/customers/search_source/"
+                        add="open_pop_create_source" edit_data="open_pop_edit_source"
+                        delete_data="/customers/delete_source/" btn_delete_title="message.do-you-like-delete-this-source"
+                        btn_delete_text="message.description-delete-source" method="GET" value="{{customer.source.id}}" data-text="{{customer.source.name}}">
+                    </plus-select>
+                </div>
+            </div>
+
+            <div class="row section">
+                <div class="col">
+                    <input-field type="number" label="points-user-label" placeholder="points-user-placeholder" name="points"
+                        value="{{customer.points}}"></input-field>
+                </div>
+                <div class="col">
+                    <input-field type="number" label="credit-user-label" placeholder="credit-user-placeholder" name="credit"
+                        value="{{customer.credit}}"></input-field>
+                </div>
+            </div>
+
+            <div class="row section">
+                <div class="col">
+                    <info-label label="tags" message="email-message-show"></info-label>
+                    <plus-tags id="tags" name="tags" label="emails-guests" message="email-message-show"
+                        placeholder="input.add-most-email" value="{{customer.tags}}"></plus-tags>
+                </div>
+            </div>
+
+            <div class="row section">
+                <div class="col">
+                    <plus-select label="form1-number_of_price_of_sale" name="number_of_price_of_sale" id="number_of_price_of_sale" value="1">
+                        <option value="1" t="1"></option>
+                        <option value="2" t="2"></option>
+                        <option value="3" t="3"></option>
+                        <option value="4" t="4"></option>
+                        <option value="5" t="5"></option>
+                        <option value="6" t="6"></option>
+                    </plus-select>
+                </div>
+            </div>
+
+            <div class="row section">
+                <label for="" t="note"></label>
+                <textarea t-placeholder="note-placeholder" name="note" id="note">{{customer.note}}</textarea>
+            </div>
+
+        </div>
+
+        <button class="btn btn-edit btn-success" t="message.success" onclick="hide_pop('pop-advanced-information')"
+            type="button"></button>
+    </message-pop>
+</form>
+
+
+
+<!---add the partial of the type customers and source for that the user can edit-->
+{% include 'partialsCustomers/typeCustomer.html' %}
+{% include 'partialsCustomers/source.html' %}
+
+<script>
+(() => {
+
+    const form = document.getElementById('form_create_customer');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault(); //this is for that the server not send the information to the backend
+
+        //first we will see if be in a form for add a new customer o for edit a customer that exist
+        const customer_id=document.getElementById('customer_id');
+        if(customer_id){
+            await update_a_customer(customer_id.value)
+        }else{
+            await add_a_new_customer();
+        }
+    });
+
+    async function add_a_new_customer(){
+        const server=await send_form_to_the_server('form_create_customer','/customers/add_customer/');
+        if(server.success){
+            window.restart_form('form_create_customer');
+            show_alert('success', 'customers.message.succes-save-customer', 'customers.message.success-description-save', server.error || '');
+        }else{
+            show_alert('error', 'customers.message.error-save-customer', server.message || 'customers.message.error-description-customer', server.error || 'Error in the server');
+        }
+    }
+
+    async function update_a_customer(customer_id){
+        const server=await send_form_to_the_server('form_create_customer',`/customers/edit_customer/${customer_id}/`, false);
+        if(server.success){
+            show_alert('success', 'customers.message.update.title.customer-update-with-success', 'customers.message.update.description.customer-update-with-success', server.error || '');
+        }else{
+            show_alert('error', 'customers.message.update.error-to-update-the-customer', server.message || 'customers.message.update.error-to-update-the-customer-description', server.error || 'Error in the server');
+        }
+    }
+})();
+</script>
+
+
+
+
+
+
+
+
+

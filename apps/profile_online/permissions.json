@@ -1,0 +1,20 @@
+{
+    "character": {
+        "icon": "fi fi-sr-user"
+    },
+    "permissions": [
+        "view_profile_online",
+        "update_profile_online",
+        "add_services_profile_online"
+    ],
+    "translate": {
+        "es": {
+            "app_name": "Perfil Online",
+            "description": "Permite crear y mostrar información de su negocio online como una tarjeta de presentacion.",
+
+            "view_profile_online": "Ver su perfil online.",
+            "update_profile_online": "Actualizar la información de su perfil online.",
+            "add_services_profile_online":"Agregar o Actualizar Servicios Online"
+        }
+    }
+}

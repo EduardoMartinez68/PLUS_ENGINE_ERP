@@ -1,0 +1,10 @@
+app_order:
+  - agenda
+  - customers
+  - employees
+  - departament_employee
+  - files
+  - odontograma
+  - profile_online
+  - rolesAndPermissions
+  - setting

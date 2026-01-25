@@ -1,0 +1,349 @@
+<style>
+.permission-card {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  width: 100%;
+  margin: 10px 0;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.permission-icon {
+  flex-shrink: 0;
+  font-size: 32px;
+  color: var(--primary);
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.permission-text h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+}
+
+.permission-text h5 {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #666;
+  color: var(--primary);
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 6px 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  background-color: white;
+}
+
+</style>
+
+
+<div class="container-pop">
+    <form id="form-role">
+        <div class="p-4">
+            <div class="section">
+                <input type="hidden" value=" {{role.rol_id}}" id="rol_id" name="rol_id">
+
+
+                <input-field label="rolesAndPermissions.form.label.name-rol" placeholder="rolesAndPermissions.form.placeholder.name-rol" name="name_role" id="name_role" required></input-field>
+            </div>
+        </div>
+
+
+        <!---here is save all the module of the permissions--->
+        <div id="permissions-container">
+
+        </div>
+
+        <div class="section">
+            <label t="rolesAndPermissions.form.label.description"></label>
+            <textarea name="description" id="description">{{role.description}}</textarea>
+        </div>
+
+    </form>
+</div>
+
+<br>
+{% if role %}
+<button class="btn btn-edit btn-success" type="button" onclick="send_the_form__of_the_rol_to_the_server()" t="btn.update" type="button">Update</button>
+{% else %}
+<button class="btn btn-add btn-success" type="button" onclick="send_the_form__of_the_rol_to_the_server()"  t="message.save" type="button">Save</button>
+{% endif %}
+
+
+<script>
+  async function save_the_rol(params) {
+    //first we will see if have the information need for save the permission
+    if(document.getElementById('name_role').value==''){
+      show_alert('alert', 'rolesAndPermissions.message.error.title', 'rolesAndPermissions.message.error.the-name-is-need')
+    }else{
+      const backend=await send_form_to_the_server('form-role','/rolesAndPermissions/add_a_new_rol/');
+      if(backend.success){
+        //if the rol can be save, we will restart the form 
+        restart_form('form-role')
+        show_alert('success', 'rolesAndPermissions.message.success.title.the-rol-can-be-save', 'rolesAndPermissions.message.success.description.the-rol-can-be-save', backend.error || '')
+      }else{
+        show_alert('error', 'rolesAndPermissions.message.error.title', backend.message, backend.error || '')
+      }
+    }
+  }
+
+  async function update_rol_server(params){
+    //first we will see if have the information need for save the permission
+    if(document.getElementById('name_role').value==''){
+      show_alert('alert', 'rolesAndPermissions.message.error.title', 'rolesAndPermissions.message.error.the-name-is-need')
+    }else{
+      const id = String(document.getElementById('rol_id').value).trim();
+      console.log(formToJSON(document.getElementById('form-role')));
+      const backend=await send_form_to_the_server('form-role',`/rolesAndPermissions/edit_rol/${id}/`);
+      if(backend.success){
+        //if the rol can be update, we will show a message 
+        show_alert('success', 'rolesAndPermissions.message.success.title.the-rol-was-update-with-success', 'rolesAndPermissions.message.success.the-rol-was-update-with-success', backend.error || '')
+      }else{
+        show_alert('error', 'rolesAndPermissions.message.error.title', backend.message, backend.error || '')
+      }
+    }
+  }
+
+  async function send_the_form__of_the_rol_to_the_server(){
+    const input_rol_id=document.getElementById('rol_id')
+    if(input_rol_id){
+        const rol_id=String(input_rol_id.value).trim();
+        if(rol_id==''){
+            save_the_rol();
+        }else{
+            update_rol_server();
+        }
+    }
+  }
+
+
+  // Function to update the permission count per module
+  function activate_all_the_permissions_of_a_module(value){
+    //now we will see all the switch of "activate_all_the_permissions" that is activate in the module 
+    let indexModule=0;
+
+    //read all the modules that exist in our list
+    switchInfo.forEach(item => {
+
+      //now we will see if the switch is activate and if is activate, now we will to activate all the permissions
+      if(document.getElementById(`activate_all_the_permissions_${indexModule}`).getChecked() || !value){
+        //if the switch is activate now we will activate all the permissions that exist in the module
+        item.switch.forEach(sw => {
+          document.getElementById(sw).setChecked(value)
+        });
+      }
+
+      indexModule++;
+    });
+
+  }
+
+  function get_module_permission_text(indexModule, switchList) {
+    const textTranslatePermissions = window.translate_text('rolesAndPermissions.subtext.permissions');
+    const textTranslateActivate = window.translate_text('rolesAndPermissions.subtext.permissions.activate');
+    
+
+    let countActive = 0;
+    switchList.forEach(sw => {
+      if(document.getElementById(sw).getChecked()){
+        countActive++;
+      }
+    });
+
+    //here we will see if all the permits are activate
+    const allMyPermissions=switchList.length;
+    if(countActive==allMyPermissions){
+      document.getElementById(`activate_all_the_permissions_${indexModule}`).setChecked(true)
+    }else{
+      document.getElementById(`activate_all_the_permissions_${indexModule}`).setChecked(false)
+    }
+
+    //return the answer of the permissions that the module have activate, if the countActive is 0 return 0
+    return `${allMyPermissions} ${textTranslatePermissions} - ${countActive} ${textTranslateActivate}`;
+  }
+
+
+  function update_module_permission_count(value) {
+    let indexModule=0;
+    switchInfo.forEach(item => {
+      const newDesc = get_module_permission_text(indexModule, item.switch);
+
+      //update the attribute des and update the information of the permittions that the module have activate
+      item.module.setAttribute('desc', newDesc);
+      const sidebarDesc = document.querySelector(`.plus-modules-sidebar li[data-index='${switchInfo.indexOf(item)}'] .plus-modules-desc`);
+      if (sidebarDesc) sidebarDesc.textContent = newDesc;
+
+      indexModule++;
+    });
+  }
+
+
+  async function create_form_of_the_role(){
+
+     //this is for save all the permissions of the apps with his reference of the web for after
+     //we can know how many permissions have each module
+    let switchInfo=[];
+    let permissions;
+
+    document.getElementById('permissions-container').innerHTML=''; //clear the container 
+
+    //here we will get all the permissions of the erp from the backend 
+    const backend=await send_message_to_the_server('rolesAndPermissions/get_all_the_permissions_of_the_erp/', {}, false, 'GET');
+
+    if(backend.success){
+      //get all the permissions of the server and update the UI for render all the permissions
+      const apps=backend.answer;
+      const container = document.getElementById("permissions-container");
+      container.innerHTML = ''; // Clear existing content
+
+      const containerPermissions = document.createElement('plus-modules');
+
+      const textTranslateSearch=window.t('message.search');
+      const textTranslatePermissions=window.translate_text('rolesAndPermissions.subtext.permissions');
+      const textTranslateActivate=window.translate_text('rolesAndPermissions.subtext.permissions.activate');
+
+      //print all the permissions in his module
+      let account_module=0;
+      Object.entries(apps).forEach(([appKey, appData]) => {
+          //if there is no data, skip
+          if(!appData || !appData.permissions) return;
+
+          //if exist information now we will to create the module with his permissions
+          //create the module father
+          const plusModule = document.createElement("plus-module");
+          plusModule.setAttribute("name", appData.translate[languageUser]?.app_name || appKey);
+          plusModule.setAttribute("desc", `${appData.permissions.length} ${textTranslatePermissions} - 0 ${textTranslateActivate}`);
+          plusModule.setAttribute("icon", appData.character?.icon || "fi-rr-box");
+
+          //create the weaker search
+          const searchDiv = document.createElement("div");
+          searchDiv.classList.add("search-container");
+          searchDiv.innerHTML = `
+            <i class="fi fi-rs-search search-icon"></i>
+            <input type="text" class="search-input" placeholder='${textTranslateSearch}'>
+          `;
+          
+          const searchInput = searchDiv.querySelector(".search-input");  //this is for save the reference of the search input
+          plusModule.appendChild(searchDiv);
+
+          // add title + switch for "activate all the permissions"
+          const titlePerms = document.createElement("div");
+          titlePerms.className = "section";
+          titlePerms.innerHTML = `
+              <div class="permission-card">
+                <div class="permission-icon">
+                  <i class="${appData.character?.icon || 'fi-rr-box'}"></i>
+                </div>
+                <div class="permission-text">
+                  <h4>${appData.translate[languageUser]?.app_name || appKey}</h4>
+                  <h5 class="permission-account">${appData.translate[languageUser]?.description}</h5>
+                </div>
+              </div>
+
+              <plus-switch text="rolesAndPermissions.subtext.permissions.activate-all" t='rolesAndPermissions.subtext.permissions.activate-all' id='activate_all_the_permissions_${account_module}' onclick='activate_all_the_permissions_of_a_module'></plus-switch>
+          `;
+          
+
+          const listOfPermissions=[]
+          const labelAccount=titlePerms.querySelector(".permission-account"); //this is for after update the count of permissions
+          
+
+          plusModule.appendChild(titlePerms);
+
+          //here we will print all the permissions of the module
+          const sectionDiv = document.createElement("div");
+          sectionDiv.classList.add("section");
+
+          appData.permissions.forEach(permKey => {
+            const permission = document.createElement("plus-switch");
+            permission.setAttribute("text", appData.translate[languageUser]?.[permKey] || permKey);
+            
+            permission.setAttribute("name", permKey);
+            permission.setAttribute("id", permKey);
+            permission.setAttribute('onclick', 'update_module_permission_count');
+
+            listOfPermissions.push(permKey);
+            sectionDiv.appendChild(permission);
+          });
+
+          plusModule.appendChild(sectionDiv);
+          containerPermissions.appendChild(plusModule);
+
+          //now we will to save the reference of the label for update the count of permissions
+          //when this we will to can update the infomation of the label when a switch is activated or desactivated
+          switchInfo.push({
+            module: plusModule,
+            switch: listOfPermissions,
+          });
+
+
+          // Add event listener for search functionality
+          containerPermissions.addEventListener("input", e => {
+            if (e.target.matches(".search-input")) {
+              const term = e.target.value.toLowerCase();
+
+              //get the switch of the module and show or hide the switch
+              const sectionDiv = e.target.closest("plus-modules")
+              const switches = sectionDiv.querySelectorAll("plus-switch");
+
+
+              switches.forEach(sw => {
+                const text = (sw.getAttribute("text") || "").toLowerCase();
+                sw.style.display = text.includes(term) ? "" : "none";
+              });
+            }
+          });
+        
+          account_module++;
+        });
+
+      container.appendChild(containerPermissions);
+    }
+
+    window.switchInfo=switchInfo;
+  }
+
+  async function update_form_for_edit_role(rol_id){
+    //now we will get the information of the rol if we are editing the rol
+    if(rol_id){
+        //if the user is edit a rol, now we will get the information of the rol from the server
+        rol_id=String(rol_id).trim();
+        const input_rol_id=document.getElementById('rol_id');
+        input_rol_id.value=rol_id;
+
+        const backend=await send_message_to_the_server(`rolesAndPermissions/get_information_rol/${rol_id}/`, {}, false, 'GET');
+        
+        if(backend.success){
+            //now update the information of the rol
+            const rol=backend.answer;
+            document.getElementById('name_role').value=rol.name;
+            document.getElementById('description').value=rol.description;
+            permissions=rol.permits;
+        }
+
+        //here we will see if the user is editing a rol, 
+        // and if the user is edititng now we will see if this permits exist in the information that get from the backend
+        permissions.forEach(permission => {
+            const code = permission.code;
+            const active = permission.active;
+
+            //get the select and the update
+            const select=document.getElementById(code);
+            if(select){
+                select.setChecked(active)
+            }
+        });
+    }
+  }
+</script>

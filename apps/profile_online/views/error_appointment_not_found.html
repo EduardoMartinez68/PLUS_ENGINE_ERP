@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cita no encontrada | Denty.Cloud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8fafc;
+        }
+        .error-card {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+</head>
+<body class="flex flex-col min-h-screen items-center justify-center p-4">
+
+    <div class="error-card bg-white rounded-2xl p-8 max-w-md w-full text-center border border-slate-100">
+        <div class="mb-6">
+            <div class="mx-auto w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-4">
+                <i class="fa-solid fa-calendar-xmark text-red-500 text-3xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-slate-800 mb-2">¡Cita no encontrada!</h1>
+            <p class="text-slate-600 leading-relaxed">
+                Lo sentimos, la cita que intentas consultar ya no existe en la agenda del doctor o el enlace ha expirado.
+            </p>
+        </div>
+
+        <div class="space-y-4">
+            <p class="text-sm text-slate-500">
+                Si crees que esto es un error, por favor contacta directamente a la clínica.
+            </p>
+        </div>
+    </div>
+
+    <footer class="mt-8 text-center">
+        <p class="text-slate-400 text-sm font-medium">
+            Powered by 
+            <a href="https://denty.cloud" target="_blank" class="text-blue-500 hover:text-blue-600 transition-colors font-bold tracking-tight">
+                Denty.Cloud
+            </a>
+        </p>
+    </footer>
+
+</body>
+</html>

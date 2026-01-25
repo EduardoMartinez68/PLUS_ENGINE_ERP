@@ -1,0 +1,153 @@
+<label t="setting.module.branch" desc="" icon="fi fi-rr-store-alt"></label>
+<hr>
+<form id="form_branch">
+    <div class="row section">
+        <div class="col">
+            <plus-title 
+                label="setting.label.name_branch" 
+                placeholder="setting.placeholder.name_branch" 
+                value="{{ branch.name_branch }}" 
+                name="name_branch">
+            </plus-title>
+        </div>
+    </div>
+
+    <plus-tabs>
+        <plus-tab text="setting.tag.info-basic">
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.nickname" 
+                        placeholder="setting.placeholder.nickname" 
+                        value="{{ branch.nickname }}" 
+                        name="nickname">
+                    </input-field>
+                </div>
+            </div>
+
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.email_branch" 
+                        placeholder="setting.placeholder.email_branch" 
+                        value="{{ branch.email_branch }}" 
+                        name="email_branch" 
+                        type="email">
+                    </input-field>
+                </div>
+            </div>
+
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.name_of_the_person_in_charge" 
+                        placeholder="setting.placeholder.name_of_the_person_in_charge" 
+                        value="{{ branch.name_of_the_person_in_charge }}" 
+                        name="name_of_the_person_in_charge">
+                    </input-field>
+                </div>
+                <div class="col">
+                    <input-field 
+                        label="setting.label.email_of_the_person_in_charge" 
+                        placeholder="setting.placeholder.email_of_the_person_in_charge" 
+                        value="{{ branch.email_of_the_person_in_charge }}" 
+                        name="email_of_the_person_in_charge" 
+                        type="email">
+                    </input-field>
+                </div>
+            </div>
+            {% if permissions.edit_data_facture %}
+                <show-more onclick="get_info_facturation()" label="setting.title.billing-data"></show-more>
+            {% endif %}
+            <show-more onclick="window.show_pop('address_branch')" label="setting.label.address" description="{{branch.address}}"></show-more>
+            <show-more onclick="window.show_pop('config_branch')" label="setting.show.setting-branch"></show-more>
+            
+            <plus-switch text="setting.label.enable_online_orders" value="{{ branch.enable_online_orders }}"></plus-switch>
+
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.notes" 
+                        placeholder="setting.placeholder.notes" 
+                        value="{{ branch.notes }}" 
+                        name="notes">
+                    </input-field>
+                </div>
+            </div>
+        </plus-tab>
+        <plus-tab text="setting.tag.info-contact">
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.phone" 
+                        placeholder="setting.placeholder.phone" 
+                        value="{{ branch.phone }}" 
+                        name="phone" 
+                        type="tel">
+                    </input-field>
+                </div>
+                <div class="col">
+                    <input-field 
+                        label="setting.label.cellphone" 
+                        placeholder="setting.placeholder.cellphone" 
+                        value="{{ branch.cellphone }}" 
+                        name="cellphone" 
+                        type="tel">
+                    </input-field>
+                </div>
+            </div>
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.support_email" 
+                        placeholder="setting.placeholder.support_email" 
+                        value="{{ branch.support_email }}" 
+                        name="support_email" 
+                        type="email">
+                    </input-field>
+                </div>
+            </div>
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.whatsapp_number" 
+                        placeholder="setting.placeholder.whatsapp_number" 
+                        value="{{ branch.whatsapp_number }}" 
+                        name="whatsapp_number" 
+                        type="tel">
+                    </input-field>
+                </div>
+            </div>
+
+            <div class="row section">
+                <div class="col">
+                    <input-field 
+                        label="setting.label.website" 
+                        placeholder="setting.placeholder.website" 
+                        value="{{ branch.website }}" 
+                        name="website" 
+                        type="url">
+                    </input-field>
+                </div>
+            </div>
+
+        </plus-tab>
+
+    </plus-tabs>
+    
+    <button class="btn btn-edit btn-success" t="btn.save" type="button" onclick="send_form_branch()"></button>
+    <br><br>
+</form>
+<script>
+    async function send_form_branch(){
+        //send the information to the server and get his answer
+        const result = await send_form_to_the_server('form_branch', 'setting/view_update_branch/');
+
+        //we will see if we can add the new customer
+        if (result.success) {
+            show_notification('success', result.message || 'info.info-send-with-success');
+        } else {
+            show_alert('alert', 'Error', result.message || 'info.not-was-can-send-the-information', (result.error || 'info.not-was-can-send-the-information'))
+        }
+    }
+</script>

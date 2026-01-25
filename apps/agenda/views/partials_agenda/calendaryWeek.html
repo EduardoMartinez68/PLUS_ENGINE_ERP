@@ -1,0 +1,1193 @@
+<style>
+  .calendary-week-calendar {
+    display: grid;
+    grid-template-columns: 100px repeat(7, 1fr);
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    overflow-x: auto;
+    /* permitir scroll horizontal en móviles */
+  }
+
+
+  .calendary-week-header {
+    display: contents;
+  }
+
+  .calendary-week-header div {
+    background: #f0f0f0;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    border: 1px solid #ccc;
+  }
+
+  .calendary-week-hour-cell {
+    padding: 4px;
+    border: 1px solid #ddd;
+    text-align: right;
+    font-size: 12px;
+    background: #fafafa;
+  }
+
+  .calendary-week-time-slot {
+    border: 1px solid #eee;
+    height: 40px;
+    position: relative;
+  }
+
+  .calendary-week-time-slot:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+    cursor: pointer;
+  }
+
+  .calendary-week-row {
+    display: contents;
+  }
+
+  .calendary-week-column-day {
+    background: #fff;
+  }
+
+  /* 🔴 Línea roja para hora actual */
+  .calendary-week-current-hour-line {
+    position: absolute;
+    height: 2px;
+    background: rgb(250, 126, 126);
+    width: calc(100% - 100px);
+    /* 100px es la columna de horas */
+    left: 100px;
+    z-index: 10;
+  }
+
+  /* 🌟 Columna del día actual */
+  .calendary-week-today-column {
+    background-color: #e0f7fa79 !important;
+  }
+
+  .calendary-week-event {
+    cursor: grab !important;
+    user-select: none;
+    touch-action: none;
+    /* Important to prevent scrolling while dragging */
+    transition: grid-column 0.2s ease;
+  }
+
+  .calendary-week-event:active {
+    cursor: grabbing !important;
+    opacity: 0.8;
+  }
+
+  .calendary-week-event * {
+    pointer-events: none;
+  }
+
+  .event-resizer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    cursor: ns-resize;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 6px 6px;
+  }
+
+  /* 📱 Adaptación a móviles 
+  @media (max-width: 768px) {
+    .calendary-week-calendar {
+      grid-template-columns: 60px repeat(7, minmax(60px, 1fr));
+    }
+
+    .calendary-week-header div {
+      font-size: 10px;
+      padding: 6px 2px;
+    }
+
+    .calendary-week-hour-cell {
+      font-size: 8px;
+      padding: 1px 2px;
+    }
+
+    .calendary-week-time-slot {
+      height: 30px;
+    }
+
+    .calendary-week-current-hour-line {
+      width: calc(100% - 60px);
+      left: 60px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .calendary-week-calendar {
+      grid-template-columns: 40px repeat(7, minmax(40px, 1fr));
+    }
+
+    .calendary-week-header div {
+      font-size: 8px;
+      padding: 4px 1px;
+    }
+
+    .calendary-week-hour-cell {
+      font-size: 7px;
+      padding: 1px;
+    }
+
+    .calendary-week-time-slot {
+      height: 25px;
+    }
+
+    .calendary-week-current-hour-line {
+      width: calc(100% - 40px);
+      left: 40px;
+    }
+  }
+  */
+
+
+
+  @media (max-width: 768px) {
+    .calendary-week-calendar {
+      grid-template-columns: 60px repeat(7, 120px);
+    }
+
+    .calendary-week-current-hour-line {
+      width: calc(100% - 60px);
+      left: 60px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .calendary-week-calendar {
+      grid-template-columns: 40px repeat(7, 100px);
+    }
+
+    .calendary-week-current-hour-line {
+      width: calc(100% - 40px);
+      left: 40px;
+    }
+  }
+
+  /*------------------------this is for skeleton loading effect------------------------------ */
+  /* Skeleton shimmer animation */
+  @keyframes shimmer {
+    0% {
+      background-position: -468px 0;
+    }
+
+    100% {
+      background-position: 468px 0;
+    }
+  }
+
+  .skeleton-loader {
+    display: grid;
+    grid-template-columns: 100px repeat(7, 1fr);
+    width: 100%;
+    height: 100vh;
+  }
+
+  .skeleton-cell {
+    height: 40px;
+    border: 1px solid #eee;
+    background: #f6f7f8;
+    background-image: linear-gradient(to right,
+        #f6f7f8 0%,
+        #edeef1 20%,
+        #f6f7f8 40%,
+        #f6f7f8 100%);
+    background-repeat: no-repeat;
+    background-size: 800px 104px;
+    animation: shimmer 1.2s linear infinite forwards;
+  }
+
+  .container-div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  #button-show-calendary-month {
+    padding-left: 5%;
+  }
+
+  .container-div plus-actions {
+    padding-left: 50%;
+  }
+
+  .only-mobile {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .only-mobile {
+      display: block;
+    }
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: #1f1f1f;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+
+  .status-badge-calendar{
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 6px;
+      border-radius: 99px;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      gap: 6px;
+  }
+
+
+  /*--------------*/
+.calendar-nav {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 3px;
+}
+
+.nav-btn {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #444;
+    background-color: transparent;
+    border: 1px solid #e0e0e0;
+    font-weight: 500;
+}
+
+.nav-btn:hover {
+    border: 1px solid #e0e0e0;
+    color: #000;
+    cursor: pointer;
+    background-color: #eeeeee;
+}
+
+.nav-btn .icon {
+    margin: 0 5px;
+    font-weight: bold;
+    color: #888;
+}
+
+</style>
+
+{% load static %}
+<div class="calendar-nav">
+    <button class="nav-btn" id="btn-calendar-navbar-preview">
+        <span class="icon"><i class="fi fi-rr-angle-left"></i></span>
+    </button>
+    <button class="nav-btn" id="btn-calendar-navbar-next">
+        <span class="icon"><i class="fi fi-rr-angle-right"></i></span>
+    </button>
+    <label id="text-date-week" t="range.today"></label>
+</div>
+<div class="container-div only-mobile">
+  <button id="button-show-calendary-month" t="17/12/2025" icon="fi fi-sr-sort-down" class="btn-ghost"
+    onclick="show_calendary_month(this)">
+    17/12/2025
+  </button>
+  <plus-actions>
+    <plus-action text="create-a-new-type-event" onclick="open_pop_new_type_event" combo="Shift+e"></plus-action>
+    <plus-action text="title-show-all-the-type-event" onclick="open_pop_show_all_type_event"></plus-action>
+    <plus-action text="title.show-all-my-appoints" onclick="open_pop_show_all_my_appoints"></plus-action>
+    <plus-action text="title-sync-google-btn" onclick="sync_google"></plus-action>
+  </plus-actions>
+</div>
+<div id="calendary-week-calendar" class="calendary-week-calendar" style="width: 100%; height: 100vh;">
+
+</div>
+
+<script>
+  (() => {
+    //this variables be for save the information of the calendar when the user do click and drag for select the hours that want to create an appointment
+    let isSelecting = false;
+    let startSlot = null; // { day: 0, hour: 0 }
+    let endSlot = null;   // { day: 0, hour: 0 }
+
+    //this variables be for the drag and drop and resize of the events and that the user can move or drag his events
+    let draggedEvent = null;
+    let resizingEvent = null;
+    let startY, startTop, startHeight;
+    let isDragging = false;
+
+    window.isSelecting = isSelecting;
+    window.startSlot = startSlot;
+    window.endSlot = endSlot;
+
+    window.draggedEvent = draggedEvent;
+    window.resizingEvent = resizingEvent;
+    window.startY = startY;
+    window.startTop = startTop;
+    window.startHeight = startHeight;
+    window.isDragging = isDragging;
+
+    window.listAppoints=[
+      { date: '', appoints: [] },
+      { date: '', appoints: [] }, //here is the month 
+      { date: '', appoints: [] }
+    ]; //here we will save the information of the events
+    window.listAppoints=[];
+  })();
+
+  function formatDateISO(date) {
+    return date.toISOString().split('T')[0];
+  }
+
+  function updateEventVisualStatusToPending(eventEl) {
+      // 1. Buscamos el badge viejo dentro del elemento arrastrado
+      const oldBadge = eventEl.querySelector('.status-badge-calendar');
+
+      //here we will get the starts of the text
+      const dot = oldBadge.querySelector('.status-dot');
+      const fullText = oldBadge.textContent;
+      const starsOnly = fullText.match(/★+/g)?.[0] || "";
+      
+      // 2. Generamos el nuevo badge con estado 'P' (Pendiente)
+      const newBadge = getStatusBadgeElement('P', starsOnly)//+starsOnly; 
+      
+      // Ajustes de estilo para que mantenga la estética del calendario
+      newBadge.style.fontSize = '0.7em';
+      newBadge.style.padding = '2px 6px';
+      newBadge.style.marginBottom = '4px';
+      newBadge.style.transform = 'scale(0.9)';
+
+      if (oldBadge) {
+          // 3. Si existe, lo reemplazamos
+          eventEl.replaceChild(newBadge, oldBadge);
+      } else {
+          // Si por alguna razón no tenía badge, lo ponemos al principio
+          eventEl.prepend(newBadge);
+      }
+  }
+
+  window.addEventListener('mouseup', async () => {
+    if (window.isSelecting) {
+      window.isSelecting = false;
+
+      // Determine the actual start and end times (in case it was dragged upwards)
+      const hStart = Math.min(window.startSlot.hour, window.endSlot.hour);
+      const hEnd = Math.max(window.startSlot.hour, window.endSlot.hour) + 1; // +1 because it occupies the entire block
+
+      // 1. Prepare dates
+      const dateStart = new Date(window.weekStart);
+      dateStart.setDate(window.weekStart.getDate() + window.startSlot.day);
+
+      // If the time is 24, it means it ends at 00:00 the next day
+      const dateEnd = new Date(dateStart);
+      if (hEnd === 24) {
+        dateEnd.setDate(dateEnd.getDate() + 1);
+      }
+
+      // 2. Format hours
+      const startTimeStr = `${hStart.toString().padStart(2, '0')}:00`;
+      const endTimeStr = `${(hEnd === 24 ? 0 : hEnd).toString().padStart(2, '0')}:00`;
+
+      // 3. write the information in the pop form
+      update_pop_information();
+      window.change_plus_date('start_date', dateStart);
+      window.change_plus_date('end_date', dateEnd);
+      window.change_plus_time('start_time', startTimeStr);
+      window.change_plus_time('end_time', endTimeStr);
+
+      window.show_pop('pop-data-event'); //show the form to create a new event
+
+      // 4. clear highlight
+      clearHighlight();
+    }
+
+    /////---------------------
+    const slotHeight = 40;
+
+    // --- DRAG (MOVER) ---
+    if (window.draggedEvent && window.isDragging) {
+      const finalTop = window.draggedEvent.el.offsetTop;
+      const sampleSlot = document.querySelector('.calendary-week-time-slot');
+      const headerOffset = sampleSlot ? sampleSlot.offsetTop : 40;
+
+      const totalMinutesStart = Math.round((finalTop - headerOffset) / slotHeight * 60 / 15) * 15;
+      const start_date = new Date(window.weekStart);
+      const finalDayIndex = window.draggedEvent.newDayIndex !== undefined ? window.draggedEvent.newDayIndex : window.draggedEvent.dayIndex;
+
+      start_date.setDate(window.weekStart.getDate() + finalDayIndex);
+      start_date.setHours(Math.floor(totalMinutesStart / 60), totalMinutesStart % 60, 0, 0);
+
+      // CHANGE CHECK
+      const hasChanged = start_date.getTime() !== window.draggedEvent.originalStartDate.getTime();
+
+      if (hasChanged) {
+        const appointment_id=window.draggedEvent.id;
+        const durationMs = window.draggedEvent.durationMs;
+        const end_date = new Date(start_date.getTime() + durationMs);
+        const start_time = `${start_date.getHours().toString().padStart(2, '0')}:${start_date.getMinutes().toString().padStart(2, '0')}`;
+        const end_time = `${end_date.getHours().toString().padStart(2, '0')}:${end_date.getMinutes().toString().padStart(2, '0')}`;
+
+        const newDateStart=`${start_date.toLocaleDateString()} : ${start_time}`;
+        const newDateFinish=`${end_date.toLocaleDateString()} : ${end_time}`;
+        const fatherEventData=window.draggedEvent
+        const fatherEvent=window.draggedEvent.el //this is for after change the status of the event if the user would like 
+        let titleStruct=window.get_text_and_keys(['agenda.question.change-the-event-date',{name:'evento'}]);
+        let messageStruct=window.get_text_and_keys(['agenda.question.change-the-event-date-description',{date_start:newDateStart, date_finish:newDateFinish}]);    
+        window.draggedEvent=null;    
+
+        if (confirm(window.translate_text(messageStruct.text, messageStruct.keys))) {
+          //here we will to update the appointment with the new dates
+          //first we will to construt the object that send to the server
+          const appointmentUpdate = {
+            id_event: appointment_id,
+            start_date: formatDateISO(start_date), // YYYY-MM-DD
+            start_time: start_time,                // HH:mm
+            end_date: formatDateISO(end_date),
+            end_time: end_time,
+          };
+          
+
+          //now we will to send the information to the server and we will wait his answer
+          const backend=await window.send_message_to_the_server('/agenda/update_appointment_time_view/', appointmentUpdate);
+          if(backend.success){
+            //window.update_all_the_information_of_my_calendary();
+            window.show_notification('success', 'message.update-new-event.success')
+            updateEventVisualStatusToPending(fatherEvent) //this is for change the status of the event
+            //window.show_alert('success', window.translate_text('message.update-new-event.success'), window.translate_text('message.update-new-event.success.description'));
+
+            //here we will update the information of the appoints in the list
+            //const listAppoints=window.get_the_list_of_appointments()
+            //console.log(listAppoints)
+          }else{
+            window.show_alert('error', window.translate_text("message.error_in_server"), window.translate_text(backend.message), backend.error);
+          }
+        } else {
+          window.reset_appoint_in_the_calendar();
+          
+          //const data = fatherEventData;
+          //const el = fatherEvent;
+
+          // Regreso suave
+          //el.style.transition = "all 0.3s ease";
+          //el.style.top = data.initialTop + "px";
+          //el.style.left = data.initialLeft + "px";
+          await update_all_the_information_of_my_calendary();
+        }
+      } else {
+        render_this_day(); // Clean up any drag styles.
+      }
+      window.draggedEvent = null;
+    }
+
+    // --- RESIZE ---
+    if (window.resizingEvent) {
+      const newHeightPx = window.resizingEvent.el.offsetHeight;
+      const durationMinutes = Math.round((newHeightPx / slotHeight) * 60 / 15) * 15;
+
+      const start_date = window.resizingEvent.originalStartDate;
+      const end_date = new Date(start_date.getTime() + (durationMinutes * 60000));
+
+      //CHANGE CHECK (We compare against the original end date)
+      const hasChanged = end_date.getTime() !== window.resizingEvent.originalEndDate.getTime();
+
+      if (hasChanged) {
+        const end_time = `${end_date.getHours().toString().padStart(2, '0')}:${end_date.getMinutes().toString().padStart(2, '0')}`;
+        if (confirm(`¿Cambiar hora de finalización a las ${end_time}?`)) {
+          console.log("DURACIÓN CAMBIADA");
+        } else {
+          render_this_day();
+        }
+      } else {
+        console.log("Misma duración, no se pregunta.");
+        render_this_day();
+      }
+      window.resizingEvent = null;
+    }
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    const slotHeight = 40;
+
+    if (window.draggedEvent) {
+      let dragThreshold = 5;
+      const deltaYM = Math.abs(e.pageY - window.draggedEvent.initialY);
+      const deltaXM = Math.abs(e.pageX - window.draggedEvent.initialX);
+      if (deltaYM > dragThreshold || deltaXM > dragThreshold){
+        window.isDragging = true;
+      }
+
+      if(!window.isDragging) return;
+
+      // --- VERTICAL MOVEMENT LOGIC (TIME) ---
+      const deltaY = e.pageY - window.draggedEvent.initialY;
+      window.draggedEvent.el.style.top = (window.draggedEvent.initialTop + deltaY) + 'px';
+
+      // --- HORIZONTAL MOVEMENT LOGIC (DAY) ---
+      // We're looking for what element is under the mouse.
+      const elementUnderMouse = document.elementFromPoint(e.clientX, e.clientY);
+      const slot = elementUnderMouse ? elementUnderMouse.closest('.calendary-week-time-slot') : null;
+
+      if (slot && slot.dataset.day) {
+        const newDayIndex = parseInt(slot.dataset.day);
+        // Visually update the column in the Grid (dayIndex + 2)
+        window.draggedEvent.el.style.gridColumn = `${newDayIndex + 2} / span 1`;
+        // We save the new day in the temporary object for the mouseup
+        window.draggedEvent.newDayIndex = newDayIndex;
+      }
+    }
+
+    if (window.resizingEvent) {
+      const deltaY = e.pageY - window.resizingEvent.initialY;
+      const newHeight = Math.max(10, window.resizingEvent.initialHeight + deltaY);
+      window.resizingEvent.el.style.height = newHeight + 'px';
+    }
+  
+  });
+
+  function show_calendar_loader() {
+    const calendar = document.getElementById('calendary-week-calendar');
+    calendar.innerHTML = ''; // clear previous content
+    calendar.classList.add("skeleton-loader");
+
+    // We simulate 24 hours x 8 columns (hour + 7 days)
+    for (let h = 0; h < 24; h++) {
+      for (let d = 0; d < 8; d++) {
+        const cell = document.createElement('div');
+        cell.className = 'skeleton-cell';
+        calendar.appendChild(cell);
+      }
+    }
+  }
+
+  function render_loader_week() {
+    show_calendar_loader(); //show the loader in the calendar while we load the information
+
+    //clear the calendar of all the old information
+    const inputDate = new Date();
+    const weekStart = new Date(inputDate);
+    weekStart.setDate(inputDate.getDate() - inputDate.getDay()); // Sunday
+
+
+    //get all the appoint of this week
+    const appointments = window.get_the_appointments_of_the_week(weekStart); //her get the appointments of the week
+
+    const today = new Date();
+    const isSameDay = (d1, d2) =>
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate();
+
+    const header = document.createElement('div');
+    header.className = 'calendary-week-header';
+
+    const hourHeader = document.createElement('div');
+    hourHeader.textContent = '';
+    header.appendChild(hourHeader);
+
+    // Here we will get the days of the week in the language that the user uses
+    const dayNames = [window.t('sunday'), window.t('monday'), window.t('tuesday'), window.t('wednesday'), window.t('thursday'), window.t('friday'), window.t('saturday')];
+
+    const todayColumnIndices = [];
+
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(weekStart);
+      day.setDate(weekStart.getDate() + i);
+
+      const dayDiv = document.createElement('div');
+      dayDiv.textContent = `${dayNames[i]} ${day.getDate()}`;
+
+      if (isSameDay(today, day)) {
+        todayColumnIndices.push(i); // save here the day that is today
+        dayDiv.style.backgroundColor = '#e0f7fa'; // also highlight in header
+      }
+
+      header.appendChild(dayDiv);
+    }
+
+    const calendar = document.getElementById('calendary-week-calendar');
+    calendar.appendChild(header);
+
+    for (let h = 0; h < 24; h++) {
+      const hour = h.toString().padStart(2, '0');
+
+      const row = document.createElement('div');
+      row.className = 'calendary-week-row';
+
+      const hourCell = document.createElement('div');
+      hourCell.className = 'calendary-week-hour-cell';
+      hourCell.textContent = `${hour}:00`;
+      row.appendChild(hourCell);
+
+      for (let d = 0; d < 7; d++) {
+        const slot = document.createElement('div');
+        slot.className = 'calendary-week-time-slot calendary-week-column-day';
+        slot.dataset.day = d;
+        slot.dataset.hour = h;
+
+        //if is the day current now add the class for know that this day is today
+        if (todayColumnIndices.includes(d)) {
+          slot.classList.add('calendary-week-today-column');
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////HERE WE WILL ADD ALSO THE DAY THAT THE USER SELECT////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        row.appendChild(slot);
+      }
+
+      calendar.appendChild(row);
+    }
+  }
+
+  function highlightSelection() {
+    clearHighlight(); //first we will to clear the calendar
+    const hMin = Math.min(startSlot.hour, endSlot.hour);
+    const hMax = Math.max(startSlot.hour, endSlot.hour);
+
+    //We look for slots in the DOM that are in the range
+    document.querySelectorAll('.calendary-week-time-slot').forEach(s => {
+      const sDay = parseInt(s.dataset.day);
+      const sHour = parseInt(s.dataset.hour);
+
+      if (sDay === startSlot.day && sHour >= hMin && sHour <= hMax) {
+        s.style.backgroundColor = 'rgba(0, 123, 255, 0.3)'; // Color selection
+        s.style.border = '1px solid #007bff';
+      }
+    });
+  }
+
+  function clearHighlight() {
+    //this function is for clear all the highlight of the calendar
+    document.querySelectorAll('.calendary-week-time-slot').forEach(s => {
+      s.style.backgroundColor = '';
+      s.style.border = '';
+    });
+  }
+
+  function getStatusBadgeElement(status, textStar) {
+      const statusDiv = document.createElement('div');
+      statusDiv.className = 'status-badge-calendar';
+
+      // Mapeo de configuración
+      const config = {
+          'P': { class: 'status-pending', text: window.translate_text('agenda.status.pending') || 'Pendiente' },
+          'C': { class: 'status-confirmed', text: window.translate_text('agenda.status.confirmed') || 'Confirmada' },
+          'X': { class: 'status-cancelled', text: window.translate_text('agenda.status.cancelled') || 'Cancelada' },
+      };
+
+      // Obtenemos la configuración según el parámetro, por defecto Pendiente
+      const state = config[status] || config['P'];
+
+      statusDiv.classList.add("container-div-calendar");
+      statusDiv.classList.add(state.class);
+      statusDiv.style.marginTop = '0px';
+      // Crear el punto (dot)
+      const dot = document.createElement('div');
+      dot.className = 'status-dot';
+
+      // Armar el elemento
+      statusDiv.appendChild(dot);
+      statusDiv.appendChild(document.createTextNode(state.text+textStar));
+
+      return statusDiv;
+  }
+
+  function get_the_appointments_of_the_week(weekStart) {
+      const startOfWeek = new Date(weekStart);
+      startOfWeek.setHours(0, 0, 0, 0);
+
+      const endOfWeek = new Date(weekStart);
+      endOfWeek.setDate(endOfWeek.getDate() + 6);
+      endOfWeek.setHours(23, 59, 59, 999);
+
+      return window.listAppoints.filter(item => {
+          const date_start = new Date(item.date_start); // usa date_start para comparar
+          const date_finish = new Date(item.date_finish); // usa date_finish para comparar
+          return date_start >= startOfWeek && date_finish <= endOfWeek;
+      });
+  }
+  window.get_the_appointments_of_the_week=get_the_appointments_of_the_week;
+
+  function renderWeek(dateStr) {
+    show_calendar_loader(); //show the loader in the calendar while we load the information
+
+    //clear the calendar of all the old information
+    const inputDate = new Date(dateStr);
+    const weekStart = new Date(inputDate);
+    weekStart.setDate(inputDate.getDate() - inputDate.getDay()); // Sunday
+    window.weekStart = weekStart; //we will save the week start in a global variable for use it in other functions
+
+    //get all the appoint of this week
+    const appointments = window.get_the_appointments_of_the_week(weekStart); //her get the appointments of the week
+
+    const today = new Date();
+    const isSameDay = (d1, d2) =>
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate();
+
+    const header = document.createElement('div');
+    header.className = 'calendary-week-header';
+
+    const hourHeader = document.createElement('div');
+    hourHeader.textContent = '';
+    header.appendChild(hourHeader);
+
+    // Here we will get the days of the week in the language that the user uses
+    const dayNames = [window.t('sunday'), window.t('monday'), window.t('tuesday'), window.t('wednesday'), window.t('thursday'), window.t('friday'), window.t('saturday')];
+
+    const todayColumnIndices = [];
+
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(weekStart);
+      day.setDate(weekStart.getDate() + i);
+
+      const dayDiv = document.createElement('div');
+      dayDiv.textContent = `${dayNames[i]} ${day.getDate()}`;
+
+      if (isSameDay(today, day)) {
+        todayColumnIndices.push(i); // save here the day that is today
+        dayDiv.style.backgroundColor = '#e0f7fa'; // also highlight in header
+      }
+
+      header.appendChild(dayDiv);
+    }
+
+    const calendar = document.getElementById('calendary-week-calendar');
+    calendar.innerHTML = ''; //clear the loader of the calendar or the information that be printed
+    calendar.appendChild(header);
+
+    for (let h = 0; h < 24; h++) {
+      const hour = h.toString().padStart(2, '0');
+
+      const row = document.createElement('div');
+      row.className = 'calendary-week-row';
+
+      const hourCell = document.createElement('div');
+      hourCell.className = 'calendary-week-hour-cell';
+      hourCell.textContent = `${hour}:00`;
+      row.appendChild(hourCell);
+
+      for (let d = 0; d < 7; d++) {
+        const slot = document.createElement('div');
+        slot.className = 'calendary-week-time-slot calendary-week-column-day';
+        slot.dataset.day = d;
+        slot.dataset.hour = h;
+
+        //if this is the cloumn of today we will add a specific class for highlight it
+        if (todayColumnIndices.includes(d)) {
+          slot.classList.add('calendary-week-today-column');
+        }
+
+
+        //here we will add the event for when the user do click in one of the time slots of the calendar
+        // START THE DRAG OF THE SELECTION
+        slot.addEventListener('mousedown', (e) => {
+          window.isSelecting = true;
+          window.startSlot = { day: parseInt(slot.dataset.day), hour: parseInt(slot.dataset.hour) };
+          window.endSlot = window.startSlot;
+          highlightSelection();
+        });
+
+        // WHILE DRAGGING
+        slot.addEventListener('mouseenter', () => {
+          if (window.isSelecting) {
+            const currentDay = parseInt(slot.dataset.day);
+
+            //Block the drag the same day
+            if (currentDay === window.startSlot.day) {
+              window.endSlot = { day: currentDay, hour: parseInt(slot.dataset.hour) };
+              highlightSelection();
+            }
+          }
+        });
+
+        row.appendChild(slot);
+      }
+
+      calendar.appendChild(row);
+    }
+
+    ////////////////this is for add the events to the calendar/////////////////////
+  const sampleSlot = document.querySelector('.calendary-week-time-slot');
+  const slotHeight = sampleSlot.offsetHeight; // Altura real actual (40, 30 o 25px)
+  const headerHeight = document.querySelector('.calendary-week-header div').offsetHeight;
+
+    let divisorDinamico;
+    const screenWidth = window.innerWidth;
+    if (screenWidth >= 1200) {
+      divisorDinamico = 60; // Valor base para PC
+    }
+    else {
+      divisorDinamico = 50//(screenWidth * 50) / 1878;
+    }
+
+    appointments.forEach(event => {
+      const start = new Date(event.date_start);
+      const end = new Date(event.date_finish);
+
+      const dayIndex = start.getDay(); 
+      const startHour = start.getHours();
+      const startMinutes = start.getMinutes();
+      const durationHours = (end - start) / (1000 * 60 * 60);
+
+      const eventDiv = document.createElement('div');
+      eventDiv.className = 'calendary-week-event';
+
+      // Adaptable position for all the devices
+      eventDiv.style.position = 'absolute';
+
+      // CÁLCULO DINÁMICO SEGÚN EL SLOT ACTUAL
+      // Posición Top = Altura del header + (Horas * altura slot) + (proporción de minutos * altura slot)
+      const topPosition = headerHeight + (startHour * slotHeight) + (startMinutes / 60 * slotHeight);
+      const eventHeight = durationHours * slotHeight;
+      eventDiv.style.top = `${topPosition}px`;
+      eventDiv.style.height = `${eventHeight}px`; // Usar PX en lugar de % para precisión
+      // Posicionamiento horizontal usando Grid
+      const gridColumnStart = dayIndex + 2; 
+
+      eventDiv.style.gridColumn = `${gridColumnStart} / span 1`;
+      eventDiv.style.width = '100%';
+      eventDiv.style.left = '0';
+
+      const totalMinutesFromStartOfDay = startHour * 60 + startMinutes;
+      const topPositionPx = totalMinutesFromStartOfDay * (slotHeight / divisorDinamico)//(slotHeight / 60);
+      //const headerHeight = sampleSlot.offsetTop;
+
+      // Background color
+      const bgColor = event.appoints[0].type_appoint?.color || 'rgba(0, 123, 255, 0.2)';
+      eventDiv.style.backgroundColor = bgColor;
+
+      //---------
+      // Automatic text contrast
+      const rgb = bgColor.match(/\d+/g) || [0, 123, 255];
+      const brightness = (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) / 1000;
+      eventDiv.style.color = brightness > 125 ? 'black' : 'white';
+
+      // Text style
+      eventDiv.style.cursor = 'pointer';
+      eventDiv.style.display = 'flex';
+      eventDiv.style.flexDirection = 'column';
+      eventDiv.style.alignItems = 'center';
+      eventDiv.style.justifyContent = 'center';
+      eventDiv.style.borderRadius = '6px';
+      eventDiv.style.padding = '2%';
+      eventDiv.style.overflow = 'hidden';
+      eventDiv.style.textAlign = 'center';
+      eventDiv.style.boxShadow = '0 1px 3px rgba(0,0,0,0.2)';
+
+      // container of the appointment
+      const title = document.createElement('div');
+      title.textContent = event.appoints[0].title;
+      title.style.fontWeight = 'bold';
+      title.style.fontSize = '.8em';
+      title.style.lineHeight = '1em';
+      title.style.marginBottom = '0.2em';
+      title.style.color = darkenColor(bgColor, 0.4);
+
+      const legend = document.createElement('div');
+      legend.textContent = event.appoints[0].type_appoint?.name || '';
+      legend.style.fontSize = '0.8em';
+      legend.style.opacity = '0.8';
+      legend.style.color = darkenColor(bgColor, 0.3);
+
+
+      const priorityContainer = document.createElement('div');
+      priorityContainer.style.display = 'flex';
+      priorityContainer.style.justifyContent = 'center';
+      priorityContainer.style.marginTop = '0.2em';
+
+      //here we will show the level of the priority of the appointment
+      const priority = event.appoints[0].priority || 0;
+      let textStar=''
+      if (priority > 0) {
+        for (let i = 0; i < 3; i++) {
+          const star = document.createElement('span');
+          star.textContent = '★'; // estrella
+          textStar+='★'
+          star.style.fontSize = '0.5em';
+          star.style.margin = '0 0.5px';
+
+          // color: lleno si menor que prioridad, transparente si no
+          if (i <= priority) {
+            star.style.color = 'gold';
+          } else {
+            star.style.color = 'rgba(255, 215, 0, 0.3)'; // más transparente
+          }
+
+          priorityContainer.appendChild(star);
+        }
+      }
+
+      // ------------------------ CONTENEDOR DE BOTONES DE ACCIÓN ---------------------
+      const actionButtonsContainer = document.createElement('div');
+      actionButtonsContainer.style.display = 'flex';
+      actionButtonsContainer.style.justifyContent = 'center';
+      actionButtonsContainer.style.gap = '8px';
+      actionButtonsContainer.style.marginTop = '8px';
+      actionButtonsContainer.style.width = '100%';
+      actionButtonsContainer.style.zIndex = '1007'; // Asegura que el click funcione sobre el resizer o el drag
+
+      // Botón WhatsApp
+      const btnWhatsapp = document.createElement('button');
+      btnWhatsapp.innerHTML = '<i class="fi fi-brands-whatsapp"></i>';
+      btnWhatsapp.className = 'btn-calendar-action btn-whatsapp';
+      btnWhatsapp.style.backgroundColor = 'rgba(37, 211, 102, 0.2)'; // Verde transparente
+      btnWhatsapp.style.color = '#25D366';
+      btnWhatsapp.title = 'Enviar WhatsApp';
+
+      btnWhatsapp.addEventListener('click', (e) => {
+          e.stopPropagation(); // Evita abrir los detalles de la cita
+          const ev = event.appoints[0];
+          // Aquí usamos tus variables de cliente que ya tienes en el objeto event
+          open_whatsapp_customer(btnWhatsapp, ev.id, ev.customer_name, ev.title, ev.description, ev.customer_whatsapp);
+      });
+      // Botón Email
+      const btnEmail = document.createElement('button');
+      btnEmail.innerHTML = '<i class="fi fi-ss-paper-plane"></i>';
+      btnEmail.className = 'btn-calendar-action btn-email';
+      btnEmail.style.backgroundColor = 'rgba(0, 123, 255, 0.2)'; // Azul transparente
+      btnEmail.style.color = '#007bff';
+      btnEmail.title = 'Enviar Email';
+
+      btnEmail.addEventListener('click', (e) => {
+          e.stopPropagation(); // Evita abrir los detalles de la cita
+          send_reminder_for_email_to_customer(event.appoints[0].id); // La función que creamos antes
+      });
+      actionButtonsContainer.appendChild(btnWhatsapp);
+      actionButtonsContainer.appendChild(btnEmail);
+
+      //eventDiv.appendChild(actionButtonsContainer);
+
+      // --- ADD RESIZE FOR EVENTS ---
+      const resizer = document.createElement('div');
+      resizer.className = 'event-resizer';
+      eventDiv.appendChild(resizer);
+
+      // EVENT FOR DRAG 
+      eventDiv.addEventListener('mousedown', (e) => {
+        if (e.target.className === 'event-resizer') return; // Si toca el resizer, no arrastrar
+        window.isDragging = false;
+
+        window.draggedEvent = {
+          el: eventDiv,
+          id: event.appoints[0].id,
+          initialY: e.pageY,
+          initialX: e.pageX,
+          initialTop: eventDiv.offsetTop,
+          initialLeft: eventDiv.offsetLeft,
+          startHour: startHour,
+          dayIndex: dayIndex,
+          durationMs: end - start, //save the duration original of the event
+          originalStartDate: new Date(start)
+        };
+      });
+
+      // EVENTO PARA REDIMENSIONAR (RESIZE)
+      resizer.addEventListener('mousedown', (e) => {
+        e.stopPropagation(); //avoid triggering drag event
+        window.resizingEvent = {
+          el: eventDiv,
+          id: event.appoints[0].id,
+          initialY: e.pageY,
+          initialHeight: eventDiv.offsetHeight,
+          originalStartDate: start,
+          originalEndDate: new Date(end)
+        };
+      });
+
+      //-----show the hours of the event when the user 
+      // Tooltip with the time
+      const startHourStr = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const endHourStr = end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const tooltipText = `${event.appoints[0].type_appoint?.name || window.translate_text('agenda.label.appoint')} || ${startHourStr} - ${endHourStr}`;
+
+      // Create a div for the tooltip
+      const tooltip = document.createElement('div');
+      tooltip.className = 'event-tooltip';
+      tooltip.textContent = tooltipText;
+      tooltip.style.position = 'absolute';
+      tooltip.style.padding = '4px 8px';
+      tooltip.style.backgroundColor = 'rgba(0,0,0,0.7)';
+      tooltip.style.color = 'white';
+      tooltip.style.borderRadius = '4px';
+      tooltip.style.fontSize = '12px';
+      tooltip.style.pointerEvents = 'none';
+      tooltip.style.visibility = 'hidden';
+      tooltip.style.zIndex = '1000';
+      document.body.appendChild(tooltip); //add the tooltip to the body
+
+
+      // show the tooltip to move the mouse for one of the events
+      //with this we will show the duration of the event
+      eventDiv.addEventListener('mouseenter', e => {
+        tooltip.style.visibility = 'visible';
+        tooltip.style.left = e.pageX + 10 + 'px'; // 10px to the right of the cursor
+        tooltip.style.top = e.pageY + 10 + 'px';  // 10px below the cursor
+      });
+
+      eventDiv.addEventListener('mousemove', e => {
+        tooltip.style.left = e.pageX + 10 + 'px';
+        tooltip.style.top = e.pageY + 10 + 'px';
+      });
+
+      eventDiv.addEventListener('mouseleave', () => {
+        tooltip.style.visibility = 'hidden';
+      });
+
+      // Show the character of the event when the user do click
+      eventDiv.addEventListener('click', async () => {
+        if(window.isDragging) return; //if the user was dragging the event we will not open the event details
+        window.draggedEvent=null;
+        window.isDragging = false;
+        await show_character_appoint(event.appoints[0].id);
+      });
+
+
+
+
+
+
+
+
+
+
+
+
+
+      //add the tooltip
+      eventDiv.appendChild(title);
+      //eventDiv.appendChild(legend);
+      //eventDiv.appendChild(priorityContainer);
+
+      //--------------satus of the event------------------
+      const divStatus = getStatusBadgeElement(event.appoints[0].status, textStar)
+      eventDiv.appendChild(divStatus);
+
+      calendar.appendChild(eventDiv);
+    });
+
+    //Red line of the current time for show the hour current of the user for that the user know that evenet next 
+    const redLine = document.createElement('div');
+    redLine.className = 'calendary-week-current-hour-line';
+    if (today >= weekStart && today <= new Date(weekStart.getTime() + 6 * 86400000)) {
+        const hours = today.getHours();
+        const minutes = today.getMinutes();
+        const redLineTop = headerHeight + (hours * slotHeight) + (minutes / 60 * slotHeight);
+        redLine.style.top = `${redLineTop}px`;
+        redLine.style.display = "block";
+    } else {
+        redLine.style.display = "none";
+    }
+    calendar.appendChild(redLine);
+
+    //update the functions of the buttons of the navbar of the calendar for move in the weeks
+    const btnNex=document.getElementById('btn-calendar-navbar-next');
+    const btnPreview=document.getElementById('btn-calendar-navbar-preview');
+    
+
+    btnNex.onclick = async function() {
+      const weekEdit = new Date(weekStart); //this is the variable for sum or rest the week
+      weekEdit.setDate(weekEdit.getDate() + 7);
+      document.getElementById('text-date-week').textContent=weekEdit.toLocaleDateString()
+      await window.get_the_information_of_the_calendary(weekEdit); //this is for get the new event that have the server
+      renderWeek(weekEdit)
+    };
+    
+    btnPreview.onclick = async function() {
+      const weekEdit = new Date(weekStart); //this is the variable for sum or rest the week
+      weekEdit.setDate(weekEdit.getDate() - 7);
+      document.getElementById('text-date-week').textContent=weekEdit.toLocaleDateString()
+      await window.get_the_information_of_the_calendary(weekEdit); //this is for get the new event that have the server
+      renderWeek(weekEdit)
+    };
+
+    //----here we will see if the user is in a cellphone for hidden the calendar when the user do clic about that-----
+    //show_calendary_month(document.getElementById('button-show-calendary-month'))
+  }
+
+  function update_line() {
+    const today = new Date();
+    const lines = document.querySelectorAll('.calendary-week-current-hour-line');
+
+    lines.forEach(line => {
+      const hours = today.getHours();
+      const minutes = today.getMinutes();
+      const positionY = (hours * 40) + (minutes / 60 * 40); // a hour is equal to 40px
+
+      line.style.top = `${positionY + 40}px`; // +40 for header
+    });
+  }
+
+  function darkenColor(color, amount = 0.3) {
+    // color puede ser "rgb(r,g,b)" o "#rrggbb"
+    let r, g, b;
+
+    if (color.startsWith('#')) {
+      r = parseInt(color.slice(1, 3), 16);
+      g = parseInt(color.slice(3, 5), 16);
+      b = parseInt(color.slice(5, 7), 16);
+    } else if (color.startsWith('rgb')) {
+      const nums = color.match(/\d+/g);
+      r = parseInt(nums[0]);
+      g = parseInt(nums[1]);
+      b = parseInt(nums[2]);
+    } else {
+      // color desconocido, fallback
+      return '#000';
+    }
+
+    // oscurecemos multiplicando por (1-amount)
+    r = Math.max(Math.min(Math.floor(r * (1 - amount)), 255), 0);
+    g = Math.max(Math.min(Math.floor(g * (1 - amount)), 255), 0);
+    b = Math.max(Math.min(Math.floor(b * (1 - amount)), 255), 0);
+
+    return `rgb(${r},${g},${b})`;
+  }
+
+  function render_this_day() {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}T00:00:00`;
+
+    renderWeek(todayStr);
+  }
+
+  render_loader_week();
+
+  setInterval(update_line, 60000); //update the line for minute 
+  window.render_this_day = render_this_day;
+
+
+
+  function show_calendary_month(button) {
+    const calendar = document.getElementById('container-calendary-month');
+
+    /*
+    if(!calendar.classList.contains('first-one')){
+      calendar.classList.add('first-one');
+      return;
+    }
+    */
+
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (!isMobile) return;
+
+    const rect = button.getBoundingClientRect();
+    calendar.style.top = rect.bottom + 8 + 'px';
+    calendar.style.left = rect.left + 'px';
+    calendar.style.width = window.innerWidth - 30 + 'px';
+    calendar.classList.toggle('only-mobile');
+    calendar.classList.toggle('show');
+  }
+
+</script>

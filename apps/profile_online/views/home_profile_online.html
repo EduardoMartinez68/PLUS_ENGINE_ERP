@@ -1,0 +1,57 @@
+
+
+<script>
+    (()=>{
+        async function get_information_profile(){
+            //if the information not is null is beacause already get the information of the server
+            if(window.infoProfile) return window.infoProfile;
+
+            //if the information is null, here will to try get the information of the server
+            const backend=await window.send_message_to_the_server(`profile_online/get_information_of_profile_online/`, {}, true, 'GET');
+
+            //we will see if we can add the new customer
+            if (backend.success) {
+                window.infoProfile=backend.answer; //here we will to update the variable global that the programmer can use in the partials
+                return window.infoProfile;
+            } else {
+                show_alert('alert', 'Error', backend.message || '', (backend.error || ''));
+                return{
+                    profile:{},
+                    services:{},
+                    schedules:{},
+                    locations:{},
+                    reviews:{}
+                };
+            }
+        }
+
+        window.infoProfile=null;
+        window.get_information_profile=get_information_profile;
+    })();
+</script>
+
+<plus-modules>
+    <plus-module name="web_profile.module.profile" desc="" icon="fi fi-rr-user">
+        {% include 'partials_profile_online/info_profile.html' %}
+    </plus-module>
+    <plus-module name="web_profile.module.address" desc="" icon="fi fi-rs-marker">
+        {% include 'partials_profile_online/address.html' %}
+    </plus-module>
+    <plus-module name="web_profile.module.services" desc="" icon="fi fi-rr-briefcase" on-visible="initialize_services_module()">
+        {% include 'partials_profile_online/services.html' %}
+    </plus-module>
+    <plus-module name="web_profile.module.schedules" desc="" icon="fi fi-rr-clock-three" on-visible="initial_schedules()">
+        {% include 'partials_profile_online/schedules.html' %}
+    </plus-module>
+    <plus-module name="web_profile.module.schedules_online" desc="" icon="fi fi-rr-calendar-clock" on-visible="initial_schedules_online()">
+        {% include 'partials_profile_online/schedules_online.html' %}
+    </plus-module>
+
+    <!---
+    <plus-module name="web_profile.module.comment" desc="" icon="fi fi-rr-comment-alt">
+        {% include 'partials_profile_online/comment.html' %}
+    </plus-module>
+    --->
+</plus-modules>
+
+
