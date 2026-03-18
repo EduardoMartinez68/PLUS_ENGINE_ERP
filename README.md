@@ -90,15 +90,26 @@ El objetivo de PLUS es ser un **engine abierto** y extensible para que otros pro
 
 ---
 #open-source #business
-
-## ✨ Características principales (planes a futuro)
-- Gestión de clientes
+## ✨ APPS BASICAS
+- Dashboard
+- Usuarios
+- Roles y Permisos
+- Clientes
 - Punto de Venta POS
+- Facturación y pagos
+- Reportes
+- Suscripción
+- Configuraciones
+
+## ✨ Características principales
+- Gestión de clientes
 - Control de facturación y pagos
-- Agenda de eventos y tareas
 - Reportes dinámicos
 - Soporte multi-usuario y control de permisos
 - UI moderna y elegante (inspirada en Odoo y otras apps líderes)
+- Gestion de traducciones para multiples idiomas
+- Módulo de suscripción para modelo SAAS
+- Creación de Apps y Plugins para el ERP
 
 ![PLUS ERP supplies](web_git/supplies.webp)
 
