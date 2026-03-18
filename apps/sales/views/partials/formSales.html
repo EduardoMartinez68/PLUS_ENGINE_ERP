@@ -1,0 +1,1570 @@
+<style>
+
+    item-sales {
+        position: relative;
+        z-index: 1;
+    }
+
+    item-sales:focus-within {
+        z-index: 100;
+    }
+
+
+    .container-sales {
+        margin: 2rem auto;
+        padding: 0 20px;
+    }
+
+    .container-total {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+    }
+
+    .container-total p {
+        margin: 0;
+    }
+
+    #grandTotal {
+        font-weight: 600;
+        font-size: 18px;
+    }
+
+    /**/
+    .add-line-container {
+        border: 1px solid #e0e0e0;
+        border-top: none;
+        background: #fff;
+        padding: 10px 15px;
+        z-index: 0;
+    }
+
+    .btn-add-line {
+        background: transparent;
+        border: none;
+        color: #008784;
+        font-weight: 500;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-add-line:hover {
+        color: #005f5d;
+        text-decoration: underline;
+    }
+
+    .plus-icon {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+
+    /* styles of the header */
+    .table-header {
+        display: grid;
+        grid-template-columns: 40px 2.5fr 1fr 1fr 1fr 1fr 1.2fr 40px;
+        padding: 10px 8px;
+        background-color: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-bottom: none;
+        border-radius: 4px 4px 0 0;
+        color: #888;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    /* Scroll */
+    .scroll-container {
+        width: 100%;
+        height: 23vh;
+        max-height: 23vh;
+        border: 1px solid #e0e0e0;
+        border-radius: 0 0 4px 4px;
+        overflow-y: visible;
+        background: #fff;
+        z-index: 400;
+    }
+
+    .inline {
+        display: inline;
+        margin-left: 6px;
+    }
+
+    @media (max-width: 768px) {
+
+        .table-header {
+            min-width: 900px;
+        }
+
+        item-sales {
+            min-width: 900px;
+            display: block;
+        }
+
+    }
+
+    /*---------------------------------------------*/
+    @media (min-width: 768px) and (max-width: 1024px) {
+        .container-sales {
+            min-height: 100vh;
+        }
+
+        #formSales {
+            overflow-y: auto;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .scroll-container {
+            overflow-y: auto;
+            height: 23vh;
+            max-height: 23vh;
+        }
+    }
+
+    /* Etapas (arriba) */
+    status-stepper {
+        flex-shrink: 0;
+        margin: 0px 0;
+    }
+
+    /* Formulario ocupa todo el espacio disponible */
+    .container-form {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+        /* importante para que el scroll funcione en flex */
+        padding-right: 5px;
+        overflow-x: hidden;
+    }
+
+    /* Sección inferior (total + botón) */
+    .container-footer {
+        flex-shrink: 0;
+    }
+
+    /* Total alineado a la derecha */
+    .container-total {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+
+    .plus-navbar {
+        margin: 0 0;
+    }
+
+    #container-print{
+        display: none;
+    }
+
+    .table-container {
+        width: 100%;
+        overflow-x: auto; 
+    }
+</style>
+
+<form id="formSales">
+    <div class="container-sales">
+
+        <div class="container-form section">
+
+            <div class="row">
+                <div class="col">
+                    <div class="section-header">
+                        <plus-title id="name_title_sale" label="" name="name_sale" required="true" maxlength="400"></plus-title>
+                        <div class="reference-info">
+                            <span class="inline" t="sales.label.reference"></span>
+                            <span id="reference" style="color: #2B6CB0;" class="inline"
+                                t="sales.label.self-generated"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <status-stepper steps="['draft','pending', 'accepted', 'paid', 'cancelled']" current="draft" id="statusSales">
+                    </status-stepper>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <plus-select link="/customers/customers_search/" label="sales.label.customer" name="customer"
+                        id="customer"></plus-select>
+                </div>
+                <div class="col">
+                    <input-field label="sales.label.maturity" type="date" id="expiration_date"></input-field>
+                </div>
+                <div class="col">
+                    <input-field label="sales.label.payment-term" placeholder="0" type="number"
+                        id="payment_term_days"></input-field>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <plus-select link="/departament_employee/search_employee/" label="sales.label.employee"
+                        name="employee" id="employee"></plus-select>
+                </div>
+                <div class="col">
+                    <plus-select label="Moneda" name="currency" value="MXN" id="currency">
+                        <option value="MXN">MXN</option>
+                        <option value="USD">USD</option>
+                    </plus-select>
+                </div>
+                <div class="col"></div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <div></div>
+                    <div t="sales.table.product"></div>
+                    <div t="sales.table.quantity"></div>
+                    <div t="sales.table.price"></div>
+                    <div t="sales.table.discount"></div>
+                    <div t="sales.table.taxes"></div>
+                    <div t="sales.table.total"></div>
+                    <div></div>
+                </div>
+
+                <div class="scroll-container">
+                </div>
+            </div>
+            <div class="add-line-container">
+                <button type="button" class="btn-add-line" onclick="addNewRow()">
+                    <span class="plus-icon">+</span>
+                    <p t="sales.btn.add-line"></p>
+                </button>
+            </div>
+
+            <!--
+            <div class="row section">
+                <div class="col">
+                    <label t="sales.label.notes"></label>
+                    <textarea></textarea>
+                </div>
+            </div>
+            ---->
+        </div>
+
+        <div class="container-footer">
+            <div class="container-total">
+                <p t="sales.label.total"></p>
+                <span id="grandTotal">0.00</span>
+            </div>
+        </div>
+
+    </div>
+</form>
+    <div class="row" id="container-print">
+        <div class="col-8">
+            <button class="btn btn-success btn-edit" t="sales.btn.print-quote" type="button" onclick="print_table_sales()"></button>
+        </div>
+        <div class="col-4">
+            <button class="btn btn-success btn-add" t="sales.btn.accept-quote" type="button" id="txtButton2Info" onclick="update_sales()"></button>
+        </div>
+    </div>
+    <button id="statusButton" class="btn btn-success btn-add" t="sales.btn.create-quote" type="button" onclick="saveSale()">
+</button>
+
+{% include 'sales/partials/contract.html' %}
+{% include 'sales/partials/formBuy.html' %}
+{% include 'sales/partials/printBuy.html' %}
+
+
+<message-pop name="note_cancelled_sales" title="sales.title.cancel-sale">
+    <label t="sales.title.cancel-sale"></label>
+    <textarea t-placeholder="sales.placeholder.cancel-sale" id="note_cancelled" rows="4"></textarea>
+    <button class="btn btn-success btn-edit" t="btn.save" onclick="cancel_sale_backend()"></button>
+</message-pop>
+
+
+<script>
+    (() => {
+        window.reference_sales = null;
+        window.current = 'MXN';
+        window.status = 'draft'
+        window.idSales = 0;
+        window.totalSale = 0;
+
+        function set_form_read_only(formId, readOnly = true) {
+            const form = document.getElementById(formId);
+            if (!form) return;
+
+            // 1. Inputs normales
+            const fields = form.querySelectorAll("input, select, textarea");
+            fields.forEach(field => {
+                if (readOnly) {
+                    field.setAttribute("disabled", "disabled");
+                    field.setAttribute("readonly", "readonly");
+                } else {
+                    field.removeAttribute("disabled");
+                    field.removeAttribute("readonly");
+                }
+            });
+
+            // 2. Botones (excepto los que quieras mantener)
+            const buttons = form.querySelectorAll("button");
+            buttons.forEach(btn => {
+                if (!btn.classList.contains("btn-allow")) {
+                    btn.disabled = readOnly;
+                }
+            });
+
+            // 3. Componentes personalizados (plus-select, input-field, etc.)
+            const customComponents = form.querySelectorAll("plus-select, input-field, status-stepper");
+            customComponents.forEach(comp => {
+                if (readOnly) {
+                    comp.setAttribute("data-readonly", "true");
+                    comp.style.pointerEvents = "none";
+                    comp.style.opacity = "0.7";
+                } else {
+                    comp.removeAttribute("data-readonly");
+                    comp.style.pointerEvents = "";
+                    comp.style.opacity = "";
+                }
+            });
+
+            // 4. Bloquear edición en tablas / contenedores dinámicos
+            const editableAreas = form.querySelectorAll(".scroll-container");
+            editableAreas.forEach(area => {
+                if (readOnly) {
+                    area.style.pointerEvents = "none";
+                    area.style.opacity = "0.8";
+                } else {
+                    area.style.pointerEvents = "";
+                    area.style.opacity = "";
+                }
+            });
+
+            // 5. Ocultar acciones como "Agregar línea"
+            const addButtons = form.querySelectorAll(".btn-add-line");
+            addButtons.forEach(btn => {
+                btn.style.display = readOnly ? "none" : "";
+            });
+        }
+
+        function create_the_payload_of_the_sale(data) {
+            let totalTaxesGlobal = 0;
+            let grandTotal = 0;
+            let subTotalGlobal=0;
+            let discountTotalGlobal=0;
+
+            //here get all the information of the form for send to the backend
+            const customer = document.getElementById('customer').getValue();
+            const employee = document.getElementById('employee').getValue();
+            const currency = document.getElementById('currency').getValue();
+            const expiration_date = document.getElementById('expiration_date').value;
+            const payment_term_days = document.getElementById('payment_term_days').value;
+            const name_sale=document.getElementById('name_title_sale').value;
+
+            data.forEach(line => {
+
+                // 1. subtotal 
+                const base = line.quantity * line.unit_price;
+                subTotalGlobal+=base;
+
+                // 2. discount
+                const discountAmount = base * ((line.discount || 0) / 100);
+                const baseAfterDiscount = base - discountAmount;
+                discountTotalGlobal+=discountAmount;
+
+                // 3. taxes
+                let lineTaxesTotal = 0;
+
+                if (line.taxes && line.taxes.length > 0) {
+                    line.taxes.forEach(tax => {
+                        const taxAmount = baseAfterDiscount * (tax.rate / 100);
+                        lineTaxesTotal += taxAmount;
+                    });
+                }
+
+                // 4. Total with taxes
+                const lineTotal = baseAfterDiscount + lineTaxesTotal;
+
+                // save the object
+                line.subtotal = baseAfterDiscount;
+                line.taxes_total = lineTaxesTotal;
+                line.total = lineTotal;
+
+                // 5. Acumular globales
+                totalTaxesGlobal += lineTaxesTotal;
+                grandTotal += lineTotal;
+            });
+            
+            const payload = {
+                customer,
+                name_sale,
+                employee,
+                currency,
+                subtotal:subTotalGlobal,
+                discount_total:discountTotalGlobal,
+                tax_total: totalTaxesGlobal,
+                total: grandTotal,
+                expiration_date,
+                payment_term_days,
+                items:data
+            };
+
+            return payload;
+        }
+
+        function change_status_button(status) {
+            const btn = document.getElementById('statusButton');
+            const btnInfo = document.getElementById('txtButton2Info');
+
+            const containerPrint=document.getElementById('container-print');
+            const legend_print_buy=document.getElementById('legend_print_buy');
+            const text_status_print_buy=document.getElementById('text_status_print_buy');
+            //clear the configuration of the button 
+            btn.onclick = null;
+            set_form_read_only('formSales', true);
+
+            //btn.classList.remove('btn-warning');
+            //btn.classList.add('btn-success');      
+            
+            //if exist the <printArea> we will to delete the status of cancelled
+            const printArea = document.getElementById("printArea");
+            if(printArea){
+                printArea.classList.remove("print-cancelled");
+            }
+            
+            if (status == 'pending') {
+                btn.textContent = window.translate_text('sales.btn.accept-quote');
+                btnInfo.textContent = window.translate_text('sales.btn.accept-quote');
+
+                //here we will to show the buttons of print 
+                containerPrint.style.display = 'flex';
+                btn.style.display = 'none';
+            } else if (status == 'accepted') {
+                btn.textContent = window.translate_text('sales.btn.accept-buy');
+                btnInfo.textContent = window.translate_text('sales.btn.accept-buy');
+
+                //add the new event to the button for open the panel for accept the buy
+                btnInfo.onclick=null;
+                btnInfo.onclick = function () {
+                    window.open_buy_panel(window.totalSale);
+                };
+
+                containerPrint.style.display = 'flex';
+                btn.style.display = 'none';
+            } else if (status == 'paid') {
+                btn.textContent = window.translate_text('sales.btn.print');
+                btnInfo.textContent = window.translate_text('sales.btn.print');
+
+                btn.classList.remove('btn-add');
+                btn.classList.add('btn-edit');
+
+                containerPrint.style.display = 'none';
+                btn.style.display = 'block';
+
+                btn.onclick = function () {
+                    print_table_sales();
+                };
+            }
+            else if(status=='cancelled'){
+                btn.textContent = window.translate_text('sales.btn.print');
+                btnInfo.textContent = window.translate_text('sales.btn.print');  
+                btn.classList.remove('btn-add');
+                btn.classList.add('btn-edit');
+                containerPrint.style.display = 'none';
+                btn.style.display = 'block';
+                btn.onclick = function () {
+                    print_table_sales();
+                };
+
+
+                //if exist the UI for print the sale, we will add the legend of cancelled
+                if(printArea){
+                    printArea.classList.add("print-cancelled");
+                }
+            }
+
+            //translate the text of the legend of the sale
+            const textStatus=window.translate_text(`sales.status.${status}`);
+            if(legend_print_buy && text_status_print_buy){
+                legend_print_buy.textContent=textStatus;
+                text_status_print_buy.textContent=textStatus;
+            }
+
+            //change the status in the stepper
+            const stepper = document.getElementById('statusSales');
+            stepper.setCurrentStep(status);
+
+            //here we will see if exist the function of render history for activate
+            if(typeof render_history_sale === 'function'){
+                render_history_sale();
+            }
+        }
+
+        function get_new_status(status) {
+            //here we will see what is the new status for the sale, 
+            // only for the button for change the status, not for save the sale, 
+            // because when we save the sale we will send the status that we want in the payload
+            if (status == 'draft') return 'accepted';
+            if (status == 'pending') return 'accepted';
+            if (status == 'accepted') return 'paid';
+            return status;
+        }
+
+        async function update_sales(){
+            //see the status of the customer for 
+            if(window.status){
+                window.show_pop('pop_signature')
+                return;
+            }
+
+            //send the information to the server and try update the sale
+            const body={
+                id:window.idSales,
+                status:get_new_status(window.status),
+            }
+
+            const backend = await window.send_message_to_the_server('/sales/update_sale/', body, true, 'POST');
+            if (!backend.success) {
+                window.show_alert('error', 'sales.error.sales-updated', backend.message || 'sales.message.sale-not-saved', backend.error || '');
+                return;
+            }
+
+            //if we can update the sale, we will to get his information for show in the screen
+            const answer = backend.answer;
+            
+
+            //now we will update the 'reference' in the screen with the reference that generate the backend for the sale
+            change_status_button(answer.status);
+            window.idSales = answer.id;
+            window.reference_sales = answer.reference;
+            window.status=answer.status;
+            document.getElementById('reference').textContent = window.reference_sales;
+
+            window.show_notification('success', 'sales.message.sales-updated');
+        }
+
+        async function saveSale() {
+            //get all the items of the sale for send to the backend
+            const items = [];
+            document.querySelectorAll('item-sales').forEach(item => {
+                items.push({
+                    name: item.getAttribute('name'),
+                    sku: item.getAttribute('sku'),
+                    quantity: parseFloat(item.getAttribute('quantity')) || 0,
+                    unit_price: parseFloat(item.getAttribute('unit-price')) || 0,
+                    discount: parseFloat(item.getAttribute('discount')) || 0,
+                    taxes: item.getTaxesArray().map(t => ({ name: t[0], rate: t[1], id: t[2] }))
+                });
+            });
+
+            //we will see if exist etems in the table
+            if (items.length == 0) {
+                window.show_alert('alert', 'sales.title.sale-not-saved', 'sales.message.add-product');
+                return;
+            }
+
+            //here we will see if the expiration date is correct, the expiration date not can be less than the current date
+            const expiration_date=document.getElementById('expiration_date');
+            if(expiration_date && expiration_date.value){
+                const expirationDateValue = new Date(expiration_date.value);
+                const now = new Date();
+                if (expirationDateValue < now) {
+                    window.show_alert('alert','sales.title.sale-not-saved' ,'sales.error.expiration-date');
+                    return;
+                }
+            }
+
+            //create the payload for send to the server
+            const payload = create_the_payload_of_the_sale(items);
+
+            //send the information to the server and try create the sale
+            const backend = await window.send_message_to_the_server('/sales/add_sale/', payload, true, 'POST');
+            if (!backend.success) {
+                window.show_alert('error', 'sales.title.sale-not-saved', backend.message || 'sales.message.sale-not-saved', backend.error || '');
+                return;
+            }
+
+            //if we can save the sale, we will to get his information for show in the screen
+            const answer = backend.answer;
+            change_status_button(answer.status);
+
+            //now we will update the 'reference' in the screen with the reference that generate the backend for the sale
+            window.idSales = answer.id;
+            window.reference_sales = answer.reference;
+            document.getElementById('reference').textContent = window.reference_sales;
+
+            window.show_notification('success', 'sales.message.sale-saved');
+            window.nextWeb(`/sales/view_sale/${window.idSales}/`);
+        }
+
+        async function cancel_sale(){
+            //here we will to send the information to the backend for try cancelled
+            //first we will see if the user have the ID of the sale
+            if(!window.idSales){
+                window.show_notification('error', 'sales.error.not-id-of-sale');
+                return;
+            }
+
+            //now we will to do a question to the user for know if would like cancel the sale 
+            if(!await show_message_question('sales.question.cancel-sale', 'sales.question.do-you-cancel-sale')){
+                return;
+            }
+
+            window.show_pop('note_cancelled_sales');
+        }
+
+        async function cancel_sale_backend(){
+            //first we will see if exist a comment for cancelled the sale
+            const input_note_cancelled=document.getElementById('note_cancelled')
+            if (!input_note_cancelled || input_note_cancelled.value.trim() === '') {
+               window.show_alert('alert', 'sales.error.cancel-sale', 'sales.message.not-add-comment-cancel-sale');
+               return;
+            }
+
+            //if have the ID of the sale, now we will send the information to the server
+            const note_cancelled=input_note_cancelled.value;
+            const backend=await window.send_message_to_the_server(`/sales/cancel_sale/${window.idSales}/`, {note_cancelled:note_cancelled}, true, 'POST');
+            if(!backend.success){
+                window.show_alert('error', 'sales.error.cancel-sale', backend.message || 'sales.error.cancel-sale', backend.error || '');
+            }
+
+            //hidden the pop of comment and clear his input 
+            window.hide_pop('note_cancelled_sales'); 
+            input_note_cancelled.value='';
+
+            //if we can cancel the sale now show a notification and change the status of the sale
+            window.show_notification('success', 'sales.success.cancel-sale');
+            change_status_button('cancelled');
+
+            //if we is in the UI of edit sale show because the user cancelled the sale
+            const note_sales_cancelled=document.getElementById('note_sales_cancelled')
+            if(note_sales_cancelled){
+                note_sales_cancelled.textContent=note_cancelled;
+            }
+        }
+
+        function print_table_sales() {
+            const items = [];
+            document.querySelectorAll('item-sales').forEach(item => {
+                items.push({
+                    name: item.getAttribute('name'),
+                    sku: item.getAttribute('sku'),
+                    quantity: parseFloat(item.getAttribute('quantity')) || 0,
+                    unit_price: parseFloat(item.getAttribute('unit-price')) || 0,
+                    discount: parseFloat(item.getAttribute('discount')) || 0,
+                    taxes: item.getTaxesArray().map(t => ({ name: t[0], rate: t[1], id: t[2] }))
+                });
+            });
+
+            print_sale({
+                reference: window.reference_sales,
+                date: new Date().toLocaleDateString(),
+                customer: document.getElementById('customer').value,
+                total: window.totalSale,
+                lines: items
+            });
+        }
+        
+        
+        document.getElementById('name_title_sale').value=window.translate_text('sales.navbar.new');
+        
+        window.saveSale = saveSale;
+        window.change_status_button = change_status_button;
+        window.print_table_sales=print_table_sales;
+        window.update_sales =update_sales ;
+        window.cancel_sale=cancel_sale;
+        window.cancel_sale_backend=cancel_sale_backend;
+    })();
+
+</script>
+
+<script>
+    if (!customElements.get("status-stepper")) {
+        class StatusStepper extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+            }
+
+            connectedCallback() {
+                this.render();
+            }
+
+            static get observedAttributes() {
+                return ['current', 'steps'];
+            }
+
+            attributeChangedCallback() {
+                this.render();
+            }
+
+            // --- MÉTODO PARA CAMBIAR EL ESTADO ---
+            setCurrentStep(newStep) {
+                const steps = this.getStepsArray();
+
+                // Si el estado existe en el array, lo ponemos. 
+                // Si no, ponemos el primero por defecto.
+                if (steps.includes(newStep)) {
+                    this.setAttribute('current', newStep);
+                } else {
+                    console.warn(`El estado "${newStep}" no existe. Seteando por defecto a: ${steps[0]}`);
+                    this.setAttribute('current', steps[0] || '');
+                }
+            }
+
+            // Helper para no repetir la lógica de parseo
+            getStepsArray() {
+                const stepsRaw = this.getAttribute('steps') || '[]';
+                try {
+                    // Reemplazamos comillas simples por dobles para un JSON válido
+                    return JSON.parse(stepsRaw.replace(/'/g, '"'));
+                } catch (e) {
+                    console.error("Error parseando steps:", e);
+                    return [];
+                }
+            }
+
+            render() {
+                const current = this.getAttribute('current') || '';
+                const steps = this.getStepsArray();
+
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        :host {
+                            display: block;
+                            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                        }
+                        .stepper-container {
+                            background: white;
+                            border: 1px solid #e2e8f0;
+                            border-bottom: none;
+                            border-top-left-radius: 0.75rem;
+                            border-top-right-radius: 0.75rem;
+                            padding: 1rem;
+                            display: flex;
+                            align-items: center;
+                            gap: 1rem;
+                            overflow-x: auto;
+                            position: relative;
+                            z-index: 10;
+                            margin-bottom: -1px;
+                        }
+                        .step {
+                            font-size: 0.875rem;
+                            font-weight: 500;
+                            color: #94a3b8;
+                            text-transform: capitalize;
+                            white-space: nowrap;
+                            transition: all 0.2s ease;
+                        }
+                        .step.active {
+                            color: #2B6CB0;
+                            font-weight: 700;
+                            border-bottom: 2px solid #2B6CB0;
+                            padding-bottom: 0.25rem;
+                        }
+                        .separator {
+                            color: #cbd5e1;
+                            font-style: italic;
+                            font-size: 0.875rem;
+                            user-select: none;
+                        }
+                        .stepper-container::-webkit-scrollbar { height: 4px; }
+                        .stepper-container::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+                    </style>
+                    
+                    <div class="stepper-container">
+                        ${steps.map((step, index) => `
+                            <span class="step ${step === current ? 'active' : ''}">
+                                ${window.translate_text ? window.translate_text(`sales.status.${step}`) : step}
+                            </span>
+                            ${index < steps.length - 1 ? '<span class="separator">→</span>' : ''}
+                        `).join('')}
+                    </div>
+                    `;
+            }
+        }
+
+        customElements.define('status-stepper', StatusStepper);
+    }
+
+</script>
+<script>
+    if (!customElements.get("item-sales")) {
+        class ItemSales extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+            }
+
+            connectedCallback() {
+                this.render();
+                this.addEvents();
+                this.recalculate();
+                this.setupSearch();
+                this.setupDeleteEvent();
+                this.setupTaxEvents();
+            }
+
+            /**/
+            async searchProducts(query, container) {
+                try {
+                    const backend = await window.send_message_to_the_server(
+                        '/services/search_pack/1/',
+                        { allFilters: [query], amountOfData: 5 },
+                        false,
+                        'GET'
+                    );
+
+                    if (!backend.success) {
+                        const text = window.translate_text('sales.error.search-error');
+                        container.innerHTML = `<div class="result-item">${text}</div>`;
+                        return;
+                    }
+
+                    const answer = backend.answer;
+                    container.innerHTML = '';
+
+                    // 1. We normalized the query for comparison (without extra spaces and in lowercase)
+                    const normalizedQuery = query.toLowerCase().trim();
+
+                    // 2. variable for know if we found the product
+                    let exactMatchFound = false;
+
+                    answer.forEach(p => {
+                        const productName = p.name.toLowerCase().trim();
+                        const productSku = (p.skus?.[0] || '').toLowerCase().trim();
+
+                        // see if the query is exactament equal to the name or the sku
+                        if (normalizedQuery === productName || normalizedQuery === productSku) {
+                            exactMatchFound = true;
+                        }
+
+                        const div = document.createElement('div');
+                        div.className = 'result-item';
+                        div.innerHTML = `
+                            <span>${p.name}</span>
+                            <small class="muted">${p.skus?.[0] || ''}</small>
+                        `;
+
+                        div.onclick = () => this.selectProduct({
+                            id: p.id,
+                            name: p.name,
+                            sku: p.skus?.[0] || '',
+                            price: p.base_price,
+                            taxes: p.taxes || []
+                        });
+
+                        container.appendChild(div);
+                    });
+
+                    // 3. only create the button if not exist coincidence and the query not is empty
+                    if (!exactMatchFound && query.length > 0) {
+                        const createBtn = document.createElement('div');
+                        const textCreate = window.translate_text('sales.btn.create');
+                        createBtn.className = 'btn-create-new';
+                        createBtn.innerText = `${textCreate} "${query}"`;
+                        createBtn.onclick = () => this.handleCreateNew(query);
+                        container.appendChild(createBtn);
+                    }
+
+                    container.style.display = 'block';
+
+                } catch (error) {
+                    console.error(error);
+                    const text = window.translate_text('sales.error.search-error');
+                    container.innerHTML = `<div class="result-item">${text}</div>`;
+                    container.style.display = 'block';
+                }
+            }
+
+
+            setupSearch() {
+                const input = this.shadowRoot.querySelector('.name-input');
+                const resultsContainer = this.shadowRoot.querySelector('.search-results');
+
+                let debounceTimer = null;
+
+                input.addEventListener('input', (e) => {
+                    const query = e.target.value.trim();
+
+                    resultsContainer.innerHTML = '';
+                    this.setAttribute('name', query); //update the name of the service
+                    if (query.length === 0) {
+                        //resultsContainer.style.display = 'none';
+                        //return;
+                    }
+                    //{ id: 1, name: "Café Legal 50g", sku: "010101", price: 100 },
+                    // Debounce (espera 300ms después de escribir)
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => {
+                        this.searchProducts(query, resultsContainer);
+                    }, 300);
+                });
+
+                input.addEventListener('focus', (e) => {
+                    const query = e.target.value.trim();
+
+                    // show the container of results
+                    resultsContainer.style.display = 'block';
+
+                    // only if the container is clean or the query has content, we search again (this allows to show results when focusing without typing)
+                    if (resultsContainer.innerHTML === '' || query.length == 0) {
+                        this.searchProducts(query, resultsContainer);
+                    }
+                });
+
+                // close the do click outside
+                document.addEventListener('click', (e) => {
+                    if (!this.contains(e.target)) {
+                        resultsContainer.style.display = 'none';
+                    }
+                });
+            }
+
+            selectProduct(p) {
+                this.setAttribute('id', p.id || '');
+                this.setAttribute('name', p.name);
+                this.setAttribute('sku', p.sku); //here need only do this
+                this.setAttribute('unit-price', p.price);
+                this.setAttribute('tax-rate', JSON.stringify(p.taxes || []));
+
+                this.render(); // Re-renderizamos para actualizar los campos
+                this.setupDeleteEvent();
+                this.setupSearch(); // Re-vinculamos eventos tras render
+                this.recalculate(); // Actualizamos totales
+                this.setupTaxEvents();
+
+            }
+
+            async handleCreateNew(name) {
+                const getVal = cls => {
+                    const el = this.shadowRoot.querySelector('.' + cls);
+                    if (!el) return 0;
+                    return parseFloat(el.value || el.textContent) || 0;
+                };
+
+                //get the struct of the form of the service
+                const base_price = getVal('unitPrice'); //get the price for send to the backend
+                const taxes_list = this.getTaxes(); //get the information of the taxes in array for send to the backend
+                const body = {
+                    name,
+                    base_price,
+                    taxes: taxes_list.map(t => ({ id: t[2] })) //get the id of the tax for send to the backend
+                }
+
+                //send the information to the backend for create the product and get the response for show in screen
+                const backend = await window.send_message_to_the_server(
+                    '/services/add_services/',
+                    body,
+                    true,
+                    'POST'
+                );
+
+                //here we will see if not can create of the product for show a error in screen
+                if (!backend.success) {
+                    window.show_alert('alert', 'sales.message.product-created-error', backend.message || 'sales.message.try-after', backend.error || '')
+                    return;
+                };
+
+                //get the data of the product that was created 
+                const answer = backend.answer;
+                window.show_notification('success', 'sales.message.product-created');
+
+                //close the bar of search
+                const resultsContainer = this.shadowRoot.querySelector('.search-results');
+                resultsContainer.style.display = 'none';
+            }
+
+
+            /**/
+            get canEdit() {
+                return this.getAttribute('can-edit') === 'true';
+            }
+
+            getNumber(attr, def = 0) {
+                return parseFloat(this.getAttribute(attr)) || def;
+            }
+
+            getTaxes() {
+                const attr = this.getAttribute('tax-rate');
+                if (!attr) return [];
+
+                try {
+                    return JSON.parse(attr);
+                } catch {
+                    return [];
+                }
+            }
+
+
+            /*this functions are for edit the taxes*/
+            getTaxesArray() {
+                try {
+                    const attr = this.getAttribute('tax-rate');
+                    return attr ? JSON.parse(attr) : [];
+                } catch {
+                    return [];
+                }
+            }
+
+            setTaxesArray(taxes) {
+                this.setAttribute('tax-rate', JSON.stringify(taxes));
+            }
+
+
+            renderTaxes() {
+                const taxes = this.getTaxesArray();
+                const text = window.translate_text('sales.table.taxes');
+                const placeholder = window.translate_text('search')
+                return `
+                    <div class="tax-container">
+                        ${taxes.map((tax, index) => `
+                            <span class="tax-badge">
+                                ${tax[0]}
+                                <button class="remove-tax" data-index="${index}">×</button>
+                            </span>
+                        `).join('')}
+
+                        <div class="tax-select-wrapper">
+                            <button class="add-tax">+ ${text}</button>
+                            <div class="tax-search-box" style="display:none;">
+                                <input type="text" class="tax-search-input" placeholder="${placeholder}">
+                                <div class="tax-results"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            render() {
+                // get the data of the attributtes in the labels
+                const name = this.getAttribute('name') || '';
+                const sku = this.getAttribute('sku') || '';
+
+                const packImage = this.getAttribute('pack-image') || '';
+                const editable = this.canEdit;
+
+                const quantity = this.getNumber('quantity', 1);
+                const unitPrice = this.getNumber('unit-price');
+                const discount = this.getNumber('discount');
+                const taxRate = this.getNumber('tax-rate');
+
+                const input = (val, cls, step = "0.01") =>
+                    editable
+                        ? `<input class="o-input ${cls}" type="number" step="${step}" value="${val}">`
+                        : `<span class="${cls}">${val}</span>`;
+
+                //here wwe will get all the taxes of the product
+                const taxContent = this.canEdit
+                    ? this.renderTaxes()
+                    : (
+                        this.getTaxes().length
+                            ? this.getTaxes().map(t => `
+                                <span class="tax-tag">${t[0]}</span>
+                            `).join('')
+                            : `<span class="muted">0%</span>`
+                    );
+
+                this.shadowRoot.innerHTML = `
+        <style>
+            :host {
+                display: block;
+                font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            .row {
+                display: grid;
+                grid-template-columns: 40px 2.5fr 1fr 1fr 1fr 1fr 1.2fr 40px;
+                align-items: center;
+                padding: 12px 8px;
+                color: #333;
+                background: #fff;
+            }
+            .row:hover { background-color: #fafafa; }
+            input[type="checkbox"] { cursor: pointer; }
+            
+            .product-col { display: flex; align-items: center; gap: 12px; }
+            .img-container { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+            img { max-width: 100%; max-height: 100%; object-fit: contain; }
+            
+            .details { display: flex; flex-direction: column; }
+            .name { font-weight: 500; font-size: 13px; color: #444; }
+            .muted { color: #999; font-size: 11px; margin-top: 2px; }
+            
+            .data-cell { font-size: 13px; color: #555; }
+            .bold { font-weight: 700; color: #000; font-size: 14px; }
+            
+            .action-btn { 
+                color: #2fb344; 
+                cursor: pointer; 
+                display: flex; 
+                align-items: center;
+                justify-content: center;
+            }
+            .green-icon {
+                border: 1.5px solid #2fb344;
+                border-radius: 50%;
+                width: 18px;
+                height: 18px;
+                font-size: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+            }
+
+
+            /*---------STYLES INPUTS---------*/
+            .o-input {
+                width: 100%;
+                border: none;
+                outline: none;
+                background: transparent;
+                font-size: 13px;
+                font-family: inherit;
+                padding: 5px 10px;
+                box-sizing: border-box;
+                border-bottom: 1px solid transparent;
+                transition: border-color 0.15s ease;
+            }
+            .o-input:hover {
+                border-bottom: 1px solid #d6d6d6;
+            }
+            .o-input:focus {
+                border-bottom: 1px solid #9ca3af;
+            }
+            .o-input::-webkit-outer-spin-button,
+            .o-input::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            .o-input[type=number] {
+                -moz-appearance: textfield;
+            }
+
+            /*------------------TAXES---------------*/
+            .tax-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .tax-tag {
+                background: #f1f3f5;
+                color: #555;
+                font-size: 11px;
+                padding: 2px 6px;
+                border-radius: 4px;
+                border: 1px solid #e0e0e0;
+                white-space: nowrap;
+            }
+            .tax-badge {
+                background: #f1f3f5;
+                border: 1px solid #e0e0e0;
+                border-radius: 4px;
+                font-size: 11px;
+                padding: 2px 6px;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .remove-tax {
+                border: none;
+                background: transparent;
+                cursor: pointer;
+                color: #999;
+                font-size: 10px;
+            }
+
+            .remove-tax:hover {
+                color: #ef4444;
+            }
+
+            .add-tax {
+                border: none;
+                background: transparent;
+                color: #2B6CB0;
+                font-size: 11px;
+                cursor: pointer;
+            }
+
+            .add-tax:hover {
+                text-decoration: underline;
+            }
+
+            /*-------------select taxes-------------*/
+            .tax-select-wrapper {
+                position: relative;
+            }
+
+            .tax-search-box {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 220px;
+                background: white;
+                border-radius: 6px;
+                box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+                z-index: 9999;
+                padding: 8px;
+            }
+
+            .tax-search-input {
+                width: 100%;
+                padding: 6px;
+                font-size: 12px;
+                border-radius: 4px;
+                margin-bottom: 6px;
+            }
+
+            .tax-results {
+                max-height: 150px;
+                overflow-y: auto;
+            }
+
+            .tax-result-item {
+                padding: 6px;
+                font-size: 12px;
+                cursor: pointer;
+                border-radius: 4px;
+            }
+
+            .tax-result-item:hover {
+                background: #f1f5f9;
+            }
+            /*-------select-native---------*/
+            .search-wrapper { position: relative; width: 100%; }
+
+            .search-results {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 9999;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+
+            .result-item {
+                padding: 8px 12px;
+                cursor: pointer;
+                font-size: 13px;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .result-item:hover { background-color: #f1f5f9; }
+
+            .btn-create-new {
+                padding: 8px 12px;
+                color: #008784;
+                font-weight: 600;
+                border-top: 1px solid #eee;
+                cursor: pointer;
+                background: #f8fafc;
+                font-size: 12px;
+            }
+
+            .btn-create-new:hover { background: #f1f5f9; text-decoration: underline; }
+
+            .delete-btn {
+                cursor: pointer;
+                color: #9ca3af;
+                font-size:12px;
+            }
+            .delete-btn:hover {
+                color: #ef4444;
+            }
+            .green-icon {
+                border: none;
+                font-size:1rem;
+            }
+        </style>
+
+        <div class="row">
+            <input type="checkbox">
+            
+            <div class="product-col">
+                <div class="img-container">
+                    ${packImage ? `<img src="${packImage}" alt="product">` : ''}
+                </div>
+                <div class="details">
+                    <div class="search-wrapper">
+                        <input type="text" class="o-input name-input" 
+                            value="${name}" 
+                            placeholder="Escribe para buscar..."
+                            autocomplete="off">
+                        <div class="search-results" style="display: none;">
+                            </div>
+                    </div>
+                    <span class="muted sku-label">${sku}</span>
+                </div>
+            </div>
+
+        
+            <div class="data-cell">${input(quantity, 'quantity')}</div>
+            <div class="data-cell">${input(unitPrice, 'unitPrice')}</div>
+          
+            <div class="data-cell">
+                <div class="muted" style="color: #2fb344; font-weight: 600;">${input(discount, 'discount')}</div>
+            </div>
+
+            <div class="data-cell">
+                <div class="tax-container">
+                    ${taxContent}
+                </div>
+            </div>
+
+            <div class="data-cell">
+                <div class="total-cell">
+                    <div class="bold total">$0.00</div>
+                    <div class="muted subtotal">$0.00</div>
+                </div>
+            </div>
+
+            <div class="action-btn delete-btn">
+                <div class="green-icon">×</div>
+            </div>
+        </div>
+        `;
+            }
+
+            setupDeleteEvent() {
+                const btn = this.shadowRoot.querySelector('.delete-btn');
+                if (!btn) return;
+
+                btn.onclick = () => {
+                    this.remove();
+                    calculateGrandTotal();
+                };
+            }
+
+            async searchTaxes(query, container) {
+                try {
+                    const backend = await window.send_message_to_the_server(
+                        '/services/search_tax/?query=' + encodeURIComponent(query),
+                        {},
+                        false,
+                        'GET'
+                    );
+
+                    if (!backend.success) {
+                        container.innerHTML = `<div class="tax-result-item">Error</div>`;
+                        return;
+                    }
+
+                    const taxes = backend.answer;
+                    container.innerHTML = '';
+
+                    taxes.forEach(tax => {
+                        const div = document.createElement('div');
+                        div.className = 'tax-result-item';
+                        div.textContent = tax.name;
+
+                        div.onclick = () => {
+                            let currentTaxes = this.getTaxesArray();
+
+                            // avoid duplicates
+                            if (currentTaxes.some(t => t[2] === tax.id)) return;
+
+                            const rate = parseFloat(tax.name.match(/(\d+(\.\d+)?)%/)?.[1] || 0);
+
+                            currentTaxes.push([tax.name.replace(` ${rate}%`, ''), rate, tax.id]);
+
+                            this.setTaxesArray(currentTaxes);
+                            this.render();
+                            this.addEvents();
+                            this.recalculate();
+                            this.setupSearch();
+                            this.setupDeleteEvent();
+                            this.setupTaxEvents();
+                        };
+
+                        container.appendChild(div);
+                    });
+
+                } catch (error) {
+                    console.error(error);
+                    container.innerHTML = `<div class="tax-result-item">Error</div>`;
+                }
+            }
+
+            setupTaxEvents() {
+                const shadow = this.shadowRoot;
+
+                // -------- delete tax --------
+                shadow.querySelectorAll('.remove-tax').forEach(btn => {
+                    btn.onclick = () => {
+                        const index = parseInt(btn.dataset.index);
+                        let taxes = this.getTaxesArray();
+                        taxes.splice(index, 1);
+                        this.setTaxesArray(taxes);
+                        this.render();
+                        this.setupSearch();
+                        this.setupTaxEvents();
+                        this.recalculate();
+                    };
+                });
+
+                // -------- show search --------
+                const addBtn = shadow.querySelector('.add-tax');
+                const searchBox = shadow.querySelector('.tax-search-box');
+                const input = shadow.querySelector('.tax-search-input');
+                const resultsContainer = shadow.querySelector('.tax-results');
+
+                if (addBtn) {
+                    addBtn.onclick = () => {
+                        searchBox.style.display = 'block';
+                        input.focus();
+                    };
+                }
+
+                if (input) {
+                    let debounce;
+
+                    //this is for that do a search when the user click in the button for show the search
+                    const query = (input.value || '').trim();
+                    this.searchTaxes(query, resultsContainer);
+
+                    //also do a search when the user write in the input
+                    input.addEventListener('input', () => {
+                        clearTimeout(debounce);
+                        debounce = setTimeout(() => {
+                            const query = (input.value || '').trim();
+                            this.searchTaxes(query, resultsContainer);
+                        }, 300);
+                    });
+                }
+
+                // close if do click outside
+                document.addEventListener('click', (e) => {
+                    if (!this.contains(e.target)) {
+                        if (searchBox) searchBox.style.display = 'none';
+                    }
+                });
+            }
+
+            addEvents() {
+                if (!this.canEdit) return;
+
+                this.shadowRoot.addEventListener('input', () => {
+                    this.recalculate();
+                });
+            }
+
+            recalculate() {
+                const getVal = cls => {
+                    const el = this.shadowRoot.querySelector('.' + cls);
+                    if (!el) return 0;
+                    return parseFloat(el.value || el.textContent) || 0;
+                };
+
+                const quantity = getVal('quantity');
+                const unitPrice = getVal('unitPrice');
+                const discount = getVal('discount');
+
+                const discountAmount = (discount * unitPrice) / 100;
+                let subtotal = quantity * (unitPrice - discountAmount);
+                let subtotalAfterDiscount = subtotal;
+
+                // get the taxes and calculate the amount of taxes for the product
+                const taxes = this.getTaxes();
+
+                let taxAmount = 0;
+                taxes.forEach(t => {
+                    const rate = parseFloat(t[1]) || 0;
+                    taxAmount += subtotalAfterDiscount * (rate / 100);
+                });
+
+                let total = subtotalAfterDiscount + taxAmount;
+
+                // save the attributtes
+                this.setAttribute('quantity', quantity);
+                this.setAttribute('unitPrice', unitPrice);
+                this.setAttribute('discount', discount);
+                this.setAttribute('unit-price', unitPrice);
+                this.setAttribute('tax-rate', JSON.stringify(taxes));
+
+                // save like JSON
+                this.setAttribute('taxRate', JSON.stringify(taxes));
+
+                this.setAttribute('taxAmount', taxAmount.toFixed(2));
+                this.setAttribute('subtotal', subtotalAfterDiscount.toFixed(2));
+                this.setAttribute('total', total.toFixed(2));
+
+                // print the subtotal and total in the screen
+                this.shadowRoot.querySelector('.subtotal').textContent =
+                    `$${window.format_currency(subtotalAfterDiscount.toFixed(2), window.current)}`;
+
+                this.shadowRoot.querySelector('.total').textContent =
+                    `$${window.format_currency(total.toFixed(2), window.current)}`;
+
+                // events for send the information of the item to the container for calculate the total general
+                this.dispatchEvent(new CustomEvent('item-change', {
+                    detail: {
+                        quantity,
+                        unit_price: unitPrice,
+                        discount,
+                        tax_rate: taxes,
+                        tax_amount: taxAmount,
+                        subtotal: subtotalAfterDiscount,
+                        total
+                    },
+                    bubbles: true,
+                    composed: true
+                }));
+            }
+        }
+
+        customElements.define('item-sales', ItemSales);
+    }
+
+    function calculateGrandTotal() {
+        let total = 0;
+
+        document.querySelectorAll('item-sales').forEach(item => {
+            total += parseFloat(item.getAttribute('total')) || 0;
+        });
+        window.totalSale = total;
+        document.getElementById('grandTotal').textContent = window.format_currency(total.toFixed(2), window.current, true);
+    }
+    document.addEventListener('item-change', calculateGrandTotal);
+    window.addEventListener('load', calculateGrandTotal);
+    document.querySelector('.scroll-container')
+        .addEventListener('item-delete', () => {
+            //recalculateTotals();
+            calculateGrandTotal();
+        });
+</script>
+<script>
+    function addNewRow() {
+        const container = document.querySelector('.scroll-container');
+
+        // Creamos el nuevo elemento item-sales
+        const newItem = document.createElement('item-sales');
+
+        // Configuramos atributos por defecto
+        newItem.setAttribute('name', '');
+        newItem.setAttribute('sku', '000000');
+        newItem.setAttribute('unit-price', '0');
+        newItem.setAttribute('quantity', '1');
+        newItem.setAttribute('discount', '0');
+        newItem.setAttribute('tax-rate', '');
+        newItem.setAttribute('can-edit', 'true');
+
+        // Lo agregamos al contenedor
+        container.appendChild(newItem);
+
+        // Hacemos scroll automático al nuevo producto
+        container.scrollTop = container.scrollHeight;
+    }
+</script>

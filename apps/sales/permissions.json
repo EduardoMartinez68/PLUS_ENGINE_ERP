@@ -1,0 +1,31 @@
+{
+    "character": {
+        "icon": "fi fi-rr-cube"
+    },
+    "permissions": [
+        "view_sales",
+        "view_sales_totals",
+        "view_sales_reports",
+        "add_sales",
+        "edit_sales",
+        "cancel_sales",
+        "cancelled_sales",
+        "apply_discount",
+        "change_price"
+    ],
+    "translate": {
+        "es": {
+            "app_name": "Ventas",
+            "description": "Permite gestionar las ventas de productos y servicios dentro de la clínica.",
+            
+            "view_sales": "Permite ver el listado y detalle de las ventas realizadas.",
+            "view_sales_totals": "Permite ver los montos totales de las ventas (subtotal, impuestos y total).",
+            "view_sales_reports": "Permite acceder a reportes y estadísticas de ventas.",
+            "add_sales": "Permite crear nuevas ventas de productos o servicios.",
+            "edit_sales": "Permite modificar ventas existentes antes de ser finalizadas.",
+            "cancel_sales": "Permite cancelar o anular ventas realizadas.",
+            "apply_discount": "Permite aplicar descuentos a los productos o al total de la venta.",
+            "change_price": "Permite modificar el precio de los productos o servicios durante la venta."
+        }
+    }
+}

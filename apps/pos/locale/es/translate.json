@@ -1,0 +1,18 @@
+{
+    "pos.title.home": "Inicio",
+    "pos.label.total":"Total: ",
+    "pos.label.car":"Carrito",
+    "pos.label.customer":"Cliente",
+    "pos.btn.buy":"Comprar",
+
+    "pos.title.do-you-delete-this-item":"¿Quieres eliminar este producto?",
+    "pos.description.do-you-delete-this-item":"Eliminaras este producto del carrito de compras.",
+    "pos.message.item-delete-with-success":"Producto Eliminado con éxito",
+
+    "pos.title.edit-product-in-the-car":"Editar Articulo en el carrito.",
+    "pos.label.quantity":"Cantidad *",
+    "pos.label.discount":"Descuento",
+    "pos.label.percentage":"% Porcentaje *",
+    "pos.label.discount-in-money":"$ Descuento *",
+    "pos.label.price-finality":"Precio final *"
+}

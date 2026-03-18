@@ -1,0 +1,763 @@
+<style>
+    :root {
+        --bg-color: #f4f7f6;
+        --white: #ffffff;
+        --border-color: #e0e0e0;
+        --text-main: #333;
+        --shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .body-pos {
+        background-color: var(--bg-color);
+        margin: 0;
+        overflow: hidden;
+        font-family: system-ui, sans-serif;
+        display: flex;
+        height: 100dvh;
+        width: 100%;
+    }
+
+    /* ================= PRODUCTOS ================= */
+    .container-products-list {
+        flex: 0 0 70%;
+    }
+
+    .products-container {
+        width: 100%;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+        align-content: flex-start;
+        overflow-y: auto;
+        min-width: 0;
+    }
+
+    /* ================= CARRITO ================= */
+    .cart-sidebar {
+        flex: 0 0 30%;
+        background: var(--white);
+        border-left: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 0;
+        min-width: 0;
+    }
+
+    .cart-header {
+        padding: 16px;
+        border-bottom: 1px solid var(--border-color);
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .cart-items {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
+    }
+
+    /* Footer siempre abajo */
+    .cart-footer {
+        padding: 15px;
+        border-top: 1px solid var(--border-color);
+        background: #fff;
+        bottom: 0;
+        margin-top: auto;
+        padding-bottom: 15%;
+    }
+
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .btn-pay {
+        width: 100%;
+        background: var(--color-success);
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    /* ================= ITEM PRODUCTO ================= */
+    item-pos {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        padding: 10px;
+        text-align: center;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        width: 100%;
+        transition: transform 0.1s;
+        box-shadow: var(--shadow);
+    }
+
+    item-pos:hover {
+        border-color: #aaa;
+        cursor: pointer;
+    }
+
+    item-pos img {
+        max-width: 80px;
+        height: 80px;
+        object-fit: contain;
+        margin: 0 auto 10px;
+        display: block;
+    }
+
+    item-pos .name {
+        font-size: 0.85rem;
+        font-weight: bold;
+        color: #555;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        text-align: left;
+
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        /* Máximo 2 líneas */
+        -webkit-box-orient: vertical;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        line-height: 1.1em;
+        max-height: 2.2em;
+        /* 2 líneas */
+
+        word-break: break-word;
+        /* Corta palabras largas */
+    }
+
+    item-pos .price {
+        text-align: left;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text-main);
+    }
+
+    /* ================= ITEM CARRITO ================= */
+    tem-car {
+        display: flex;
+        gap: 12px;
+        border-bottom: 1px solid var(--border-color);
+        padding: 12px 8px;
+        align-items: center;
+        position: relative;
+        background: #fff;
+    }
+
+    .tem-img {
+        width: 50px;
+        height: 50px;
+        object-fit: contain;
+        border-radius: 4px;
+    }
+
+    .tem-info {
+        flex: 1;
+        min-width: 0;
+        /* Evita que el texto desborde */
+    }
+
+    .tem-qty {
+        display: inline-block;
+        font-size: 0.85rem;
+        color: #444;
+        margin-top: 4px;
+        cursor: pointer;
+        background: #f0f0f0;
+        padding: 2px 8px;
+        border-radius: 12px;
+        transition: background 0.2s;
+    }
+
+    .tem-qty:active {
+        background: #e0e0e0;
+    }
+
+    .tem-discount-text {
+        font-size: 0.75rem;
+        color: #d32f2f;
+        font-weight: 600;
+    }
+
+    /* Lado derecho: Precio y Acciones */
+    .tem-right-side {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 8px;
+    }
+
+    .tem-price {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--text-main);
+    }
+
+    .tem-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-action {
+        border: none;
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 6px 10px;
+        cursor: pointer;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .btn-delete:active {
+        background: #ffebee;
+        border-color: #ef5350;
+    }
+
+    .btn-edit:active {
+        background: #e8f5e9;
+        border-color: #4caf50;
+    }
+
+    /* Optimización para tablets/celulares (Touch targets) */
+    @media (max-width: 768px) {
+        .btn-action {
+            padding: 10px 14px;
+            /* Botones más grandes para dedos */
+        }
+
+        .tem-name {
+            font-size: 0.95rem;
+        }
+    }
+
+    /* ================= RESPONSIVE ================= */
+
+    /* Tablets */
+    @media (max-width: 1024px) {
+        .cart-sidebar {
+            width: 320px;
+        }
+    }
+
+    /* Celulares: solo carrito */
+    @media (max-width: 768px) {
+        .products-container {
+            display: none;
+        }
+
+        .cart-sidebar {
+            width: 100%;
+            border-left: none;
+        }
+    }
+</style>
+<input type="hidden" id="pagnumber">
+<div class="body-pos">
+    <div class="container-products-list">
+        <main class="products-container" id="products-container">
+
+        </main>
+    </div>
+
+    <aside class="cart-sidebar">
+        <div class="cart-header">
+            <span t="pos.label.car"></span>
+            <button style="border:none;background:none;color:blue;" t="pos.label.customer"></button>
+        </div>
+
+        <plus-search input_id="search-products">
+        </plus-search>
+
+
+        <div class="cart-items" id="cartItems">
+
+        </div>
+
+        <div class="cart-footer">
+            <div class="total-row">
+                <span t="pos.label.total"></span>
+                <span id="totalCar">$</span>
+            </div>
+            <button class="btn-pay" onclick="openBuyPanel()" t="pos.btn.buy"></button>
+        </div>
+    </aside>
+</div>
+<message-pop name="pop_edit_item" title="pos.title.edit-product-in-the-car">
+    <div class="row">
+        <div class="col-4">
+            <img src="" id="image_information_pop_edit">
+        </div>
+        <div class="col-6">
+            <h3 id="name_edit_item"></h3>
+            <h5 id="price_edit_item"></h5>
+            <h5 id="amount_edit_item"></h5>
+        </div>
+    </div>
+    <label t="pos.label.discount"></label>
+    <div class="row section">
+        <div class="col">
+            <input-field label="pos.label.percentage" placeholder="0%" type="number" id="input_edit_discount"></input-field>
+        </div>
+        <div class="col">
+            <input-field label="pos.label.discount-in-money" placeholder="0.00" type="number" id="input_edit_discount_number"></input-field>
+        </div>
+    </div>
+    <div class="row section">
+        <div class="col">
+            <input-field label="pos.label.price-finality" placeholder="0.00" type="number" id="input_edit_price"></input-field>
+        </div>
+    </div>
+    <button class="btn btn-success btn-edit" t="btn.save"></button>
+</message-pop>
+<script>
+    // ================= ITEM PRODUCTO =================
+    if (!customElements.get("item-pos")) {
+        class ItemPos extends HTMLElement {
+            connectedCallback() {
+                const id = this.getAttribute('id') || null;
+                const name = this.getAttribute('name') || 'Product';
+                const price = window.format_currency((this.getAttribute('price') || '0.00'), window.currencyUser)
+                const image = this.getAttribute('image');
+                this._productId = id;
+
+                // logic for the placeholder
+                const inicial = name.charAt(0).toUpperCase();
+                const pastelColor = this.generarColorPastel(name);
+
+                this.innerHTML = `
+                <style>
+                    item-pos { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+                    .img-container { width: 100px; height: 100px; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+                    .img-container img { width: 100%; height: 100%; object-fit: cover; }
+                    .placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; color: rgba(0,0,0,0.4); }
+                    .name { font-weight: bold; font-size: 0.9rem; }
+                    .price { color: #666; }
+                </style>
+
+                <div class="img-container">
+                    ${image
+                        ? `<img src="${image}" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\' style=\\'background-color: ${pastelColor}\\'>${inicial}</div>'">`
+                        : `<div class="placeholder" style="background-color: ${pastelColor}">${inicial}</div>`
+                    }
+                </div>
+                <div class="name">${name}</div>
+                <div class="price">$${price}</div>
+            `;
+
+
+                //here we will add all the logic that need when the user need add a product to the car
+                this.addEventListener('click', () => {
+                    this.dispatchEvent(new CustomEvent('add-to-cart', {
+                        detail: {
+                            id: this._productId,
+                            name: name,
+                            price: this.getAttribute('price')
+                        },
+                        bubbles: true
+                    }));
+                });
+            }
+
+            // Function to generate a consistent pastel color based on text
+            generarColorPastel(str) {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                // We use high HSL values ​​to ensure they are light/pastel shades
+                const h = Math.abs(hash % 360);
+                return `hsl(${h}, 70%, 85%)`;
+            }
+        }
+        customElements.define('item-pos', ItemPos);
+    }
+
+    // ================= ITEM CARRITO =================
+    if (!customElements.get("tem-car")) {
+        class TemCar extends HTMLElement {
+            connectedCallback() {
+                const name = this.getAttribute('name') || '';
+                const description = this.getAttribute('description') || '';
+                const price = parseFloat(this.getAttribute('price') || 0);
+                const amount = parseFloat(this.getAttribute('amount') || 1);
+                const discount = parseFloat(this.getAttribute('discount') || 0); // Nuevo: Descuento
+                const unity = this.getAttribute('unity') || '1';
+                const image = this.getAttribute('image') || '';
+
+                // Cálculo: (Precio * Cantidad) - Descuento
+                const subtotal = price * amount;
+                const finalTotal = subtotal - discount;
+
+                const totalFormatted = window.format_currency(finalTotal.toFixed(2), window.currencyUser);
+                const priceProduct = window.format_currency(price.toFixed(2), window.currencyUser);
+                const discountProduct = window.format_currency(discount.toFixed(2), window.currencyUser);
+
+                let unityText = unity == "2" ? "gr" : "pza";
+
+                this.innerHTML = `
+                ${image ? `<img src="${image}" class="tem-img">` : ''}
+                
+                <div class="tem-info">
+                    <div class="tem-name">${name}</div>
+                    <div class="tem-desc">${description}</div>
+                    <div class="tem-qty" onclick="edit_quantity(this.closest('tem-car'))">
+                        <span class="qty-badge">${amount} ${unityText}</span> x ${priceProduct}
+                    </div>
+                    ${discount > 0 ? `<div class="tem-discount-text">- ${discountProduct} dto.</div>` : ''}
+                </div>
+
+                <div class="tem-right-side">
+                    <div class="tem-price">$${totalFormatted}</div>
+                    <div class="tem-actions">
+                        <button class="btn-action btn-edit" title="Descuento" onclick="add_discount(this.closest('tem-car'))">
+                            🏷️
+                        </button>
+                        <button class="btn-action btn-delete" title="Eliminar" onclick="remove_item(this.closest('tem-car'))">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `;
+            }
+        }
+        customElements.define('tem-car', TemCar);
+    }
+
+    async function remove_item(element) {
+        if (await window.show_message_question('pos.title.do-you-delete-this-item', 'pos.description.do-you-delete-this-item')) {
+            const id = element.getAttribute('item_id'); // get the ID of the attribute 
+
+            // delete the item with this id of the car
+            window.cart = window.cart.filter(item => item.id !== id);
+
+            //render the car
+            renderCart();
+
+            window.show_notification('success','pos.message.item-delete-with-success')
+        }
+    }
+
+    function add_discount(el) {
+        //save the item global 
+        window.item_edit=el;
+
+        //first we will get the data of the element like his 'image', 'name', 'price' and 'discount'
+        //for show in the pop
+        const image=el.getAttribute('image');
+        const name=el.getAttribute('name') || 'item';
+        const discount=el.getAttribute('discount'); 
+        const amount=el.getAttribute('amount') || '1'; 
+        const priceItem=parseFloat(el.getAttribute('price') || '0');
+        const price=priceItem*amount;
+
+        //update the information of the screen
+        document.getElementById('image_information_pop_edit').src=image;
+        document.getElementById('name_edit_item').textContent=name;
+        document.getElementById('price_edit_item').textContent=window.format_currency((priceItem), window.currencyUser, true);
+        document.getElementById('input_edit_discount').value=discount;
+
+        const unity = el.getAttribute('unity') || '1';
+        let unityText = unity == "2" ? "gr" : "pza";
+        document.getElementById('amount_edit_item').textContent=`${amount} ${unityText}`;
+
+        //here we will see quantity is the discount of the product
+        const priceDiscount=((discount*price)/100).toFixed(2);
+        document.getElementById('input_edit_discount_number').value=priceDiscount;
+        document.getElementById('input_edit_price').value=(price-priceDiscount).toFixed(2);
+        window.show_pop('pop_edit_item');
+        console.log("Agregar descuento a:", el);
+    }
+
+    function edit_quantity(el) {
+        console.log("Editar cantidad de:", el);
+        // Tu lógica para abrir el teclado numérico o modal
+    }
+
+    //here we will add the functions for update the discount dinamyc
+    (()=>{
+        window.item_edit=null;
+        function update_inputs(type){
+            //this is when the user is update the input of the discount %
+            const priceItem=parseFloat(window.item_edit.getAttribute('price') || '0');
+            const amount=parseFloat(window.item_edit.getAttribute('amount') || '1');
+
+            const price=priceItem*amount;
+            if(type==1){
+                //100%==100
+                //20%==x
+                const discount=parseFloat(document.getElementById('input_edit_discount').value); 
+        
+
+                const priceDiscount=((discount*price)/100).toFixed(2);
+                document.getElementById('input_edit_discount_number').value=priceDiscount;
+                document.getElementById('input_edit_price').value=(price-priceDiscount).toFixed(2);
+            }else if(type==2){
+                //100%==100
+                //x%==20
+                const priceDiscount=parseFloat(document.getElementById('input_edit_discount_number').value); 
+                const discount=((priceDiscount*100)/price).toFixed(2);
+
+                document.getElementById('input_edit_discount').value=discount;
+                document.getElementById('input_edit_price').value=(price-priceDiscount).toFixed(2);
+            }
+            else if(type==3){
+                //100%==100
+                //x%==80
+                const priceDiscount=parseFloat(document.getElementById('input_edit_price').value);
+                
+                
+                const input_edit_discount_number=((priceDiscount*100)/100).toFixed(2);
+                const discount=((priceDiscount*100)/price).toFixed(2);
+                
+                document.getElementById('input_edit_discount').value=discount;
+                document.getElementById('input_edit_discount_number').value=input_edit_discount_number;
+            }
+        }
+
+        //this is for activate that the input can update the information of the price of the product
+        const interval = setInterval(()=>{
+
+            const inputDiscount = document.getElementById("input_edit_discount");
+            const inputDiscountNumber = document.getElementById("input_edit_discount_number");
+            const inputPrice = document.getElementById("input_edit_price");
+
+            if(inputDiscount && inputDiscountNumber && inputPrice){
+
+                clearInterval(interval);
+
+                inputDiscount.addEventListener("input", function () {
+                    update_inputs(1);
+                });
+
+                inputDiscountNumber.addEventListener("input", function () {
+                    update_inputs(2);
+                });
+
+                inputPrice.addEventListener("input", function () {
+                    update_inputs(3);
+                });
+
+                console.log("Inputs ready and events attached");
+
+            }
+
+        },100);
+    })();
+</script>
+
+
+
+{% include 'sales/partials/formBuy.html' %}
+
+
+
+<script>
+    (() => {
+        const cart = [];
+        window.cart = cart;
+
+        const textBuy = window.translate_text('pos.btn.buy');
+        window.textBuy = textBuy;
+
+        window.currencyUser = 'MXN';
+        window.totalCar = 0;
+    })();
+
+    document.addEventListener('add-to-cart', (e) => {
+        add_product_to_the_car(e.detail.id);
+    });
+
+    function add_product_to_the_car(id) {
+
+        //search if already the product in the car
+        const existing = window.cart.find(item => item.id === id);
+
+        if (existing) {
+            existing.amount += 1; //if exist the produc only add a more
+        } else {
+
+            // get the data of the product from the DOM
+            const productElement = document.querySelector(`item-pos[id="${id}"]`);
+
+            const name = productElement.getAttribute('name');
+            const price = parseFloat(productElement.getAttribute('price'));
+            const image = productElement.getAttribute('image') || '';
+
+            window.cart.push({
+                id,
+                name,
+                price,
+                discount:0,
+                amount: 1,
+                image
+            });
+        }
+
+        renderCart();
+    }
+
+    function renderCart() {
+        //first we will to clear the car
+        const container = document.getElementById('cartItems');
+        container.innerHTML = '';
+
+        //this variable be use for calculate the total of the car and the total of the product
+        let total = 0;
+        let totalItems = 0;
+
+        //read all the product of the car
+        cart.forEach(item => {
+
+            //we add the calculate to the total global and to the total of the product
+            total += item.price * item.amount;
+            totalItems += item.amount;
+
+            //here we will to create the ellement of the car and his attributes
+            const element = document.createElement('tem-car');
+            element.setAttribute('item_id', item.id);
+            element.setAttribute('name', item.name);
+            element.setAttribute('price', item.price);
+            element.setAttribute('amount', item.amount);
+            element.setAttribute('image', item.image);
+            element.setAttribute('discount', item.discount || 0)
+
+            container.appendChild(element);
+        });
+
+        updateCartFooter(total, totalItems);
+        window.totalCar = total;
+    }
+
+    function updateCartFooter(total, totalItems) {
+        //here we will to update the text of the card when the user add a new item to the car
+        const textTotal = window.format_currency((total), window.currencyUser, true) //transform the text for that the user can read better
+        document.getElementById('totalCar').textContent = `$${textTotal}`;
+
+        //here update the button of buy for that the user know how many products exist
+        document.querySelector('.btn-pay').textContent = `(${totalItems}) ${textBuy}`;
+    }
+
+    function openBuyPanel() {
+        //here we will to swo the UI for buy all the car
+        document.getElementById('buyPanel').setSize(70);
+        //document.getElementById('buyPanel').show();
+
+        open_buy_panel(window.totalCar);
+    }
+
+    function create_the_payload_of_the_sale_from_the_pos() {
+        let totalTaxesGlobal = 0;
+        let grandTotal = 0;
+        let subTotalGlobal = 0;
+        let discountTotalGlobal = 0;
+
+        const items = [];
+
+        // information of the form
+        const customer = null; //this is for save the customer that do the sale
+        const employee = null;//document.getElementById('employee').getValue(); //after we can add a customer to the sale
+        const currency = window.currencyUser;
+        const expiration_date = null; //in the POS normally the buy is the same day 
+        const payment_term_days = 0; //in the POS normally the buy is the same day 
+
+
+        //here we will to read all the value of the car
+        cart.forEach(product => {
+
+            const line = {
+                name: product.name,
+                quantity: product.amount,
+                unit_price: product.price,
+                discount: 0, //after the <discount> can be add from the UI
+                taxes: []
+            };
+
+            // 1. subtotal
+            const base = line.quantity * line.unit_price;
+            subTotalGlobal += base;
+
+            // 2. discount
+            const discountAmount = base * ((line.discount || 0) / 100);
+            const baseAfterDiscount = base - discountAmount;
+            discountTotalGlobal += discountAmount;
+
+            // 3. taxes
+            let lineTaxesTotal = 0;
+
+            if (line.taxes && line.taxes.length > 0) {
+                line.taxes.forEach(tax => {
+                    const taxAmount = baseAfterDiscount * (tax.rate / 100);
+                    lineTaxesTotal += taxAmount;
+                });
+            }
+
+            // 4. total line
+            const lineTotal = baseAfterDiscount + lineTaxesTotal;
+
+            line.subtotal = baseAfterDiscount;
+            line.taxes_total = lineTaxesTotal;
+            line.total = lineTotal;
+            totalTaxesGlobal += lineTaxesTotal;
+            grandTotal += lineTotal;
+            items.push(line);
+        });
+
+
+        //this is the information that the server can recived for save the sale
+        const payload = {
+            customer,
+            employee,
+            currency,
+            subtotal: subTotalGlobal,
+            discount_total: discountTotalGlobal,
+            tax_total: totalTaxesGlobal,
+            total: grandTotal,
+            expiration_date,
+            payment_term_days,
+            items: items
+        };
+
+        return payload;
+    }
+
+    function clear_car() {
+        window.cart = [];
+        window.idSales = null;
+        renderCart();
+    }
+
+    //---------------------------------------------------------SEARCH PRODUCTS--------------------------------
+    function get_div() {
+        return `
+            <item-pos id="{id}" name="{name}" price="{price}"
+                image="{img}" skus="{skus}">
+            </item-pos>
+        `
+    }
+
+    //here we will get all the products of the store and the show in the screen
+    window.update_container_with_seeker(['search-products', 'pagnumber'], 'products-container', get_div(), `/services/search_pack/1/`, 'GET');
+</script>

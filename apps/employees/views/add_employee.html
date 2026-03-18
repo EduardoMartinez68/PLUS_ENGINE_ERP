@@ -1,4 +1,4 @@
-{% include 'partials_employees/navbarEmployee.html' %}
+{% include 'employees/partials_employees/navbarEmployee.html' %}
 <form id="form-employee">
 <div class="container-section">
     <div class="row section">
@@ -220,11 +220,11 @@
 
 
 <!---here we will to create the pop for edit and add new departament for the employees--->
-{% include "partials_departament_employee/pop_add_and_edit_departament.html" %}
+{% include "departament_employee/partials_departament_employee/pop_add_and_edit_departament.html" %}
 
 <!---here we will to create the pop for edit and add new role and permissions for the employees--->
 <message-pop title="employees.title.role" name="pop-role-and-permissions">
-  {% include 'partials_rolesAndPermissions/from_role.html' %}
+  {% include 'rolesAndPermissions/partials_rolesAndPermissions/from_role.html' %}
 </message-pop>
 
 <script>

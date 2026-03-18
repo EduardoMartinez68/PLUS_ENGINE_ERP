@@ -1,0 +1,252 @@
+<style>
+    .form-header {
+        margin-bottom: 25px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+    }
+
+    .form-header h2 {
+        color: var(--primary-dark);
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    /* Organización en filas */
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+
+    .full-width {
+        grid-column: span 2;
+        margin-bottom: 15px;
+    }
+
+    /* Botonera */
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 30px;
+    }
+</style>
+<message-pop title="services.title.form-speed" name="form-pop-services-speed">
+<div class="container-pop">
+    <form id="formSpeedProduct">
+        <input type="hidden" name="id" id="id_product_speed">
+        <input type="hidden" name="pack_type" value="1">
+
+        <div class="row section">
+            <div class="col">
+                <plus-title label="services.input.name-services" name="name" placeholder="services.placeholder.name-services" required>
+                </plus-title>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col">
+                <label t="services.input.sku"></label>
+                <plus-tags id="tags_products_flash" name="skus" label="services.input.sku" t="services.input.sku" required></plus-tags>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col">
+                <input-field label="services.input.price" name="base_price" required type="number"></input-field>
+            </div>
+            <div class="col">
+                <plus-multiselect id="select_taxes_form_speed" name="taxes" label="services.select.taxes" link="/services/search_tax/" method="GET"
+                add="open_pop_tax" edit_data="open_pop_tax">
+                </plus-multiselect>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col">
+                <plus-select label="services.select.departament" id="departament-form-speed" name="department"
+                add="open_pop_departament" link="/services/search_departament/" method="GET" 
+                edit_data="open_pop_departament" 
+                delete_data="/services/delete_departament/" btn_delete_title="services.question.do-you-delete-departament" btn_delete_text="services.question.delete-departament">
+                </plus-select>
+            </div>
+            <div class="col">
+                <plus-select label="services.select.category" id="category-form-speed" name="category"
+                add="open_pop_category" link="/services/search_category/" method="GET" 
+                edit_data="open_pop_category"
+                delete_data="/services/delete_category/" btn_delete_title="services.question.do-you-delete-category" btn_delete_text="services.question.delete-category">
+                </plus-select>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col">
+                <label t="services.input.description"></label>
+                <textarea t-placeholder="services.placeholder.description" name="description"></textarea>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="row" id="buttons-form-speed-add">
+    <div class="col-8">
+        <button type="button" class="btn btn-success btn-add" t="btn.save" onclick="send_form_product_speed()"></button>
+    </div>
+    <div class="col-4">
+        <button type="button" class="btn btn-success btn-cancel" t="btn.cancel" onclick="window.hide_pop('form-pop-services-speed')"></button>
+    </div>
+</div>
+<div class="row" id="buttons-form-speed-update">
+    <div class="col-8">
+        <button type="button" class="btn btn-success btn-edit" t="btn.update" onclick="send_form_product_speed()"></button>
+    </div>
+    <div class="col-4">
+        <button type="button" class="btn btn-success btn-delete-tr" t="btn.delete" onclick="window.delete_product_speed()"></button>
+    </div>
+</div>
+</message-pop>
+{% include 'services/partials/formPopDepartament.html' %}
+{% include 'services/partials/formPopCategory.html' %}
+{% include 'services/partials/formPopTax.html' %}
+
+
+<script>
+    
+    (()=>{
+        function restart_form(){
+            window.restart_form('formSpeedProduct');
+            window.hide_pop('form-pop-services-speed');
+
+            //document.getElementById('departament-form-speed').reset()
+            //document.getElementById('category-form-speed').reset()
+            document.getElementById('select_taxes_form_speed').reset()
+        }
+
+        async function get_information_product(product_id){
+            //this function is for get the information of the departament 
+            const backend=await window.send_message_to_the_server(`/services/get_information_product/${product_id}/`, {}, true, 'GET')
+            if(backend.success){
+                //if get the information from the server now we will update the form 
+                const data=backend.answer;
+                window.update_inputs_of_the_form('formSpeedProduct',data);
+
+                document.getElementById('id_product_speed').value=product_id;
+
+                if(data.department){
+                    set_value_plus_select('departament-form-speed', data.department.id, data.department.name)
+                }
+
+                if(data.category){
+                    set_value_plus_select('category-form-speed', data.category.id, data.category.name)
+                }
+                
+                if(data.taxes){
+                    set_value_plus_select_multiple('select_taxes_form_speed', data.taxes)
+                }
+                
+
+                window.show_pop('form-pop-services-speed');
+                return;
+            }
+
+            window.show_alert('error', 'services.message.not-can-get-the-information-departament', backend.message || '', backend.error || '');
+        }
+
+
+        async function open_pop_speed(id=null){
+            restart_form();
+
+            //buttons of the form
+            const addButtons = document.getElementById('buttons-form-speed-add');
+            const updateButtons = document.getElementById('buttons-form-speed-update');
+
+            //if have a ID of the departament we will to call to the function for get his information
+            if((Number.isInteger(id))){
+                //here we will see if exist a id for open the pop.
+                //If exist an id is because the user would like update a departament and we will to update the input in the input
+                //else is because the user would like add a new departament
+                document.getElementById('id_product_speed').value=id;
+
+                //if the user would like edit the product, now will to show the buttons of type edit
+                if (addButtons) addButtons.style.display = 'none';
+                if (updateButtons) updateButtons.style.display = 'flex';
+
+                await get_information_product(id); //get the information of the product and the show in the form
+                return;
+            }
+
+            //show the buttons of add
+            if (addButtons) addButtons.style.display = 'flex';
+            if (updateButtons) updateButtons.style.display = 'none';
+
+
+            document.getElementById('id_product_speed').value='';
+            window.show_pop('form-pop-services-speed');
+        }
+
+        async function update_product(id){
+            const backend=await window.send_form_to_the_server('formSpeedProduct', '/services/update_services/');
+            if(backend.success){
+                restart_form();
+
+                //here we will see if the partial of <formSpeed> is in the home of services, for update his container
+                if (typeof window.update_container_home_services === "function") {
+                    window.update_container_home_services();
+                }
+
+                window.show_notification('success', 'services.success.the-product-was-update');
+                return;
+            }
+
+            window.show_alert('alert', 'services.message.the-product-not-was-update', backend.message || '', backend.error || '');
+        }
+
+        async function add_procut(){
+            const backend=await window.send_form_to_the_server('formSpeedProduct', '/services/add_services/');
+            if(backend.success){
+                restart_form();
+
+                //here we will see if the partial of <formSpeed> is in the home of services, for update his container
+                if (typeof window.update_container_home_services === "function") {
+                    window.update_container_home_services();
+                }
+
+                window.show_notification('success', 'services.success.the-product-was-add');
+                return;
+            }
+
+            window.show_alert('alert', 'services.message.the-product-not-was-created', backend.message || '', backend.error || '');
+        }
+
+        async function send_form_product_speed(){
+            //here we will see if exist or not exist the ID in the form
+            //if exist the ID is because the user would like update the departament
+            const id=document.getElementById('id_product_speed').value;
+            if(id && id.trim() !== ""){
+                await update_product(id);
+                return;
+            }
+
+
+            await add_procut();
+        }
+
+        async function delete_product_speed(){
+            if (await show_message_question('services.question.delete-service', 'services.question.do-you-delete-service')) {
+                const id=document.getElementById('id_product_speed').value;
+                const backend=await window.send_form_to_the_server('formSpeedProduct', `/services/delete_services/${id}/`);
+                if(backend.success){
+                    restart_form();
+
+                    //here we will see if the partial of <formSpeed> is in the home of services, for update his container
+                    if (typeof window.update_container_home_services === "function") {
+                        window.update_container_home_services();
+                    }
+
+                    window.show_notification('success', 'services.message.the-services-was-delete');
+                    return;
+                }
+            }
+        }
+
+        window.send_form_product_speed=send_form_product_speed;
+        window.open_pop_speed=open_pop_speed;
+        window.delete_product_speed=delete_product_speed;
+    })();
+</script>

@@ -55,8 +55,10 @@ class CustomerType(models.Model):
 
 # upload_to dinamic
 def customer_avatar_path(instance, filename):
+    company_id = instance.company.id if instance.company else 0
+    branch_id = instance.branch.id if instance.branch else 0
     ext = filename.split('.')[-1]
-    return f"customers/{uuid.uuid4().hex}_avatar.{ext}"
+    return f"customers/company_{company_id}/branch_{branch_id}/{filename}"
 
 class Customer(models.Model):
     #------personal information------
@@ -119,7 +121,8 @@ class Customer(models.Model):
 
     creation_date = models.DateTimeField(auto_now_add=True)
     activated = models.BooleanField(default=True)
-
+    avatar_updated_at = models.DateTimeField(auto_now=True)
+    
     class Meta:
         db_table = "customers_customer"
         indexes = [
@@ -128,24 +131,6 @@ class Customer(models.Model):
         ]
 
     def save(self, *args, **kwargs):
-        MAX_SIZE_MB = 5
-
-        #here we will to limit the size of the file that the user can upload to the server 
-        if self.avatar and self.avatar.size > MAX_SIZE_MB * 1024 * 1024:
-            raise ValidationError(f"Avatar cannot exceed {MAX_SIZE_MB} MB")
-
-        if self.avatar:
-            with Image.open(self.avatar) as img:
-                max_width = 800
-                max_height = 800
-
-                if img.width > max_width or img.height > max_height:
-                    img.thumbnail((max_width, max_height), Image.ANTIALIAS)
-                    
-                    buffer = BytesIO()
-                    img.save(buffer, format=img.format)
-                    self.avatar.save(self.avatar.name, ContentFile(buffer.getvalue()), save=False)
-
         super().save(*args, **kwargs)
 
 

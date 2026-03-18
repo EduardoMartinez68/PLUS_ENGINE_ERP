@@ -1,0 +1,101 @@
+<message-pop title="services.title.category" name="form-pop-category">
+    <div class="container-pop">
+        <form id="formPopcategory">
+            <div class="row section">
+                <div class="col">
+                    <input type="hidden" id="idFormcategory" name="id">
+                    <plus-title label="services.input.name-category" name="name" placeholder="services.placeholder.name" required id="namecategoryForm"></plus-title>
+                </div>
+            </div>
+        </form>
+    </div>
+    <button type="button" class="btn btn-success btn-normal" t="btn.save" id="btn-form-category" onclick="send_form_category_to_the_server()"></button>
+</message-pop>
+
+<script>
+    (()=>{
+        function restart_form(){
+            const form = document.getElementById('formPopcategory');
+            form.reset();
+
+            window.hide_pop('form-pop-category');
+        }
+
+        async function get_information_category(category_id){
+            //this function is for get the information of the category 
+            const backend=await window.send_message_to_the_server(`/services/get_information_category/${category_id}/`, {}, true, 'GET')
+            if(backend.success){
+                //if get the information from the server now we will update the form 
+                const data=backend.answer;
+                document.getElementById('idFormcategory').value=category_id;
+                document.getElementById('namecategoryForm').value=data.name;
+                window.show_pop('form-pop-category');
+                return;
+            }
+
+            window.show_alert('error', 'services.message.not-can-get-the-information-category', backend.message || '', backend.error || '');
+        }
+
+        async function open_pop_category(category_id=null){
+            restart_form();
+            
+            //if have a ID of the category we will to call to the function for get his information
+            if((Number.isInteger(category_id))){
+                //here we will see if exist a id for open the pop.
+                //If exist an id is because the user would like update a category and we will to update the input in the input
+                //else is because the user would like add a new category
+                document.getElementById('idFormcategory').value=category_id;
+                await get_information_category(category_id);
+                return;
+            }
+
+            document.getElementById('idFormcategory').value='';
+            window.show_pop('form-pop-category');
+        }
+
+
+        async function add_new_category(){
+            const backend=await window.send_form_to_the_server('formPopcategory', '/services/add_category/');
+            if(backend.success){
+                restart_form();
+                window.show_notification('success', 'services.success.the-category-was-add');
+                return;
+            }
+
+            window.show_alert('alert', 'services.message.the-category-not-was-created', backend.message || '', backend.error || '');
+        }
+
+        async function update_category(category_id){
+            const backend=await window.send_form_to_the_server('formPopcategory', `/services/update_category/${category_id}/`);
+            if(backend.success){
+                restart_form();
+
+                //here we will see if the partial of <formSpeed> is in the home of services, for update his container
+                if (typeof window.update_container_home_services === "function") {
+                    window.update_container_home_services();
+                }
+                
+                window.show_notification('success', 'services.success.the-category-was-update');
+                return;
+            }
+
+            window.show_alert('alert', 'services.message.the-category-not-was-update', backend.message || '', backend.error || '');
+        }
+
+
+        async function send_form_category_to_the_server(){
+            //here we will see if exist or not exist the ID in the form
+            //if exist the ID is because the user would like update the category
+            const id=document.getElementById('idFormcategory').value;
+            if(id && id.trim() !== ""){
+                await update_category(id);
+                return;
+            }
+
+            await add_new_category();
+        }
+
+        window.open_pop_category=open_pop_category;
+        window.send_form_category_to_the_server=send_form_category_to_the_server;
+    })();
+</script>

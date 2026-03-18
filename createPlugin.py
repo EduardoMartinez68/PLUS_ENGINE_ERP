@@ -67,27 +67,27 @@ def {app_name}_home(request):
 
 def create_web_html(plugin_app):
     return f"""
-        <title>Welcome to {plugin_app}</title>
-        <style>
-            h1 {{
-                color: #007ACC;
-                margin-bottom: 20px;
-            }}
-            p {{
-                font-size: 18px;
-                line-height: 1.6;
-                max-width: 600px;
-                margin: 0 auto;
-                color: #555;
-            }}
-            .highlight {{
-                color: #ff6600;
-                font-weight: bold;
-            }}
-        </style>
-        <h1>Welcome to your plugin <span class="highlight">{plugin_app}</span> in PLUS</h1>
-        <p>Thank you for choosing our platform. This app is designed to help you manage your <strong>{plugin_app}</strong> efficiently and effortlessly.</p>
-        <p>Explore the features and enjoy a seamless experience!</p>
+<title>Welcome to {plugin_app}</title>
+<style>
+    h1 {{
+        color: #007ACC;
+        margin-bottom: 20px;
+    }}
+    p {{
+        font-size: 18px;
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto;
+        color: #555;
+    }}
+    .highlight {{
+        color: #ff6600;
+        font-weight: bold;
+    }}
+</style>
+<h1>Welcome to your plugin <span class="highlight">{plugin_app}</span> in PLUS</h1>
+<p>Thank you for choosing our platform. This app is designed to help you manage your <strong>{plugin_app}</strong> efficiently and effortlessly.</p>
+<p>Explore the features and enjoy a seamless experience!</p>
     """
 
 if __name__ == '__main__':

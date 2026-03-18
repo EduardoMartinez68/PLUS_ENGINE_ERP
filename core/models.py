@@ -218,7 +218,6 @@ class BranchSchedule(models.Model):
     def __str__(self):
         return f"{self.branch.name} - {self.get_day_of_week_display()}"
     
-
 class BranchBillingData(models.Model):
     '''
     this model is for create factures example in Mexico is for create facture CFDI, 
@@ -289,7 +288,6 @@ class BranchBillingData(models.Model):
     def __str__(self):
         return f"{self.legal_name} ({self.country})"
 
-
 class UserDepartment(models.Model):
     color = models.CharField(max_length=100, null=True)
     name = models.CharField(max_length=100)
@@ -311,6 +309,14 @@ class UserDepartment(models.Model):
     def __str__(self):
         return self.name
     
+from django.apps import AppConfig
+class CompaniesConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'companies'
+
+    def ready(self):
+        import signals
+
 #----------------------------------------------------this is for create the roles and permissions of the ERP------------------------------------------------
 #here table is for save all the permissions that exist in all the apps of the ERP. This permits be load when the server is started
 class Permit(models.Model):
@@ -410,6 +416,12 @@ class WhatsAppAccount(models.Model):
     monthly_limit = models.IntegerField(default=50)
     messages_sent_this_month = models.IntegerField(default=0)
 
+    template_today=models.CharField(max_length=50, null=True)
+    template_day_before=models.CharField(max_length=50, null=True)
+    template_four_before=models.CharField(max_length=50, null=True)
+    template_qualification=models.CharField(max_length=50, null=True)
+    template_birthday=models.CharField(max_length=50, null=True)
+    
     @property
     def can_send_more(self):
         return self.messages_sent_this_month < self.monthly_limit
@@ -590,7 +602,7 @@ class UserSubscription(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def can_add_new_device(self):
         from django.utils import timezone
         # Acount the sessions that be activate in the table of Django that not was expired
@@ -636,9 +648,15 @@ class UserSubscription(models.Model):
     
     def can_send_message(self):
         """Here we will to check if the user can send more messages for whatsapp this month"""
-        whatsappCount = WhatsAppAccount.objects(branch=self.user.branch).first()
+        whatsappCount = WhatsAppAccount.objects.filter(
+            branch=self.user.branch
+        ).first()
+
+        if not whatsappCount:
+            return False
+
         return whatsappCount.messages_sent_this_month < self.plan.max_messages
-    
+            
     def can_upload_more_storage(self, additional_gb):
         """Here we will to check if the user can upload more files to his storage"""
         return (self.used_storage_gb + additional_gb) <= self.plan.storage_gb

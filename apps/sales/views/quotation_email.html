@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html>
+<body style="margin:0; padding:0; background:#f4f6f8; font-family:Arial, Helvetica, sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8; padding:20px;">
+<tr>
+<td align="center">
+
+<!-- Container -->
+
+<table width="650" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:8px; padding:30px;">
+
+<!-- Header -->
+<tr>
+    <td>
+        <h2 style="margin:0; color:#1a365d;">COTIZACIÓN</h2>
+        <p style="margin:5px 0; color:#718096;">
+            Ref: <strong>{{ sale.reference }}</strong><br>
+            Fecha: {{ sale.date }}
+        </p>
+    </td>
+    <td align="right">
+        {% if company.logo %}
+            <img src="{{ company.logo.url }}" style="height:60px;">
+        {% endif %}
+    </td>
+</tr>
+
+<!-- Clínica -->
+<tr>
+    <td colspan="2" style="padding-top:15px;">
+        <strong style="font-size:18px;">
+            {% if branch.name_branch %}
+                {{ branch.name_branch }}
+            {% else %}
+                {{ company.company_name }}
+            {% endif %}
+        </strong><br>
+
+        {% if branch.phone %}Tel: {{ branch.phone }}{% elif company.phone %}Tel: {{ company.phone }}{% endif %}<br>
+        {% if branch.email_branch %}{{ branch.email_branch }}{% else %}{{ company.support_email }}{% endif %}
+    </td>
+</tr>
+
+<!-- Paciente -->
+<tr>
+    <td colspan="2" style="padding-top:20px;">
+        <strong>Paciente:</strong> {{ sale.customer.name }}
+    </td>
+</tr>
+
+<!-- Tabla -->
+<tr>
+    <td colspan="2" style="padding-top:15px;">
+        <table width="100%" cellpadding="8" cellspacing="0" style="border-collapse:collapse; font-size:13px;">
+            <tr style="background:#f1f5f9;">
+                <th align="left">Servicio</th>
+                <th align="center">Cant</th>
+                <th align="right">Precio</th>
+                <th align="right">Subtotal</th>
+            </tr>
+
+            {% for item in items %}
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                    <td>{{ item.name }}</td>
+                    <td align="center">{{ item.quantity }}</td>
+                    <td align="right">${{ item.unit_price }}</td>
+                    <td align="right">${{ item.total }}</td>
+                </tr>
+            {% endfor %}
+
+
+        </table>
+    </td>
+</tr>
+
+<!-- Total -->
+<tr>
+    <td colspan="2" align="right" style="padding-top:15px;">
+        <strong style="font-size:18px; color:#1a365d;">
+            Total: ${{ total }}
+        </strong>
+    </td>
+</tr>
+
+<!-- Pago -->
+<tr>
+    <td colspan="2" style="padding-top:20px; font-size:13px;">
+        <strong>Información de pago</strong><br>
+
+        {% if branch.bank_account %}
+            {{ branch.bank_name }}: {{ branch.bank_account }}
+        {% elif company.bank_account %}
+            {{ company.bank_name }}: {{ company.bank_account }}
+        {% else %}
+            No hay información bancaria disponible.
+        {% endif %}
+    </td>
+</tr>
+
+{% if payments %}
+<h3 style="margin-top:25px; font-size:16px; color:#0f172a;">
+Historial de pagos
+</h3>
+
+<table width="100%" cellspacing="0" cellpadding="6" style="border-collapse:collapse; font-size:13px;">
+    
+    <tr style="background:#f1f5f9; border-bottom:1px solid #e2e8f0;">
+        <th align="left">Fecha</th>
+        <th align="right">Pago recibido</th>
+        <th align="right">Cambio</th>
+        <th align="right">Total pagado</th>
+        <th align="right">Saldo restante</th>
+    </tr>
+    <br><br>
+    {% for payment in payments %}
+    <hr>
+    <tr style="border-bottom:1px solid #e2e8f0;">
+        <td>
+            {{ payment.date|date:"d/m/Y H:i" }}
+        </td>
+        <td align="right">
+            ${{ payment.cash_received }}
+        </td>
+        <td align="right">
+            ${{ payment.change_given }}
+        </td>
+        <td align="right">
+            ${{ payment.new_amount_paid }}
+        </td>
+        <td align="right">
+            ${{ payment.new_balance }}
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>
+{% endif %}
+<p style="text-align:right; font-size:14px; margin-top:8px;">
+<strong>Saldo actual: ${{ payments.last.new_balance }}</strong>
+</p>
+
+<!-- Footer -->
+<tr>
+    <td colspan="2" style="padding-top:25px; font-size:12px; color:#718096; text-align:center;">
+        Esta cotización es informativa y puede cambiar según valoración clínica.
+    </td>
+</tr>
+
+<tr>
+    <td colspan="2" style="padding-top:10px; font-size:11px; color:#a0aec0; text-align:right;">
+        Powered by <strong>denty.cloud</strong>
+    </td>
+</tr>
+
+
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>

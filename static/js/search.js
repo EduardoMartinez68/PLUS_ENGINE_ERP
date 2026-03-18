@@ -44,6 +44,127 @@ function hidden_loader_in_the_div_container_of_plus(contenedorId, contenido) {
     contenedor.innerHTML = contenido;
 }
 
+function render_pagination_controls(fieldId, pagination = null, reloadFunction = null) {
+    //first we need see if exist the container and exist the json of the pagination for can create the pagination controller
+    const field = document.getElementById(fieldId);
+    if (!field || !pagination) return;
+
+    // 1. add styles css
+    if (!document.getElementById('erp-pagination-styles')) {
+        const style = document.createElement('style');
+        style.id = 'erp-pagination-styles';
+        style.innerHTML = `
+            .pagination-wrapper {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                gap: 12px;
+                margin: 20px 0;
+                font-family: 'Segoe UI', Roboto, sans-serif;
+                width: 100%;
+            }
+            .pagination-info {
+                font-size: 0.85rem;
+                color: #718096;
+                margin-right: auto; /* Empuja la info a la izquierda y botones a la derecha */
+            }
+            .btn-pagination {
+                background-color: #ffffff;
+                border: 1px solid #e0e6ed;
+                color: #4a5568;
+                padding: 6px 14px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                font-size: 14px;
+            }
+            .btn-pagination:hover:not(:disabled) {
+                border-color: #007bff;
+                color: #007bff;
+                background-color: #f8fafc;
+            }
+            .btn-pagination:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+                background-color: #f5f7f9;
+            }
+            .page-counter {
+                background-color: #ebf4ff;
+                color: #2b6cb0;
+                padding: 6px 12px;
+                border-radius: 8px;
+                font-weight: 700;
+                font-size: 0.9rem;
+                border: 1px solid #bee3f8;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // 2. search or create the container
+    let paginationDiv = document.getElementById(`pagination-container-${fieldId}`);
+    if (!paginationDiv) {
+        paginationDiv = document.createElement('div');
+        paginationDiv.id = `pagination-container-${fieldId}`;
+        paginationDiv.className = 'pagination-wrapper';
+        
+        // struct of the container and the buttons
+        paginationDiv.innerHTML = `
+            <div class="pagination-info" id="page-info-${fieldId}"></div>
+            <button class="btn-pagination" id="btn-prev-${fieldId}">
+                <i class="fas fa-chevron-left" style="margin-right:5px"></i> 🡨
+            </button>
+            <div class="page-counter" id="page-indicator-${fieldId}">1</div>
+            <button class="btn-pagination" id="btn-next-${fieldId}">
+                🡪 <i class="fas fa-chevron-right" style="margin-left:5px"></i>
+            </button>
+        `;
+        field.after(paginationDiv);
+    }
+
+    // 3. update dynamic the information with the JSON 'pagination' that send the backend
+    if (pagination) {
+        const info = document.getElementById(`page-info-${fieldId}`);
+        const indicator = document.getElementById(`page-indicator-${fieldId}`);
+        const btnPrev = document.getElementById(`btn-prev-${fieldId}`);
+        const btnNext = document.getElementById(`btn-next-${fieldId}`);
+
+        // update the number of the page and the total
+        indicator.innerText = `${pagination.page} / ${pagination.total_pages}`;
+
+        //if the backend send the information of the quantity that exist
+        if (info) {
+            //use the translate dynamic example: "Total: 43 registros"
+            const total=window.translate_text('home.table.total');
+            const records=window.translate_text('home.table.records');
+            info.innerText = `${total}: ${pagination.total_records} ${records}`;
+        }
+
+        // activate or disable the buttons use the information that the backend send
+        btnPrev.disabled = !pagination.has_previous;
+        btnNext.disabled = !pagination.has_next;
+
+        // save the value of the page in the buttons for that the function of <send_information_to_the_server> will can use
+        //the function <send_information_to_the_server> is <reloadFunction>
+        btnPrev.onclick = () => {
+            if (pagination.has_previous) {
+                //here we will to update get of the server the old data of the page previous
+                reloadFunction(pagination.page - 1);
+            }
+        };
+
+        btnNext.onclick = () => {
+            if (pagination.has_next) {
+                //here we will to update get of the server the old data of the page next
+                reloadFunction(pagination.page + 1);
+            }
+        };
+    }
+}
+
 function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, method='POST', loadingImage=null, delay = 500, type='tr') {
     /*
       inputsId=this is a array of all the inputs of filter fot search the objects. inputsId[0] is the id of the search input
@@ -109,7 +230,7 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
         return input.value.trim();
     }
 
-    const send_information_to_the_server=async ()=>{
+    const send_information_to_the_server=async (page = 1)=>{
         const query = input.value.trim() || '';
 
         //after that we send the information to the server, we will see if the user send more inputs for filter
@@ -129,10 +250,10 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
             }
 
             //send a message to the server for get the answer
-            data = await window.send_message_to_the_server(searchUrl, { allFilters }, false, method);
+            data = await window.send_message_to_the_server(searchUrl, { allFilters, page  }, false, method);
         } else {
             //send a message to the server for get the answer
-            data = await window.send_message_to_the_server(searchUrl, { query }, false, method);
+            data = await window.send_message_to_the_server(searchUrl, { query, page  }, false, method);
         }
 
         //when the server send a answer, we will to hidden the load in the div 
@@ -146,10 +267,11 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
                 //if exist container, we will show in the field
                 data.answer.forEach(dataItem => {
                     //here we will get the card or table that need add to the field or table
-                    const labelHtml = document.createElement(type);
-                    labelHtml.innerHTML = renderTemplate(divHtml, dataItem); //now her create the container of the card or table
-                    field.appendChild(labelHtml); //add the new card or row to the container
+                    const html = renderTemplate(divHtml, dataItem);
+                    field.insertAdjacentHTML('beforeend', html);
                 });
+
+                render_pagination_controls(fieldId, data.pagination, send_information_to_the_server); //here we will to create the pagination of the div
             } else {
                 //if exist an answer, we will show a message to the user
                 const answer=t("info.no_results");
@@ -276,7 +398,7 @@ function update_container_from_the_server(inputsId, fieldId, divHtml, searchUrl,
     }
 
     // Función principal para enviar datos al servidor
-    const send_information_to_the_server = async () => {
+    const send_information_to_the_server = async (page = 1) => {
         show_loader_in_the_div_container_of_plus(fieldId);
 
         const query = input.value.trim();
@@ -290,8 +412,8 @@ function update_container_from_the_server(inputsId, fieldId, divHtml, searchUrl,
         }
 
         const data = Array.isArray(inputsId) && inputsId.length > 1 
-            ? await window.send_message_to_the_server(searchUrl, { allFilters }, false, method)
-            : await window.send_message_to_the_server(searchUrl, { query }, false, method);
+            ? await window.send_message_to_the_server(searchUrl, { allFilters , page}, false, method)
+            : await window.send_message_to_the_server(searchUrl, { query, page }, false, method);
 
         //when the server send a answer, we will to hidden the load in the div 
         hidden_loader_in_the_div_container_of_plus(fieldId)
@@ -304,6 +426,8 @@ function update_container_from_the_server(inputsId, fieldId, divHtml, searchUrl,
                     el.innerHTML = renderTemplate(divHtml, item);
                     field.appendChild(el);
                 });
+
+                render_pagination_controls(fieldId, data.pagination, send_information_to_the_server); //here we will to create the pagination of the div
             } else {
                 const answer = t("info.no_results");
                 field.innerHTML = `<tr><td colspan="6" style="text-align:center;">${answer}</td></tr>`;

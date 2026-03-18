@@ -1,0 +1,190 @@
+<style>
+    .container-signature {
+        margin: auto;
+        width: 100%;
+        height: 100%;
+    }
+
+    canvas {
+        border: 2px solid #333;
+        border-radius: 10px;
+        background: white;
+        cursor: crosshair;
+        width: 100%;
+        height: 200px;
+    }
+
+    .signature-name {
+        font-family: "Brush Script MT", "Lucida Handwriting", cursive;
+        font-size: 32px;
+        text-align: center;
+        margin-bottom: 10px;
+        color: #333;
+    }
+</style>
+
+<message-pop title="sales.title.signature" name="pop_signature">
+    <div class="container-signature">
+        <div class="row">
+            <div class="col">
+                <input-field id="responsibleName" label="sales.label.name-of-the-responsible" required="true"
+                    placeholder="sales.placeholder.name-of-the-responsible"></input-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div id="previewNombre" class="signature-name"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h3 t="sales.label.signature-here"></h3>
+                <canvas id="signatureCanvas"></canvas>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col">
+                <button onclick="clear_signature()" class="btn btn-cancel btn-success"
+                    t="sales.label.clear-signature"></button>
+            </div>
+            <div class="col">
+                <button onclick="save_signature_json()" class="btn btn-add btn-success" t="sales.btn.accept-quote"></button>
+            </div>
+        </div>
+    </div>
+</message-pop>
+
+<script>
+    (() => {
+
+
+        document.addEventListener("input", function (e) {
+
+            if (e.target.closest("#responsibleName")) {
+
+                const input = e.target.querySelector("input") || e.target;
+                const name = input.value;
+
+                document.getElementById("previewNombre").textContent = name;
+            }
+
+        });
+
+        function initSignature() {
+            const canvas = document.getElementById("signatureCanvas");
+            if (!canvas) return;
+
+            const ctx = canvas.getContext("2d");
+
+            let drawing = false;
+            let strokes = [];
+            let current_trace = [];
+
+            function get_positions(e) {
+                const rect = canvas.getBoundingClientRect();
+
+                return {
+                    x: (e.clientX - rect.left) * (canvas.width / rect.width),
+                    y: (e.clientY - rect.top) * (canvas.height / rect.height)
+                };
+            }
+
+
+            canvas.addEventListener("mousedown", (e) => {
+                drawing = true;
+                current_trace = [];
+
+                const pos = get_positions(e);
+                current_trace.push(pos);
+
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+            });
+
+            canvas.addEventListener("mousemove", (e) => {
+                if (!drawing) return;
+
+                const pos = get_positions(e);
+                current_trace.push(pos);
+
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            });
+
+            canvas.addEventListener("mouseup", () => {
+                drawing = false;
+                strokes.push(current_trace);
+            });
+
+            canvas.addEventListener("mouseleave", () => {
+                drawing = false;
+            });
+
+            function clear_signature() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                strokes = [];
+            }
+
+            function create_json_signature() { 
+                const responsibleName=document.getElementById('responsibleName').value;
+                const signature = { 
+                    date: new Date(), 
+                    strokes: strokes ,
+                    responsibleName
+                }; 
+
+                return signature;//JSON.stringify(signature, null, 2); 
+            }
+
+            async function save_signature_json() {
+                //see if can send the data of the form
+                if(!window.idSales){
+                    window.show_alert('error', 'sales.error.not-id-of-sale', 'sales.error.not-id-of-sale', 'you sale not have a ID');
+                }
+
+                //now see if exist the name of the customer of the signature and his signature
+                const dataSignature=create_json_signature();
+                if(!dataSignature.responsibleName || dataSignature.responsibleName.trim() === ''){
+                    window.show_alert('error', 'sales.error.not-id-of-sale', 'sales.error.not-id-of-sale', 'you sale not have a ID');
+                }
+
+                //second we need see that exist information of the signature in json
+                if(!dataSignature.strokes){
+                    window.show_alert('error', 'sales.error.not-id-of-sale', 'sales.error.not-id-of-sale', 'you sale not have a ID');
+                }
+
+
+
+                //when all the information exist in the contract, now we will to send the information to the backend 
+                const backend=await window.send_message_to_the_server(`/sales/save_signature/${window.idSales}/`, {dataSignature}, true, 'POST');
+                if(!backend.success){
+                    window.show_alert('error', 'sales.error.cancel-sale', backend.message || 'sales.error.cancel-sale', backend.error || '');
+                }
+
+                //also change the status of the sale 
+                //now we will update the 'reference' in the screen with the reference that generate the backend for the sale
+                const answer=backend.answer;
+                change_status_button(answer.status);
+                window.idSales = answer.id;
+                window.reference_sales = answer.reference;
+                window.status=answer.status;
+                document.getElementById('reference').textContent = window.reference_sales;
+                window.show_notification('success', 'sales.message.sales-updated');
+            }
+
+            window.clear_signature = clear_signature;
+            window.save_signature_json = save_signature_json; //this function is for save the signature in the backend
+        }
+
+        // wait to that the modal exist
+        const observer = new MutationObserver(() => {
+            const canvas = document.getElementById("signatureCanvas");
+            if (canvas) {
+                initSignature();
+                observer.disconnect(); //only do this one time
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    })();
+</script>

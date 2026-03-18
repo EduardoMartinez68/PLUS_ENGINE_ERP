@@ -3,7 +3,7 @@ import os
 def create_app(app_name):
     base_path = os.path.join('apps', app_name)
 
-    # Crear carpetas
+    # create folders
     os.makedirs(base_path, exist_ok=True)
     os.makedirs(os.path.join(base_path, 'config'), exist_ok=True)
     os.makedirs(os.path.join(base_path, 'links'), exist_ok=True)
@@ -15,21 +15,26 @@ def create_app(app_name):
     os.makedirs(os.path.join(base_path, 'static', 'js'), exist_ok=True)
     os.makedirs(os.path.join(base_path, 'static', 'img'), exist_ok=True)
 
-    os.makedirs(os.path.join(base_path, 'views',f'partials_{app_name}'), exist_ok=True)
-    index_html_path = os.path.join(base_path, 'views', f'home_{app_name}.html')
+    os.makedirs(os.path.join(base_path, 'views',f'partials'), exist_ok=True)
+    index_html_path = os.path.join(base_path, 'views', f'home.html')
 
     with open(index_html_path, 'w', encoding='utf-8') as f:
         f.write(create_web_html(app_name))
 
-    # Crear config.yaml
+    # create config.yaml
     config_content = f"""
 name: "{app_name}"
+version: "1.0.0"
+
 appName: "{app_name}"
 icon: "{app_name}/icon.webp"
+iconF: "fi fi-rs-rocket-lunch"
+
 path: "/{app_name}"
 dbInit: true
+public: true
 permissionsFile: 'permissions.json'
-    """
+"""
     with open(os.path.join(base_path, 'config.yaml'), 'w', encoding='utf-8') as f:
         f.write(config_content)
 
@@ -58,7 +63,7 @@ urlpatterns = [
     views_content = f"""from django.shortcuts import render
 
 def {app_name}_home(request):
-    return render(request, 'home_{app_name}.html')
+    return render(request, '{app_name}/home.html')
 """
     fileLink=os.path.join(base_path, 'links')
     with open(os.path.join(fileLink, 'views.py'), 'w', encoding='utf-8') as f:
@@ -68,28 +73,28 @@ def {app_name}_home(request):
 
 def create_web_html(app_name):
     return f"""
-        <title>Welcome to {app_name}</title>
-        <style>
-            h1 {{
-                color: #007ACC;
-                margin-bottom: 20px;
-            }}
-            p {{
-                font-size: 18px;
-                line-height: 1.6;
-                max-width: 600px;
-                margin: 0 auto;
-                color: #555;
-            }}
-            .highlight {{
-                color: #ff6600;
-                font-weight: bold;
-            }}
-        </style>
-        <h1>Welcome to your app <span class="highlight">{app_name}</span> in PLUS</h1>
-        <p>Thank you for choosing our platform. This app is designed to help you manage your <strong>{app_name}</strong> efficiently and effortlessly.</p>
-        <p>Explore the features and enjoy a seamless experience!</p>
-    """
+<title>Welcome to {app_name}</title>
+<style>
+    h1 {{
+        color: #007ACC;
+        margin-bottom: 20px;
+    }}
+    p {{
+        font-size: 18px;
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto;
+        color: #555;
+    }}
+    .highlight {{
+        color: #ff6600;
+        font-weight: bold;
+    }}
+</style>
+<h1>Welcome to your app <span class="highlight">{app_name}</span> in PLUS</h1>
+<p>Thank you for choosing our platform. This app is designed to help you manage your <strong>{app_name}</strong> efficiently and effortlessly.</p>
+<p>Explore the features and enjoy a seamless experience!</p>
+"""
 
 if __name__ == '__main__':
     appName = input("What is the the name of the app?: ").strip()

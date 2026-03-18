@@ -1,0 +1,682 @@
+<style>
+    .payment-grid {
+        display: flex;
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
+        justify-content: space-between;
+    }
+
+    .payment-method-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .method-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 8px;
+        object-fit: contain;
+        transition: var(--transition);
+    }
+
+    .payment-method-item label {
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text);
+    }
+
+    .payment-method-item .payment-input {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+        border: 1.5px solid var(--card-border);
+        border-radius: 8px;
+        font-size: 15px;
+        color: var(--primary);
+        font-weight: 700;
+        background: #fdfdfd;
+    }
+
+
+    .div-pay {
+        background: transparent;
+        width: 100%;
+        height: 100%;
+
+        display: flex;
+        flex-direction: column;
+
+        margin: 0;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+
+        font-family: var(--font);
+        overflow: hidden;
+    }
+
+    /* Header Estilo Glassmorphism suave */
+    .pay-header {
+        background: linear-gradient(to bottom right, transparent, var(--background));
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--card-border);
+        position: sticky;
+        top: 0;
+        z-index: 5;
+    }
+
+    .header-item .label {
+        display: block;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        color: #8e9aaf;
+        margin-bottom: 4px;
+    }
+
+    .header-item .value {
+        font-size: 28px;
+        font-weight: 800;
+    }
+
+    .value.primary {
+        color: var(--primary-dark);
+    }
+
+    .value.success {
+        color: var(--color-success);
+    }
+
+    .align-right {
+        text-align: right;
+    }
+
+    .pay-content {
+        padding: var(--space-4) var(--space-5);
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    /* Inputs con enfoque elegante */
+    .input-field-buy{
+        margin-bottom: var(--space-3);
+    }
+
+    .input-field-buy label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .currency {
+        position: absolute;
+        left: 12px;
+        color: #94a3b8;
+        font-weight: 600;
+    }
+
+    .payment-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(43, 108, 176, 0.1);
+    }
+
+    /* Atajos */
+    /* Contenedor de los atajos */
+    .shortcuts-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    /* Estilo exacto de la imagen */
+    .btn-shortcut {
+        /* Fondo azul muy claro (puedes usar var(--background) o este específico) */
+        background-color: #f0f4f8;
+
+        /* Color de texto azul (usando tu variable primary) */
+        color: var(--primary);
+
+        /* Bordes muy redondeados (Pill style) */
+        border-radius: 50px;
+
+        /* Sin borde o un borde muy sutil */
+        border: 1px solid transparent;
+
+        padding: 10px 15px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+
+        /* Centrado de texto */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    /* Efecto al pasar el mouse */
+    .btn-shortcut:hover {
+        background-color: var(--primary-light);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Efecto cuando el botón es presionado */
+    .btn-shortcut:active {
+        transform: translateY(0);
+        background-color: var(--primary);
+    }
+
+    /* Botón Final */
+    .btn-action-pay {
+        width: 100%;
+        padding: 18px;
+        background: var(--color-success);
+        color: white;
+        border: none;
+        font-size: 16px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: var(--transition);
+
+        position: sticky;
+        bottom: 0;
+        z-index: 5;
+
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn-action-pay:hover {
+        background: var(--color-hover-success);
+    }
+
+    @media (max-width: 600px) {
+        .payment-grid {
+            flex-direction: column;
+            /* Se apilan en móvil */
+            gap: var(--space-2);
+        }
+
+        .method-icon {
+            display: none;
+            /* Ocultamos iconos en pantallas chicas */
+        }
+
+        .payment-method-item {
+            flex-direction: row;
+            /* En móvil: Etiqueta al lado del Input */
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .payment-method-item label {
+            margin-bottom: 0;
+            flex: 1;
+            text-align: left;
+        }
+
+        .payment-method-item .payment-input {
+            flex: 2;
+            text-align: right;
+        }
+    }
+
+    /* Estilo de botones MXN (Referencia imagen) */
+    .btn-shortcut {
+        background-color: #cce1f8;
+        color: var(--secondary);
+        border-radius: 50px;
+        border: none;
+        padding: 8px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-shortcut:hover {
+        background-color: var(--primary-light);
+        color: white;
+    }
+
+    .change-success {
+        color: var(--color-success);
+    }
+
+    .change-primary {
+        color: #fa3a3a;
+    }
+</style>
+<plus-panel id="buyPanel" title="sales.btn.accept-buy" side="left" size="100%">
+    <div class="div-pay">
+
+
+        <div class="pay-header">
+            <div class="header-item">
+                <span class="label" t="sales.label.total-to-recived"></span>
+                <span class="value primary" id="txtMoneyToBuy">$0.00</span>
+            </div>
+            <div class="header-item align-right">
+                <span class="label" t="sales.label.change"></span>
+                <span id="txtChangeToBuy" class="value change-success">$0.00</span>
+            </div>
+        </div>
+        <br>
+
+        <div class="payment-grid">
+            <div class="payment-method-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/426/426107.png" class="method-icon">
+                <label t="sales.label.paycash"></label>
+                <input type="number" id="payCash" class="payment-input" placeholder="0.00" onclick="setActiveInput(this)">
+            </div>
+
+            <div class="payment-method-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/609/609713.png" class="method-icon">
+                <label t="sales.label.paydebit"></label>
+                <input type="number" id="payDebit" class="payment-input" placeholder="0.00" onclick="setActiveInput(this)">
+            </div>
+
+            <div class="payment-method-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/147/147258.png" class="method-icon">
+                <label t="sales.label.paycredit"></label>
+                <input type="number" id="payCredit" class="payment-input" placeholder="0.00" onclick="setActiveInput(this)">
+            </div>
+        </div>
+        <div class="shortcuts-grid">
+            <button type="button" class="btn-shortcut" onclick="fillActiveInput(20)">20</button>
+            <button type="button" class="btn-shortcut" onclick="fillActiveInput(50)">50</button>
+            <button type="button" class="btn-shortcut" onclick="fillActiveInput(100)">100</button>
+            <button type="button" class="btn-shortcut" onclick="fillActiveInput(200)">200</button>
+            <button type="button" class="btn-shortcut" onclick="fillActiveInput(500)">500</button>
+        </div>
+        <br><br>
+
+        <hr>
+        <button class="btn-action-pay" onclick="buy_success()">
+            <span t="sales.label.success-buy"></span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+        </button>
+    </div>
+</plus-panel>
+
+
+
+
+
+
+
+
+
+
+<style>
+    .div-information-sales-buy {
+        background: transparent;
+        padding: var(--space-5);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-3);
+        border-radius: var(--radius);
+    }
+
+    .success-icon-container {
+        width: 80px;
+        height: 80px;
+        margin-bottom: var(--space-2);
+    }
+
+    .success-svg {
+        width: 80px;
+        height: 80px;
+        display: block;
+    }
+
+    .success-circle {
+        stroke: var(--btn-success-bg);
+        stroke-width: 3;
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .success-check {
+        stroke: var(--btn-success-bg);
+        stroke-width: 4;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+
+    @keyframes stroke {
+        100% {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    .status-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0;
+    }
+
+    .status-subtitle {
+        font-size: 16px;
+        color: var(--primary);
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .document-text {
+        font-size: 13px;
+        color: #94a3b8;
+        margin-top: var(--space-2);
+    }
+
+    .actions-grid {
+        display: flex;
+        gap: var(--space-3);
+        margin-top: var(--space-4);
+    }
+
+    .btn-action-icon {
+        background: white;
+        border: 1px solid var(--card-border);
+        padding: 15px;
+        border-radius: 12px;
+        color: var(--primary);
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--shadow);
+    }
+
+    .btn-action-icon:hover {
+        background: #f8fafc;
+        transform: translateY(-3px);
+        border-color: var(--primary-light);
+        color: var(--primary-dark);
+    }
+</style>
+<message-pop name="buyPanelInfo" title="Cobro Realizado">
+    <div class="div-information-sales-buy">
+        <div class="success-icon-container">
+            <svg class="success-svg" viewBox="0 0 52 52">
+                <circle class="success-circle" cx="26" cy="26" r="25" fill="none" />
+                <path class="success-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+            </svg>
+        </div>
+
+        <h2 class="status-title" t="sales.title.sales-success"></h2>
+        <p class="status-subtitle" id="informationBoxAndFolio">Caja 1 - Folio #0284</p>
+
+        <span class="document-text" t="sales.label.document-created"></span>
+        <label id="txtChangeToBuyBox"></label>
+
+        <div class="actions-grid">
+            <button class="btn-action-icon" title="Imprimir" onclick="btn_print_buy()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+            </button>
+
+            <button class="btn-action-icon" title="Enviar por Email" onclick="send_buy_for_email()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+            </button>
+            <!--
+            <button class="btn-action-icon" title="Compartir">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+            </button>
+            --->
+        </div>
+        <br>
+        <button onclick="window.hide_pop('buyPanelInfo')" class="btn btn-success btn-edit" id="buttonChangeText"></button>
+    </div>
+</message-pop>
+
+
+<script>
+    (()=>{
+        let activeInput = null;
+        let totalBuy=0;
+        window.totalBuy = totalBuy;
+        window.activeInput=activeInput;
+    })();
+
+    function send_buy_for_email() {
+        //here we will send the information of the buy for email, for that we will send a post to the backend with the id of the sale and the email of the customer
+        const email=prompt("Please enter the customer's email:");
+        if(!email){
+            return;
+        }
+        
+        if(!window.idSales){
+            window.show_notification('error', 'sales.error.cant-send-email');
+            return;
+        }
+
+        window.send_message_to_the_server(`/sales/send_buy_email/${window.idSales}/`, {email: email}, true, 'POST');
+        window.show_notification('success', 'sales.message.email-sent');
+    }
+
+    function btn_print_buy() {
+
+        //here we will see if the function print_table_sales exist, if exist we are in the app of sales and we can print the sale,
+        // if not we are in the POS and we use other function to print the sale, this is because the POS have a different design for the print of the sale
+        if (typeof print_table_sales === "function") {
+            window.print_table_sales()
+        }
+    }
+
+    async function buy_success() {
+        //first we will see if the sale can be completed, for example if the change is negative we can not complete the sale because the customer did not pay enough money
+        //get all the money that the user put in the inputs
+        const payCash = parseFloat(document.getElementById('payCash').value) || 0;
+        const payDebit   = parseFloat(document.getElementById('payDebit').value) || 0;
+        const payCredit  = parseFloat(document.getElementById('payCredit').value) || 0;
+        const totalPaid = payCash + payDebit + payCredit;
+
+        // we will see if exist a totelBuy in the window, if not we set it to 0, 
+        // this is because in the POS we set the totalBuy when open the panel but in the sales form we can not be sure that exist that variable
+        const totalBuy = window.totalBuy || 0;
+        const change = totalPaid - totalBuy;
+        let existChange=true;
+
+        //now we will see if exist the input
+        const payment_term_days=document.getElementById('payment_term_days');
+        if(payment_term_days && payment_term_days.value && parseInt(payment_term_days.value)>0){
+            //if exist the input of payment term days and the value is greater than 0, 
+            // this mean that the sale is on credit, for that reason we not need to see the change because the customer will pay later
+            //for that reason we set the change to 0 for avoid problems in the backend
+            existChange=false;
+        }
+
+        //if the change is negative and existChange is true, 
+        // this mean that the customer did not pay enough money for complete the sale, 
+        // for that reason we will show an alert for the user and we will not complete the sale
+        if(change<0 && existChange){
+            const text=window.translate_text('sales.error.sale-not-completed-amount', {money: window.format_currency(Math.abs(change), 'MXN')});
+            window.show_alert('alert', 'sales.error.insufficient-payment', text);
+            return;
+        }
+
+        //if the change is ok we can complete the sale, 
+        // we will send the post to the backend for complete the sale 
+        const body={
+            cash_received:totalPaid,
+            payCash: payCash,
+            payDebit: payDebit,
+            payCredit: payCredit,
+            totalBuy: totalBuy,
+        }
+
+        //now here we will see if exist a ID of the sale. If not exist maybe is because the user is in the POS
+        if(!window.idSales){
+            //if the user maybe is in the POS we need create first the sale for after do the buy
+            //for know if the user is in the POS ww will see if exist the function of create_payload of the pos
+            if (typeof create_the_payload_of_the_sale_from_the_pos !== "function") {
+                window.show_alert('error', 'sales.title.sale-not-saved', 'sales.error.not-id-of-sale', 'The sale not have a ID');
+                return;
+            }
+
+            //Now if exist the funcion <create_the_payload_of_the_sale_from_the_pos> is because the user is in the POS
+            // and now we will to create the payload for send to the server
+            const payload = create_the_payload_of_the_sale_from_the_pos();
+
+            //send the information to the server and try create the sale
+            const backend = await window.send_message_to_the_server('/sales/add_sale/', payload, true, 'POST');
+            if (!backend.success) {
+                window.show_alert('error', 'sales.title.sale-not-saved', backend.message || 'sales.message.sale-not-saved', backend.error || '');
+                return;
+            }
+
+            //now we will update the 'reference' in the screen with the reference that generate the backend for the sale
+            const answer=backend.answer;
+            window.idSales = answer.id;
+        }
+
+        //when exist a <idSales> is because the user already do a sale previously and now can create a buy
+        const backend=await window.send_message_to_the_server(`/sales/do_a_sale/${window.idSales}/`, body, true, 'POST');
+        if(!backend.success){
+            window.show_alert('error', 'sales.error.insufficient-payment-server', backend.message || 'sales.error.sale-not-completed');
+            return;
+        }
+
+        //if we can complete the sale we will show the information of the sale in a new panel
+        document.getElementById('informationBoxAndFolio').textContent = `${backend.answer.point_of_sale} - Folio #${backend.answer.reference}`;
+        document.getElementById('buyPanel').hide();
+
+        const changeBackend=backend.answer.change_given || 0;
+        const textChange=window.format_currency(changeBackend, 'MXN', true);
+        document.getElementById('txtChangeToBuyBox').textContent = window.translate_text('sales.label.change') + ': ' + textChange;
+        document.getElementById('buttonChangeText').textContent = window.translate_text('sales.label.change') + ': ' + textChange;
+
+        //here we will to update the information of buy of the UI
+        window.totalBuy=backend.answer.balance;
+
+        window.show_pop('buyPanelInfo');
+
+        //here we will see if the user is in the form of the sales or is in the POS
+        //if exist the function change_status_button we are in the app of sales if not we are in the POS
+        if (typeof change_status_button === "function") {
+            change_status_button(backend.answer.status);
+            //window.nextWeb(`/sales/view_sale/${window.idSales}/`); //if the user is in the view of sale we will to render the view with the history of the sale
+        }
+
+        //if we is in the POS now clear all the car
+        if (typeof clear_car === "function") {
+            window.clear_car();
+        }
+    }
+
+    function calculate_change() {
+        //get all the money that the user put in the inputs
+        const payCash = parseFloat(document.getElementById('payCash').value) || 0;
+        const payDebit   = parseFloat(document.getElementById('payDebit').value) || 0;
+        const payCredit  = parseFloat(document.getElementById('payCredit').value) || 0;
+        const totalPaid = payCash + payDebit + payCredit;
+
+        // we will see if exist a totelBuy in the window, if not we set it to 0, 
+        // this is because in the POS we set the totalBuy when open the panel but in the sales form we can not be sure that exist that variable
+        const totalBuy = window.totalBuy || 0;
+
+        const change = totalPaid - totalBuy;
+
+        const changeElement = document.getElementById('txtChangeToBuy');
+        changeElement.textContent = window.format_currency(change, 'MXN', true);
+
+        // styles
+        changeElement.classList.toggle('change-success', change >= 0);
+        changeElement.classList.toggle('change-primary', change < 0);
+    }
+
+    function open_buy_panel(total) {
+        //this is for know if exist the variable totalBuy in the window, 
+        // if not we set it to 0, this is for avoid problems in the POS
+        //  because in the POS we set the totalBuy when open the panel but in the sales form we can not be sure that exist that variable
+        if(window.totalBuy==0){
+            window.totalBuy = total;
+        }
+        
+        //first we will to clear all the inputs of the panel for avoid problems 
+        // if the user open again the panel for do another sale,
+        document.getElementById('payCash').value = '';
+        document.getElementById('payDebit').value = '';
+        document.getElementById('payCredit').value = '';
+
+        //update the information of the panel 
+        document.getElementById('txtMoneyToBuy').textContent = window.format_currency(totalBuy, 'MXN', true);
+        calculate_change();
+
+        document.getElementById('buyPanel').show();
+    }
+
+
+    // Función que detecta en qué campo hizo clic el usuario
+    function setActiveInput(inputElement) {
+        activeInput = inputElement;
+    }
+
+    // Función que llena el input activo
+    function fillActiveInput(amount) {
+        if (activeInput) {
+            // Sumamos el valor al monto actual o simplemente lo reemplazamos
+            // En este caso reemplazamos para rapidez, pero puedes usar += para sumar.
+            activeInput.value = amount;
+
+            // Efecto visual de feedback
+            activeInput.classList.add('updated');
+            setTimeout(() => activeInput.classList.remove('updated'), 300);
+
+            // Aquí podrías llamar a una función que recalcule el 'Cambio'
+        } else {
+            alert("Por favor, selecciona primero un campo de pago (Efectivo o Tarjeta)");
+        }
+    }
+
+
+
+    document.querySelectorAll('.payment-input').forEach(input => {
+        input.addEventListener('input', calculate_change);
+    });
+
+</script>

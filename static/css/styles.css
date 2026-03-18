@@ -876,6 +876,14 @@ hr {
   color: white;                
 }
 
+.btn-cancel {
+  background: transparent;
+  color: var(--text-light);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
 .btn-normal {
   background-color: var(--primary);
 }
@@ -1949,6 +1957,35 @@ hr {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s;
+  padding-left: 26px; /* space in the cube */
+  position: relative;
+}
+
+
+.plus-select-option.selected {
+  font-weight: 500;
+}
+
+/* cube blue with the check in */
+.plus-select-option.selected::before {
+  content: "✔";
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  
+  width: 14px;
+  height: 14px;
+  
+  background: var(--primary);
+  color: white;
+  
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 14px;
+  text-align: center;
+  
+  border-radius: 3px;
 }
 
 .plus-select-option:hover {
@@ -2841,4 +2878,24 @@ hr {
 
 .icon-color-primary{
   color: var(--primary);
+}
+
+
+.only-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .only-mobile {
+    display: block;
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #1f1f1f;
+  border: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
 }

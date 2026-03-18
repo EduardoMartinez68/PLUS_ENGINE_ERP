@@ -457,7 +457,8 @@
         const textDataTypeCustomer = data.customer_type?.customer ?? window.translate_text('customers.info.customer');
         const dataTypeCustomerColor = data.customer_type?.color ?? '#3B82F6';
         const textSource = data.source?.name ?? '';
-
+        const avatar_updated_at = data.avatar_updated_at || "1";
+        
         //here we will see if this customer is a company or is a person with help of a icon
         let iconCompany=`<i class="fi fi-rr-building"></i>`;
         if(window.is_true(data.this_customer_is_a_company)){
@@ -467,7 +468,7 @@
         container.innerHTML = `
         <div class="info-customer-card">
             <div class="customer-header section">
-                <img src="${image}" alt="Photo of ${data.name}" class="customer-avatar">
+                <img src="${image}?v=${avatar_updated_at}" alt="Photo of ${data.name}" class="customer-avatar">
                 <div>
                     <h2>${data.name}</h2>
                     <br>
@@ -566,6 +567,7 @@
           const colorTypeCustomer = customer_type.color || '#3B82F6';
           const points = this.getAttribute("points") || "0";
           const credit = this.getAttribute("credit") || "0";
+          const avatar_updated_at = this.getAttribute("avatar_updated_at") || "1";
 
           let image = this.getAttribute("image");
           if(this.hasAttribute("image")){
@@ -693,7 +695,7 @@
 
           wrapper.innerHTML = `
     <div class="customer-header">
-      <img class="customer-img" src="${image}" alt="${name}">
+      <img class="customer-img" src="${image}?v=${avatar_updated_at}" alt="${name}">
       <div>
         <p class="customer-name">${name}</p>
         <div class="customer-info">${email}</div>
@@ -751,6 +753,7 @@
       num_ext="{ num_ext }"
       num_int="{ num_int }"
       reference="{ reference }"
+      avatar_updated_at="{ avatar_updated_at }"
       this_customer_is_a_company="{ this_customer_is_a_company }"
       source=" { source } "
       onclick="window.update_information_div_customer('{ id }')">
@@ -782,8 +785,8 @@
 
 
 <!---show the partials of type customers and the partials source-->
-{% include 'partialsCustomers/typeCustomer.html' %}
-{% include 'partialsCustomers/source.html' %}
+{% include 'customers/partialsCustomers/typeCustomer.html' %}
+{% include 'customers/partialsCustomers/source.html' %}
 
 
 

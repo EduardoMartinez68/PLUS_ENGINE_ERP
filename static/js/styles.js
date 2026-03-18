@@ -106,8 +106,7 @@ class InfoLabel extends HTMLElement {
     span.textContent = labelText;
 
     const icon = document.createElement("i");
-    icon.className = "fi fi-sr-interrogation"; // Puedes cambiar el ícono
-
+    icon.className = "fi fi-sr-interrogation";
     // Evento tooltip
     icon.addEventListener("mouseenter", () => {
       tooltip.textContent = message;
@@ -181,8 +180,6 @@ class MessagePop extends HTMLElement {
       `;
   }
 }
-
-
 
 class PlusPanel extends HTMLElement {
   constructor() {
@@ -324,6 +321,12 @@ class PlusPanel extends HTMLElement {
       }
     `;
 
+    //save the reference 
+    this._container = container;
+    this._titleEl = title;
+    this._overlay = overlay;
+    this._navbar = navbar;
+
     // clear and add
     this.shadowRoot.innerHTML = '';
     this.shadowRoot.append(style, overlay);
@@ -365,6 +368,230 @@ class PlusPanel extends HTMLElement {
       this._overlayEl.removeEventListener('click', this._onOverlayClick);
     }
   }
+
+  // change the size
+  setSize(newSize) {
+    if (newSize === undefined || newSize === null) return;
+
+    let numericValue = parseFloat(newSize);
+
+    if (isNaN(numericValue)) return;
+
+    // limit in 0 and 100
+    numericValue = Math.max(0, Math.min(100, numericValue));
+
+    // applicate %
+    this._container.style.width = numericValue + 'vw';
+
+    this.setAttribute('size', numericValue);
+  }
+
+  // change the title
+  setTitle(newTitle) {
+    if (!newTitle) return;
+    const translated = window.translate_text
+      ? window.translate_text(newTitle)
+      : newTitle;
+
+    this._titleEl.textContent = translated;
+    this.setAttribute('title', newTitle);
+  }
+
+  // change the side (left / right)
+  setSide(newSide) {
+    if (!['left', 'right'].includes(newSide)) return;
+
+    this._container.classList.remove('left', 'right');
+    this._container.classList.add(newSide);
+
+    this._container.style.transform =
+      this.classList.contains('visible')
+        ? 'translateX(0)'
+        : `translateX(${newSide === 'left' ? '-100%' : '100%'})`;
+
+    this.setAttribute('side', newSide);
+  }
+
+  // activate / desactivate blur
+  setBlur(enable = true) {
+    const bg = enable
+      ? 'rgba(0,0,0,0.4)'
+      : 'rgba(0,0,0,0.25)';
+
+    const blur = enable ? 'blur(5px)' : 'none';
+
+    this._overlay.style.background = bg;
+    this._overlay.style.backdropFilter = blur;
+
+    this.setAttribute('blur-background', enable);
+  }
+
+  // update multiple oprtions
+  updateOptions(options = {}) {
+    if (options.size) this.setSize(options.size);
+    if (options.title) this.setTitle(options.title);
+    if (options.side) this.setSide(options.side);
+    if (typeof options.blur !== 'undefined') this.setBlur(options.blur);
+  }
+}
+
+class PlusNavbar extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+    }
+
+    connectedCallback() {
+        this.render();
+    }
+
+    render() {
+        const options = Array.from(this.querySelectorAll(':scope > option'));
+
+        this.shadowRoot.innerHTML = `
+        <style>
+            :host {
+                display: block;
+                position: sticky;
+                top: 0;
+                width: 100%;
+                z-index: 1000;
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                background-color: #ffffff;
+                color: black;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+
+            .navbar-container {
+                display: flex;
+                align-items: center;
+                padding: 0 15px;
+                height: 46px; 
+            }
+
+            ul {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                height: 100%;
+            }
+
+            .nav-item {
+                position: relative;
+                height: 100%;
+            }
+
+            .nav-link {
+                display: flex;
+                align-items: center;
+                padding: 0 12px;
+                height: 100%;
+                text-decoration: none;
+                color: rgba(0, 0, 0, 0.7);
+                font-size: 14px;
+                cursor: pointer;
+                transition: background 0.2s;
+                white-space: nowrap;
+            }
+
+            .nav-link:hover {
+                background-color: #F2F2F2; 
+                color: #0057BD;
+            }
+
+            /* Submenús */
+            .dropdown {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                background-color: white;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                min-width: 180px;
+                border-radius: 0 0 4px 4px;
+                padding: 5px 0;
+                z-index: 1100;
+            }
+
+            .nav-item:hover > .dropdown {
+                display: block;
+            }
+
+            .dropdown .nav-link {
+                color: #333;
+                padding: 8px 16px;
+                height: auto;
+            }
+
+            .dropdown .nav-link:hover {
+                background-color: #E5E5E5;
+                color: #004EA8;
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .navbar-container { overflow-x: auto; }
+            }
+        </style>
+        <nav class="navbar-container">
+            <ul>
+                ${options.map(opt => this.createNavItem(opt)).join('')}
+            </ul>
+        </nav>
+        `;
+
+        this.setupEvents();
+    }
+
+    createNavItem(option) {
+        //here we will to construct the text with a icon if the option have a attribute icon for show in the screen
+        const text = window.translate_text(option.getAttribute('t') || '');
+        const icon = option.getAttribute('icon') ? `<i class="${option.getAttribute('icon')}"></i>` : '';
+
+        const children = Array.from(
+            option.querySelectorAll(':scope > option, :scope > sub-option')
+        );
+        const hasSubmenu = children.length > 0;
+        const link = option.getAttribute('link');
+        const id = Math.random().toString(36).substr(2, 9);
+        option.setAttribute('data-nav-id', id);
+
+        return `
+            <li class="nav-item">
+                <a class="nav-link" 
+                data-id="${id}" 
+                ${link ? `onclick="window.nextWeb('${link}');"` : ''} 
+                ${hasSubmenu ? 'aria-haspopup="true"' : ''}>
+                ${icon} ${text} ${hasSubmenu ? ' ▾' : ''}
+                </a>
+                ${hasSubmenu ? `
+                    <ul class="dropdown">
+                        ${children.map(sub => this.createNavItem(sub)).join('')}
+                    </ul>
+                ` : ''}
+            </li>
+        `;
+    }
+
+    setupEvents() {
+        this.shadowRoot.querySelectorAll('.nav-link').forEach(anchor => {
+            anchor.addEventListener('click', (e) => {
+                const id = anchor.getAttribute('data-id');
+                const originalOption = this.querySelector(`[data-nav-id="${id}"]`);
+                
+                if (originalOption) {
+                    //if have a event onclick in the original option, we will execute this event for that the user can do click in the button and show the event that the programmer add in the option
+                    const clickHandler = originalOption.getAttribute('onclick');
+                    if (clickHandler) {
+                        e.preventDefault();
+                        // run the function that the programmer add in the option
+                        new Function(clickHandler).call(window);
+                    }
+                }
+            });
+        });
+    }
 }
 
 
@@ -1477,6 +1704,7 @@ class PlusModules extends HTMLElement {
 
     // X button for mobile
     const closeBtn = document.createElement('button');
+    closeBtn.type = "button";
     closeBtn.textContent = 'X';
     closeBtn.style.position = 'absolute';
     closeBtn.style.top = '10px';
@@ -1599,6 +1827,7 @@ class PlusSelect extends HTMLElement {
   }
 
   async connectedCallback() {
+    const self = this;
     const originalSelect = this.cloneNode(true);
     this._selectElement = originalSelect;
 
@@ -1749,8 +1978,6 @@ class PlusSelect extends HTMLElement {
     this._hiddenInput = hiddenInput;
 
     //Click event on select visible. This is when the user do clic in the select.
-    let left = 0;
-    let width = 0;
     select.addEventListener('click', async () => {
       popup.classList.toggle('active');
       popup.style.zIndex = currentPopZIndex;
@@ -1776,7 +2003,7 @@ class PlusSelect extends HTMLElement {
         popup.classList.remove('active');
         searchInput.value = '';
         filterOptions('');
-        this.dispatchEvent(new Event('change', { bubbles: true }));
+        self.dispatchEvent(new Event('change', { bubbles: true }));
       });
     });
 
@@ -1974,7 +2201,7 @@ class PlusSelect extends HTMLElement {
             popup.classList.remove('active');
             searchInput.value = '';
             filterOptions('');
-            this.dispatchEvent(new Event('change', { bubbles: true }));
+            self.dispatchEvent(new Event('change', { bubbles: true }));
           });
 
           options.push(div);
@@ -2014,18 +2241,22 @@ class PlusSelect extends HTMLElement {
     wrapper.appendChild(label);
     wrapper.appendChild(select);
     wrapper.appendChild(hiddenInput);
-    this.appendChild(wrapper);
+    self.appendChild(wrapper);
 
     // mover el popup al body para que no rompa el layout
     document.body.appendChild(popup);
 
     //if the select have a value for dafault
-    const defaultValue = this.getAttribute('value');
+    const defaultValue = self.getAttribute('value');
     this.setValue(defaultValue);
   }
 
   setValue(value, text = null) {
     if (!this._selectElement) return;
+    if (value && typeof value === "object") {
+      text = text ?? value.name ?? "";
+      value = value.id ?? "";
+    }
     
     if (this._textSelected) {
       this._selectText.setAttribute('t', this._textSelected);
@@ -2088,6 +2319,555 @@ class PlusSelect extends HTMLElement {
     }
   }
 }
+
+class PlusMultiSelect extends HTMLElement {
+  constructor() {
+    super();
+    this._hiddenInput = null;
+    this._selectText = null;
+    this._selectElement = null;
+    this._thisSlectSendDataToTheServer = false;
+    this._textSelected = null;
+    this._textLabelTranslate=null;
+    this._method = 'GET'
+    this._selectedValues = new Map(); // id -> text
+  }
+
+  async connectedCallback() {
+    const self = this;
+    const originalSelect = this.cloneNode(true);
+    this._selectElement = originalSelect;
+    this._method = this.getAttribute('method') || 'GET'
+
+    //get the information that the programmer added to the select
+    const textLabel = this.getAttribute('t') || this.getAttribute('label') || '';
+    const textLabelTranslate = window.translate_text(textLabel); //translate the text of the label
+    
+
+    const name = this.getAttribute('name') || '';
+    const isRequired = this.hasAttribute('requerid');
+
+    //create a label of text of that the user can know that need do
+    const thisLabelHaveAMessage = this.getAttribute('message');
+    let label;
+
+    //get the value for if the programmer would like show other message that not be the default
+    const tilteBtn = this.getAttribute('btn_delete_title') || '';
+    const textBtn = this.getAttribute('btn_delete_text') || '';
+    this._textLabelTranslate=textLabelTranslate;
+    
+    //her we will know if the programmer need show a message to the user
+    if (thisLabelHaveAMessage) {
+      //if the programmer need show a messga, we will to create the special label when the information that need
+      label = document.createElement('info-label');
+      label.setAttribute('label', textLabel)
+      label.setAttribute('t', textLabel)
+      label.textContent = textLabelTranslate;
+      label.setAttribute('message', thisLabelHaveAMessage)
+    } else {
+      //if the programmer not need show a message, we will create a message normal
+      label = document.createElement('label');
+      label.setAttribute('label', textLabel)
+      label.setAttribute('t', textLabel);
+      label.textContent = textLabelTranslate;
+    }
+
+
+
+    //Create main wrapper
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('plus-select-wrapper');
+
+    //Create select visible container
+    const select = document.createElement('div');
+    select.classList.add('plus-select-select');
+
+    const valueShow = this.getAttribute('value') || textLabel; //this is for know what value we will show in the select when the user not selected nothing
+
+    select.innerHTML = `
+      <span class="plus-select-selected-text" t='${valueShow}'>${textLabelTranslate}</span>
+      <i class="fi fi-rr-angle-small-right plus-select-icon"></i>
+    `;
+    this._selectText = select.querySelector('.plus-select-selected-text'); //save the span of the text that was selected
+    this._textSelected = this.getAttribute('data-text') || null; //save the text that was selected
+
+    //Create options popup
+    const popup = document.createElement('div');
+    popup.classList.add('plus-select-popup');
+
+    // Create the container of the seeker 
+    const searchWrapper = document.createElement('div');
+    searchWrapper.classList.add('plus-select-search-wrapper');
+    const txtSearch = window.t('message.search') || 'search...'; //get the translate global of a seeker
+
+    //we will see if exist a pop for add a new data to this select 
+    if (this.hasAttribute('add')) {
+      const functionName = this.getAttribute('add');
+
+      searchWrapper.innerHTML = `
+      <i class="fi fi-rs-search"></i>
+      <input type="text" placeholder="${txtSearch}">
+      <button class="search-add-btn" title="${window.t('message.add')}" type="button">
+        <i class="fi fi-br-plus"></i>
+      </button>
+    `;
+
+      // Asegúrate de que el DOM ya tiene el botón antes de agregar el evento
+      const addButton = searchWrapper.querySelector('.search-add-btn');
+      if (addButton && typeof window[functionName] === 'function') {
+        addButton.addEventListener('click', window[functionName]);
+      }
+    } else {
+      //if not exist the attribute 'add' we only show the input
+      searchWrapper.innerHTML = `
+        <i class="fi fi-rs-search"></i>
+        <input type="text" placeholder="${txtSearch}">
+      `;
+    }
+
+
+    const searchInput = searchWrapper.querySelector('input');
+
+    //firsrt we will see if this select, can update 
+    const thisSlectSendDataToTheServer = this.hasAttribute('link');
+    this._thisSlectSendDataToTheServer = thisSlectSendDataToTheServer;
+
+    //also we will see if this data can be edit or delete 
+    const delete_data = this.hasAttribute('delete_data');
+    const edit_data = this.hasAttribute('edit_data');
+    const functionDelete = this.getAttribute('delete_data')?.replace('()', ''); //this is for remplace the () of the function example delete_customer() to delete_customer
+    const functionEdit = this.getAttribute('edit_data')?.replace('()', '');
+    const linkDelete = this.getAttribute('delete_data')?.replace('()', '');
+    const link = this.getAttribute('link');
+    //Create the container of the <option>
+    const slotOptions = this.querySelectorAll('option');
+    let options = [];
+
+    //--this is when in the frontend the proggramer added options
+    slotOptions.forEach(opt => {
+      //get the text of the iformation
+      const optionText = opt.getAttribute('t') || opt.textContent || '';
+
+      //we will see if the proggramer need translate this option
+      let textTranlate = window.translate_text(optionText); //translate the text that exist 
+
+
+
+      //her we will create the container of the div of the options
+      const div = document.createElement('div');
+      div.classList.add('plus-select-option');
+      div.setAttribute('t', optionText);
+
+      div.textContent = textTranlate; //update the text that we will show in the option
+      div.dataset.value = opt.getAttribute('value') || textTranlate; //add the value
+
+      //add the option to the select
+      options.push(div);
+      popup.appendChild(div);
+    });
+
+
+    //----
+    slotOptions.forEach(opt => opt.remove()); //clear the DOOM of the after options
+
+
+
+    //Insert search before options
+    popup.insertBefore(searchWrapper, popup.firstChild);
+
+    //Create hidden input
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = name;
+    hiddenInput.id = this.getAttribute('id') || generate_unique_dom_id();
+    if (isRequired) hiddenInput.required = true;
+    this._hiddenInput = hiddenInput;
+
+    //Click event on select visible. This is when the user do clic in the select.
+    select.addEventListener('click', async () => {
+      popup.classList.toggle('active');
+      popup.style.zIndex = currentPopZIndex;
+      searchInput.focus();
+
+      if (popup.classList.contains('active')) {
+        positionPopup(select, popup);
+        positionPopup(select, popup);
+      }
+
+
+      if (thisSlectSendDataToTheServer) {
+        await update_option_for_the_server('');
+      }
+    });
+    this._selectText = select.querySelector('.plus-select-selected-text');
+
+    // Event clic in options
+    options.forEach(opt => {
+      opt.addEventListener('click', () => {
+        const value = opt.dataset.value;
+        const text = opt.textContent;
+
+        // Toggle selección
+        if (this._selectedValues.has(value)) {
+          this._selectedValues.delete(value);
+          opt.classList.remove('selected');
+        } else {
+          this._selectedValues.set(value, text);
+          opt.classList.add('selected');
+        }
+
+        // Actualizar hidden
+        hiddenInput.value = JSON.stringify([...this._selectedValues.keys()]);
+
+        // Actualizar texto visible
+        this._updateSelectedText();
+
+        self.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    });
+
+
+    // Filter
+    let debounceTimer;
+    searchInput.addEventListener('input', async e => {
+      //we will see if the select will send data to the server
+      if (thisSlectSendDataToTheServer) {
+        clearTimeout(debounceTimer);
+        const value = e.target.value.toLowerCase();
+        debounceTimer = setTimeout(async () => {
+          await filterOptions(value);
+        }, 500); // 500ms after stopping typing
+      } else {
+        await filterOptions(e.target.value.toLowerCase()); //if not send data to the server, we will filter to the instant 
+      }
+    });
+
+    function positionPopup(selectElement, popupElement) {
+      // get the position in the screen
+      const rect = selectElement.getBoundingClientRect();
+      const popupRect = popupElement.getBoundingClientRect();
+
+      // position for default of the select 
+      let left = rect.left + window.scrollX + rect.width;
+      let top = rect.bottom + window.scrollY - 43;
+
+      // Check if the popup goes off the screen (right side)
+      if (left + popupRect.width > window.innerWidth) {
+          // If it goes outside, move it to the left of the select
+          //here we will to calculate the excess of the border
+          const overflowRight = left + popupRect.width - window.innerWidth;
+
+          // Adjust left by subtracting the excess
+          left = left - overflowRight-16;
+      }
+
+
+      //here we will see if the user be in the cellphone 
+      if (window.innerWidth <= 768) {
+        popupElement.style.width = `${window.innerWidth-64}px`;
+        left = rect.left + window.scrollX;
+        top = rect.bottom + window.scrollY + 8;
+      }
+
+      //update the positions
+      popupElement.style.left = `${left}px`;
+      popupElement.style.top = `${top}px`;
+    }
+
+    async function filterOptions(term) {
+      //Standardize the search term: lowercase letters and no accents
+      const normalizedTerm = term
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""); // remove accents and diacritical marks
+
+      if (thisSlectSendDataToTheServer) {
+        await update_option_for_the_server(term);
+      } else {
+        options.forEach(opt => {
+          // Standardize the text of the option
+          const normalizedText = opt.textContent
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+
+          opt.style.display = normalizedText.includes(normalizedTerm) ? 'block' : 'none';
+        });
+      }
+    }
+
+    async function update_option_for_the_server(textFilter) {
+      //after of send the message to the server, we will clear all the container of the previous options
+      clear_option_select();
+
+      //her we will create a loading for that the user know that the app is search his data
+      const loadingDiv = document.createElement('div');
+      loadingDiv.classList.add('plus-select-option');
+      loadingDiv.textContent = window.t('info.loading');
+      options.push(loadingDiv);
+      popup.appendChild(loadingDiv);
+
+      //if have a link of search, send this information to the server for get the information. 
+      //the that the server can retur is {id:0, text:'name', color: '#ffff}
+      //send the information to the server and get his answer
+      const result = await window.send_message_to_the_server(link, { query: textFilter }, false, 'GET'); //with this have a error for translate the label
+
+      //when get the answer of the server, other clear all the container 
+      clear_option_select();
+
+      //we will see if we can add the new customer
+      if (result.success) {
+        //get the data that send the server
+        const anserServer = result.answer;
+
+        //read all the data that the server send 
+        anserServer.forEach(data => {
+          const div = document.createElement('div');
+          div.classList.add('plus-select-option');
+          div.dataset.value = data.id;
+
+          
+          const value = String(data.id);
+          if (self._selectedValues.has(value)) {
+            div.classList.add('selected');
+          }
+
+          // contenedor horizontal (texto + acciones)
+          const contentContainer = document.createElement('div');
+          contentContainer.classList.add('plus-select-content');
+
+          //square of color
+          let redSquare;
+          if (data.color) {
+            redSquare = document.createElement('span');
+            redSquare.style.display = 'inline-block';
+            redSquare.style.width = '12px';
+            redSquare.style.height = '12px';
+            redSquare.style.backgroundColor = data.color;
+            redSquare.style.marginRight = '8px'; // space between square and text
+            redSquare.style.verticalAlign = 'middle';
+          }
+
+          const photo=data.photo || data.avatar; 
+          if (photo) {
+            const imgThumb = document.createElement('img');
+            imgThumb.src = photo;
+            imgThumb.alt = data.text || data.name;
+            imgThumb.loading = 'lazy';
+            imgThumb.style.width = '24px';
+            imgThumb.style.height = '24px';
+            imgThumb.style.objectFit = 'cover';
+            imgThumb.style.borderRadius = '4px';
+            imgThumb.style.marginRight = '8px';
+            imgThumb.style.verticalAlign = 'middle';
+
+            //if the image not exit, show a image for default
+            imgThumb.onerror = function() {
+              this.onerror = null;
+              this.src = window.STATIC_URLS.imageDefault; //path for default
+            };
+
+            contentContainer.appendChild(imgThumb);
+          }
+
+          // text
+          const textSpan = document.createElement('span');
+          textSpan.classList.add('option-text');
+          textSpan.textContent = data.text || data.name;
+
+          // Contenedor de botones
+          const actionsContainer = document.createElement('div');
+          actionsContainer.classList.add('plus-select-actions');
+
+          if (edit_data) {
+            const editBtn = document.createElement('button');
+            editBtn.setAttribute('type', 'button');
+            editBtn.classList.add('edit-btn');
+            editBtn.innerHTML = '<i class="fi fi-sr-pencil"></i>';
+            editBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              window[functionEdit](data.id); // run the function with the ID
+            });
+            actionsContainer.appendChild(editBtn);
+          }
+
+          if (delete_data) {
+            //create the button of delete and hsi characters
+            const deleteBtn = document.createElement('button');
+            deleteBtn.setAttribute('type', 'button');
+            deleteBtn.setAttribute('message', '')
+            //deleteBtn.classList.add('delete-btn');
+            deleteBtn.innerHTML = '<i class="fi fi-sr-trash"></i>';
+            deleteBtn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+
+              //her we will see if the user delete the item
+              if (await plus_delete_with_help_button(data.id, linkDelete, tilteBtn, textBtn)) {
+                await update_option_for_the_server(''); //update the input when the user delete a item
+              }
+            });
+            actionsContainer.appendChild(deleteBtn);
+          }
+
+          // add the option
+          if (data.color) {
+            contentContainer.appendChild(redSquare);
+          }
+          contentContainer.appendChild(textSpan);
+          if (edit_data || delete_data) {
+            contentContainer.appendChild(actionsContainer);
+          }
+          div.appendChild(contentContainer);
+
+          // Option selection event
+          div.addEventListener('click', () => {
+            //-------------------------
+            const value = div.dataset.value;
+            const text = div.textContent;
+ 
+            // Toggle selección _selectedValues
+            if (self._selectedValues.has(value)) {
+              self._selectedValues.delete(value);
+              div.classList.remove('selected');
+            } else {
+              self._selectedValues.set(value, text);
+              div.classList.add('selected');
+            }
+
+            // Actualizar hidden
+            hiddenInput.value = JSON.stringify([...self._selectedValues.keys()]);
+            self._updateSelectedText();
+            self.dispatchEvent(new Event('change', { bubbles: true }));
+          });
+
+          options.push(div);
+          popup.appendChild(div);
+        });
+      } else {
+        console.error(result.message || 'error to get information of the server for the select')
+        const text = t('error.general'); //if exit a error to connect with the server show a message 
+
+        //now we will create the container of the div of the options
+        const div = document.createElement('div');
+        div.classList.add('plus-select-option');
+
+        div.textContent = text;
+
+        //add the option to the select
+        options.push(div);
+        popup.appendChild(div);
+      }
+    }
+
+    function clear_option_select() {
+      options.forEach(opt => opt.remove());
+      options = [];
+    }
+
+
+    // Clouse if the user do clic outside 
+    document.addEventListener('click', (e) => {
+      if (!wrapper.contains(e.target)) {
+        popup.classList.remove('active');
+      }
+    });
+
+
+    //show structure of the label
+    wrapper.appendChild(label);
+    wrapper.appendChild(select);
+    wrapper.appendChild(hiddenInput);
+    self.appendChild(wrapper);
+
+    // mover el popup al body para que no rompa el layout
+    document.body.appendChild(popup);
+
+    //if the select have a value for dafault
+    const defaultValue = self.getAttribute('value');
+    self.setValue(defaultValue);
+  }
+
+  setValues(values, texts = null) {
+    if (!Array.isArray(values)) return;
+
+    if (!this._hiddenInput) {
+      setTimeout(() => this.setValues(values, texts), 50);
+      return;
+    }
+
+    this._selectedValues.clear();
+
+    const ids = [];
+
+    values.forEach((val, index) => {
+      const id = val !== null && val !== undefined ? String(val) : "";
+      let text = id;
+
+      if (texts && texts[index]) {
+        text = texts[index];
+      }
+
+      this._selectedValues.set(id, text);
+      ids.push(id); // 🔴 recolectamos solo IDs
+    });
+
+    // 🔴 Guardar solo los IDs en el hidden input
+    this._hiddenInput.value = JSON.stringify(ids);
+
+    this._updateSelectedText();
+  }
+
+  //this return the value of the hidden input
+  getValue() {
+    return this._hiddenInput ? this._hiddenInput.value : null;
+  }
+
+  //this is for restart the form when a form be send
+  reset() {
+    // 1️⃣ Limpiar el hidden input
+    if (this._hiddenInput) {
+      this._hiddenInput.value = "";
+    }
+
+    // 2️⃣ Limpiar el mapa interno de valores seleccionados
+    if (this._selectedValues) {
+      this._selectedValues.clear();
+    }
+
+    // 3️⃣ Restaurar el texto visible al label por defecto
+    if (this._selectText) {
+      const defaultLabel = this.getAttribute("t") || this.getAttribute("label") || "";
+      this._selectText.textContent = window.translate_text(defaultLabel);
+    }
+
+    // 4️⃣ Opcional: si tienes método que actualiza la UI
+    if (typeof this._updateSelectedText === "function") {
+      this._updateSelectedText();
+    }
+  }
+
+
+  _updateSelectedText() {
+    if (!this._selectText) return;
+
+    const count = this._selectedValues.size;
+
+    if (count === 0) {
+      this._selectText.textContent = window.translate_text(this._textLabelTranslate);
+      return;
+    }
+
+    if (count === 1) {
+      this._selectText.textContent = [...this._selectedValues.values()][0];
+      return;
+    }
+
+    this._selectText.textContent = `${count} seleccionados`;
+  }
+
+}
+
+
 
 class PlusCountry extends HTMLElement {
   constructor() {
@@ -2168,6 +2948,29 @@ function set_value_plus_select(id, newValue, newText = null) {
   if (typeof mySelect.setValue === 'function') {
     mySelect.setValue(newValue, newText);
   }
+}
+
+function set_value_plus_select_multiple(componentId, values) {
+  const multiSelect = document.getElementById(componentId);
+  if (!multiSelect || typeof multiSelect.setValues !== "function") return;
+
+  // Arrays para IDs y textos
+  let ids = [];
+  let texts = null;
+
+  if (!Array.isArray(values)) return;
+
+  // Detectar si es array de objetos [{id,name}]
+  if (values.length > 0 && typeof values[0] === "object") {
+    ids = values.map(item => item.id);
+    texts = values.map(item => item.name ?? String(item.id));
+  } else {
+    // Array simple de IDs
+    ids = values.map(val => String(val)); // forzar a string
+  }
+
+  // Llamar al setValues del componente
+  multiSelect.setValues(ids, texts);
 }
 
 function get_value_plus_select(id) {
@@ -4562,8 +5365,11 @@ class InputColor extends HTMLElement {
 }
 
 class PlusTag extends HTMLElement {
+  static formAssociated = true;
+
   constructor() {
     super();
+    this.internals = this.attachInternals();
     this.attachShadow({ mode: 'open' });
 
     // label
@@ -4574,7 +5380,7 @@ class PlusTag extends HTMLElement {
     this.appendChild(this.labelInfo);
 
     // atributes of the tag, we will see if need translate the tag
-    const name = this.getAttribute('name') || 'plus-tags';
+    //const name = this.getAttribute('name') || 'plus-tags';
     const t = this.getAttribute('t') || this.getAttribute('t-placeholder') || this.getAttribute('placeholder') || 'input.tags';
     const textPlaceholder = window.translate_text(t);
 
@@ -4635,30 +5441,36 @@ class PlusTag extends HTMLElement {
     // input hidden fuera del shadow
     this.hiddenInput = document.createElement('input');
     this.hiddenInput.type = 'hidden';
-    this.hiddenInput.name = name;
+    //this.hiddenInput.name = name;
     this.appendChild(this.hiddenInput);
 
     // list of all the tags
-    this.emails = [];
+    this.tags  = [];
   }
 
   connectedCallback() {
     this.input = this.shadowRoot.querySelector('input[type="text"]');
     this.container = this.shadowRoot.querySelector('.container');
+    this.hiddenInput.value = '[]';
+
+    const name = this.getAttribute('name') || 'plus-tags';
+    this.hiddenInput.name = name;
 
     this.input.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ',') {
         e.preventDefault();
-        const email = this.input.value.trim();
-        if (email && !this.emails.includes(email)) {
-          this.addTag(email);
+        const tag = this.input.value.trim();
+        if (tag && !this.tags.includes(tag)) {
+          this.addTag(tag);
         }
         this.input.value = '';
       }
     });
 
     this._value = this.getAttribute('value') || []
-
+    if (!this.hiddenInput.value) {
+      this.hiddenInput.value = '[]';
+    }
 
     // Obtener los tags iniciales desde el atributo `value`
     const valueAttr = this.getAttribute('value');
@@ -4689,7 +5501,7 @@ class PlusTag extends HTMLElement {
    * Renders the list of email tags inside the container.
    * 
    * This function first removes any existing tags to avoid duplicates.
-   * Then, it iterates over the current list of emails and creates a 
+   * Then, it iterates over the current list of tags and creates a 
    * visual "tag" element for each one. 
    * 
    * Each tag consists of:
@@ -4701,7 +5513,7 @@ class PlusTag extends HTMLElement {
    * 
    * Finally, all tags are inserted into the container, before the 
    * input element, and the hidden input field is updated to contain 
-   * the JSON string of the emails array. This makes the data 
+   * the JSON string of the tags array. This makes the data 
    * available for form submissions.
    */
   renderTags() {
@@ -4710,7 +5522,7 @@ class PlusTag extends HTMLElement {
     existingTags.forEach(tag => tag.remove());
 
     // Create a new tag element for each email
-    this.emails.forEach(email => {
+    this.tags.forEach(email => {
       const tag = document.createElement('span');
       tag.className = 'tag';
       tag.innerHTML = `${email} <button type="button">&times;</button>`;
@@ -4724,36 +5536,38 @@ class PlusTag extends HTMLElement {
       this.container.insertBefore(tag, this.input);
     });
 
-    // Store all emails as JSON in the hidden input (for form submission)
-    this.hiddenInput.value = JSON.stringify(this.emails);
+    // Store all tags as JSON in the hidden input (for form submission)
+    const data = JSON.stringify(this.tags);
+    this.hiddenInput.value = data;
+    this.internals.setFormValue(data);
   }
 
   /** PUBLIC METHODS */
   addTag(value) {
-    if (value && !this.emails.includes(value)) {
-      this.emails.push(value);
+    if (value && !this.tags.includes(value)) {
+      this.tags.push(value);
       this.renderTags();
     }
   }
 
   removeTag(value) {
-    this.emails = this.emails.filter(v => v !== value);
+    this.tags = this.tags.filter(v => v !== value);
     this.renderTags();
   }
 
   setTags(values) {
     if (Array.isArray(values)) {
-      this.emails = values;
+      this.tags = values;
       this.renderTags();
     }
   }
 
   getTags() {
-    return this.emails;
+    return this.tags;
   }
 
   resetTags() {
-    this.emails = [];
+    this.tags = [];
     this.renderTags();
   }
 }
@@ -4844,6 +5658,8 @@ class ImageUploader extends HTMLElement {
     const maxImages = parseInt(this.getAttribute("max")) || 1;
     const styleType = this.getAttribute("style") || "square";
     const fieldName = this.getAttribute("name") || "image";
+
+    const version = this.getAttribute("version") || "1";
 
     const style = document.createElement("style");
     style.textContent = `
@@ -5024,7 +5840,7 @@ class ImageUploader extends HTMLElement {
         createImageBox(url, img, index);
       };
 
-      img.src = url;
+      img.src = `${url}?v=${version}`;
 
       img.onerror = () => {
         // La imagen no existe → crea solo el marco vacío
@@ -5040,7 +5856,7 @@ class ImageUploader extends HTMLElement {
       box.classList.add("image-box", `image-${styleType}`);
 
       const img = document.createElement("img");
-      img.src = src;
+      img.src = `${src}?v=${version}`;
       img.alt = "Uploaded Image";
 
       // 🔹 input oculto en el form
@@ -5050,7 +5866,7 @@ class ImageUploader extends HTMLElement {
         hiddenInput = document.createElement("input");
         hiddenInput.type = "hidden";
         hiddenInput.name = maxImages === 1 ? fieldName : `${fieldName}_${index}`;
-        hiddenInput.value = src;
+        hiddenInput.value = `${src}?v=${version}`;
         form.appendChild(hiddenInput);
       }
 
@@ -6693,6 +7509,10 @@ function transform_my_labels_erp() {
     customElements.define('plus-search', PlusSearch);
   }
 
+  if (!customElements.get("plus-multiselect")) {
+    customElements.define('plus-multiselect', PlusMultiSelect);
+  }
+
   if(!customElements.get("list-button")){
     customElements.define('list-button', ListButton);
   }
@@ -6720,6 +7540,10 @@ function transform_my_labels_erp() {
 
   if(!customElements.get("plus-accordion")){
     customElements.define('plus-accordion', PlusAccordion);
+  }
+
+  if(!customElements.get("plus-navbar")){
+    customElements.define('plus-navbar', PlusNavbar);
   }
   
 }

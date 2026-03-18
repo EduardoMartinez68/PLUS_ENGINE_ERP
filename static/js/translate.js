@@ -30,13 +30,12 @@ let lastUrl=''; //here we will save the last loaded URL for avoid loading the sa
 let numberLanguageLoad=0;
 let allTheDictionary=[];
 const MAX_DICTIONARIES = 5;
-const VERSION_LANGUAGES_PLUS = '1.0.3'; //here is the version of the software PLUS
 
 //here we will see if exist in memory the dictionary that the user can save
 const storedDict = localStorage.getItem('allTheDictionary');
 if (storedDict) {
   try {
-    allTheDictionary = JSON.parse(storedDict);
+    //allTheDictionary = JSON.parse(storedDict);
   } catch (err) {
     console.warn("Error to load the dictionaries from localStorage", err);
   }
@@ -68,7 +67,6 @@ async function load_language(langUrl) {
 */
 
 async function load_language(langUrl, first=true) {
-  
   if (lastUrl === langUrl) {
     //if we have save the translation of the web, we will apply the translation to the web evit load the language again
     //apply_translation_to_the_web(existing.dictionary);
@@ -87,7 +85,7 @@ async function load_language(langUrl, first=true) {
 
   //if not exist the dictionary now we will the download and save in memory
   try {
-    const res = await fetch(`${langUrl}?v=${VERSION_LANGUAGES_PLUS}`);
+    const res = await fetch(`${langUrl}?v=${window.VERSION_LANGUAGES_PLUS}`);
     const translations = await res.json();
 
     // if the memory of the cache be full, delete the more old
@@ -100,7 +98,7 @@ async function load_language(langUrl, first=true) {
 
     //now we will see if the app have other app like dependencies for load his translate also
     //get the path of the information of the app
-    const configUrl = get_base_path_from_lang_url(langUrl) + "config.yaml";
+    const configUrl = get_base_path_from_lang_url(langUrl) + "/config.yaml";
     const infoConfig=await load_config(configUrl);
 
     //if this app have dependencies, now we will to load his language
@@ -144,9 +142,10 @@ async function load_config(configUrl) {
 }
 
 function get_base_path_from_lang_url(langUrl) {
-  return langUrl.replace(/locale\/.*\/translate\.json$/, "");
+  return langUrl
+    .replace(/\/(config|locale)\/.*$/, "")
+    .replace(/\/config\.yaml$/, "");
 }
-
 
 //this function is for translate the web with the translations loaded or saved. The function is called when the user load the web or change the language
 function apply_translation_to_the_web(translations) {
@@ -216,7 +215,7 @@ console.log(t("language.loading"));
 */
 async function get_language_ERP() {
   try {
-    const res = await fetch(`/static/language/${languageUser}/language.json?v=${VERSION_LANGUAGES_PLUS}`);
+    const res = await fetch(`/static/language/${languageUser}/language.json?v=${window.VERSION_LANGUAGES_PLUS}`);
     const translations = await res.json();
     return translations;
   } catch (err) {

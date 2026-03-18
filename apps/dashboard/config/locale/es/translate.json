@@ -1,0 +1,23 @@
+{
+    "dashboard.title.dashboard": "Dashboard",
+    "dashboard.title.welcome": "Bienvenido a tu panel de reportes",
+    "dashboard.plugin.dashboard_dentist.title.dashboard": "Dashboard",
+    "dashboard.plugin.dashboard_dentist.title.welcome": "Bienvenido a tu panel de reportes",
+    "dashboard.plugin.dashboard_dentist.title.appoint-today": "Citas Hoy",
+    "dashboard.plugin.dashboard_dentist.title.appoint-week": "Citas de la semana",
+    "dashboard.plugin.dashboard_dentist.title.cancelled-appointments": "Citas canceladas",
+    "dashboard.plugin.dashboard_dentist.title.attended-appointments": "Citas Atendidas",
+    "dashboard.plugin.dashboard_dentist.title.next-appointments": "Próximas citas",
+    "dashboard.plugin.dashboard_dentist.title.date": "Fecha",
+    "dashboard.plugin.dashboard_dentist.title.title": "Titulo",
+    "dashboard.plugin.dashboard_dentist.title.user": "Doctor",
+    "dashboard.plugin.dashboard_dentist.title.status": "Estado",
+    "dashboard.plugin.dashboard_dentist.message.no-appointments": "No hay citas programadas",
+    "dashboard.plugin.dashboard_dentist.title.appointment-statuses": "Estado de las citas",
+    "dashboard.plugin.dashboard_dentist.title.appointment-types": "Tipos de citas",
+    "agenda.status.pending": "Por confirmar",
+    "agenda.status.confirmed": "Confirmada",
+    "agenda.status.cancelled": "Cancelada",
+    "agenda.status.attended": "Atendida",
+    "agenda.status.noshow": "Ausente"
+}

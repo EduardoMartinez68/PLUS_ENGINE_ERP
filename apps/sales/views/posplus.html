@@ -1,0 +1,313 @@
+<style>
+:root {
+    --bg-color: #f4f7f6;
+    --white: #ffffff;
+    --border-color: #e0e0e0;
+    --text-main: #333;
+    --accent-green: #28a745;
+    --shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.body-pos {
+    background-color: var(--bg-color);
+    margin: 0;
+    display: flex;
+    height: 100dvh;
+    overflow: hidden;
+    font-family: system-ui, sans-serif;
+}
+
+/* ================= PRODUCTOS ================= */
+.products-container {
+    flex: 1;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    align-content: flex-start;
+    overflow-y: auto;
+}
+/* ================= CARRITO ================= */
+.cart-sidebar {
+    width: 360px;
+    background: var(--white);
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+.cart-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+}
+
+.cart-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+/* Footer siempre abajo */
+.cart-footer {
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+    background: #fff;
+    bottom: 0;
+    margin-top: auto;
+    padding-bottom: 15%;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.btn-pay {
+    width: 100%;
+    background: var(--accent-green);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* ================= ITEM PRODUCTO ================= */
+    /* --- ESTILOS DEL CUSTOM ELEMENT (item-pos) --- */
+    item-pos {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        padding: 10px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.1s;
+        box-shadow: var(--shadow);
+    }
+
+    item-pos:hover {
+        border-color: #aaa;
+        cursor: pointer;
+    }
+
+    item-pos img {
+        max-width: 80px;
+        height: 80px;
+        object-fit: contain;
+        margin: 0 auto 10px;
+        display: block;
+    }
+
+item-pos .name {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #555;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    text-align: left;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;      /* Máximo 2 líneas */
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    line-height: 1.1em;
+    max-height: 2.2em;          /* 2 líneas */
+
+    word-break: break-word;     /* Corta palabras largas */
+}
+
+    item-pos .price {
+        text-align: left;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text-main);
+    }
+/* ================= ITEM CARRITO ================= */
+tem-car {
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid var(--border-color);
+    padding: 8px 5px;
+    align-items: center;
+}
+
+tem-car img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+}
+
+.tem-info {
+    flex: 1;
+}
+
+.tem-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.tem-desc {
+    font-size: 0.7rem;
+    color: #777;
+}
+
+.tem-price {
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.tem-qty {
+    font-size: 0.8rem;
+    color: #555;
+}
+
+/* ================= RESPONSIVE ================= */
+
+/* Tablets */
+@media (max-width: 1024px) {
+    .cart-sidebar {
+        width: 320px;
+    }
+}
+
+/* Celulares: solo carrito */
+@media (max-width: 768px) {
+    .products-container {
+        display: none;
+    }
+
+    .cart-sidebar {
+        width: 100%;
+        border-left: none;
+    }
+}
+</style>
+
+<div class="body-pos">
+    <main class="products-container">
+        <item-pos nombre="NESCAFE CLASICO 120G" precio="92.50"
+            imagen="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSJCmNVh1cvZV6KdNGfv2b7dI2Kw71hetG-CbF_O2IeIA6pmRN1splxe4Q9Nm1PxGIt2foYBAAffl1_P4CJ_9RWDKtBr9klDMZZnBtGejmhg&s=10">
+        </item-pos>
+        <item-pos nombre="NESCAFE DOLCA 66G" precio="69.00"
+            imagen="https://m.media-amazon.com/images/I/71t-Y9o-MOL._AC_SL1500_.jpg" codigo="7501058622441">
+        </item-pos>
+
+        <item-pos nombre="PRODUCTO SIN IMAGEN" precio="45.00" descripcion="Este es un ejemplo sin foto" codigo="000123">
+        </item-pos>
+
+        <item-pos nombre="NESCAFE DE OLLA 170G" precio="63.00"
+            imagen="https://m.media-amazon.com/images/I/61MvUq-Xv5L._AC_SL1200_.jpg" codigo="7501058633552">
+        </item-pos>
+    </main>
+
+    <aside class="cart-sidebar">
+        <div class="cart-header">
+            <span>Carrito</span>
+            <button style="border:none;background:none;color:blue;">Cliente 👤</button>
+        </div>
+
+        <div class="cart-items" id="cartItems">
+            <!-- Ejemplo -->
+            <tem-car
+                nombre="Nescafe Clasico"
+                descripcion="120g"
+                precio="92.50"
+                cantidad="2"
+                unidad="1"
+                imagen="https://m.media-amazon.com/images/I/71Y68t6S6VL._SL1500_.jpg">
+            </tem-car>
+        </div>
+
+        <div class="cart-footer">
+            <div class="total-row">
+                <span>Total:</span>
+                <span>$185.00 MXN</span>
+            </div>
+            <button class="btn-pay" onclick="openBuyPanel()">(2) Pagar</button>
+        </div>
+    </aside>
+</div>
+<script>
+// ================= ITEM PRODUCTO =================
+class ItemPos extends HTMLElement {
+    connectedCallback() {
+        const nombre = this.getAttribute('nombre') || 'Producto';
+        const precio = this.getAttribute('precio') || '0.00';
+        const imagen = this.getAttribute('imagen') || '';
+
+        this.innerHTML = `
+            ${imagen ? `<img src="${imagen}">` : ''}
+            <div class="name">${nombre}</div>
+            <div class="price">$${precio}</div>
+        `;
+
+        this.addEventListener('click', () => {
+            console.log("Agregar al carrito:", nombre);
+        });
+    }
+}
+customElements.define('item-pos', ItemPos);
+
+
+// ================= ITEM CARRITO =================
+class TemCar extends HTMLElement {
+    connectedCallback() {
+        const nombre = this.getAttribute('nombre') || '';
+        const descripcion = this.getAttribute('descripcion') || '';
+        const precio = parseFloat(this.getAttribute('precio') || 0);
+        const cantidad = parseFloat(this.getAttribute('cantidad') || 1);
+        const unidad = this.getAttribute('unidad') || '1';
+        const imagen = this.getAttribute('imagen') || '';
+
+        let unidadTexto = unidad == "2" ? "gr" : "pza";
+
+        this.innerHTML = `
+            ${imagen ? `<img src="${imagen}">` : ''}
+            <div class="tem-info">
+                <div class="tem-name">${nombre}</div>
+                <div class="tem-desc">${descripcion}</div>
+                <div class="tem-qty">${cantidad} ${unidadTexto}</div>
+            </div>
+            <div class="tem-price">
+                $${(precio * cantidad).toFixed(2)}
+            </div>
+        `;
+    }
+}
+customElements.define('tem-car', TemCar);
+</script>
+
+<plus-panel id="buyPanel"
+            title="sales.btn.accept-buy"
+            side="left"
+            size="66%"
+            >
+
+
+{% include 'sales/partials/formBuy.html' %}
+            
+</plus-panel>
+
+
+<script>
+    function openBuyPanel() {
+
+    document.getElementById('buyPanel').show();
+    }
+</script>
+

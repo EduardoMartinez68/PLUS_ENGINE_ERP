@@ -1,5 +1,186 @@
 <label t="setting.module.whatsapp" desc="" icon="fi fi-brands-whatsapp"></label>
 <hr>
+<style>
+    :root {
+        --mw-primary: #2b6cb0;
+        --mw-bg: #f8fbfc;
+        --mw-border: #edf2f4;
+        --mw-text-light: #f1ef47;
+    }
+
+    /* Contenedor con Scroll Horizontal */
+    .mw-scroll-container {
+        width: 100%;
+        overflow-x: auto;
+        padding: 40px 0;
+        scrollbar-width: thin;
+    }
+
+    .mw-timeline-wrapper {
+        display: flex;
+        align-items: flex-start;
+        min-width: 1000px; /* Asegura el scroll en pantallas pequeñas */
+        position: relative;
+        padding: 0 40px;
+    }
+
+    /* Línea horizontal continua */
+    .mw-timeline-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 25px; /* Alineado al centro de los iconos de WhatsApp */
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #e2eef0;
+        z-index: 1;
+    }
+
+    /* Columna de cada paso */
+    .mw-step {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 2;
+        padding: 0 10px;
+    }
+
+    /* Iconos circulares */
+    .mw-icon-circle {
+        width: 50px;
+        height: 50px;
+        background: white;
+        border: 2px solid #b2e1e5;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        color: #46C168;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    /* Estilo de las tarjetas (Cards) */
+    .mw-card {
+        background: white;
+        border: 1px solid var(--mw-border);
+        border-radius: 12px;
+        padding: 15px;
+        width: 100%;
+        max-width: 250px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .mw-tag p {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--mw-primary);
+        text-transform: uppercase;
+        margin: 0 0 10px 0;
+    }
+
+    .mw-action-btn {
+        margin-top: 10px;
+        padding: 8px;
+        background: #f4f9fa;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        text-align: center;
+        cursor: pointer;
+        color: var(--mw-primary);
+        font-weight: 600;
+    }
+
+    /* Estilo especial para el centro (Día de la cita) */
+    .mw-center-icon {
+        background: #fff;
+        border: 2px solid var(--mw-primary);
+        color: #333;
+        font-weight: bold;
+    }
+</style>
+<form id="formWhatsappBussiness">
+    <div class="row section">
+        <div class="col">
+            <input-field label="setting.label.phone-number-id" placeholder="setting.placeholder.phone-number-id"
+                value="{{ whatsapp_account.phone_number_id }}" name="phone_number_id" type="text" id="phone_number_id"
+                required>
+            </input-field>
+        </div>
+    </div>
+    <div class="row section">
+        <div class="col">
+            <input-field label="setting.label.access-token" placeholder="setting.placeholder.access-token"
+                value="{{ whatsapp_account.access_token }}" name="access_token" type="text" id="access_token" required>
+            </input-field>
+        </div>
+    </div>
+    <div class="mw-scroll-container">
+        <div class="mw-timeline-wrapper">
+            
+            <div class="mw-step">
+                <div class="mw-icon-circle"><i class="fi fi-brands-whatsapp"></i></div>
+                <div class="mw-card">
+                    <span class="mw-tag"><p t="setting.whatsapp.four-day-before"></p></span>
+                    <div class="mw-content">
+                        <input-field label="setting.label.template_four_before" value="{{ whatsapp_account.template_four_before }}" name="template_four_before" type="text"></input-field>
+                    </div>
+                    <div class="mw-footer-btns">
+                        <div class="mw-action-btn" t="setting.btn.see-example" onclick="show_example_whatsapp(1)"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mw-step">
+                <div class="mw-icon-circle"><i class="fi fi-brands-whatsapp"></i></div>
+                <div class="mw-card">
+                    <span class="mw-tag"><p t="setting.whatsapp.a-day-before"></p></span>
+                    <div class="mw-content">
+                        <input-field label="setting.label.template_24h" value="{{ whatsapp_account.template_day_before }}" name="template_day_before" type="text"></input-field>
+                    </div>
+                    <div class="mw-footer-btns">
+                        <div class="mw-action-btn" t="setting.btn.see-example" onclick="show_example_whatsapp(2)"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mw-step">
+                <div class="mw-icon-circle mw-center-icon">1</div>
+                <div class="mw-card">
+                    <span class="mw-tag">
+                        <p t="setting.whatsapp.today"></p>
+                    </span>
+                    <div class="mw-content">
+                        <input-field label="setting.label.template_2h" placeholder="setting.placeholder.template_2h"
+                            value="{{ whatsapp_account.template_today }}" name="template_today" type="text"
+                            id="template_today">
+                        </input-field>
+                    </div>
+                    <div class="mw-footer-btns">
+                        <div class="mw-action-btn" t="setting.btn.see-example" onclick="show_example_whatsapp(3)"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mw-step">
+                <div class="mw-icon-circle" style="color: var(--mw-text-light); border-style: dashed;"><i class="fi fi-sr-circle-star"></i></div>
+                <div class="mw-card">
+                    <span class="mw-tag"><p t="setting.whatsapp.a-hrs-after"></p></span>
+                    <div class="mw-content">
+                        <input-field label="setting.label.template_qualification" value="{{ whatsapp_account.template_qualification }}" name="template_qualification" type="text"></input-field>
+                    </div>
+                    <div class="mw-footer-btns">
+                        <div class="mw-action-btn" t="setting.btn.see-example" onclick="show_example_whatsapp(4)"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <button class="btn btn-success btn-edit" t="btn.save" type="button" onclick="save_tokens_whatsapp()"></button>
+</form>
+<!--
 <h2 t="setting.title.connect-your-count-of-whatsapp"></h2>
 <p t="setting.info.connect-your-count-of-whatsapp"></p>
 <a href="https://www.facebook.com/v24.0/dialog/oauth?client_id={{facebook_id}}&redirect_uri={{facebook_redirect_uri}}&scope=whatsapp_business_management,whatsapp_business_messaging,business_management&response_type=code">
@@ -9,3 +190,147 @@
     <br><br><br><br>
     <a href="https://business.whatsapp.com/messaging/business-platform-guide-api?locale=es_LA&content_id=YLcAyjuoai0rscv&gad_source=1&gad_campaignid=23186316201&gclid=CjwKCAiAxc_JBhA2EiwAFVs7XFIq4V19rkgKcG1QQFsIV-SLAD0JXVvlqYrlUgZQTkJCJXE5_WvRHxoCaPYQAvD_BwE" t="setting.btn.do-you-not-a-count" target="_blank"></a>
 </a>
+--->
+
+
+<script>
+    (() => {
+        async function save_tokens_whatsapp() {
+            const backend = await window.send_form_to_the_server('formWhatsappBussiness', `/setting/save_token_whatsapp/`);
+            if (!backend.success) {
+                window.show_notification('error', backend.message || 'setting.error.send-form-whatsapp')
+            }
+
+            window.show_notification('success', 'setting.success.send-form-whatsapp')
+        }
+
+        window.save_tokens_whatsapp = save_tokens_whatsapp;
+    })();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+    :root {
+        --example-w-teal: #2c726c;
+        --example-w-bg: #e5ddd5;
+        --example-w-white: #ffffff;
+        --example-w-border: #1a1a1a;
+    }
+
+    .example-w-phone-container {
+        width: 350px;
+        height: 600px;
+        background-color: var(--example-w-bg);
+        border: 12px solid var(--example-w-border);
+        border-radius: 40px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        margin: 20px auto;
+    }
+
+    .example-w-header {
+        background-color: var(--example-w-teal);
+        height: 90px;
+        padding: 15px;
+        display: flex;
+        align-items: flex-end;
+        box-sizing: border-box;
+    }
+
+    .example-w-profile-pic {
+        width: 45px;
+        height: 45px;
+        background-color: #ccc;
+        border-radius: 50%;
+        border: 1.5px solid white;
+        background-image: url('https://i.imgur.com/8Km9m41.png'); 
+        background-size: cover;
+    }
+
+    .example-w-chat-body {
+        padding: 20px 15px;
+    }
+
+    .example-w-message-bubble {
+        background-color: var(--example-w-white);
+        padding: 15px;
+        border-radius: 12px;
+        border-top-left-radius: 2px; /* Efecto de mensaje de WhatsApp */
+        max-width: 85%;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        position: relative;
+    }
+
+    .example-w-text {
+        margin: 0 0 10px 0;
+        color: #333;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .example-w-text:last-child {
+        margin-bottom: 0;
+    }
+
+    .example-w-bold {
+        font-weight: 700;
+    }
+
+    .example-w-link {
+        color: #00a5f4;
+        text-decoration: none;
+        word-break: break-all;
+    }
+</style>
+<message-pop name="example-whatsapp" title="setting.title.example-whatsapp">
+    <div class="example-w-phone-container">
+        <header class="example-w-header">
+            <div class="example-w-profile-pic"></div>
+        </header>
+
+        <main class="example-w-chat-body">
+            <article class="example-w-message-bubble">
+                <p id="container-example-text"></p>
+            </article>
+        </main>
+    </div>
+</message-pop>
+<script>
+    function show_example_whatsapp(type){
+        const title = document.getElementById("container-example-text");
+        if(type == 1){
+            title.innerHTML = `${window.translate_text('setting.text.template_four-day-before')}`;
+        }
+        if(type == 2){
+            title.innerHTML = `${window.translate_text('setting.text.template_a-day-before')}`;
+        }
+        if(type == 3){
+            title.innerHTML = `${window.translate_text('setting.text.template_today')}`;
+        }
+        if(type == 4){
+            title.innerHTML = `${window.translate_text('setting.text.a-hrs-after')}`;
+        }
+
+        window.show_pop('example-whatsapp');
+    }
+</script>

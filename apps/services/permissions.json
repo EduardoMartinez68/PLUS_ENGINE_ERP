@@ -1,0 +1,36 @@
+{
+    "character": {
+        "icon": "fi fi-rr-cube"
+    },
+    "permissions": [
+        "view_products",
+        "view_product_cost",
+        "add_products",
+        "update_products",
+        "update_product_price",
+        "delete_products",
+        "restore_products",
+        "manage_product_categories",
+        "manage_product_taxes"
+    ],
+    "translate": {
+        "es": {
+            "app_name": "Productos y Servicios",
+            "description": "Permite crear, organizar y administrar los productos y servicios de la clínica.",
+
+            "view_products": "Permite ver el listado y la información de los productos y servicios.",
+            "view_product_cost": "Permite ver el costo interno y la utilidad de los productos o servicios.",
+            "add_products": "Permite crear nuevos productos o servicios.",
+
+            "update_products": "Permite modificar la información general de los productos o servicios.",
+            "update_product_price": "Permite modificar los precios de los productos o servicios.",
+
+            "delete_products": "Permite eliminar productos y servicios.",
+            "restore_products": "Permite restaurar productos o servicios eliminados previamente.",
+
+            "manage_product_categories": "Permite crear y administrar categorías o departamentos de productos y servicios.",
+            
+            "manage_product_taxes": "Permite asignar y modificar los impuestos aplicados a los productos o servicios."
+        }
+    }
+}

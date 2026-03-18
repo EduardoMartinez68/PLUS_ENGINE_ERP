@@ -1,0 +1,17 @@
+
+name: "sales"
+version: "1.0.0"
+
+appName: "sales"
+icon: "sales/icon.webp"
+iconF: "fi fi-rs-rocket-lunch"
+
+path: "/sales"
+dbInit: true
+public: true
+permissionsFile: 'permissions.json'
+dependencies:
+  - "services"
+  - "customers"
+  - "employees"
+

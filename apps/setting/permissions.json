@@ -11,7 +11,8 @@
         "edit_schedule",
         "edit_email",
         "edit_setting_user",
-        "edit_data_facture"
+        "edit_data_facture",
+        "edit_data_whatsapp_bussiness"
     ], 
     "translate":{
         "es": {
@@ -26,7 +27,8 @@
             "edit_schedule":"Editar horario de la sucursal",
             "edit_email":"Editar el email para enviar mensajes en nuestro servicio de correo electronico.",
             "edit_setting_user":"El usuario podra editar sus propias configuraciones del sistema como zona horaria, vistas, formato de fecha, etc.",
-            "edit_data_facture":"Editar datos de facturación de la sucursal"
+            "edit_data_facture":"Editar datos de facturación de la sucursal",
+            "edit_data_whatsapp_bussiness":"Editar datos de Whatsapp Business y Recordatorios Automaticos"
         }
     }
 }

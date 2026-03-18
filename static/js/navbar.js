@@ -141,7 +141,7 @@ function get_path_of_the_file_translate_of_the_app(url) {
 
   //if exit the path of the app we will load the translate.json
   if (basePathTranslate) {
-    const pathTranslate = `static/${basePathTranslate}/locale/${language}/translate.json`;
+    const pathTranslate = `static/${basePathTranslate}/config/locale/${language}/translate.json`;
     return pathTranslate;
   } else {
     console.error('Not able to obtain the base path of the app.');

@@ -1,0 +1,172 @@
+<style>
+/* Table base */
+.plus-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    font-size: 14px;
+}
+
+/* Header */
+.plus-table thead {
+    background: #f6f7f9;
+}
+
+.plus-table th {
+    padding: 10px;
+    font-weight: 600;
+    color: #444;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Rows */
+.plus-table td {
+    padding: 10px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+}
+
+/* Hover effect like Odoo */
+.odoo-table tbody tr:hover {
+    background: #f9fafb;
+    cursor: pointer;
+}
+
+/* Alignment helpers */
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Reference column */
+.ref {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Balance highlight */
+.balance {
+    font-weight: 600;
+}
+
+/* Status badges */
+.status {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Status colors */
+.status-pending {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.status-accepted {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-paid {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-expired {
+    background: #ffe5b4;
+    color: #8a5700;
+}
+
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+#appointments-table {
+    width: 100%;
+    min-width: 600px; 
+    border-collapse: collapse;
+}
+
+</style>
+
+<div class="container-section">
+    <h4>Tratamientos / Ventas</h4>
+    <div class="row">
+        <div class="col-8">
+            
+        </div>
+        <div class="col-5 p-3">
+            <plus-search input_id="search-sales">
+                <search-option>
+                    <button class="btn btn-add" onclick="window.nextWeb('/sales/add_sale/')">+</button>
+                </search-option>
+            </plus-search>
+        </div>
+    </div>
+    <div class="table-container">
+        <table class="plus-table">
+            <thead>
+                <tr>
+                    <th>Referencia</th>
+                    <th>Nombre</th>
+                    <th>Paciente</th>
+                    <th>Doctor</th>
+                    <th>Fecha</th>
+                    <th class="text-right">Total</th>
+                    <th class="text-right">Pagado</th>
+                    <th class="text-right">Saldo</th>
+                    <th class="text-center">Moneda</th>
+                    <th class="text-center">Estado</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody id="container-table-sales">
+
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+
+<script>
+    (()=>{
+        function get_div(){
+            return `
+            <tr>
+                <td class="ref" sales_id='{id}'>{reference}</td>
+                <td t='{name_sale}'></td>
+                <td t='{customer}'></td>
+                <td>{user}</td>
+                <td>{creationDate}</td>
+                <td class="text-right">$ {total}</td>
+                <td class="text-right">$ {amount_paid}</td>
+                <td class="text-right balance">$ {balance}</td>
+                <td class="text-center">{currency}</td>
+                <td class="text-center">
+                    <span class="status status-{status}" t='sales.status.{status}'></span>
+                </td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-primary" onclick="window.nextWeb('/sales/view_sale/{id}/')"><i class="fi fi-sr-pencil"></i></button>
+                </td>
+            </tr>
+            `
+        }
+
+
+        window.update_container_with_seeker('search-sales', 'container-table-sales', get_div(), `/sales/get_the_sales/`, 'GET');
+    })();
+</script>

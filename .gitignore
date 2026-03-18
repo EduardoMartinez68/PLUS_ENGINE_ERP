@@ -1,5 +1,4 @@
 .env
-.env.*
 media/*
 templates/*
 views/*
@@ -15,6 +14,7 @@ __pycache__/
 # Entornos virtuales
 venv/
 env/
+.env
 
 # Base de datos local
 db.sqlite3

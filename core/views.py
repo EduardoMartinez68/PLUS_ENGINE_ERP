@@ -244,8 +244,8 @@ def register(request):
                     plan=plan_demo,
                     status='Free',
 
-                    #Set the end of the trial to 15 days from now
-                    current_period_end=timezone.now() + timedelta(days=15),
+                    #Set the end of the trial to 7 days from now
+                    current_period_end=timezone.now() + timedelta(days=7),
                     provider="manual"
                 )
 

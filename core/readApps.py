@@ -1,3 +1,4 @@
+import importlib
 import os
 from dotenv import load_dotenv
 import yaml
@@ -34,6 +35,39 @@ def read_all_my_apps():
     return apps
 
 
+import importlib
+import importlib.util
+from pathlib import Path
+
+def load_all_plugins(apps):
+    for app in apps:
+        app_name = app["name"]
+        plugins_dir = Path(f"apps/{app_name}/plugins")
+
+        if not plugins_dir.exists():
+            continue
+
+        for plugin_dir in plugins_dir.iterdir():
+            plugin_file = plugin_dir / "plugin.py"
+
+            if not plugin_file.exists():
+                continue
+
+            module_name = f"apps.{app_name}.plugins.{plugin_dir.name}.plugin"
+
+            spec = importlib.util.spec_from_file_location(
+                module_name,
+                plugin_file
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+
+            print(f"[PLUGIN LOADED] {module_name}")
+
+def get_public_apps():
+    apps = read_all_my_apps()
+    load_all_plugins(apps) #here we will to load all the plugins of the apps
+    return [app for app in apps if app.get('public') is True]
 
 def sort_all_apps_based_on_their_dependencies(apps):
     # Filtramos None y preparamos dict para acceso rápido
@@ -83,12 +117,18 @@ def read_the_config_of_the_app(pathFile):
                 'appName': config.get('appName', ''),
                 'icon': config.get('icon', ''),
                 'path': config.get('path', ''),
+                'public': config.get('public', False),
                 'depends': config.get('depends', [])
             }
 
 def get_order_apps():
     path_file=os.path.join('apps', 'ordering.yaml')
     if not os.path.exists(path_file):
+        #here we will to create the file of ordering.yaml
+        with open(path_file, 'w', encoding='utf-8') as f:
+            f.write('')
+
+        
         return []
 
     try:
@@ -118,5 +158,5 @@ def sort_apps_by_order(original_list, order_list):
     return sorted(original_list, key=sort_key)
 
 #save all the apps in cache for not read forever all the apps. Only read all the apps when run the server
-APPS_CACHE = sort_apps_by_order(read_all_my_apps(), get_order_apps())
+APPS_CACHE = sort_apps_by_order(get_public_apps(), get_order_apps())
 APPS_FOLDER = [Path(folder) for folder in APPS_FOLDER] #her we will conver the string to path

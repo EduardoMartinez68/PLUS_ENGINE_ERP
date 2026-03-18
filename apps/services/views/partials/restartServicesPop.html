@@ -1,0 +1,70 @@
+<message-pop title="services.title.product-delete" name="pop-restart-services">
+    <div class="row">
+        <div class="col">
+            <plus-search input_id="search-services-delete"></plus-search>
+            <input type="hidden" id="pageServicesDelete">
+        </div>
+    </div>
+    <div class="row">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 90%;" t="services.title.services"></th>
+                    <th style="width: 10%;"></th>
+                </tr>
+            </thead>
+            <tbody id="body-table-delete-services">
+
+            </tbody>
+        </table>
+    </div>
+</message-pop>
+
+<script>
+(()=>{
+    function get_struct_div(){
+        return `
+        <tr>
+            <td>{name}</td>
+            <td><button class='btn btn-transparent' onclick=window.restart_services_pop('{id}')><i class="fi fi-ss-trash-restore-alt"></i></button></td>
+        </tr>
+        `
+    }
+
+    async function restart_services_pop(id){
+        const backend=await window.send_message_to_the_server(`/services/restart_services/${id}/`, {}, true, 'POST');
+        if(backend.success){
+            //here we will see if the partial of <formSpeed> is in the home of services, for update his container
+            if (typeof window.update_container_home_services === "function") {
+                window.update_container_home_services();
+            }
+
+            //update the container of services delete
+            window.update_container_from_the_server(['search-services-delete', 'pageServicesDelete'], 'body-table-delete-services', get_struct_div(), '/services/search_pack/0/', 'GET')
+            window.show_notification('success', 'services.success.the-services-was-restart');
+            return;
+        }
+
+        window.show_alert('alert', 'services.message.the-services-not-was-restart', backend.message || '', backend.error || '');
+    }
+
+
+    function open_pop_services_delete(){
+        //here we will to start the container dynamic of the products and services
+        window.show_pop('pop-restart-services');
+        window.update_container_from_the_server(['search-services-delete', 'pageServicesDelete'], 'body-table-delete-services', get_struct_div(), '/services/search_pack/0/', 'GET')
+    }
+    
+    window.update_container_with_seeker(
+        ['search-services-delete', 'pageServicesDelete'],
+        'body-table-delete-services',
+        get_struct_div(),
+        '/services/search_pack/0/',
+        'GET'
+    );
+
+    window.open_pop_services_delete=open_pop_services_delete;
+    window.restart_services_pop=restart_services_pop;
+})();
+</script>
+

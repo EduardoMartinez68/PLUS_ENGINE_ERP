@@ -1,0 +1,15 @@
+
+name: "pos"
+version: "1.0.0"
+
+appName: "pos"
+icon: "pos/icon.webp"
+iconF: "fi fi-rs-rocket-lunch"
+
+path: "/pos"
+dbInit: true
+public: true
+permissionsFile: 'permissions.json'
+dependencies:
+  - "services"
+  - "sales"

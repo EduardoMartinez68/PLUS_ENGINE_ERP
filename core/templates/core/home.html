@@ -24,7 +24,7 @@
     
     <!--our styles-->
     <link rel="icon" href="{% static 'img/favicon.ico' %}?v=1.1" type="image/x-icon">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=2.23">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=2.27">
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}?v=2.1">
     <link rel="stylesheet" href="{% static 'css/subMenuApp.css' %}?v=2.0">
     <link rel="stylesheet" href="{% static 'css/tableAndSearch.css' %}?v=2.0">
@@ -47,7 +47,16 @@
     {% include 'core/navbar.html' %}
     {% include 'core/apps.html' %}
     {% include 'core/messagePop.html' %}
-
+    <style>
+    .bg-slate-100.sticky {
+        top: 0;
+        z-index: 100;
+        /* Aumentamos el z-index para que supere a los eventos (z-index 10 o 50) */
+        background: #f8fafc;
+        /* Color sólido para que no se trasluzcan los eventos al scrollear */
+        border-bottom: 2px solid #e2e8f0;
+    }
+    </style>
     <!----load screen---->
     <div id="loadingOverlay">
         <div class="spinner"></div>
@@ -61,12 +70,6 @@
         {% block content %}{% endblock %}
     </main>
 
-
-    <!---library-->
-    <script src="{% static 'js/library/js-yaml.min.js' %}" defer></script>
-    <script src="{% static 'js/library/pdf.min.js' %}" defer></script>
-    <!--<script src="{% static 'js/library/Sortable.min.js' %}" defer></script>-->
-
     <!---js for the UI-->
     <script>
         //this variable be use for default in the UI
@@ -74,18 +77,25 @@
             emptyImage: "{% static 'img/info/empty.webp' %}",
             imageDefault:"{% static '/img/imageDefault.webp' %}"
         };
+
+        const VERSION_LANGUAGES_PLUS = '1.0.9'; //here is the version of the software PLUS
     </script>
 
-    
-    <script src="{% static 'js/translate.js' %}?v=2.42"></script>
-    <script src="{% static 'js/sendDataToTheServer.js' %}?v=2.0" defer></script>
-    <script src="{% static 'js/navbar.js' %}?v=2.23" defer></script>
-    <script src="{% static 'js/shortcuts.js' %}?v=2.1" defer></script>
-    <script src="{% static 'js/styles.js' %}?v=2.67" defer></script>
-    <script src="{% static 'js/selectStatus.js' %}?v=2.0" defer></script>
-    <script src="{% static 'js/search.js' %}?v=2.0" defer></script>
-    <script src="{% static 'js/currency.js' %}?v=2.0" defer></script>
+    <!---library-->
+    <script src="{% static 'js/library/js-yaml.min.js' %}" defer></script>
+    <script src="{% static 'js/library/pdf.min.js' %}" defer></script>
+    <!--<script src="{% static 'js/library/Sortable.min.js' %}" defer></script>-->
 
+    
+    <script src="{% static 'js/translate.js' %}?v=2.51"></script>
+    <script src="{% static 'js/sendDataToTheServer.js' %}?v=2.25" defer></script>
+    <script src="{% static 'js/navbar.js' %}?v=2.24" defer></script>
+    <script src="{% static 'js/shortcuts.js' %}?v=2.1" defer></script>
+    <script src="{% static 'js/styles.js' %}?v=2.79" defer></script>
+    <script src="{% static 'js/selectStatus.js' %}?v=2.0" defer></script>
+    <script src="{% static 'js/search.js' %}?v=2.17" defer></script>
+    <script src="{% static 'js/currency.js' %}?v=2.0" defer></script>
+    <script src="{% static 'js/library/chart.js' %}" defer></script>
     <script>
         //here we will to translate the ads 
         window.translate_dynamic_content(document.getElementById('main-content'));

@@ -4,180 +4,126 @@ from PIL import Image
 from io import BytesIO
 import base64
 import uuid
-from cryptography.fernet import Fernet
+
+from apps.customers.services.forms import CustomerForm, CustomerUpdateForm
 from ..models import Customer, CustomerType, CustomerSource
 from ..plus_wrapper import Plus
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 import os 
+from django.core.files.base import ContentFile
+from cryptography.fernet import Fernet #this is for encrypt the file
+from django.core.paginator import Paginator
 
-def save_customer(user, form, user_admin=None, password_admin=None):
+#get the key of encrypt that is in our file .env
+FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY').encode()
+f = Fernet(FIELD_ENCRYPTION_KEY)
+
+
+
+def save_customer(user, form_data):
+    form = CustomerForm(form_data)
+
+    if not form.is_valid():
+        return {
+            "success": False,
+            "errors": form.errors
+        }
+
+    customer = form.save(commit=False)
+    customer.company = user.company
+    customer.branch = user.branch
+    customer.number_of_price_of_sale = customer.number_of_price_of_sale or 1
+
+    avatar_data = form_data.get("avatar")
+    if avatar_data:
+        process_and_encrypt_avatar_form(customer, avatar_data)
+
+    customer.save()
+
+    return {
+        "success": True,
+        "customer_id": customer.id
+    }
+
+def process_and_encrypt_avatar_form(customer, avatar_data):
     """
-    Creates a client associated with the user's company.
-    `form` must be a dictionary containing the form fields.
+    avatar_data: base64 string
+    fernet: Fernet instance (key already loaded)
     """
+
+    fmt, imgstr = avatar_data.split(",", 1)
+    img_bytes = base64.b64decode(imgstr)
+
+    img = Image.open(BytesIO(img_bytes))
+
+    if img.mode in ("RGBA", "P"):
+        img = img.convert("RGB")
+
+    img.thumbnail((400, 400), Image.LANCZOS)
+
+    buffer = BytesIO()
+    img.save(buffer, format="WEBP", quality=85)
+    img.close()
+
+    raw_bytes = buffer.getvalue()
+
+    # 🔐 ENCRIPTACIÓN REAL
+    encrypted_bytes = f.encrypt(raw_bytes)
+
+    filename = f"{uuid.uuid4().hex}.enc"
+    customer.avatar.save(
+        filename,
+        ContentFile(encrypted_bytes),
+        save=False
+    )
+
+def process_and_encrypt_avatar(avatar_base64):
+    """
+    Procesa una imagen base64, la convierte a WEBP, la encripta
+    y retorna (filename, encrypted_bytes)
+    """
+    global f
+    fmt, imgstr = avatar_base64.split(",", 1)
+    img_data = base64.b64decode(imgstr)
+
+    with Image.open(BytesIO(img_data)) as img:
+        if img.mode in ("RGBA", "P"):
+            img = img.convert("RGB")
+
+        img.thumbnail((400, 400), Image.LANCZOS)
+
+        buffer = BytesIO()
+        img.save(buffer, format="WEBP", quality=85, method=6)
+        raw_bytes = buffer.getvalue()
+
+    encrypted_bytes = f.encrypt(raw_bytes)
+    filename = f"{uuid.uuid4().hex}.encrypted"
+
+    return filename, encrypted_bytes
+
+def update_customer(user, customer_id, data):
     try:
-        customer = Customer()
-        customer.company = user.company
-        customer.branch = user.branch
+        customer = Customer.objects.get(
+            id=customer_id,
+            company=user.company
+        )
 
-        # Personal information
-        customer.sku = form.get("sku", "")
-        customer.name = form.get("name", "")
-        customer.email = form.get("email") or None
-        customer.phone = form.get("phone") or None
-        customer.cellphone = form.get("cellphone") or None
-        customer.country = form.get("country", "MX")
-        customer.address = form.get("address") or None
-        customer.city = form.get("city") or None
-        customer.state = form.get("state") or None
-        customer.postal_code = form.get("postal_code") or None
-        customer.num_ext = form.get("num_ext") or None
-        customer.num_int = form.get("num_int") or None
-        customer.reference = form.get("reference") or None
-        customer.activated = Plus.to_bool(form.get("activated"))
-        customer.priority= form.get("priority") or 0
-        customer.gender = form.get("gender") or ''
+        form = CustomerUpdateForm(data, instance=customer)
 
-        # information of the company of the customer
-        customer.this_customer_is_a_company = Plus.to_bool(form.get("this_customer_is_a_company"))
-        customer.company_name = form.get("company_name") or None
-        customer.contact_name = form.get("contact_name") or None
-        customer.contact_email = form.get("contact_email") or None
-        customer.contact_phone = form.get("contact_phone") or None
-        customer.contact_cellphone = form.get("contact_cellphone") or None
-        customer.website = form.get("website") or None
-        customer.note = form.get("note") or None
+        if not form.is_valid():
+            return {
+                "success": False,
+                "errors": form.errors
+            }
 
-        # information of the customer in the company
-        customer.points = form.get("points") or 0
-        customer.credit = form.get("credit") or 0
-        customer.tags = form.get("tags") or None
-        customer.number_of_price_of_sale = form.get("number_of_price_of_sale") or 1 #forever the price be 1 for default
-
-
-        # do a relation with CustomerType and CustomerSource
-        type_id = form.get("customer_type")
-        if type_id:
-            try:
-                customer.customer_type = CustomerType.objects.get(id=type_id)
-            except CustomerType.DoesNotExist:
-                customer.customer_type = None
-
-        source_id = form.get("source")
-        if source_id:
-            try:
-                customer.source = CustomerSource.objects.get(id=source_id)
-            except CustomerSource.DoesNotExist:
-                customer.source = None
-
-        #here we will see if exist a image in base64
-        avatar_data = form.get("avatar")
-        if avatar_data and "," in avatar_data:
-            try:
-                fmt, imgstr = avatar_data.split(",", 1)
-                # decodificar imagen
-                img_data = base64.b64decode(imgstr)
-                img = Image.open(BytesIO(img_data))
-
-                # Convertir a RGB si tiene alpha (webp soporta alpha, pero RGB suele ser más compatible)
-                if img.mode in ("RGBA", "P"):
-                    img = img.convert("RGB")
-
-                # Redimensionar a tamaño máximo recomendable para avatar
-                max_size = (400, 400)
-                img.thumbnail(max_size, Image.LANCZOS)
-
-                # Guardar en memoria en formato WebP (liviano)
-                buffer = BytesIO()
-                img.save(buffer, format="WEBP", quality=85, method=6)
-                img.close()
-                buffer.seek(0)
-
-                # Nombre único para la imagen
-                unique_filename = f"{uuid.uuid4().hex}_avatar.webp"
-                customer.avatar.save(unique_filename, ContentFile(buffer.read()), save=False)
-            except Exception as e:
-                print("Error al procesar avatar:", e)
-
-
+        customer = form.save(commit=False)
         customer.save()
-        return {"success": True, "answer": "Customer save with success", "customer_id": customer.id}
-    except Exception as e:
-        print("Error saving customer:", e)
-        import traceback
-        traceback.print_exc() 
-        return {"success": False, "error": str(
-            e
-        )}
 
-def update_customer(user, customer_id, form):
-    """
-    Updates an existing customer that belongs to the user's company.
-    `form` must be a dictionary containing the fields to update.
-    """
-    try:
-        # Get the client only if it belongs to the user's company
-        customer = Customer.objects.get(id=customer_id, company=user.company)
+        # ---------- Avatar ----------
+        avatar_data = data.get("avatar")
 
-        #----- Personal information -----
-        customer.sku = form.get("sku") or ''
-        customer.name = form.get("name") or ''
-        customer.email = form.get("email") or ''
-        customer.phone = form.get("phone") or ''
-        customer.cellphone = form.get("cellphone") or ''
-        customer.country = form.get("country") or 'MX'
-        customer.address = form.get("address") or ''
-        customer.city = form.get("city") or ''
-        customer.state = form.get("state") or ''
-        customer.postal_code = form.get("postal_code") or ''
-        customer.num_ext = form.get("num_ext") or ''
-        customer.num_int = form.get("num_int") or ''
-        customer.reference = form.get("reference") or ''
-        customer.gender = form.get("gender") or ''
-
-        customer.activated = Plus.to_bool(form.get("activated"))
-        customer.priority = form.get("priority") or 0
-
-        #----- Company info -----
-        customer.this_customer_is_a_company = Plus.to_bool(form.get("this_customer_is_a_company"))
-
-        customer.company_name = form.get("company_name") or ''
-        customer.contact_name = form.get("contact_name") or ''
-        customer.contact_email = form.get("contact_email") or ''
-        customer.contact_phone = form.get("contact_phone") or ''
-        customer.contact_cellphone = form.get("contact_cellphone") or ''
-        customer.website = form.get("website") or ''
-        customer.note = form.get("note") or ''
-
-        #----- Customer company relations -----
-        customer.points = form.get("points", customer.points or 0)
-        customer.credit = form.get("credit", customer.credit or 0)
-        customer.tags = form.get("tags") or []
-
-        customer.number_of_price_of_sale = form.get("number_of_price_of_sale", customer.number_of_price_of_sale or 1)
-
-        # Relación con CustomerType
-        type_id = form.get("customer_type")
-        if type_id:
-            try:
-                customer.customer_type = CustomerType.objects.get(id=type_id)
-            except CustomerType.DoesNotExist:
-                customer.customer_type = None
-
-        # Relación con CustomerSource
-        source_id = form.get("source")
-        if source_id:
-            try:
-                customer.source = CustomerSource.objects.get(id=source_id)
-            except CustomerSource.DoesNotExist:
-                customer.source = None
-
-
-        avatar_data = form.get("avatar")
-
-        if avatar_data in ["None", None, ""]:  
-            # if the server send a None → delete the avatar
+        if avatar_data in ["None", None, ""]:
             if customer.avatar:
                 old_path = customer.avatar.path
                 customer.avatar.delete(save=False)
@@ -186,56 +132,31 @@ def update_customer(user, customer_id, form):
                         os.remove(old_path)
                     except PermissionError:
                         pass
-                customer.avatar = None
+
         elif avatar_data and "," in avatar_data:
-            try:
-                fmt, imgstr = avatar_data.split(",", 1)
-                img_data = base64.b64decode(imgstr)
+            #delete the old avatar
+            old_path = customer.avatar.path
+            customer.avatar.delete(save=False)
+            if os.path.exists(old_path):
+                try:
+                    os.remove(old_path)
+                except PermissionError:
+                    pass
+            process_and_encrypt_avatar_form(customer, avatar_data)
 
-                # Procesar imagen
-                with Image.open(BytesIO(img_data)) as img:
-                    if img.mode in ("RGBA", "P"):
-                        img = img.convert("RGB")
-                    img.thumbnail((400, 400), Image.LANCZOS)
-
-                    buffer = BytesIO()
-                    img.save(buffer, format="WEBP", quality=85, method=6)
-                    buffer.seek(0)
-
-                # Generar nombre único y reemplazar
-                unique_filename = f"{uuid.uuid4().hex}_avatar.webp"
-
-                # Si había una imagen previa, eliminarla
-                if customer.avatar:
-                    old_path = customer.avatar.path
-                    customer.avatar.delete(save=False)
-                    if os.path.exists(old_path):
-                        try:
-                            os.remove(old_path)
-                        except PermissionError:
-                            pass
-
-                # Guardar la nueva
-                customer.avatar.save(unique_filename, ContentFile(buffer.read()), save=False)
-
-            except Exception as e:
-                print("Error updating avatar:", e)
-
-                
-        # save the change
         customer.save()
 
-
-
-        return {"success": True, "answer": "Customer updated successfully", "customer_id": customer.id}
+        return {
+            "success": True,
+            "answer": "Customer updated successfully",
+            "customer_id": customer.id
+        }
 
     except Customer.DoesNotExist:
-        return {"success": False, "error": "Customer not found or does not belong to your company"}
-    except Exception as e:
-        print("Error updating customer:", e)
-        import traceback
-        traceback.print_exc()
-        return {"success": False, "error": str(e)}
+        return {
+            "success": False,
+            "error": "Customer not found or does not belong to your company"
+        }
     
 def toggle_customer_activation(customer_id, activate=True):
     """
@@ -262,7 +183,7 @@ def toggle_customer_activation(customer_id, activate=True):
         traceback.print_exc()
         return {"success": False, "error": str(e)}
 
-def search_customer_for_filter(user, search, customer_type, source, priority, activated):
+def search_customer_for_filter(user, search, customer_type, source, priority, activated, page=1):
 
     try:
         # --- 1. limit first to the user's company ---
@@ -300,13 +221,21 @@ def search_customer_for_filter(user, search, customer_type, source, priority, ac
                 (c.phone and search in c.phone.lower()) or
                 (c.cellphone and search in c.cellphone.lower())
             )]
-  
-        # --- 3. limit 20 answer ---
-        qs = qs[:20]
+        else:
+            qs = list(qs)
+
+
+        paginator = Paginator(qs, 20)
+        try:
+            page_obj = paginator.get_page(page)
+        except:
+            page_obj = paginator.get_page(1)
+
+        page_items = page_obj.object_list
 
         # --- 4. format the response ---
         customers = []
-        for c in qs:
+        for c in page_items:
             customers.append({
                 "id": c.id,
                 "sku": c.sku or '',
@@ -340,16 +269,36 @@ def search_customer_for_filter(user, search, customer_type, source, priority, ac
                     "description": c.source.description if c.source else None,
                 } if c.source else None,
 
-
-                "avatar": c.avatar.url if c.avatar else None,
+                "avatar_updated_at": int(c.avatar_updated_at.timestamp()) if c.avatar_updated_at else 0,
+                "avatar": f"/customers/get_customer_avatar/{c.id}/" if c.avatar else None,
                 "activated": "active" if c.activated else "inactive",
             })
 
-        return {"success": True, "answer": customers, "error": "the serach of the customer was success"}
+        return {
+            "success": True, 
+            "answer": customers, 
+            "pagination": {
+                "page": page_obj.number,
+                "total_pages": paginator.num_pages,
+                "total_records": paginator.count,
+                "has_next": page_obj.has_next(),
+                "has_previous": page_obj.has_previous()
+            },
+            "error": "the serach of the customer was success"}
     
     except Exception as e:
         return {"success": False, "answer": [], "error": str(e)}
     
+def desencrypt_avatar(customer):
+    # 2. Leer el archivo encriptado desde el storage
+
+    with customer.avatar.open('rb') as encrypted_file:
+        encrypted_data = encrypted_file.read()
+    
+    # 3. Desencriptar
+    decrypted_data = f.decrypt(encrypted_data)
+    return decrypted_data
+
 def get_information_of_a_customer_for_id(user, customer_id):
     try:
         if not customer_id:
@@ -401,7 +350,8 @@ def get_information_of_a_customer_for_id(user, customer_id):
                 "name": customer.source.name if customer.source else None,
                 "description": customer.source.description if customer.source else None,
             } if customer.source else None,
-            "avatar": customer.avatar.url if customer.avatar else '',
+            "avatar_updated_at": int(customer.avatar_updated_at.timestamp()) if customer.avatar_updated_at else 0,
+            "avatar": f"/customers/get_customer_avatar/{customer.id}/" if customer.avatar else None,
             "creation_date": customer.creation_date.isoformat() if customer.creation_date else None,
             "activated": customer.activated,
             "number_of_price_of_sale":customer.number_of_price_of_sale or 1

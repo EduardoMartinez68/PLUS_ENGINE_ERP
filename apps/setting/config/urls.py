@@ -9,6 +9,7 @@ urlpatterns = [
     path('view_update_data_facture_branch/', views.view_update_data_facture_branch, name='view_update_data_facture_branch'),
     path('view_get_branch_billing_data/', views.view_get_branch_billing_data, name='view_get_branch_billing_data'),
     path('view_update_schedule/', views.view_update_schedule, name='view_update_schedule'),
+    path('save_token_whatsapp/', views.save_token_whatsapp, name='save_token_whatsapp'),
     path('whatsapp_callback/', views.whatsapp_callback, name='whatsapp_callback'),
     path('view_update_profile_user/', views.view_update_profile_user, name='view_update_profile_user'),
 ]

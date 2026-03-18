@@ -1,10 +1,13 @@
 app_order:
-  - agenda
+  - dashboard
+  - pos
+  - sales
+  - services
+  
   - customers
+
   - employees
   - departament_employee
-  - files
-  - odontograma
-  - profile_online
+
   - rolesAndPermissions
   - setting

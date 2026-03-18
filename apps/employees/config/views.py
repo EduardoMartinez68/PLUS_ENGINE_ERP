@@ -119,15 +119,16 @@ def search_employee(request, activated):
         search=values[0]
         branch_name = values[1].strip() if values[1] and values[1].strip() else request.user.branch
         some_flag = values[2] if values[2] not in (None, "") else True
-    
+        page = request.GET.get("page", "")
         result = get_employees_for_search(
             company=request.user.company,
             branch= branch_name,
             sku=search,
-            activated=some_flag
+            activated=some_flag,
+            page=page
         )
     
-        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
+        return JsonResponse({"success": result["success"], "answer": result["answer"], "pagination": result["pagination"],'error':result["error"]}, status=200) 
     else:
         if request.method == "POST":
             return JsonResponse({
@@ -149,15 +150,16 @@ def search_employee(request, activated):
         search=values[0]
         branch_name = values[1].strip() if values[1] and values[1].strip() else request.user.branch
         some_flag = values[2] if values[2] not in (None, "") else True
-    
+        page = request.GET.get("page", "")
         result = get_employees_for_search(
             company=request.user.company,
             branch= branch_name,
             sku=search,
-            activated=some_flag
+            activated=some_flag,
+            page=page
         )
     
-        return JsonResponse({"success": result["success"], "answer": result["answer"], 'error':result["error"]}, status=200) 
+        return JsonResponse({"success": result["success"], "answer": result["answer"], "pagination": result["pagination"],'error':result["error"]}, status=200) 
 
 @login_required(login_url='login')
 def search_branch(request):

@@ -1,0 +1,307 @@
+<style>
+.services-grid {
+    display: grid;
+    gap: 25px;
+    padding: 20px;
+}
+
+/* Desktop grande → 4 columnas */
+@media (min-width: 1400px) {
+    .services-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Laptop / desktop normal → 3 columnas */
+@media (min-width: 992px) and (max-width: 1399px) {
+    .services-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Tablet → 2 columnas */
+@media (min-width: 576px) and (max-width: 991px) {
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Celular → 1 columna */
+@media (max-width: 575px) {
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+{% include 'services/partials/navbar.html' %}
+<input type="hidden" id="pageServices">
+<div class="container-section">
+    <div class="row">
+        <div class="col-8">
+            
+        </div>
+        <div class="col-4 p-3">
+            <plus-search input_id="search-services">
+                <search-option>
+                    <button class="btn btn-transparent" onclick="open_pop_services_delete()"><i class="fi fi-ss-trash-restore-alt"></i></button>
+                </search-option>
+                <search-option>
+                    <button class="btn btn-add" onclick="open_pop_speed()">+</button>
+                </search-option>
+            </plus-search>
+        </div>
+    </div>
+
+    <div class="services-grid" id="listServices">
+        <div class="row">
+            <div class="col section">
+                <div class="row p-4">
+                    <div class="col-9">
+                        <div class="skeleton skeleton-rect" style="width: 90%;"></div><br>
+                        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="skeleton skeleton-rect" style="width: 90%;"></div><br><br>
+                    <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col section">
+                <div class="row p-4">
+                    <div class="col-9">
+                        <div class="skeleton skeleton-rect" style="width: 90%;"></div><br>
+                        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="skeleton skeleton-rect" style="width: 90%;"></div><br><br>
+                    <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col section">
+                <div class="row p-4">
+                    <div class="col-9">
+                        <div class="skeleton skeleton-rect" style="width: 90%;"></div><br>
+                        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="skeleton skeleton-rect" style="width: 90%;"></div><br><br>
+                    <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col section">
+                <div class="row p-4">
+                    <div class="col-9">
+                        <div class="skeleton skeleton-rect" style="width: 90%;"></div><br>
+                        <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="skeleton skeleton-rect" style="width: 90%;"></div><br><br>
+                    <div class="skeleton skeleton-rect" style="width: 50%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% include 'services/partials/formSpeed.html' %}
+{% include 'services/partials/restartServicesPop.html' %}
+
+<script>
+    if (!customElements.get("card-service")) {
+        class CardService extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+            }
+
+            connectedCallback() {
+                const id=this.getAttribute('id') || null;
+                const name = this.getAttribute('name') || '';
+                const description = this.getAttribute('description') || '';
+                const category = this.getAttribute('category') || '';
+                const price = this.getAttribute('price') || '0.00';
+                const oldPrice = this.getAttribute('base_price') || '0.00';
+                const skus=this.getAttribute('skus') || {};
+                const department=this.getAttribute('department') || '';
+
+                // Mapeo de tipos para clases CSS
+                const packType = parseInt(this.getAttribute('pack_type') || 1);
+                const typeMap = {
+                    0: 'product',
+                    1: 'service',
+                    2: 'pack'
+                };
+                const type = typeMap[packType] || 'service';
+
+                const typeLabels = {
+                    'service': 'Servicio',
+                    'product': 'Producto',
+                    'pack': 'Pack/Combo'
+                };
+
+                const textButtonEdit=window.translate_text('services.btn.settings');
+                this.shadowRoot.innerHTML = `
+                <style>
+                    :host {
+                        display: block;
+                    }
+                    .card {
+                        background: white;
+                        border-radius: 16px;
+                        padding: 24px;
+                        display: flex;
+                        flex-direction: column;
+                        transition: all 0.3s ease;
+                        position: relative;
+                        border: 1px solid #e2e8f0;
+                        width:100%;
+                        height: 100%;
+                        box-sizing: border-box;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    }
+                    .card:hover {
+                        cursor: pointer;
+                        border-color: var(--primary-light, #4388C6);
+                    }
+                    .badge-row {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 15px;
+                    }
+                    .type-badge {
+                        font-size: 0.65rem;
+                        font-weight: 800;
+                        text-transform: uppercase;
+                        padding: 5px 12px;
+                        border-radius: 50px;
+                        letter-spacing: 0.5px;
+                    }
+                    /* Colores dinámicos por tipo */
+                    .type-service { background: #e3f2fd; color: var(--primary, #2b6cb0); }
+                    .type-pack { background: #fff3e0; color: #ef6c00; }
+                    .type-product { background: #f1f8e9; color: #388e3c; }
+
+                    .category-label {
+                        font-size: 0.8rem;
+                        color: var(--secondary, #1C74C2);
+                        font-weight: 600;
+                    }
+                    .card-title {
+                        font-size: 1.25rem;
+                        color: var(--primary-dark, #064985);
+                        margin: 0 0 10px 0;
+                        line-height: 1.2;
+                    }
+                    .card-desc {
+                        font-size: 0.9rem;
+                        color: #718096;
+                        line-height: 1.5;
+                        margin-bottom: 25px;
+                        flex-grow: 1;
+                    }
+                    .card-footer {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding-top: 20px;
+                        border-top: 1px solid #f1f1f1;
+                    }
+                    .price-block {
+                        display: flex;
+                        flex-direction: column;
+                    }
+                    .old-price {
+                        font-size: 0.8rem;
+                        color: #a0aec0;
+                        margin-bottom: -2px;
+                    }
+                    .current-price {
+                        font-size: 1.4rem;
+                        font-weight: 700;
+                        color: #2d3748;
+                    }
+                    .btn-action {
+                        background-color: var(--primary, #2b6cb0);
+                        color: white;
+                        padding: 10px 18px;
+                        border-radius: 10px;
+                        font-size: 0.85rem;
+                        font-weight: 600;
+                        border: none;
+                        cursor: pointer;
+                        transition: background 0.2s;
+                    }
+                    .btn-action:hover {
+                        background-color: var(--primary-dark, #064985);
+                    }
+                </style>
+                <div class="card">
+                    <div class="badge-row">
+                        <span class="type-badge type-${type}">${skus}</span>
+                        <span class="category-label">${category} || ${department}</span>
+                    </div>
+                    <h2 class="card-title">${name}</h2>
+                    <p class="card-desc">${description}</p>
+                    <div class="card-footer">
+                        <div class="price-block">
+                            <span class="old-price">$${oldPrice}</span>
+                            <span class="current-price">$${price}</span>
+                        </div>
+                        <button class="btn-action" onclick="window.open_pop_speed(${id})">${textButtonEdit}</button>
+                    </div>
+                </div>
+                `;
+            }
+        
+        }
+        customElements.define('card-service', CardService);
+    }
+
+    function get_struct_div(){
+        return `
+            <card-service 
+                id="{id}" 
+                skus="{skus}" 
+                pack_type="{pack_type}"
+                department="{department}" 
+                category="{category}" 
+                name="{name}" 
+                description="{description}"
+                price="{price}"
+                base_price="{base_price}"
+                >
+            </card-service>
+        `
+    }
+
+    function update_container_home_services(){
+        window.update_container_from_the_server(['search-services', 'pageServices'], 'listServices', get_struct_div(), '/services/search_pack/1/', 'GET')
+    }
+    
+    (()=>{
+        //here we will to start the container dynamic of the products and services
+        window.update_container_with_seeker(
+            ['search-services', 'pageServices'],
+            'listServices',
+            get_struct_div(),
+            '/services/search_pack/1/',
+            'GET'
+        );
+    })();
+</script>

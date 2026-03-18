@@ -4,6 +4,7 @@ from django.http import JsonResponse
 import json
 
 from ..services.schedule import get_branch_schedule_all
+from ..services.branch import get_whatsapp_credentials
 def setting_home(request):
     if request.method != "GET":
         return JsonResponse(
@@ -23,7 +24,13 @@ def setting_home(request):
     branch = user.branch
 
     #here we will to construct the permissions that have the user in the view of the settings 
-    permissions=Plus.get_user_permissions(user, ["edit_system","edit_company", "edit_branch", "edit_drivers", "edit_schedule", "edit_email", "edit_data_facture"]) 
+    permissions=Plus.get_user_permissions(user, 
+    ["edit_system","edit_company", 
+     "edit_branch", "edit_drivers", 
+     "edit_schedule", "edit_email", 
+     "edit_data_facture", 
+     "edit_data_whatsapp_bussiness"]
+    ) 
 
     #here we will see if have permission for edit the schedule for get from the function
     schedule=None
@@ -33,7 +40,9 @@ def setting_home(request):
     from django.conf import settings
     facebook_id=settings.FB_APP_ID
     facebook_redirect_uri=f'https://{settings.PLUS_URL}/setting/whatsapp_callback'
-    return render(request, 'setting/home_setting.html', {"user": user, "company": company, "branch":branch, "permissions": permissions, "schedule": schedule, "facebook_id":facebook_id, "facebook_redirect_uri":facebook_redirect_uri})
+
+    whatsapp_account=get_whatsapp_credentials(request.user)
+    return render(request, 'setting/home_setting.html', {"user": user, "company": company, "branch":branch, "permissions": permissions, "schedule": schedule, "facebook_id":facebook_id, "facebook_redirect_uri":facebook_redirect_uri, "whatsapp_account":whatsapp_account})
 
 
 
@@ -74,7 +83,7 @@ def view_update_company(request):
 
 
 
-from ..services.branch import update_branch
+from ..services.branch import update_branch, update_token_branch
 def view_update_branch(request):
     if request.method != "POST":
         return JsonResponse(
@@ -237,7 +246,28 @@ def view_update_schedule(request):
         "error": result.get('error',"")
     }, status=200)   
 
+def save_token_whatsapp(request):
+    if request.method != "POST":
+        return JsonResponse(
+            {"success": False, "answer": "Invalid JSON", "error": "method not success"}, 
+            status=400
+        )  
 
+    try:
+        data = json.loads(request.body)
+    except Exception as e:
+        return JsonResponse(
+            {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+            status=400
+        )   
+
+    result=update_token_branch(request.user,data)
+    return JsonResponse({
+        "success": result.get('success',False),
+        "answer": result.get('answer',''),
+        "message": result.get('message',''),
+        "error": result.get('error',"")
+    }, status=200)  
 
 #/setting/whatsapp_callback
 def whatsapp_callback(request):

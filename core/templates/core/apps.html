@@ -583,9 +583,9 @@
   <!-- Logo empresa -->
   <div class="info-branch">
     {% if request.user.company.logo %}
-      <img src="{{ request.user.company.logo.url }}" alt="{{ request.user.company.company_name }}" class="icon-company-menu">
+      <img src="{{ request.user.company.logo.url }}?v=1.3" alt="{{ request.user.company.company_name }}" class="icon-company-menu">
     {% else %}
-      <img src="{% static 'img/logo.png' %}?v=1.1" alt="icon for default" class="icon-company-menu">
+      <img src="{% static 'img/logo.png' %}?v=1.3" alt="icon for default" class="icon-company-menu">
     {% endif %}
     <span class="name_company">{{ request.user.branch.branch_name }}</span>
   </div>

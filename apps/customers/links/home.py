@@ -1,9 +1,17 @@
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 import json
+
+from core.plugins.registry import plugins
 from ..plus_wrapper import Plus
+
+
+from cryptography.fernet import Fernet #this is for encrypt the file
+import os 
+FIELD_ENCRYPTION_KEY = os.environ.get('FIELD_ENCRYPTION_KEY').encode()
+f = Fernet(FIELD_ENCRYPTION_KEY)
 
 def customers_home(request):
     # get the first 20 answers from the branch ordered by ID and that his status is True
@@ -12,10 +20,21 @@ def customers_home(request):
     return render(request, 'customers/customers.html', {'customers': customers})
 
 #-------------------------customer-------------------------
-from ..services.customers import save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, change_status_of_the_customer, update_customer
+from ..services.customers import desencrypt_avatar, save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, change_status_of_the_customer, update_customer
 @csrf_exempt
 def add_customer(request):
+    print("Total plugins:", plugins.count_all())
     if request.method == 'POST':
+        '''
+        for plugin in plugins.get_plugins(
+            module="customers",
+            action="add_customer",
+            request=request,
+            data=data,
+        ):
+            plugin.save(customer, data)
+        '''
+        
         #here we will to validate if the user have the subscription for that not can add more of that need
         sub = Plus.valid_subscription(request.user, 'customers/customers')
         if not sub.get("status",False):
@@ -76,6 +95,7 @@ def customers_search(request):
         if Plus.this_user_have_this_permission(request.user, 'view_customer'):
             query = request.GET.get("query", None)
             all_filters = request.GET.get("allFilters", "")
+            page = request.GET.get("page", 1)
             values = all_filters.split(",")
 
             if query:
@@ -89,12 +109,12 @@ def customers_search(request):
             activated = values[2] if len(values) > 2 else None
 
             answer = search_customer_for_filter(
-                request.user, search, customer_type, source, priority, activated
+                request.user, search, customer_type, source, priority, activated, page
             )
-            
+ 
             if answer["success"]:
                 return JsonResponse(
-                    {"success": True, "answer": answer["answer"], "error": answer["error"]},
+                    {"success": True, "answer": answer["answer"], "pagination": answer.get("pagination", {}), "error": answer["error"]},
                     status=200
                 )
             else:
@@ -113,7 +133,25 @@ def customers_search(request):
             status=405
         )
 
+def get_customer_avatar(request, customer_id):
+    from apps.customers.models import Customer
+    # 1. Security: Only users of the same company can see the photo
+    customer = get_object_or_404(Customer, id=customer_id, company=request.user.company)
+    
+    if not customer.avatar:
+        raise Http404("None Avatar")
 
+    try:
+        # 4. return the byte as image WebP
+        response = HttpResponse(desencrypt_avatar(customer), content_type="image/webp")
+
+        # Optional: Cache in the browser for 1 hour to avoid unnecessary work
+        response['Cache-Control'] = 'private, max-age=3600'
+        return response
+        
+    except Exception as e:
+        return HttpResponse(status=500)
+    
 @csrf_exempt
 def get_information_of_the_customer(request):
     if request.method == "GET":
@@ -222,16 +260,16 @@ from ..services.type_customer import delete_type_customer_service, edit_type_cus
 
 @csrf_exempt
 def search_type_customer(request):
+    # Ensure request method is GET
+    if request.method != "GET":
+        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+    
     #now we will see if the user have the permsssion need that the ERP need
     if not Plus.this_user_have_this_permission(request.user, 'view_type_customer'):
         return JsonResponse(
             {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
             status=200
         )
-
-    # Ensure request method is GET
-    if request.method != "GET":
-        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
 
     # Extract query param
     query = request.GET.get("query", "").strip()

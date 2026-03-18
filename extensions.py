@@ -138,6 +138,31 @@ def build_app_views(app_path):
     #Now we will to create the locale files merging the core with the plugins locale files
     create_the_file_locale(app_path, core_folder, plugins_base_folder)
 
+def migrate_partials_to_templates(app):
+    app_name = os.path.basename(os.path.normpath(app))
+    folder_views = os.path.join(app, "views")
+    target_folder = os.path.join("templates", app_name)
+
+    #if not exist the folder views we return
+    if not os.path.exists(folder_views):
+        return
+    
+    os.makedirs(target_folder, exist_ok=True)
+
+    for item in os.listdir(folder_views):
+        source_path = os.path.join(folder_views, item)
+
+        # only folders
+        if os.path.isdir(source_path):
+            destination_path = os.path.join(target_folder, item)
+
+            #if exist the folder we skip it
+            if os.path.exists(destination_path):
+                continue
+
+            shutil.copytree(source_path, destination_path)
+
+
 def load_plugins_and_extensions():
     #1. Create the folder templates if not exist and when exist delete all the subfolder of the apps in the views folder
     output_folder = os.path.join("templates")
@@ -150,5 +175,10 @@ def load_plugins_and_extensions():
     folders_apps=get_plugin_directories('apps')
     for app in folders_apps:
         build_app_views(app) 
+
+        #---now we will to migrate the partials to the templates folder---
+        migrate_partials_to_templates(app)
+
+
 
     print('All the plugins was upload with success')

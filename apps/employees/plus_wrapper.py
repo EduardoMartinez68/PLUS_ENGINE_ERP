@@ -4,6 +4,9 @@ from typing import Tuple
 from django.contrib.auth import authenticate
 from datetime import datetime
 
+from decimal import Decimal
+
+
 class Plus:
     functions_path = os.path.abspath(
         os.path.join(os.path.dirname(__file__), '../../functions')
@@ -147,7 +150,51 @@ class Plus:
             "message": "subscription.this-service-does-not-exist",
         }
 
+    @staticmethod
+    def format_currency(amount, currency_code='MXN', with_code=False, with_symbol=False):
+        """
+        Format amount similar to Intl.NumberFormat in JS.
+        Example:
+            format_currency(2500) -> '2,500.00'
+            format_currency(2500, 'MXN', True, True) -> '$ 2,500.00 MXN'
+        """
 
+        # Convert to Decimal for financial safety
+        amount = Decimal(amount)
+
+        # Locale format map
+        locale_map = {
+            'MXN': {'symbol': '$', 'thousands': ',', 'decimal': '.'},
+            'USD': {'symbol': '$', 'thousands': ',', 'decimal': '.'},
+            'EUR': {'symbol': '€', 'thousands': '.', 'decimal': ','},
+            'GBP': {'symbol': '£', 'thousands': ',', 'decimal': '.'},
+            'JPY': {'symbol': '¥', 'thousands': ',', 'decimal': '.'},
+            'BRL': {'symbol': 'R$', 'thousands': '.', 'decimal': ','},
+            'ARS': {'symbol': '$', 'thousands': '.', 'decimal': ','},
+            'CLP': {'symbol': '$', 'thousands': '.', 'decimal': ','},
+            'FRF': {'symbol': '₣', 'thousands': ' ', 'decimal': ','},
+        }
+
+        fmt = locale_map.get(currency_code, locale_map['USD'])
+
+        # Format number with US style first
+        formatted = f"{amount:,.2f}"
+
+        # Adjust separators if needed
+        if fmt['thousands'] != ',' or fmt['decimal'] != '.':
+            formatted = formatted.replace(',', 'X').replace('.', fmt['decimal']).replace('X', fmt['thousands'])
+
+        # Add symbol
+        result = formatted
+        if with_symbol:
+            result = f"{fmt['symbol']} {result}"
+
+        # Add currency code
+        if with_code:
+            result = f"{result} {currency_code}"
+
+        return result.strip()
+    
 
     @staticmethod
     def this_user_have_this_permission(

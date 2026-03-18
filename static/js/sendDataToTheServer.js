@@ -203,9 +203,9 @@ function valid_all_the_inputs_of_the_form(form) {
         // 4. Check if it is a number type and contains invalid characters
         if (input.type === 'number') {
             // The value of an input number is "" if it contains letters in some browsers
-            if (isNaN(valor) || valor === "") {
-                isValid = false;
-                errors.push(`El campo ${nombre} debe ser un número válido.`);
+            if(!Number.isFinite(Number(valor))){
+              isValid = false;
+              errors.push(`El campo ${nombre} debe ser un número válido.`);
             }
         }
     });
@@ -228,7 +228,115 @@ async function send_form_to_the_server(formId, url) {
   }
 
   //else if the user not finish all the input that be required, we will to show a message of advertence 
-  return { success: false, error: vForm.errors };
+  return { success: false, message: vForm.message || '',error: vForm.errors || ''};
+}
+
+//this functions is for update all the value of the inputs of a form in the UI.
+//The proggramer send a dictionary with all the information that the would like update in the form
+//use the 'name' of the input that is in the form and the 'keys' that is in the dictionary of <data>
+function update_inputs_of_the_form(formId, data) {
+    //first we will get the form and see if exist the form in the UI
+    const form = document.getElementById(formId);
+    if (!form || !data) return;
+
+    // get all the elements of the form for after read all and see the type 
+    const elements = form.querySelectorAll("[name]");
+    elements.forEach(element => {
+        //get the type name of the input of the form
+        const name = element.getAttribute("name");
+
+        // if the backend not send this information we will to ignore the input
+        if (!(name in data)) return;
+
+        //else if exist in the list that send the backend, we will get his value 
+        const value = data[name];
+
+        // -----------------------------
+        //Now we will see that type of input is it
+        // INPUT / TEXTAREA / SELECT
+        // -----------------------------
+        if (
+            element.tagName === "INPUT" ||
+            element.tagName === "TEXTAREA" ||
+            element.tagName === "SELECT"
+        ) {
+            if (element.type === "checkbox") {
+                element.checked = window.is_true(value);
+            } else {
+                element.value = value ?? "";
+            }
+        }
+
+        // -----------------------------
+        // INPUTS PERSONALITY
+        // -----------------------------
+        // plus-tags
+        if (element.tagName === "PLUS-TAGS" && Array.isArray(value)) {
+            if (typeof element.setTags === "function") {
+                element.setTags(value);
+            } else {
+                element.value = value;
+            }
+        }
+
+        // plus-multiselect
+        if (element.tagName === "PLUS-MULTISELECT") {
+
+            const value = data[name];
+
+            if (!value || typeof element.setValues !== "function") return;
+
+            // Case 1: array de objetos [{id, name}]
+            if (Array.isArray(value) && value.length > 0 && typeof value[0] === "object") {
+                const ids = value.map(item => item.id);
+                const texts = value.map(item => item.name);
+                element.setValues(ids, texts);
+                return;
+            }
+
+            // Case 2: array simple [1,2,3]
+            if (Array.isArray(value)) {
+                element.setValues(value);
+                return;
+            }
+        }
+
+        //plus select
+        if (element.tagName === "PLUS-SELECT") {
+
+            let id = null;
+            let text = null;
+
+            // backend sends object {id, name}
+            if (value && typeof value === "object" && !Array.isArray(value)) {
+                id = value.id ?? null;
+                text = value.name ?? "";
+            } else {
+                id = value;
+            }
+
+            // 🔴 Forzar a primitivo
+            if (id !== null && id !== undefined) {
+                id = String(id);
+            } else {
+                id = "";
+            }
+
+            if (typeof element.setValue === "function") {
+                element.setValue(id, text);
+            } else {
+                element.value = id;
+            }
+        }
+    });
+
+    // -----------------------------
+    // ID hidden (only if exist)
+    // -----------------------------
+    if (data.id) {
+        const idField = form.querySelector('[name="id"]');
+        if (idField) idField.value = data.id;
+    }
 }
 
 //this function is for create a form that send the information to the server

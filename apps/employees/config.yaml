@@ -3,6 +3,7 @@ appName: "employees"
 icon: "employees/icon.webp"
 path: "/employees"
 dbInit: true
+public: true
 permissionsFile: 'permissions.json'
 dependencies:
   - "departament_employee"

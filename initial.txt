@@ -26,3 +26,9 @@ celery -A worker worker --loglevel=info --concurrency=1 -Ofair
 
 --esto es bueno para solo 1 nucleo
 celery -A proyecto worker --concurrency=1 -P solo 
+
+
+----------
+python manage.py runserver
+celery -A core worker -l info --pool=solo
+celery -A core beat -l info

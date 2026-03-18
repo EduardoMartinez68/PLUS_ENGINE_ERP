@@ -5,7 +5,7 @@
             <plus-tab text="info-general">
                 <div class="row section">
                     <div class="col-2">
-                        <image-uploader max="1" name="avatar" value-1="{{customer.avatar}}"></image-uploader>
+                        <image-uploader max="1" name="avatar" value-1="{{customer.avatar}}" version="{{customer.avatar_updated_at}}"></image-uploader>
                     </div>
 
                     <div class="col-10">
@@ -238,8 +238,8 @@
 
 
 <!---add the partial of the type customers and source for that the user can edit-->
-{% include 'partialsCustomers/typeCustomer.html' %}
-{% include 'partialsCustomers/source.html' %}
+{% include 'customers/partialsCustomers/typeCustomer.html' %}
+{% include 'customers/partialsCustomers/source.html' %}
 
 <script>
 (() => {

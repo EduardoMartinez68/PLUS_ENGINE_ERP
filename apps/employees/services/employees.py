@@ -59,9 +59,13 @@ def get_employees_for_search(company, branch=None, sku=None, activated=None, pag
     return {
         "success": True,
         "answer": results,
-        "page": employees_page.number,
-        "total_pages": paginator.num_pages,
-        "total_employees": paginator.count,
+        "pagination": {
+            "page": employees_page.number,
+            "total_pages": paginator.num_pages,
+            "total_records": paginator.count,
+            "has_next": employees_page.has_next(),
+            "has_previous": employees_page.has_previous()
+        },
         "error": "",
     }
 

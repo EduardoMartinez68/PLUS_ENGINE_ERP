@@ -4,5 +4,6 @@ appName: "setting"
 icon: "setting/icon.webp"
 path: "/setting"
 dbInit: true
+public: true
 permissionsFile: 'permissions.json'
     

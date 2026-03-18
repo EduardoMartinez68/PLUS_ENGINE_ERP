@@ -1,0 +1,12 @@
+
+name: "services"
+version: "1.0.0"
+
+appName: "services"
+icon: "services/icon.webp"
+iconF: "fi fi-rs-rocket-lunch"
+
+path: "/services"
+dbInit: true
+public: true
+permissionsFile: 'permissions.json'

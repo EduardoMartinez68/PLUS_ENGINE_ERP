@@ -77,9 +77,6 @@ TEMPLATES = [
             #this is for load the templates of the web ERP
             BASE_DIR / 'core/templates' , 
             BASE_DIR / 'templates' , #here is for load all the views of the apps that exist in the ERP
-
-            #this is for load all the templates(views) of all the apps
-            *[(folder / 'views') for folder in APPS_FOLDER]
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -135,25 +132,6 @@ if TYPE_VERSION=='CLOUD':
             },
     }
 
-
-#----------------------------configuration of django Q for task in background---------------------------------
-'''
-
-INSTALLED_APPS = [
-    'django_q'
-]
-
-
-Q_CLUSTER = {
-    'name': 'erp_cluster',        # Name of the task cluster
-    'workers': 4,                 # Number of workers (processes) that run tasks in parallel
-    'timeout': 60,                # Maximum time in seconds a task is allowed before being marked as failed
-    'retry': 120,                 # Time in seconds to retry a failed task
-    'queue_limit': 50,            # Maximum number of tasks allowed in the queue
-    'bulk': 10,                   # Number of tasks processed per cycle (for performance)
-    'orm': 'default',             # Use Django's database as the backend (instead of Redis, etc.)
-}
-'''
 
 #---------------------HERE WE WILL GET THE KEYS OF FACEBOOKS IF EXIST IN THE ENV-----------------------
 FB_APP_ID=os.getenv('FB_APP_ID', '')

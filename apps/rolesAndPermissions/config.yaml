@@ -3,5 +3,6 @@ appName: "Roles y Permisos"
 icon: "rolesAndPermissions/icon.webp"
 path: "/rolesAndPermissions"
 dbInit: true
+public: true
 permissionsFile: 'permissions.json'
     

@@ -1,0 +1,470 @@
+<style>
+    /* Reset de impresión y base */
+    .print-document {
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        padding: 50px;
+        color: #2d3748;
+        background: white;
+        line-height: 1.5;
+    }
+
+    /* Header Estilo Moderno */
+    .doc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 40px;
+    }
+
+    .clinic-logo-placeholder {
+        border-left: 4px solid #1a365d;
+        padding-left: 15px;
+    }
+
+    .clinic-info h1 {
+        margin: 0;
+        font-size: 24px;
+        letter-spacing: -0.5px;
+        color: #1a365d;
+        text-transform: uppercase;
+    }
+
+    .clinic-info p {
+        margin: 2px 0;
+        font-size: 13px;
+        color: #718096;
+    }
+
+    .doc-title {
+        text-align: right;
+    }
+
+    .doc-title h2 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 300;
+        color: #1a365d;
+        letter-spacing: 2px;
+    }
+
+    .meta-data {
+        margin-top: 10px;
+        font-size: 13px;
+    }
+
+    /* Información del Paciente */
+    .patient-card {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .patient-card div b {
+        display: block;
+        text-transform: uppercase;
+        font-size: 11px;
+        color: #4a5568;
+        margin-bottom: 4px;
+    }
+
+    /* Tabla Elegante */
+    .doc-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .doc-table th {
+        border-bottom: 2px solid #1a365d;
+        color: #1a365d;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 1px;
+        padding: 12px 10px;
+        text-align: left;
+    }
+
+    .doc-table td {
+        padding: 15px 10px;
+        border-bottom: 1px solid #edf2f7;
+        font-size: 14px;
+    }
+
+    /* Resumen y Totales */
+    .summary-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+    }
+
+    .payment-methods {
+        width: 50%;
+        font-size: 12px;
+    }
+
+    .payment-methods h4 {
+        margin-bottom: 10px;
+        color: #1a365d;
+        text-transform: uppercase;
+        font-size: 11px;
+    }
+
+    .totals-table {
+        width: 35%;
+    }
+
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+    }
+
+    .total-row.grand-total {
+        border-top: 2px solid #1a365d;
+        margin-top: 10px;
+        padding-top: 15px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #1a365d;
+    }
+
+    /* Firmas y Validez */
+    .signatures {
+        margin-top: 60px;
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
+        font-size: 12px;
+    }
+
+    .sig-line {
+        border-top: 1px solid #cbd5e0;
+        width: 200px;
+        padding-top: 10px;
+    }
+
+    .terms {
+        margin-top: 50px;
+        padding-top: 20px;
+        border-top: 1px dashed #cbd5e0;
+        font-size: 11px;
+        color: #a0aec0;
+        text-align: center;
+    }
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #printArea,
+        #printArea * {
+            visibility: visible;
+        }
+
+        #printArea {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            padding: 0;
+        }
+
+        .print-document {
+            border: none;
+        }
+    }
+
+    #printArea {
+        display: none;
+    }
+
+    @media print {
+
+        body * {
+            visibility: hidden;
+        }
+
+        #printArea,
+        #printArea * {
+            visibility: visible;
+        }
+
+        #printArea {
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.cancel-watermark {
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 120px;
+    font-weight: 800;
+    color: red;
+    opacity: 0.15;
+    pointer-events: none;
+    text-transform: uppercase;
+    letter-spacing: 10px;
+    white-space: nowrap;
+    z-index: 9999;
+    display: none;
+}
+
+.print-cancelled .cancel-watermark {
+    display: block;
+}
+</style>
+
+<div id="printArea" class="print-document print-cancelled">
+    <div class="cancel-watermark">
+       <h1 id="legend_print_buy">CANCELADA</h1>
+    </div>
+
+    <div class="doc-header">
+        {% with branch=request.user.branch company=request.user.company %}
+        <div class="clinic-logo-placeholder" style="display:flex; align-items:center; gap:15px;">
+
+            <!-- Logo -->
+            {% if company.logo %}
+                <img src="{{ company.logo.url }}" alt="Logo" style="height:70px; width:auto;">
+            {% endif %}
+
+            <div class="clinic-info">
+                <!-- Nombre de la clínica -->
+                <h1 style="margin:0;">
+                    {% if branch.name_branch %}
+                        {{ branch.name_branch }}
+                    {% else %}
+                        {{ company.company_name }}
+                    {% endif %}
+                </h1>
+
+                <!-- Responsable -->
+                <p style="margin:2px 0;">
+                    {% if branch.name_of_the_person_in_charge %}
+                        {{ branch.name_of_the_person_in_charge }}
+                    {% else %}
+                        {{ company.name_of_the_person_in_charge }}
+                    {% endif %}
+                </p>
+
+                <!-- Teléfono / Celular -->
+                <p style="margin:2px 0;">
+                    {% if branch.phone %}📞 {{ branch.phone }}{% elif company.phone %}📞 {{ company.phone }}{% endif %}
+                    {% if branch.cellphone %}
+                        | 📱 {{ branch.cellphone }}
+                    {% elif company.cellphone %}
+                        | 📱 {{ company.cellphone }}
+                    {% endif %}
+                </p>
+
+                <!-- Email -->
+                <p style="margin:2px 0;">
+                    ✉️ 
+                    {% if branch.email_branch %}
+                        {{ branch.email_branch }}
+                    {% else %}
+                        {{ company.support_email }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% endwith %}
+
+        <div class="doc-title">
+            <h2 id="text_status_print_buy">COTIZACIÓN</h2>
+            <div class="meta-data">
+                <p>Ref: <strong id="print-reference">#2024-001</strong></p>
+                <p>Emisión: <span id="print-date">15 Oct, 2024</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="patient-card">
+        <div>
+            <b>Paciente</b>
+            <span id="print-customer" style="font-size: 16px;">Cargando nombre...</span>
+        </div>
+        <div style="text-align: right;">
+            <b>Validez</b>
+            <span id="textInformationDay">7 días naturales</span>
+        </div>
+    </div>
+
+    <table class="doc-table">
+        <thead>
+            <tr>
+                <th style="width: 50%;">Descripción del Servicio</th>
+                <th style="text-align: center;">Cant.</th>
+                <th style="text-align: right;">P. Unitario</th>
+                <th style="text-align: right;">Descuento</th>
+                <th style="text-align: right;">Impuestos</th>
+                <th style="text-align: right;">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody id="print-lines">
+        </tbody>
+    </table>
+
+    <div class="summary-container">
+        <div class="payment-methods">
+            <h4>Información de Pago</h4>
+            {% if request.user.branch.bank_name %}
+                <p>
+                    <strong>{{ request.user.branch.bank_name }}:</strong> 
+                    {{ request.user.branch.bank_account }}
+                </p>
+            {% elif request.user.company.bank_name %}
+                <p>
+                    <strong>{{ request.user.company.bank_name }}:</strong> 
+                    {{ request.user.company.bank_account }}
+                </p>
+            {% else %}
+                <p>No hay información bancaria disponible.</p>
+            {% endif %}
+
+            <p style="margin-top: 10px; color: #718096;">
+                * Aceptamos tarjetas de crédito y transferencias bancarias.
+            </p>
+        </div>
+
+        <div class="totals-table">
+            <div class="total-row">
+                <span>Subtotal:</span>
+                <span>$850.00</span>
+            </div>
+            <div class="total-row">
+                <span>Impuestos:</span>
+                <span id="print-taxes">$0.00</span>
+            </div>
+            <div class="total-row grand-total">
+                <span>Total:</span>
+                <span id="print-grand-total">$850.00</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="signatures">
+        <div class="sig-line">
+            Firma del Especialista
+        </div>
+        <div class="sig-line">
+            Aceptación del Paciente
+        </div>
+    </div>
+
+    {% with branch=request.user.branch company=request.user.company %}
+    <div class="terms" style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 10px; font-size: 13px; color: #4a5568;">
+        
+        <p>
+            Esta cotización es informativa y puede modificarse según la evolución clínica del paciente.
+        </p>
+
+        <p>
+            {% if branch.address %}{{ branch.address }}{% elif company.address %}{{ company.address }}{% endif %}
+            {% if branch.city %}, {{ branch.city }}{% elif company.city %}, {{ company.city }}{% endif %}
+            {% if branch.state %}, {{ branch.state }}{% elif company.state %}, {{ company.state }}{% endif %}
+            |
+            {% if branch.website %}{{ branch.website }}{% elif company.website %}{{ company.website }}{% endif %}
+        </p>
+
+        <p style="margin-top: 8px; font-size: 11px; color: #a0aec0; text-align: right;">
+            Powered by <strong>denty.cloud</strong>
+        </p>
+
+    </div>
+    {% endwith %}
+
+</div>
+
+<script>
+    function print_sale(data) {
+        const tbody = document.getElementById("print-lines");
+        tbody.innerHTML = "";
+        let totalTaxesGlobal = 0;
+        let grandTotal = 0;
+        const currency = 'MXN';
+        console.log(data)
+        const payment_term_days=document.getElementById('payment_term_days');
+        let days=null;
+        if(payment_term_days){
+            days=payment_term_days.value;
+        }
+        document.getElementById('textInformationDay').textContent = (days ? `${days} días naturales` : 'Pago en una sola exhibición');
+
+        data.lines.forEach(line => {
+
+            // 1. subtotal 
+            const base = line.quantity * line.unit_price;
+
+            // 2. discount
+            const discountAmount = base * ((line.discount || 0) / 100);
+            const baseAfterDiscount = base - discountAmount;
+
+            // 3. taxes
+            let lineTaxesTotal = 0;
+
+            if (line.taxes && line.taxes.length > 0) {
+                line.taxes.forEach(tax => {
+                    const taxAmount = baseAfterDiscount * (tax.rate / 100);
+                    lineTaxesTotal += taxAmount;
+                });
+            }
+
+            // 4. Total with taxes
+            const lineTotal = baseAfterDiscount + lineTaxesTotal;
+
+            // save the object
+            line.subtotal = baseAfterDiscount;
+            line.taxes_total = lineTaxesTotal;
+            line.total = lineTotal;
+
+            // 5. Acumular globales
+            totalTaxesGlobal += lineTaxesTotal;
+            grandTotal += lineTotal;
+
+            // 6. print the table
+            tbody.innerHTML += `
+                <tr>
+                    <td>${line.name}</td>
+                    <td style="text-align:center;">${line.quantity}</td>
+                    <td style="text-align:right;">$${window.format_currency(line.unit_price, currency, false)}</td>
+                    <td style="text-align:right;">${line.discount || 0}%</td>
+                    <td style="text-align:right;">$${window.format_currency(lineTaxesTotal, currency, false)}</td>
+                    <td style="text-align:right; font-weight:600;">$${window.format_currency(lineTotal, currency, false)}</td>
+                </tr>
+            `;
+        });
+
+        //update the information of the totals
+        document.getElementById("print-reference").textContent = data.reference;
+        document.getElementById("print-date").textContent = data.date;
+        document.getElementById("print-customer").textContent = data.customer || window.translate_text('sales.no-customer');
+        document.getElementById("print-taxes").textContent = window.format_currency(totalTaxesGlobal,currency, false);
+        document.getElementById("print-grand-total").textContent = window.format_currency(grandTotal, currency, false);
+
+        window.print();
+    }
+</script>
