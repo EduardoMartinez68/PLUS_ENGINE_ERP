@@ -47,6 +47,12 @@ def send_welcome_email(user):
     """
     Send a welcome email to a new registered user
     """
+    TYPE_VERSION = os.getenv('TYPE_VERSION', 'DESKTOP')
+
+    if TYPE_VERSION=='DESKTOP':
+        return 
+    
+    #send the message of welcome only if be in a server
     company_name=os.getenv('NAME_COMPANY', 'PLUS ERP')
 
     subject = "🎉 Bienvenido a " + company_name + " 🎉"
@@ -59,7 +65,7 @@ def send_welcome_email(user):
         "user_name": user.name,
         "user_email": user.email,
         "company_name": user.company.company_name if user.company else "",
-        "login_url": f"https://{plus_url}/login/",
+        "login_url": f"https://{plus_url}/",
         "support_email": settings.DEFAULT_FROM_EMAIL,
     }
 
