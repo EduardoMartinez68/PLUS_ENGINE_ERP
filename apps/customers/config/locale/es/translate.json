@@ -232,5 +232,6 @@
     "customers.excel.customer_type": "Tipo de Cliente (Nombre)",
     "customers.excel.customer_source": "Canal de adquisición del Cliente (Nombre)",
     "customers.excel.priority": "Prioridad (0,1,2,3)",
-    "customers.excel.price_list_number": "Número de Precio"
+    "customers.excel.price_list_number": "Número de Precio",
+    "customers.plugin.info.customer": "Cliente"
 }
