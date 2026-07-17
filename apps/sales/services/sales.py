@@ -3,7 +3,9 @@ from io import BytesIO
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from apps.customers.plus_wrapper import Plus
-from apps.sales.models import Sale, SaleItem, Pack, SaleHistory, SalePaymentMethod
+from apps.sales.models import Sale, SaleItem, Pack, SaleHistory, SalePaymentMethod, DataReports
+from apps.services.models import HistoryInventory
+from apps.services.models import Inventory
 from decimal import Decimal
 from django.db import transaction
 from django.utils import timezone
@@ -12,8 +14,207 @@ from django.db.models import Prefetch
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 import threading
+from apps.contract.models import Contract
+from apps.sales.models import LinkPayOnline
+from django.db.models import F
+from django.conf import settings 
+from apps.setting.models import NotificationSetting
+from core.models import Company, Branch
+from django.db.models import Sum
 
 class Sales:
+    @classmethod
+    def calculate_all_the_move_money(cls):
+
+        companies = Company.objects.all()
+
+        total_companies = 0
+        total_branches = 0
+
+        for company in companies:
+
+            total_companies += 1
+
+            branches = Branch.objects.filter(company=company)
+
+            for branch in branches:
+
+                total_branches += 1
+
+                report, created = DataReports.objects.get_or_create(
+                    company=company,
+                    branch=branch
+                )
+
+                inside = (
+                    SalePaymentMethod.objects.filter(
+                        company=company,
+                        branch=branch,
+                        amount__gt=0
+                    ).aggregate(total=Sum("amount"))["total"] or 0
+                )
+
+                outside = (
+                    SalePaymentMethod.objects.filter(
+                        company=company,
+                        branch=branch,
+                        amount__lt=0
+                    ).aggregate(total=Sum("amount"))["total"] or 0
+                )
+
+                report.total_inside_money = inside
+                report.total_outside_money = abs(outside)
+                report.save(update_fields=[
+                    "total_inside_money",
+                    "total_outside_money"
+                ])
+
+        return {
+            "companies": total_companies,
+            "branches": total_branches
+        }
+    
+    @classmethod
+    def add_money_movement(cls, company, branch, amount):
+        current_year = timezone.now().year
+
+        report, created = DataReports.objects.get_or_create(
+            company=company,
+            branch=branch,
+            year=current_year,
+            defaults={
+                "total_inside_money": 0,
+                "total_outside_money": 0,
+            }
+        )
+
+        if amount >= 0:
+            DataReports.objects.filter(pk=report.pk).update(
+                total_inside_money=F("total_inside_money") + amount
+            )
+        else:
+            DataReports.objects.filter(pk=report.pk).update(
+                total_outside_money=F("total_outside_money") + abs(amount)
+            )
+
+    @classmethod
+    def send_inventory_email_thread(
+        cls,
+        subject,
+        html_content,
+        recipient_list
+    ):
+
+        try:
+            email = EmailMultiAlternatives(
+
+                subject=subject,
+
+                body="Your email client does not support HTML.",
+
+                from_email="plus_recordatorios@gmail.com",
+
+                to=recipient_list,
+            )
+
+            email.attach_alternative(
+                html_content,
+                "text/html"
+            )
+
+            email.send()
+
+        except Exception as e:
+
+            print(
+                f"Error sending inventory email: {e}"
+            )
+
+    @classmethod
+    def send_low_inventory_notifications(
+        cls,
+        company,
+        branch,
+        products
+    ):
+
+        if not products:
+            return
+
+        notification = NotificationSetting.objects.prefetch_related(
+            'users__user'
+        ).filter(
+            company=company,
+            branch=branch,
+            type_notification='inventory_low',
+            notify_by_email=True
+        ).first()
+
+        if not notification:
+            return
+
+        emails = []
+
+        for relation in notification.users.all():
+
+            user = relation.user
+
+            if user.email:
+
+                emails.append(user.email)
+
+        emails = list(set(emails))
+
+        if not emails:
+            return
+
+        # build html
+        html_content = """
+        <h2>
+            Low inventory alert
+        </h2>
+
+        <p>
+            The following products are below
+            minimum stock:
+        </p>
+
+        <ul>
+        """
+
+        for product in products:
+
+            html_content += f"""
+            <li>
+                <strong>{product['name']}</strong><br>
+
+                Stock:
+                {product['stock']}<br>
+
+                Minimum:
+                {product['min_stock']}
+            </li>
+
+            <br>
+            """
+
+        html_content += "</ul>"
+
+        subject = "Low inventory alert"
+
+        thread = threading.Thread(
+
+            target=cls.send_inventory_email_thread,
+
+            args=(
+                subject,
+                html_content,
+                emails
+            )
+        )
+
+        thread.start()
+
     @classmethod
     def add(cls, user, data):
         """
@@ -77,7 +278,7 @@ class Sales:
 
                     # search pack for SKU (only if exist SKU, because if not exist is because this is a product flash without pack)
                     pack = None
-                    sku = item.get("sku")
+                    sku = item.get("sku") or item.get("name")
 
                     if sku: #if exist a sku in the product/service we will to see the information and save 
                         pack = Pack.objects.filter(
@@ -105,6 +306,13 @@ class Sales:
                         total=Decimal(item.get("total", 0))
                     )
 
+
+
+                #----now we will to create the link for pay online with this sale----------------
+                LinkPayOnline.objects.create(
+                    sale=sale
+                )
+
                 # ---------- answer ----------
                 return {
                     "success": True,
@@ -123,6 +331,77 @@ class Sales:
                 "error": str(e),
                 "answer": {}
             }
+
+    @classmethod
+    def discount_inventory(
+        cls,
+        pack,
+        branch,
+        quantity_sold,
+        low_inventory_products=None,
+        user=None
+    ):
+        
+        if low_inventory_products is None:
+            low_inventory_products = []
+
+        items = pack.items.select_related(
+            'product'
+        ).all()
+
+        for item in items:
+
+            if not item.product.track_inventory:
+                continue
+
+            try:
+
+                inventory = Inventory.objects.select_related(
+                    'pack',
+                    'company',
+                    'branch'
+                ).get(
+                    pack=item.product,
+                    branch=branch
+                )
+
+            except Inventory.DoesNotExist:
+                continue
+
+            old_stock = inventory.stock
+
+            discount_quantity = (
+                item.quantity * quantity_sold
+            )
+
+            inventory.stock = F('stock') - discount_quantity
+            inventory.save(update_fields=['stock'])
+
+            inventory.refresh_from_db()
+           
+            # inventory history
+            HistoryInventory.objects.create(
+                company=inventory.company,
+                branch=inventory.branch,
+                pack=inventory.pack,
+                old_stock=old_stock,
+                new_stock=inventory.stock,
+                unity_type=inventory.pack.unity_type,
+                user=user
+            )
+
+            # low inventory validation
+            if inventory.stock <= inventory.min_stock:
+                low_inventory_products.append({
+                    "id": inventory.pack.id,
+                    "name": inventory.pack.name,
+                    "stock": inventory.stock,
+                    "min_stock": inventory.min_stock,
+                    "branch": inventory.branch.name_branch
+                })
+
+
+        return low_inventory_products
 
     @classmethod
     def do_a_sale(cls, user, sale_id, data):
@@ -144,8 +423,10 @@ class Sales:
                 pay_cash = Decimal(data.get("payCash", 0))
                 pay_debit = Decimal(data.get("payDebit", 0))
                 pay_credit = Decimal(data.get("payCredit", 0))
+                pay_terminal = Decimal(data.get("payTerminal", 0))
+                pay_transfer = Decimal(data.get("payTransfer", 0))
 
-                cash_received = pay_cash + pay_debit + pay_credit
+                cash_received = Decimal(pay_cash + pay_debit + pay_credit+pay_terminal+pay_transfer)
 
                 if cash_received <= 0:
                     return {"success": False, "error": "invalid payment amount", "answer": {}}
@@ -192,6 +473,8 @@ class Sales:
                 if not sale.startDate:
                     sale.startDate = timezone.now()
 
+                first_buy=sale.first_buy_do
+                sale.first_buy_do=True
                 sale.save()
 
                 # -------- create history --------
@@ -216,6 +499,12 @@ class Sales:
                 if card_total > 0:
                     payment_methods.append(("card", card_total))
 
+                if pay_terminal > 0:
+                    payment_methods.append(("terminal", pay_terminal))
+
+                if pay_transfer > 0:
+                    payment_methods.append(("transfer", pay_transfer))
+
                 # Guardar métodos usados
                 for method, amount in payment_methods:
                     SalePaymentMethod.objects.create(
@@ -225,6 +514,12 @@ class Sales:
                         payment=history,
                         user=user,
                         method=method,
+                        amount=amount
+                    )
+
+                    cls.add_money_movement(
+                        company=user.company,
+                        branch=user.branch,
                         amount=amount
                     )
 
@@ -239,6 +534,40 @@ class Sales:
                         method="change",
                         amount=-change_given   # NEGATIVO (sale dinero)
                     )
+
+                    cls.add_money_movement(
+                        company=user.company,
+                        branch=user.branch,
+                        amount=-change_given
+                    )
+
+
+                #now we will update the inventory with this sale. First we need see if this is the first sale
+                low_inventory_products = [] #here we will to save the product that be low inventory
+                if not first_buy:
+                    sale_items = SaleItem.objects.select_related(
+                        'pack'
+                    ).filter(
+                        sale=sale
+                    )
+
+                    for item in sale_items:
+                        if item.pack:
+                            cls.discount_inventory(
+                                pack=item.pack,
+                                branch=user.branch,
+                                quantity_sold=item.quantity,
+                                low_inventory_products=low_inventory_products,
+                                user=user
+                            )
+
+                
+                # send notifications
+                cls.send_low_inventory_notifications(
+                    company=user.company,
+                    branch=user.branch,
+                    products=low_inventory_products
+                )
 
                 return {
                     "success": True,
@@ -321,6 +650,103 @@ class Sales:
                     "status": sale.status
                 }
             }
+    
+     
+    #this function is for get the IP of the customer
+    @classmethod
+    def get_client_ip(cls, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            # puede venir una lista de IPs → tomamos la primera
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        return ip
+
+    @classmethod
+    def save_signature(cls, request, user, sale_id, data):
+        """
+        only update the status of the sale.
+        
+        parameters:
+            user
+            sale_id
+            new_status (str)
+
+        Return:
+        {
+            "id": sale.id,
+            "reference": sale.reference,
+            "status": sale.status
+        }
+        """
+
+        # this is the new status of the sale
+        new_status='accepted'
+
+        with transaction.atomic():
+
+            # search the sale in the company
+            sale = Sale.objects.filter(
+                id=sale_id,
+                company=user.company
+            ).first()
+
+
+            #if not exist the sale we return a error
+            if not sale:
+                raise ValueError("La venta no existe o no tienes permiso")
+
+            #if the sale was cancelled or expired also return a error for security
+            if sale.status in ['cancelled', 'expiration_date']:
+                raise ValueError("No se puede modificar una venta cancelada o expirada")
+
+            #get the IP of the user 
+            ip = cls.get_client_ip(request)
+
+            #if can update the sale to accepted now we will to create a sale or get the contract that have
+            #vinculate the sale if exist.
+            contract, created = Contract.objects.get_or_create(
+                sale=sale,
+                contract_text=data.get('contract_text',''),
+
+                #information of the customer
+                patiente_signature_json=data.get('patiente_signature_json',''),
+                patient_name=data.get('patient_name',''),
+                company_signature_json=data.get('company_signature_json',''),
+                company_name=data.get('company_name',''),
+                patient_ip=ip,
+            )
+
+            if not contract:
+                raise ValueError("No se creo el contrato")
+
+                
+            # save the date for know when was accepted the sale
+            if new_status == 'accepted' and sale.status != 'accepted':
+                sale.startDate = timezone.now()
+
+
+            #update the status and the information
+            sale.status = new_status
+            sale.save(update_fields=[
+                'status',
+                'startDate',
+                'amount_paid',
+                'balance'
+            ])
+
+            return {
+                "success": True,
+                "message": "",
+                "error": "",
+                "answer": {
+                    "id": sale.id,
+                    "reference": sale.reference,
+                    "status": sale.status
+                }
+            }
+
 
     @classmethod
     def cancel_sale(cls, user, sale_id, data):
@@ -340,7 +766,20 @@ class Sales:
         ).first()
 
         if not sale:
-            raise ValueError("La venta no existe o no tienes permiso")
+            return {
+                "success": False,
+                "message": "sales.message.this-sale-not-exist",
+                "error": "This sale does not exist",
+            }
+        
+        #here we will see if the sale not is cancelled 
+        #if the sale is cancelled we will to send a message of error
+        if sale.status == "cancelled":
+            return {
+                "success": False,
+                "message": "sales.message.sale-already-cancelled",
+                "error": "This sale was already cancelled",
+            }
         
         if sale.amount_paid > 0:
 
@@ -373,6 +812,12 @@ class Sales:
                 user=user,
                 method="change",
                 amount = -refund_amount
+            )
+
+            cls.add_money_movement(
+                company=user.company,
+                branch=user.branch,
+                amount=-refund_amount
             )
 
         sale.amount_paid = Decimal("0.00")
@@ -428,6 +873,7 @@ class Sales:
                 customer_data = {
                     "id": sale.customer.id,
                     "name": getattr(sale.customer, "name", ""),
+                    "email": getattr(sale.customer, "email", ""),
                 }
 
 
@@ -455,6 +901,19 @@ class Sales:
                     "total": float(item.total),
                 })
 
+            #link of buy
+            #get the link of the sale for pay online. If not exist we will create a new link for this sale
+            link_pay_online_url=''
+            link_pay_online=LinkPayOnline.objects.filter(sale=sale).first()
+            if not link_pay_online: #if not exist a link for pay online we will create a new link for this sale
+                link_pay_online=LinkPayOnline.objects.create(sale=sale)
+
+
+            #now we will to see if the link of pay is valid 
+            if link_pay_online.activate:
+                #if the link is active we will to add the link in the email for pay online
+                link_pay_online_url=f"{settings.PLUS_URL}/sales/pay_sale/{link_pay_online.key_link}"
+
             # ---------- sale info ----------
             expiration_date=None
             if sale.expiration_date:
@@ -478,7 +937,8 @@ class Sales:
                 "expiration_date": expiration_date,
                 "created_at": sale.created_at if hasattr(sale, "created_at") else None,
                 "items": items_data,
-                "note_cancelled":sale.note_cancelled
+                "note_cancelled":sale.note_cancelled,
+                "link_pay_online_url":link_pay_online_url
             }
             
             return {    
@@ -497,22 +957,47 @@ class Sales:
             }
         
     @classmethod
-    def search(cls, user, key, page=1, view_sales_totals=False):
-        try:
-            # 1. Base query (seguridad por empresa)
-            query = Sale.objects.filter(company=user.company)
+    def search(cls, user, key=None, page=1, view_sales_totals=False,
+            customer_id=None, user_id=None,
+            date_start=None, date_end=None, status=None):
+        
 
-            # 2. Filtro por referencia (si hay texto)
+
+        try:
+            query = Sale.objects.filter(company=user.company, branch=user.branch)
+
+            # 🔎 1. Búsqueda por texto
             if key:
                 query = query.filter(
                     Q(reference__icontains=key) |
                     Q(name_sale__icontains=key)
                 )
 
-            # 3. Ordenar (más recientes primero)
-            query = query.order_by('-id')
+            # 👤 2. Filtro por cliente
+            if customer_id:
+                query = query.filter(customer_id=customer_id)
 
-            # 4. Paginación (20 por página)
+            # 👨‍⚕️ 3. Filtro por usuario (doctor/vendedor)
+            if user_id:
+                query = query.filter(user_id=user_id)
+
+            # 📅 4. Filtro por fechas
+            if date_start:
+                date_start=Plus.convert_to_utc(date_start, user.timezone)
+                query = query.filter(creationDate__date__gte=date_start)
+
+            if date_end:
+                date_end=Plus.convert_to_utc(date_end, user.timezone)
+                query = query.filter(creationDate__date__lte=date_end)
+
+            # 📌 5. Filtro por estado
+            if status:
+                query = query.filter(status=status)
+
+            # 🔥 Orden
+            query = query.order_by('-creationDate', '-id')
+
+            # 📄 Paginación
             paginator = Paginator(query, 20)
 
             try:
@@ -522,24 +1007,31 @@ class Sales:
             except EmptyPage:
                 page_obj = paginator.page(paginator.num_pages)
 
-            # 5. Serializar resultados
             results = []
+
+            def get_initials(name=''):
+                return ''.join([word[0] for word in name.split()][:2]).upper()
+            
+
             for sale in page_obj:
-                #here we will format the date for show in the frontend with the language and timezone of the user
-                date=Plus.convert_from_utc(sale.creationDate, user.timezone)
+                date = Plus.convert_from_utc(sale.creationDate, user.timezone)
                 formatted_date = Plus.format_date_to_text(date.isoformat(), user.language, 1)
 
-                #see if the user have permission to see the totals of the sale, if not we will show 0 in total, amount_paid and balance
                 total = Plus.format_currency(sale.total, sale.currency) if view_sales_totals else '---'
                 amount_paid = Plus.format_currency(sale.amount_paid, sale.currency) if view_sales_totals else '---'
                 balance = Plus.format_currency(sale.balance, sale.currency) if view_sales_totals else '---'
+
+                user_name = sale.user.name if sale.user else 'Doc.'
+                photo=sale.user.avatar.url if sale.user and sale.user.avatar else '/static/img/employees-select.webp'
+
 
                 results.append({
                     "id": sale.id,
                     "reference": sale.reference,
                     "name_sale": sale.name_sale if sale.name_sale else 'sales.navbar.new',
                     "customer": sale.customer.name if sale.customer else 'sales.label.public',
-                    "user": sale.user.name if sale.user else 'Doc.',
+                    "photo_user": photo,
+                    "user": user_name,
                     "total": total,
                     "amount_paid": amount_paid,
                     "balance": balance,
@@ -549,7 +1041,6 @@ class Sales:
                     "branch": sale.branch.name_branch if sale.branch else None
                 })
 
-            # 6. Respuesta
             return {
                 "success": True,
                 "message": "",
@@ -712,6 +1203,20 @@ class Sales:
 
             payments = sale.payments.all().order_by('date')
 
+            #get the link of the sale for pay online. If not exist we will create a new link for this sale
+            link_pay_online_url=''
+            link_pay_online=LinkPayOnline.objects.filter(sale=sale).first()
+            if not link_pay_online: #if not exist a link for pay online we will create a new link for this sale
+                link_pay_online=LinkPayOnline.objects.create(sale=sale)
+
+
+            #now we will to see if the link of pay is valid 
+            if link_pay_online.activate:
+                #if the link is active we will to add the link in the email for pay online
+                link_pay_online_url=f"{settings.PLUS_URL}/sales/pay_sale/{link_pay_online.key_link}"
+
+
+
             # 3️⃣ Contexto para template
             context = {
                 "sale": sale,
@@ -721,7 +1226,8 @@ class Sales:
                 "total": total,
                 "branch": sale.branch,
                 "company": sale.company,
-                "payments": payments
+                "payments": payments,
+                "link_pay_online_url": link_pay_online_url
             }
 
             html_content = render_to_string(
@@ -762,3 +1268,67 @@ class Sales:
                 "error": str(e),
                 "answer": []
             }
+        
+
+    #-------------------------this is for the link of pay online-------------------------
+    @classmethod
+    def get_information_of_link_of_pay(cls, key_link):
+        try:
+            # Utilizamos select_related para llaves foráneas y prefetch_related para los items (reversa)
+            link = LinkPayOnline.objects.select_related(
+                'sale', 
+                'sale__customer', 
+                'sale__branch',
+                'sale__company'
+            ).prefetch_related(
+                'sale__items'
+            ).get(key_link=key_link, activate=True)
+            
+            sale = link.sale
+
+            if not sale:
+                return {"success": False, "error": "Sale not found", "answer": {}}
+            
+            #get the information of buy 
+            data_bank={
+                "bank_account":sale.company.bank_account if sale.company.bank_account else '',
+                "bank_name":sale.company.bank_name if sale.company.bank_name else ''
+            }
+  
+
+            # Estructuramos una respuesta rica en datos
+            sale_data = {
+                "id": sale.id,
+                "reference": sale.reference,
+                "total": float(sale.total),
+                "subtotal": float(sale.subtotal),
+                "tax_total": float(sale.tax_total),
+                "discount_total": float(sale.discount_total),
+                "amount_paid": float(sale.amount_paid),
+                "balance": float(sale.balance), # Lo que falta por pagar
+                "currency": sale.currency,
+                "status": sale.status,
+                "logo_url": sale.company.logo.url if sale.company and sale.company.logo else None,
+                "customer_name": sale.customer.name if sale.customer else "Cliente General",
+                "branch_name": sale.branch.name_branch if sale.branch else "",
+                "data_bank":data_bank,
+                # Mapeamos los items de la venta
+                "items": [
+                    {
+                        "name": item.name,
+                        "quantity": float(item.quantity),
+                        "unit_price": float(item.unit_price),
+                        "total": float(item.total)
+                    } for item in sale.items.all()
+                ]
+            }
+
+            return {
+                "success": True,
+                "answer": sale_data
+            }
+
+        except LinkPayOnline.DoesNotExist:
+            return {"success": False, "error": "Link no encontrado o inactivo", "answer": {}}
+        except Exception as e:
+            return {"success": False, "error": str(e), "answer": {}}

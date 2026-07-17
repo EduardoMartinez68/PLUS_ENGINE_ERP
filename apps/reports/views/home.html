@@ -1,0 +1,369 @@
+<style>
+    /* Contenedor principal (Fondo difuminado) */
+    #report-loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(255, 255, 255, 0.85);
+        /* Fondo claro y limpio */
+        backdrop-filter: blur(4px);
+        /* Suave desenfoque moderno */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        /* Por encima de todo */
+        opacity: 1;
+        transition: opacity 0.3s ease;
+    }
+
+    /* Estado oculto */
+    .report-loader-hidden {
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+
+    /* Tarjeta central */
+    .report-loader-card {
+        background: #ffffff;
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(136, 152, 170, 0.15);
+        /* Sombra muy suave */
+        border: 1px solid #e2e8f0;
+        text-align: center;
+        max-width: 320px;
+    }
+
+    /* Spinner con esencia clínica (Azul/Cian médico) */
+    .medical-spinner {
+        width: 45px;
+        height: 45px;
+        border: 3px solid #e2e8f0;
+        border-top: 3px solid #0ea5e9;
+        /* Azul dental/médico */
+        border-radius: 50%;
+        margin: 0 auto 1.5rem auto;
+        animation: spin 1s linear infinite;
+    }
+
+    .report-loader-text {
+        font-family: system-ui, -apple-system, sans-serif;
+        color: #1e293b;
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .report-loader-subtext {
+        font-family: system-ui, -apple-system, sans-serif;
+        color: #94a3b8;
+        font-size: 0.85rem;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+<script>
+    function get_current_week_range() {
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0 = Domingo, 1 = Lunes, etc.
+
+        // Ajustar el cálculo para que la semana empiece en Lunes (1)
+        // Si hoy es Domingo (0), restamos 6 días para ir al lunes pasado. De lo contrario, restamos (dayOfWeek - 1).
+        const distanceToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+
+        const monday = new Date(today);
+        monday.setDate(today.getDate() + distanceToMonday);
+
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+
+        // Función interna para formatear la fecha a YYYY-MM-DD local sin desajustes de zona horaria
+        const formatDate = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        return {
+            start: formatDate(monday),
+            finish: formatDate(sunday)
+        };
+    }
+
+    function set_initial_week_inputs(startInputId, finishInputId) {
+        const startInput = document.getElementById(startInputId);
+        const finishInput = document.getElementById(finishInputId);
+
+        if (startInput && finishInput) {
+            const { start, finish } = get_current_week_range();
+            console.log(get_current_week_range())
+            // Asignamos el valor. Si tu Custom Element expone un set value interno,
+            // esto funcionará directamente mediante el setter estándar de la propiedad o atributo.
+            startInput.value = start;
+            finishInput.value = finish;
+        }
+    }
+</script>
+<plus-modules>
+    {% if permissions.watch_reports_sales %}
+    <plus-module name="reports.module.sales" desc="" icon="fi fi-rs-receipt">
+        {% include 'reports/partials/sales.html' %}
+    </plus-module>
+    {% endif %}
+
+    {% if permissions.watch_reports_inventory %}
+    <plus-module name="reports.module.inventory" desc="" icon="fi fi-rs-inventory-alt">
+        {% include 'reports/partials/inventory.html' %}
+    </plus-module>
+    {% endif %}
+
+    {% if permissions.watch_reports_move_money %}
+    <plus-module name="reports.module.move-money" desc="" icon="fi fi-rr-usd-circle">
+        {% include 'reports/partials/move_money.html' %}
+    </plus-module>
+    {% endif %}
+
+    <!---
+    <plus-module name="reports.title.reports-customers" desc="" icon="fi fi-rr-clipboard-user">
+        {% include 'reports/partials/customers.html' %}
+    </plus-module>
+    --->
+
+</plus-modules>
+<!-- Pantalla de carga para reportes -->
+<div id="report-loader-overlay" class="report-loader-hidden">
+    <div class="report-loader-card">
+        <div class="medical-spinner"></div>
+        <p class="report-loader-text" t="reports.label.create-reports"></p>
+        <span class="report-loader-subtext" t="reports.label.message-label-reports"></span>
+    </div>
+</div>
+
+
+
+<script>
+    if (!customElements.get('download-file')) {
+        class DownloadFile extends HTMLElement {
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+                // Enlazar el manejador de clic para mantener el contexto correcto
+                this._handleDownloadClick = this._handleDownloadClick.bind(this);
+            }
+
+            connectedCallback() {
+                this.render();
+            }
+
+            disconnectedCallback() {
+                // Limpieza de eventos al destruir el componente
+                const linkEl = this.shadowRoot.querySelector('.download-link');
+                if (linkEl) {
+                    linkEl.removeEventListener('click', this._handleDownloadClick);
+                }
+            }
+
+            static get observedAttributes() {
+                return ['type', 'filename', 'records', 'date-range', 'link'];
+            }
+
+            attributeChangedCallback() {
+                this.render();
+            }
+
+            // --- Métodos públicos para cambiar el contenido dinámicamente ---
+            setFilename(name) {
+                this.setAttribute('filename', name);
+            }
+
+            setRecords(text) {
+                this.setAttribute('records', text);
+            }
+
+            setDateRange(range) {
+                this.setAttribute('date-range', range);
+            }
+
+            setLink(url) {
+                this.setAttribute('link', url);
+            }
+
+            // --- Manejador del evento Clic ---
+            _handleDownloadClick(event) {
+                // Buscar si el usuario definió un atributo de texto 'onclick' (estilo inline antiguo)
+                const inlineOnclick = this.getAttribute('onclick');
+
+                // Crear un evento personalizado nativo para el componente
+                const customEvent = new CustomEvent('download-click', {
+                    bubbles: true,
+                    composed: true, // Cruza la frontera del Shadow DOM
+                    detail: {
+                        filename: this.getAttribute('filename'),
+                        link: this.getAttribute('link'),
+                        preventDefault: () => event.preventDefault() // Permite pausar la descarga nativa si se desea
+                    }
+                });
+
+                this.dispatchEvent(customEvent);
+            }
+            render() {
+                const type = (this.getAttribute('type') || 'excel').toLowerCase();
+                const filename = this.getAttribute('filename') || 'Reporte';
+                const records = this.getAttribute('records') || '';
+                const dateRange = this.getAttribute('date-range') || '';
+                const link = this.getAttribute('link') || '';
+
+                const isExcel = type === 'excel';
+
+                const fileIconSvg = isExcel
+                    ? `<svg viewBox="0 0 24 24"><path fill="#107c41" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16h-4v-2h4v2zm0-4h-4v-2h4v2zm-5-4H7V8h4v2zm5 0h-4V8h4v2zm-1-5V3.5L18.5 8H15z"/></svg>`
+                    : `<svg viewBox="0 0 24 24"><path fill="#e01b1b" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-1 8.5c0 .28-.22.5-.5.5H10v-1.5h1.5c.28 0 .5.22.5.5v.5zm-4.5.5c-.28 0-.5-.22-.5-.5v-3c0-.28.22-.5.5-.5H9V14h1.5c.28 0 .5.22.5.5v.5c0 .28-.22.5-.5.5H9v1h-.5zm6.5-.5c0 .28-.22.5-.5.5H13v-3h1c.28 0 .5.22.5.5v2z"/></svg>`;
+
+                this.shadowRoot.innerHTML = `
+                    <style>
+                        :host {
+                            display: block !important;
+                            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                            background: #ffffff;
+                            border-radius: 12px;
+                            width: 100%;
+                            box-sizing: border-box;
+                            overflow: hidden;
+                            border: 1px solid #e2e8f0;
+                        }
+                        
+                        .top-card {
+                            display: flex;
+                            align-items: flex-start;
+                            padding: 24px 24px 20px 24px;
+                            gap: 20px;
+                            background: #ffffff;
+                        }
+
+                        .file-icon {
+                            width: 48px;
+                            height: 48px;
+                            flex-shrink: 0;
+                        }
+
+                        .text-container {
+                            display: flex;
+                            flex-direction: column;
+                        }
+
+                        .title {
+                            font-size: 16px;
+                            font-weight: 600;
+                            color: #1e293b;
+                            margin: 0 0 4px 0;
+                        }
+
+                        .meta-text {
+                            font-size: 13px;
+                            color: #64748b;
+                            line-height: 1.5;
+                        }
+
+                        .bottom-actions {
+                            background: #f8fafc;
+                            border-top: 1px solid #f1f5f9;
+                            padding: 20px;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                        }
+
+                        .download-link {
+                            display: inline-flex;
+                            flex-direction: column;
+                            align-items: center;
+                            text-decoration: none;
+                            color: #64748b;
+                            font-size: 13px;
+                            font-weight: 500;
+                            transition: color 0.15s ease;
+                            cursor: pointer;
+                        }
+
+                        .download-circle {
+                            width: 44px;
+                            height: 44px;
+                            background: #ffffff;
+                            border: 1px solid #e2e8f0;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-bottom: 8px;
+                            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+                            transition: all 0.15s ease;
+                        }
+
+                        .download-link:hover {
+                            color: #0f172a;
+                        }
+
+                        .download-link:hover .download-circle {
+                            border-color: #cbd5e1;
+                            transform: translateY(-1px);
+                            box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+                        }
+
+                        .download-circle svg {
+                            width: 20px;
+                            height: 20px;
+                            fill: #64748b;
+                            transition: fill 0.15s ease;
+                        }
+
+                        .download-link:hover .download-circle svg {
+                            fill: #0f172a;
+                        }
+                    </style>
+
+                    <div class="top-card">
+                        <div class="file-icon">
+                            ${fileIconSvg}
+                        </div>
+                        <div class="text-container">
+                            <span class="title">${filename}</span>
+                            <span class="meta-text">
+                                (${records})<br>
+                                ${dateRange}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="bottom-actions">
+                        <a class="download-link" target="_blank" rel="noopener noreferrer">
+                            <div class="download-circle">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                                </svg>
+                            </div>
+                            Descargar
+                        </a>
+                    </div>
+                `;
+
+                this.shadowRoot.querySelector('.download-link').addEventListener('click', this._handleDownloadClick);
+            }
+        }
+
+
+        customElements.define('download-file', DownloadFile);
+    }
+
+</script>

@@ -3,6 +3,7 @@ from .models import SubscriptionPlan, UserSubscription
 admin.site.site_header = "PLUS Admin"
 admin.site.site_title = "PLUS Admin"
 admin.site.index_title = "Administration Panel PLUS"
+from django.contrib.auth.admin import UserAdmin
 
 @admin.register(SubscriptionPlan)
 class SubscriptionPlanAdmin(admin.ModelAdmin):
@@ -31,7 +32,9 @@ class UserSubscriptionAdmin(admin.ModelAdmin):
 
     # Helper to display the email in the list
     def user_email(self, obj):
-        return obj.user.email
+        if obj.user:
+            return obj.user.email
+        return "-"
     user_email.short_description = 'User Email'
 
 
@@ -257,3 +260,162 @@ def delete_company_media_and_data(sender, instance, **kwargs):
     except Exception as e:
         print(f"Error deleting company media: {e}")
 
+
+
+@admin.register(CustomUser)
+class CustomUserAdmin(UserAdmin):
+    list_display = (
+        "id",
+        "username",
+        "email",
+        "company",
+        "branch",
+        "user_role",
+        "is_active",
+        "is_staff",
+    )
+
+    list_filter = (
+        "company",
+        "branch",
+        "is_active",
+        "is_staff",
+        "user_role",
+    )
+
+    search_fields = (
+        "username",
+        "email",
+    )
+
+    ordering = ("company", "username")
+
+    fieldsets = (
+        ("Información básica", {
+            "fields": (
+                "avatar",
+                "username",
+                "email",
+                "name",
+                "doctor_id",
+            )
+        }),
+
+        ("Empresa", {
+            "fields": (
+                "company",
+                "branch",
+                "user_role",
+                "user_department",
+            )
+        }),
+
+        ("Contacto", {
+            "fields": (
+                "address",
+                "cellphone",
+                "phone",
+                "country",
+                "postal_code",
+            )
+        }),
+
+        ("Fechas", {
+            "fields": (
+                "date_of_birth",
+                "hiring_date",
+                "date_joined",
+            )
+        }),
+
+        ("Permisos", {
+            "fields": (
+                "is_active",
+                "is_staff",
+                "is_superuser",
+                "groups",
+                "user_permissions",
+            )
+        }),
+
+        ("Configuración", {
+            "fields": (
+                "timezone",
+                "language",
+                "decimal_separator",
+                "thousands_separator",
+                "date_format",
+            )
+        }),
+
+        ("Términos", {
+            "fields": (
+                "terms_accepted",
+                "terms_version",
+                "terms_accepted_at",
+                "terms_accepted_ip",
+            )
+        }),
+    )
+
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "username",
+                    "email",
+                    "password1",
+                    "password2",
+                    "company",
+                    "branch",
+                ),
+            },
+        ),
+    )
+
+    # 1️⃣ Agrega date_joined a las propiedades de solo lectura
+    readonly_fields = ("date_joined", "terms_accepted_at", "terms_accepted_ip")
+
+    # 2️⃣ Tus fieldsets se quedan igual, Django ahora sí los procesará bien
+    fieldsets = (
+        ("Información básica", {
+            "fields": ("avatar", "username", "email", "name", "doctor_id")
+        }),
+        ("Empresa", {
+            "fields": ("company", "branch", "user_role", "user_department")
+        }),
+        ("Contacto", {
+            "fields": ("address", "cellphone", "phone", "country", "postal_code")
+        }),
+        ("Fechas", {
+            "fields": (
+                "date_of_birth", 
+                "hiring_date", 
+                "date_joined"  # <-- Ya no fallará aquí porque es readonly
+            )
+        }),
+        ("Permisos", {
+            "fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")
+        }),
+        ("Configuración", {
+            "fields": ("timezone", "language", "decimal_separator", "thousands_separator", "date_format")
+        }),
+        ("Términos", {
+            "fields": ("terms_accepted", "terms_version", "terms_accepted_at", "terms_accepted_ip")
+        }),
+    )
+
+
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = CustomUser
+        # Añade aquí los campos mínimos obligatorios para la creación rápida
+        fields = ("username", "email", "company", "branch")
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = CustomUser
+        fields = "__all__"

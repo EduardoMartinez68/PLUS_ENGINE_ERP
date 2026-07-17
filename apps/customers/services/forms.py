@@ -10,7 +10,7 @@ class CustomerForm(forms.ModelForm):
             "sku", "name", "email", "phone", "cellphone",
             "country", "address", "city", "state",
             "postal_code", "num_ext", "num_int", "reference",
-            "activated", "priority", "gender",
+            "activated", "priority", "gender", "date_of_birth",
 
             "this_customer_is_a_company",
             "company_name", "contact_name",
@@ -29,8 +29,29 @@ class CustomerForm(forms.ModelForm):
 
     def clean_cellphone(self):
         cellphone = self.cleaned_data.get("cellphone")
-        if cellphone and not re.match(r"^\d{10}$", cellphone):
-            raise forms.ValidationError("El celular debe tener 10 dígitos")
+        if not cellphone:
+            return cellphone
+        
+        cellphone = cellphone.replace(" ", "") #delete all the space in the cellphone
+
+        # Pattern Explanation:
+        # ^(\+\d{1,3})? -> Optional prefix (e.g., +52, +1)
+        # \s? -> Optional space
+        # \d{10} -> The 10 required digits
+        # (?: -> Optional start of extension group
+        # \s?(ext|x)\s? -> Space, 'ext' or 'x', and another space (optional)
+        # \d+ -> Extension digits
+        # )? -> The trailing question mark makes the entire group optional
+        # $ -> End of string
+        pattern = r"^(\+\d{1,3})?\s?\d{10}(?:\s?(ext|x)\s?\d+)?$"
+
+        # We use `re.sub` to remove extra spaces if you want to normalize the data.
+        # But for validation, `match` is sufficient.
+        if not re.match(pattern, cellphone.strip(), re.IGNORECASE):
+            raise forms.ValidationError(
+                "Formato inválido. Ejemplos aceptados: 4443579030, +52 4443579030, 4443579030 ext 123"
+            )
+
         return cellphone
 
     def clean_contact_email(self):
@@ -58,12 +79,11 @@ class CustomerForm(forms.ModelForm):
             raise forms.ValidationError("Los puntos no pueden ser negativos")
 
 
-class CustomerUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Customer
+class CustomerUpdateForm(CustomerForm):
+    class Meta(CustomerForm.Meta):
         exclude = [
             "company",
-            "created_at",
-            "updated_at",
+            "creation_date",
+            "avatar_updated_at",
             "avatar",
         ]

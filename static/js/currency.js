@@ -40,3 +40,7 @@ function format_currency(amount, currencyCode = 'MXN', withCode = false, withSym
 
   return result.trim();
 }
+
+function get_currency_system(){
+  return 'MXN'
+}

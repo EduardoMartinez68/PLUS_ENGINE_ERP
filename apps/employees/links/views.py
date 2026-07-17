@@ -7,14 +7,10 @@ def employees_home(request):
     return render(request, 'employees/home_employees.html')
 
 
-from ..services.employees import save_employee, get_information_of_employee_by_id, update_employee, change_employee_status
+from ..services.employees import save_employee, get_information_of_employee_by_id, update_employee, change_employee_status, save_users
 def add_employee(request):
     if request.method == "POST":
         #here we will to validate if the user have the subscription for that not can add more of that need
-        sub = Plus.valid_subscription(request.user, 'employees')
-        if not sub.get("status",False):
-            return JsonResponse({"success": False,"message": sub.get("message"), "error": sub.get("error",'no can be this with the subscription that you have now')},status=200)
-                
         try:
             data = json.loads(request.body)
         except Exception as e:
@@ -48,6 +44,46 @@ def add_employee(request):
     
     return render(request, 'employees/add_employee.html')
 
+
+def add_user(request):
+    if request.method == "POST":
+        #here we will to validate if the user have the subscription for that not can add more of that need
+        sub = Plus.valid_subscription(request.user, 'employees')
+        if not sub.get("status",False):
+            return JsonResponse({"success": False,"message": sub.get("message"), "error": sub.get("error",'no can be this with the subscription that you have now')},status=200)
+                
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            return JsonResponse(
+                {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
+                status=400
+            )   
+        
+        #now we will see if the user have the permsssion need that the ERP need
+        if not Plus.this_user_have_this_permission(request.user, 'add_employee'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
+        result=save_users(request.user.company,request.user.branch,data)
+        return JsonResponse({
+            "success": result['success'],
+            "message": result['message'],
+            "error": result['error']
+        }, status=200) 
+    
+
+
+
+
+
+
+
+    
+    return render(request, 'employees/add_user.html')
+ 
 from apps.employees.services.employees import get_employees_for_search
 def search_employee(request, activated):
     if request.method == "POST":
@@ -68,7 +104,7 @@ def search_employee(request, activated):
     all_filters = request.GET.get("allFilters", "")
     values = all_filters.split(",")
     search=values[0]
-    branch_name = values[1].strip() if values[1] and values[1].strip() else request.user.branch
+    branch_name = values[1].strip() if values[1] and values[1].strip() else None
     some_flag = values[2] if values[2] not in (None, "") else True
     page = request.GET.get("page", "")
     result = get_employees_for_search(

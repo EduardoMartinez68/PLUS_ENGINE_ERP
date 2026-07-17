@@ -23,7 +23,6 @@ def customers_home(request):
 from ..services.customers import desencrypt_avatar, save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, change_status_of_the_customer, update_customer
 @csrf_exempt
 def add_customer(request):
-    print("Total plugins:", plugins.count_all())
     if request.method == 'POST':
         '''
         for plugin in plugins.get_plugins(
@@ -36,22 +35,27 @@ def add_customer(request):
         '''
         
         #here we will to validate if the user have the subscription for that not can add more of that need
-        sub = Plus.valid_subscription(request.user, 'customers/customers')
+        sub = Plus.valid_subscription(request.user, 'customers')
         if not sub.get("status",False):
             return JsonResponse({"success": False,"message": sub.get("message"), "error": sub.get("error",'no can be this with the subscription that you have now')},status=200)
                 
         #we will to check if this user have this permission
         if Plus.this_user_have_this_permission(request.user, 'add_customer'):
-            try:
-                data = json.loads(request.body)  # El body lo mandas en JSON con fetch
-                answer=save_customer(request.user,data)
+            data = json.loads(request.body)  # El body lo mandas en JSON con fetch
+            answer=save_customer(request.user,data)
 
-                if answer["success"]:
-                    return JsonResponse({'success': True, 'message': answer["answer"]}, status=200)
-                else: 
-                    return JsonResponse({'success': False, 'error': f'Error to save the customer: {str(answer["error"])}'}, status=300)
-            except Exception as e:
-                return JsonResponse({'success': False, 'error': f'Error in the server for save the customer: {str(e)}'}, status=500)
+            if answer.get("success", False):
+                return JsonResponse({'success': True, 'message': answer.get("answer",'')}, status=200)
+            else: 
+                #get the error of the dictionary
+                errors_dict = answer.get("errors", {})
+                error_message = next(iter(errors_dict.values()))[0] if errors_dict else "Unknown error"
+
+                return JsonResponse({
+                    'success': False, 
+                    'message': error_message,
+                    'error': f"Error to save the customer: {error_message}"
+                }, status=200)        
         else:
             return JsonResponse(
                 {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
@@ -106,7 +110,7 @@ def customers_search(request):
             customer_type = request.GET.get("customer_type")
             source = request.GET.get("source")
             priority = values[1] if len(values) > 1 else None
-            activated = values[2] if len(values) > 2 else None
+            activated = values[2] if len(values) > 2 else "true"
 
             answer = search_customer_for_filter(
                 request.user, search, customer_type, source, priority, activated, page

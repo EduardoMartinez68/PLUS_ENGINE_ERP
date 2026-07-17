@@ -1,0 +1,217 @@
+{% include 'move_box/partials/popInsideOutsideMoney.html' %}
+<style>
+.amount {
+    font-weight: bold;
+    color: #2d3748;
+}
+
+/* Celda de Usuario (Foto + Nombre) */
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #e2e8f0; /* Color de carga si no hay imagen */
+}
+
+/* Píldoras de Estado (Method) */
+.status-pill {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+/* Colores por método */
+.status-cash {
+    background-color: #def7ec;
+    color: #03543f;
+}
+
+.status-card {
+    background-color: #e1effe;
+    color: #1e429f;
+}
+
+.status-transfer {
+    background-color: #e5edff;
+    color: #42389d;
+}
+
+/* 'Change' resaltado en rojo porque implica salida de dinero */
+.status-change {
+    background-color: #fde8e8;
+    color: #9b591c;
+}
+
+/* Pequeño detalle para el monto negativo en 'change' */
+.status-change + .amount {
+    color: #c56c30;
+}
+
+
+.status-outside {
+    background-color: #fde8e8;
+    color: #9b1c1c;
+}
+
+.status-outside + .amount {
+    color: #c53030;
+}
+
+.status-inside {
+    background-color: #def7ec;
+    color: #03543f;
+}
+
+.status-terminal {
+    background-color: #feecdc;
+    color: #b43403;
+}
+
+.status-terminal + .amount {
+    color: #b43403;
+}
+
+.status-transfer + .amount {
+    color: #42389d;
+}
+</style>
+{% include 'move_box/partials/navbar.html' %}
+<message-pop name="pop-filter-move" title="move_box.title.filter-move">
+    <div class="row section">
+        <div class="col">
+            <plus-select label="move_box.label.select_branch" method="GET" id="branch_id_filter" link="/setting/search_branches/"></plus-select>
+        </div>
+        <div class="col">
+            <plus-select link="/departament_employee/search_employee/" label="sales.filter.user" id="employee_id_filter"></plus-select>
+        </div>
+    </div>
+    <div class="row section">
+        <div class="col">
+            <input-field label="sales.filter.date_start" type="date" id="date_start_filter"></input-field>
+        </div>
+        <div class="col">
+            <input-field label="sales.filter.date_finish" type="date" id="date_finish_filter"></input-field>
+        </div>
+    </div>
+    <div class="row section">
+        <div class="col">
+            <plus-select label="move_box.filter.method" name="status" id="method_filter">
+                <option value="all" t="move_box.general.all"></option>
+                <option value="cash" t="move_box.status.cash"></option>
+                <option value="card" t="move_box.status.card"></option>
+                <option value="transfer" t="move_box.status.transfer"></option>
+                <option value="change" t="move_box.status.change"></option>
+            </plus-select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-8">
+            <button t="message.success" class="btn btn-edit btn-success" onclick="window.hide_pop('pop-filter-move')"></button>
+        </div>
+        <div class="col-4">
+            <button t="sale.btn.delete-filter" class="btn btn-secondary btn-success" onclick="restart_filters()"></button>
+        </div>
+    </div>
+</message-pop>
+
+<div class="container-section">
+    <plus-help-video 
+        videos='[
+        {"title":"¿Cómo Crear Entradas y Salidas de dinero?","url":"https://www.youtube.com/watch?v=eI0ryd51o-0"}
+        ]'>
+    </plus-help-video><br>
+    <h4 t="move_box.title.move_box"></h4>
+    <div class="row">
+        <div class="col p-3">
+            <plus-search input_id="search-move">
+                <search-option>
+                    <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-move')"><i class="fi fi-rr-settings-sliders"></i></button>
+                </search-option>
+                <search-option>
+                    <list-button class="mt-custom">
+                        <button onclick="open_pop_inside_money()" t="move_box.btn.inside-money"></button>
+                        <button onclick="open_pop_outside_money()" t="move_box.btn.outside-money"></button>
+                    </list-button>                
+                </search-option>
+            </plus-search>
+        </div>
+    </div>
+    <div class="table-container">
+        <table class="plus-table">
+            <thead>
+                <tr>
+                    <th style="width: 10%;" class="text-left" t="move_box.th.amount"></th>
+                    <th style="width: 50%;" class="text-left" t="move_box.th.comment"></th>
+                    <th style="width: 10%;" class="text-left" t="move_box.th.format"></th>
+
+                    <th style="width: 10%;" class="text-left" t="move_box.th.user"></th>
+                    <th style="width: 10%;" class="text-left" t="move_box.th.date"></th>
+
+                    <th style="width: 10%;"></th>
+                </tr>
+            </thead>
+
+            <tbody id="container-table-moves">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<script>
+    (()=>{
+        function get_div(){
+            return `
+                <tr>
+                    <td class="amount">{amount}</td>
+                    <td class="comment">{comment}</td>
+                    <td>
+                        <span class="status-pill status-{method}" t="move_box.td.{method}">{method}</span>
+                    </td>
+                    <td class="user-cell">
+                        <img src="{photo_user}" alt="{user}" class="user-avatar">
+                        <span>{user}</span>
+                    </td>
+                    <td class="date">{date}</td>
+                    <td>
+                        <span class="status-pill status-{type_move}" t="move_box.td.{type_move}"></span>
+                    </td>
+                </tr>
+            `
+        }
+
+        function reload_moves(){
+            window.update_container_from_the_server(
+                ['search-move', 'branch_id_filter', 'employee_id_filter', 'date_start_filter', 'date_finish_filter', 'method_filter'],
+                'container-table-moves', get_div(), `/move_box/search_move/`, 'GET', true);
+        }
+
+        window.update_container_with_seeker(
+            ['search-move', 'branch_id_filter', 'employee_id_filter', 'date_start_filter', 'date_finish_filter', 'method_filter'],
+            'container-table-moves', get_div(), `/move_box/search_move/`, 'GET', true);
+
+        window.reload_moves=reload_moves;
+    })();
+    
+
+
+    function restart_filters(){
+        document.getElementById('branch_id_filter').reset();
+        document.getElementById('employee_id_filter').reset();
+        document.getElementById('date_start_filter').value = '';
+        document.getElementById('date_finish_filter').value = '';
+        document.getElementById('method_filter').reset();
+
+        window.reload_moves();
+    }
+</script>

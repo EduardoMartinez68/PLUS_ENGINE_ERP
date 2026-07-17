@@ -1,0 +1,71 @@
+{
+    "move_box.title.move_box":"Movimientos de caja",
+    "move_box.btn.inside-money":"Entrada de dinero",
+    "move_box.btn.outside-money":"Salida de dinero",
+    
+    "move_box.th.date":"Fecha",
+    "move_box.th.date-approval":"Fecha de Aprobación",
+    "move_box.th.amount":"Movimiento",
+    "move_box.th.format":"Formato de Movimiento",
+    "move_box.th.user":"Ususario",
+    "move_box.th.user-approval":"Ususario que aprobó el movimiento",
+    "move_box.th.comment":"Comentario",
+    "move_box.th.status":"Estado",
+
+    "move_box.title.inside-money":"Entrada de dinero",
+    "move_box.title.outside-money":"Salida de dinero",
+    "move_box.title.send_email":"Enviar por correo electrónico",
+    "move_box.label.email":"Correo electrónico",
+    "move_box.btn.send-email":"Enviar",
+
+    "move_box.label.amount":"Monto *",
+    "move_box.label.comment-outside-inside-money":"Comentario *",
+    "move_box.label.comment":"Escribe un comentario...",
+    "move_box.placeholder.comment-outside-inside-money":"Comentario sobre el movimiento de dinero. Ej pagar la luz, comprar materiales, etc.",
+
+    "move_box.title.outside-inside-money":"Salidas y entradas de dinero",
+    "move_box.label.payment-method":"Método de pago",
+    "move_box.option.cash":"Efectivo",
+    "move_box.option.card":"Tarjeta",
+    "move_box.option.credit":"Crédito",
+    "move_box.option.terminal":"Terminal",
+    "move_box.option.transfer":"Transferencia",
+
+
+    "move_box.message.success":"Movimiento de caja registrado exitosamente",
+    "move_box.message.error":"Error al registrar el movimiento de caja. Por favor, inténtalo de nuevo.",
+    "move_box.error.no-can-save-this-move":"No se puede guardar este movimiento.",
+    "move_box.error.the-move-need-be-more-than-zero":"El monto del movimiento debe ser mayor que cero.",
+    "move_box.error.the-move-need-be-minor-than-zero":"El monto del movimiento debe ser negativo.",
+    "move_box.error.unknown-error":"Error desconocido. Por favor, inténtalo de nuevo.",
+    "move_box.error.need-do-a-comment":"Necesitas agregar un comentario para guardar el movimiento de efectivo.",
+    "move_box.error.need-do-a-payment-method":"Necesitas agregar un metodo de pago.",
+
+
+    "move_box.btn.supplies":"Compra de insumos",
+    "move_box.btn.pay-laboratory":"Pagos a laboratorios",
+    "move_box.btn.pay-manteniment":"Mantenimiento de Equipo",
+    "move_box.btn.pay-clear":"Compra de Artículos de Limpieza",
+    "move_box.btn.pay-paper":"Papelería y Oficina",
+    "move_box.btn.pay-light":"Pago del servicio de Luz",
+    "move_box.btn.pay-whater":"Pago del servicio del Agua",
+    "move_box.btn.pay-employees":"Pago de empleados",
+
+    "move_box.title.filter-move":"Filtrar Movimientos",
+    "move_box.label.select_branch":"Selecciona la sucursal",
+    "move_box.filter.method":"Seleccionar metodo",
+
+    "move_box.td.change":"Cambio",
+    "move_box.td.cash":"Efectivo",
+    "move_box.td.card":"Tarjeta",
+    "move_box.td.terminal":"Terminal",
+    "move_box.td.transfer":"Transferencia",
+
+    "move_box.td.inside":"Entrada de dinero",
+    "move_box.td.outside":"Salida de dinero",
+    "move_box.general.all":"Todos",
+    "move_box.status.change":"Cambio",
+    "move_box.status.cash":"Efectivo",
+    "move_box.status.transfer":"Transferencia",
+    "move_box.status.card":"Tarjeta"
+}

@@ -1,0 +1,26 @@
+{
+    "character": {
+        "icon": "fi fi-rr-folder-open"
+    },
+    "permissions": [
+        "view_folders",
+        "add_folder",
+        "update_folder",
+        "delete_folder",
+        "view_files",
+        "download_file"
+    ],
+    "translate": {
+        "es": {
+            "app_name": "Archivos",
+            "description": "Permite crear, organizar y gestionar archivos y carpetas dentro de la empresa.",
+
+            "view_folders": "Permite ver las carpetas a las que se tiene acceso, respetando los permisos asignados.",
+            "add_folder": "Permite crear nuevas carpetas dentro de la estructura existente.",
+            "update_folder": "Permite actualizar la información de las carpetas a las que se tiene acceso.",
+            "delete_folder": "Permite eliminar carpetas de la empresa que el mismo haya creado, según los permisos asignados.",
+            "view_files": "Permite ver los archivos a los que se tiene acceso, respetando los permisos asignados.",
+            "download_file": "Permite descargar los archivos de las carpetas a las que se tiene acceso."
+        }
+    }
+}

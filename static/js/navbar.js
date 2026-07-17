@@ -50,74 +50,149 @@ async function load_html_in_the_container(container, html){
   await load_language(pathTranslate);
 }
 
-
 async function nextWeb(url) {
-  if (typeof url === 'string' && url.trim() !== '') {
-    try {
-      //translate the language of the app
-      const pathTranslate = get_path_of_the_file_translate_of_the_app(url);
-      await load_language(pathTranslate);
+  if (typeof url !== 'string' || !url.trim()) {
+    console.error('Invalid URL provided to nextWeb');
+    return;
+  }
 
-      const response = await fetch(url, {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      });
+  //first we will see if the app in the that was the user is the app of calendary 
+  //if it the app of calendary we will to refresh the UI 
+  // 👇 Obtener última página
+  const lastPage = sessionHistory.length > 0 ? sessionHistory[sessionHistory.length - 1] : '/';
 
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
-      }
+  try {
+    const pathTranslate = get_path_of_the_file_translate_of_the_app(url);
+    await load_language(pathTranslate);
 
-      const html = await response.text();
+    const response = await fetch(url, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
 
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-
-      //her we will update the DOM
-      const mainContent = doc.getElementById('main-content');
-      document.getElementById('main-content').innerHTML = mainContent ? mainContent.innerHTML : html;
-
-      // remove the old dynamic scripts
-      document.querySelectorAll('script[data-dynamic-script]').forEach(script => script.remove());
-
-
-      // Add new scripts with for...of (allows using await if you want)
-      const scripts = doc.querySelectorAll('script');
-      for (const oldScript of scripts) {
-        const newScript = document.createElement('script');
-        newScript.setAttribute('data-dynamic-script', 'true');
-
-        if (oldScript.src) {
-          newScript.src = oldScript.src;
-          newScript.async = false;
-          // If you want to wait for the script to load:
-          await new Promise(resolve => {
-            newScript.onload = resolve;
-            newScript.onerror = resolve;
-          });
-        } else {
-          newScript.textContent = oldScript.textContent;
-        }
-
-        document.body.appendChild(newScript);
-      }
-
-      //update the last session that the user visited
-      sessionHistory.push(url);
-      localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
-
-      //update all the labels that the programmer do with the syntax of the ERP, to the labels that the user can see
-      transform_my_labels_erp();
-      await load_language(pathTranslate);
-
-      closeMenu();
-    } catch (error) {
-      console.error('Error to load the container of the body:', error);
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
     }
 
+    const html = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
 
-  } else {
-    console.error('Invalid URL provided to nextWeb');
+    // =========================
+    // 🔥 CSS DINÁMICO INTELIGENTE
+    // =========================
+
+    const newStyles = Array.from(doc.querySelectorAll('style, link[rel="stylesheet"]'));
+
+    // Obtener estilos actuales dinámicos
+    const currentStyles = Array.from(document.querySelectorAll('[data-dynamic-style]'));
+
+    // Crear mapa de estilos nuevos (para evitar duplicados)
+    const newStyleKeys = new Set(
+      newStyles.map(s => s.tagName === 'LINK' ? s.href : s.textContent)
+    );
+
+    // 🧹 Eliminar solo los que ya no existen
+    currentStyles.forEach(style => {
+      const key = style.tagName === 'LINK' ? style.href : style.textContent;
+      if (!newStyleKeys.has(key)) {
+        style.remove();
+      }
+    });
+
+    // ➕ Agregar nuevos estilos (solo si no existen)
+    for (const oldStyle of newStyles) {
+
+      let exists = false;
+
+      if (oldStyle.tagName === 'LINK') {
+        exists = document.querySelector(`link[href="${oldStyle.href}"]`);
+      } else {
+        exists = Array.from(document.querySelectorAll('style'))
+          .some(s => s.textContent === oldStyle.textContent);
+      }
+
+      if (exists) continue;
+
+      let newStyle;
+
+      if (oldStyle.tagName === 'LINK') {
+        newStyle = document.createElement('link');
+        newStyle.rel = 'stylesheet';
+        newStyle.href = oldStyle.href;
+
+        // 🔥 esperar a que cargue
+        await new Promise(resolve => {
+          newStyle.onload = resolve;
+          newStyle.onerror = resolve;
+          document.head.appendChild(newStyle);
+        });
+
+      } else {
+        newStyle = document.createElement('style');
+        newStyle.textContent = oldStyle.textContent;
+        document.head.appendChild(newStyle);
+      }
+
+      newStyle.setAttribute('data-dynamic-style', 'true');
+    }
+
+    // =========================
+    // 🔥 HTML
+    // =========================
+
+    const mainContent = doc.getElementById('main-content');
+    document.getElementById('main-content').innerHTML =
+      mainContent ? mainContent.innerHTML : html;
+
+    // =========================
+    // 🔥 JS DINÁMICO
+    // =========================
+
+    document.querySelectorAll('script[data-dynamic-script]')
+      .forEach(script => script.remove());
+
+    const scripts = doc.querySelectorAll('script');
+
+    for (const oldScript of scripts) {
+      const newScript = document.createElement('script');
+      newScript.setAttribute('data-dynamic-script', 'true');
+
+      if (oldScript.src) {
+        newScript.src = oldScript.src;
+        newScript.async = false;
+
+        await new Promise(resolve => {
+          newScript.onload = resolve;
+          newScript.onerror = resolve;
+        });
+
+      } else {
+        newScript.textContent = oldScript.textContent;
+      }
+
+      document.body.appendChild(newScript);
+    }
+
+    // =========================
+    // 🔥 FINAL
+    // =========================
+
+    sessionHistory.push(url);
+    localStorage.setItem('sessionHistory', JSON.stringify(sessionHistory));
+
+    transform_my_labels_erp();
+    await load_language(pathTranslate);
+
+    closeMenu();
+
+    // 👇 only if the user outside of the app of agenda we will to refresh the UI
+    if (url!=='/agenda/agenda' && lastPage === '/agenda/agenda') {
+      sessionHistory.push(url);
+      window.location.reload();
+      return;
+    }
+  } catch (error) {
+    console.error('Error to load the container of the body:', error);
   }
 }
 

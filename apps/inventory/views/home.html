@@ -1,0 +1,482 @@
+<style>
+    /* Base style for status badge */
+    .status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+
+    /* 1. Negative or Empty Stock (Danger) */
+    .status-low-stock {
+        background-color: #ffe5e5;
+        color: #d90429;
+        border: 1px solid #ffb3b3;
+    }
+
+    /* 2. Above the minimum (Normal/Available)*/
+    .status-stock-available {
+        background-color: #e7f9ed;
+        color: #28a745;
+        border: 1px solid #b7ebc6;
+    }
+
+    /* 3. Above 0 but below the minimum (Warning) */
+    .status-safety-stock {
+        background-color: #fff4e5;
+        color: #ff8c00;
+        border: 1px solid #ffe0b3;
+    }
+</style>
+<style>
+    .inventory-input-container {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f4f5f7;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .inventory-input-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding: 0 10px;
+    }
+
+    .inventory-input-group {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .inventory-input-align-right {
+        text-align: right;
+        align-items: flex-end;
+    }
+
+    .inventory-input-label-top {
+        font-size: 13px;
+        color: #8a8a8a;
+        margin-bottom: 4px;
+    }
+
+    .inventory-input-value-bold {
+        font-size: 15px;
+        font-weight: bold;
+        color: #111111;
+    }
+
+    /* Tarjeta blanca inferior */
+    .inventory-input-card {
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 12px 20px;
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .inventory-input-label {
+        font-size: 12px;
+        color: #757575;
+        margin-bottom: 5px;
+    }
+
+    .inventory-input-blue {
+        color: #3b73a5;
+    }
+
+    .inventory-input-field {
+        border: none;
+        outline: none;
+        font-size: 16px;
+        font-weight: 500;
+        color: #222222;
+        padding: 4px 0;
+        background: transparent;
+        width: 100%;
+    }
+
+    /* Línea inferior azul para el input interactivo */
+    .inventory-input-border-bottom {
+        border-bottom: 2px solid #3b73a5;
+    }
+
+    /* Estado activo para el Label (Texto Azul) */
+    .inventory-input-label.inventory-input-active-label {
+        color: #3b73a5;
+        transition: color 0.2s ease;
+    }
+
+    /* Estado activo para el Input (Línea Azul Inferior) */
+    .inventory-input-field.inventory-input-active-input {
+        border-bottom: 2px solid #3b73a5;
+        padding-bottom: 2px;
+        /* Ajuste opcional para que no brinque el texto por el borde */
+    }
+
+    /* Estilo base por defecto para los inputs (borde transparente para evitar saltos visuales) */
+    .inventory-input-field {
+        border: none;
+        border-bottom: 2px solid transparent;
+        outline: none;
+        font-size: 16px;
+        font-weight: 500;
+        color: #222222;
+        padding: 4px 0;
+        background: transparent;
+        width: 100%;
+        transition: border-color 0.2s ease;
+    }
+
+    /* Hover y focus del input */
+    .inventory-input-field:hover,
+    .inventory-input-field:focus {
+        border-bottom: 2px solid #3b73a5;
+    }
+
+    /* Cambiar color del label cuando el grupo tenga hover */
+    .inventory-input-group:hover .inventory-input-label,
+    .inventory-input-field:focus + .inventory-input-label {
+        color: #3b73a5;
+    }
+</style>
+<message-pop title="inventory.title.filter-inventory" name="pop-filter-inventory">
+    <div class="row section">
+        <div class="col">
+            <plus-select label="inventory.select.filter-inventory" id="filter-inventory">
+                <option value="all" t="inventory.option.all-the-inventory"></option>
+                <option value="1" t="inventory.option.soon-to-end"></option>
+                <option value="2" t="inventory.option.surplus-inventory"></option>
+            </plus-select>
+        </div>
+    </div>
+    <button class="btn btn-edit btn-success" t="btn.save" onclick="window.hide_pop('pop-filter-inventory')"></button>
+</message-pop>
+
+
+
+<div class="container-section">
+    <plus-tabs>
+        <plus-tab text="inventory.tab.inventory">
+            <div class="row">
+                <div class="col p-3">
+                    <plus-search input_id="search-inventory">
+                        <search-option>
+                            <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-inventory')"><i
+                                    class="fi fi-rr-settings-sliders"></i></button>
+                        </search-option>
+                    </plus-search>
+                </div>
+            </div>
+
+
+            <div class="table-wrapper">
+                <table class="elegant-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%; text-align: left;" t="inventory.th.product"></th>
+
+                            <th style="width: 25%;" t="inventory.th.description"></th>
+
+                            <th style="width: 15%;" t="inventory.th.category-and-departament"></th>
+
+                            <th style="width: 10%; text-align: center;" t="inventory.th.stock"></th>
+
+                            <th style="width: 10%; text-align: center;" t="inventory.th.missing"></th>
+
+                            <th style="width: 10%; text-align: center;" t="inventory.th.status"></th>
+
+                            <th style="width: 5%; text-align: center;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="container-inventory">
+                    </tbody>
+                </table>
+            </div>
+        </plus-tab>
+        <plus-tab text="inventory.tab.history">
+            {% include 'inventory/partials/history.html' %}
+        </plus-tab>
+    </plus-tabs>
+</div>
+
+<message-pop name="pop-edit-amount-product" title="inventory.title.update-amount-product">
+    <form id="form-update-inventory">
+        <input type="hidden" id="id_inventory_product" name="id">
+        <div class="container-pop">
+            <div class="inventory-input-container">
+                <h4 id="inventario-name-product"></h4>
+                <hr>
+                <div class="inventory-input-row">
+                    <div class="inventory-input-group">
+                        <span class="inventory-input-label-top" t="inventory.label.stock"></span>
+                        <span class="inventory-input-value-bold" id="inventory-info-minimum and maximum"></span>
+                    </div>
+                    <div class="inventory-input-group inventory-input-align-right">
+                        <span class="inventory-input-label-top" t="inventory.label.current-existence"></span>
+                        <span class="inventory-input-value-bold" id="label-info-current-existence"></span>
+                    </div>
+                </div>
+
+                <div class="inventory-input-card">
+                    <div class="inventory-input-group">
+                        <label class="inventory-input-label" for="inv-diferencia" t="inventory.label.difference"></label>
+                        <input type="number" id="inv-diferencia" class="inventory-input-field">
+                    </div>
+                    <div class="inventory-input-group">
+                        <label class="inventory-input-label inventory-input-active-label" for="inv-nueva" t="inventory.label.new-existence"></label>
+                        <input type="number" id="inv-nueva" class="inventory-input-field" name="new_exist">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-edit btn-success" t="btn.update" onclick="edit_amount_product()" type="button"></button>
+    </form>
+</message-pop>
+
+
+
+<script>
+    (()=>{
+
+    })();
+
+    (() => {
+        function get_div() {
+            return `
+            <tr>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="avatar">
+                            <img src="{img}" alt="{name}" class="avatar-img" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <span class="font-semibold" style="font-size: 14px;">{name}</span>
+                            <small class="text-muted" style="font-size: 11px; color: #6c757d;">
+                                {skus}
+                            </small>
+                        </div>
+                    </div>
+                </td>
+
+                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    {description}
+                </td>
+
+                <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    {category}/{department}
+                </td>
+
+                <td class="text-center">
+                    <div style="line-height: 1;">
+                        <span class="font-bold" style="font-size: 15px;">{stock}</span><br>
+                        <small class="text-muted" style="font-size: 10px;">Min: {min_stock}/<label t='inventory.unity_type.{unity_type}'></label></small>
+                    </div>
+                </td>
+                <td class="text-center">
+                    {missing}/<label t='inventory.unity_type.{unity_type}' style="font-size: 8px;"></label>
+                </td>
+                <td class="text-center">
+                    <span class="status status-{status_inventory}" t='inventory.status.{status_inventory}'>
+                        {status_text}
+                    </span>
+                </td>
+
+                <!-- Acciones -->
+                <td class="text-center">
+                    <div style="display: flex; justify-content: center; gap: 5px;">
+                        <button class="btn btn-sm btn-transparent" onclick="open_pop_edit_amount_product({id})" title="Editar">
+                            <i class="fi fi-rr-edit"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            `;
+        }
+        
+        function update_input_inventory(){
+            // -----------------------------------
+            // Elements
+            // -----------------------------------
+            const currentExistenceLabel = document.getElementById("label-info-current-existence");
+
+            const inputDifference = document.getElementById("inv-diferencia");
+            const inputNewExistence = document.getElementById("inv-nueva");
+
+            // -----------------------------------
+            // Flags
+            // -----------------------------------
+            let editingDifference = false;
+            let editingNewExistence = false;
+
+            // -----------------------------------
+            // Get current stock
+            // -----------------------------------
+            function getCurrentStock() {
+
+                const value = parseFloat(
+                    currentExistenceLabel.textContent
+                        .replace(",", ".")
+                        .trim()
+                );
+
+                return isNaN(value) ? 0 : value;
+            }
+
+            // -----------------------------------
+            // Calculate new existence
+            // -----------------------------------
+            function calculateNewExistence() {
+
+                const currentStock = getCurrentStock();
+
+                const difference = parseFloat(
+                    inputDifference.value.replace(",", ".")
+                );
+
+                if (isNaN(difference)) {
+                    inputNewExistence.value = "";
+                    return;
+                }
+
+                const result = currentStock + difference;
+
+                inputNewExistence.value = result;
+            }
+
+            // -----------------------------------
+            // Calculate difference
+            // -----------------------------------
+            function calculateDifference() {
+
+                const currentStock = getCurrentStock();
+
+                const newExistence = parseFloat(
+                    inputNewExistence.value.replace(",", ".")
+                );
+
+                if (isNaN(newExistence)) {
+                    inputDifference.value = "";
+                    return;
+                }
+
+                const result = newExistence - currentStock;
+
+                inputDifference.value = result;
+            }
+
+            // -----------------------------------
+            // Difference input
+            // -----------------------------------
+            inputDifference.addEventListener("input", () => {
+
+                if (editingNewExistence) return;
+
+                editingDifference = true;
+
+                calculateNewExistence();
+
+                editingDifference = false;
+            });
+
+            // -----------------------------------
+            // New existence input
+            // -----------------------------------
+            inputNewExistence.addEventListener("input", () => {
+
+                if (editingDifference) return;
+
+                editingNewExistence = true;
+
+                calculateDifference();
+
+                editingNewExistence = false;
+            });
+
+        }
+        
+        async function edit_amount_product() {
+            //now we will get the information of this product from the backend 
+            const backend = await window.send_form_to_the_server('form-update-inventory',`/inventory/update_inventory/`)
+            if(!backend.success){
+                window.show_alert('error', 'ERROR', backend.message || 'inventory.message.error-to-get-information', backend.error || '');
+                return;  
+            }
+
+            window.update_container_from_the_server(
+                ['search-inventory', 'filter-inventory'],
+                'container-inventory', get_div(), `/inventory/get_inventory/`, 'GET', true);
+
+            window.hide_pop('pop-edit-amount-product');
+            window.show_notification('success', 'inventory.success.the-inventory-was-update');
+        }
+
+        async function open_pop_edit_amount_product(id) {
+            //now we will get the information of this product from the backend 
+            const backend = await window.send_message_to_the_server(`/inventory/get_data_inventory/${id}/`, {}, true, 'GET')
+            if (!backend.success) {
+                window.show_alert('error', 'ERROR', backend.message || 'inventory.message.error-to-get-information', backend.error || '');
+                return;
+            }
+
+
+            //update all the information of the pop and the show
+            const answer=backend.answer;
+            document.getElementById('id_inventory_product').value = id;
+            document.getElementById('inventario-name-product').textContent=answer.name;
+            document.getElementById('inventory-info-minimum and maximum').textContent=window.translate_text('inventory.label.minimum-and-maximum', {min: answer.min_stock, max: 0});
+            document.getElementById('label-info-current-existence').textContent=answer.stock;
+            document.getElementById('inv-diferencia').value=0;
+            document.getElementById('inv-nueva').value=answer.stock;
+
+            window.show_pop('pop-edit-amount-product');
+            update_input_inventory();
+        }
+
+        window.update_container_with_seeker(
+            ['search-inventory', 'filter-inventory'],
+            'container-inventory', get_div(), `/inventory/get_inventory/`, 'GET', true);
+
+
+        window.edit_amount_product = edit_amount_product;
+        window.open_pop_edit_amount_product = open_pop_edit_amount_product;
+
+    })();
+    (() => {
+        // Seleccionamos todos los inputs dentro de nuestro contenedor de inventario
+        const inventoryInputs = document.querySelectorAll('.inventory-input-field');
+
+        inventoryInputs.forEach(input => {
+            // Al ganar el foco (hacer click o tabular dentro)
+            input.addEventListener('focus', () => {
+                // Agrega la línea azul al input actual
+                input.classList.add('inventory-input-active-input');
+
+                // Busca el label hermano superior y le pone el texto azul
+                const label = input.previousElementSibling;
+                if (label && label.classList.contains('inventory-input-label')) {
+                    label.classList.add('inventory-input-active-label');
+                }
+            });
+
+            // Al perder el foco (hacer click fuera)
+            input.addEventListener('blur', () => {
+                // Quita la línea azul
+                input.classList.remove('inventory-input-active-input');
+
+                // Quita el texto azul del label
+                const label = input.previousElementSibling;
+                if (label && label.classList.contains('inventory-input-label')) {
+                    label.classList.remove('inventory-input-active-label');
+                }
+            });
+        });
+    })();
+    
+</script>

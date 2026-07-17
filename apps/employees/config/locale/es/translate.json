@@ -10,6 +10,7 @@
     "employees.label.username": "Usuario *",
     "employees.placeholder.username": "Escribe el nombre de usuario que usará el empleado",
     "employees.label.email": "Correo electrónico del empleado *",
+    "employees.label.email-employee": "Correo electrónico del empleado",
     "employees.placeholder.email": "Ej. empleado@hotmail.com",
     "employees.label.password": "Contraseña *",
     "employees.placeholder.password": "**********",
@@ -57,5 +58,8 @@
     "employees.message.recover-employee": "¿Deseas restaurar a este empleado?",
     "employees.title.recover-employee-success": "Empleado recuperado",
     "employees.message.recover-employee-success": "El empleado fue recuperado con éxito. Ya puede volver a sus funciones normales.",
-    "employees.error.recover-employee": "Ocurrió un error al intentar recuperar al empleado."
+    "employees.error.recover-employee": "Ocurrió un error al intentar recuperar al empleado.",
+    "employees.label.create-user": "Crear Usuario",
+    "employees.label.create-employee": "Crear Empleado",
+    "employees.label.reset-filter": "Borrar filtros"
 }

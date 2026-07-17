@@ -1,4 +1,9 @@
 <div class="container-section">
+    <plus-help-video 
+        videos='[
+        {"title":"¿Cómo Crear Roles y Permisos en tu clinica Denta?","url":"https://www.youtube.com/embed/bOIFv_jMND0?si=srHgstmgzeIPFN4n"}
+        ]'>
+    </plus-help-video><br>
     <plus-search input_id="seacrh">
         <search-option>
             <button  class="btn btn-add" onclick="nextWeb('rolesAndPermissions/add_a_new_rol/')">+</button>
@@ -29,7 +34,11 @@
         const divHtml = `
             <tr>
                 <td> { name } </td>
-                <td> { description } </td>
+                <td> 
+                    <div style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; max-width: 250px;">
+                    { description } 
+                    </div>
+                </td>
                 <td>
                     <button onclick="duplicate_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-duplicate"></i></button>
                     <button onclick="edit_role(' { id } ')" class="btn btn-transparent"><i class="fi fi-sr-pencil"></i></button>
@@ -37,7 +46,7 @@
                 </td>
             </tr>
         `
-        update_container_with_seeker('seacrh', 'table-role', divHtml, 'rolesAndPermissions/get_information_of_the_role/1/', 'GET');
+        update_container_with_seeker('seacrh', 'table-role', divHtml, 'rolesAndPermissions/get_information_of_the_role/1/', 'GET', true);
     })();
 
 
@@ -64,7 +73,7 @@
                         </td>
                     </tr>
                 `
-                update_container_from_the_server('seacrh', 'table-role', divHtml, 'rolesAndPermissions/get_information_of_the_role/1/', 'GET'); //update the table
+                update_container_from_the_server('seacrh', 'table-role', divHtml, 'rolesAndPermissions/get_information_of_the_role/1/', 'GET', true); //update the table
                 show_alert('success', 'rolesAndPermissions.message.success.title.the-rol-was-deactivated', 'rolesAndPermissions.message.success.the-rol-was-deactivated', backend.error || '');
             } else {
                 show_alert('error', 'Error', backend.message || 'rolesAndPermissions.message.error.unexpected-error', backend.error || '');
@@ -88,11 +97,8 @@
 
 
 <message-pop title="rolesAndPermissions.pop.title-restart-role" name="restart-role">
-    <div class="search-container">
-        <i class="fi fi-rs-search search-icon"></i>
-        <input type="text" class="search-input" t-placeholder="message.search" id="seacrh-role-delete">
-    </div>
-
+    <plus-search input_id="seacrh-role-delete">
+    </plus-search>
     <div class="container-pop">
         <table class="section">
             <thead>
@@ -123,7 +129,7 @@
                 </td>
             </tr>
         `
-        update_container_with_seeker('seacrh-role-delete', 'table-role-delete', divHtml, 'rolesAndPermissions/get_information_of_the_role/0/', 'GET');
+        update_container_with_seeker('seacrh-role-delete', 'table-role-delete', divHtml, 'rolesAndPermissions/get_information_of_the_role/0/', 'GET', true);
     }
 
     async function restart_role(role_id) {
@@ -142,7 +148,7 @@
                         </td>
                     </tr>
                 `
-                update_container_from_the_server('seacrh-role-delete', 'table-role-delete', divHtml, 'rolesAndPermissions/get_information_of_the_role/0/', 'GET'); //update the table
+                update_container_from_the_server('seacrh-role-delete', 'table-role-delete', divHtml, 'rolesAndPermissions/get_information_of_the_role/0/', 'GET', true); //update the table
 
 
                 //update the container of the table of roles activates
@@ -156,7 +162,7 @@
                         </td>
                     </tr>
                 `
-                update_container_from_the_server('seacrh', 'table-role', divHtml2, 'rolesAndPermissions/get_information_of_the_role/1/', 'GET'); //update the table
+                update_container_from_the_server('seacrh', 'table-role', divHtml2, 'rolesAndPermissions/get_information_of_the_role/1/', 'GET', true); //update the table
 
 
 

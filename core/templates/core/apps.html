@@ -1,290 +1,293 @@
-
 {% load static %}
 
 <style>
   .menu {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #DCDAE8;
-      background: linear-gradient(135deg, #e7e0f2 0%, #f8f9fa 100%);
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      z-index: 10000;
-      transition: opacity 0.5s ease, transform 0.5s ease;
-      opacity: 0;
-      transform: translateY(-100%);
-      padding-top: 40px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #DCDAE8;
+    background: linear-gradient(135deg, #e7e0f2 0%, #f8f9fa 100%);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10000;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity: 0;
+    transform: translateY(-100%);
+    padding-top: 40px;
   }
 
   .menu.active {
-      display: flex;
-      opacity: 1;
-      transform: translateY(0);
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .close-menu {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background-color: rgba(255, 255, 255, .5);
-      color: black;
-      border: none;
-      border-radius: 5px;
-      padding: 10px;
-      cursor: pointer;
-      z-index: 1000;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(255, 255, 255, .5);
+    color: black;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1000;
   }
 
   .close-menu:hover {
-      background-color: rgba(255, 255, 255, .8);
+    background-color: rgba(255, 255, 255, .8);
   }
 
   .container-app {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      grid-auto-rows: minmax(120px, auto);
-      gap: 20px;
-      max-width: 1000px;
-      padding: 20px;
-      grid-template-columns: repeat(7, 1fr);
-      opacity: 0;
-      transition: opacity 0.5s ease;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-auto-rows: minmax(120px, auto);
+    gap: 20px;
+    max-width: 1000px;
+    padding: 20px;
+    grid-template-columns: repeat(7, 1fr);
+    opacity: 0;
+    transition: opacity 0.5s ease;
   }
 
   .menu.active .container-app {
-      opacity: 1;
+    opacity: 1;
   }
 
   .app-icon {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background-color: white;
-      border-radius: 10px;
-      padding: 10px;
-      transition: transform 0.3s ease;
-      text-align: center;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      width: 100px;
-      /* Adjust the size here */
-      height: 100px;
-      /* Adjust the size here */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    transition: transform 0.3s ease;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100px;
+    /* Adjust the size here */
+    height: 100px;
+    /* Adjust the size here */
   }
 
   .app-icon img {
-      width: 40px;
-      /* Adjust the size here */
-      height: 40px;
-      /* Adjust the size here */
-      margin-bottom: 5px;
+    width: 40px;
+    /* Adjust the size here */
+    height: 40px;
+    /* Adjust the size here */
+    margin-bottom: 5px;
   }
 
   .app-icon span {
-      font-size: 12px;
-      /* Adjust the font size here */
-      font-weight: bold;
-      color: #333;
+    font-size: 12px;
+    /* Adjust the font size here */
+    font-weight: bold;
+    color: #333;
   }
 
   .app-icon:hover {
-      transform: scale(1.1);
-      cursor: pointer;
+    transform: scale(1.1);
+    cursor: pointer;
   }
+
   .shortcuts-label {
-      display: none;
-      position: absolute;
-      transform: translateY(280%);
-      font-size: 0.8rem;
-      pointer-events: none;
-      opacity: 0.7;
+    display: none;
+    position: absolute;
+    transform: translateY(280%);
+    font-size: 0.8rem;
+    pointer-events: none;
+    opacity: 0.7;
   }
 
 
   /* 📱 Tablets */
   @media (max-width: 1024px) {
-      .container-app {
-          grid-template-columns: repeat(5, 1fr);
-      }
+    .container-app {
+      grid-template-columns: repeat(5, 1fr);
+    }
 
-      .app-icon {
-          width: 85px;
-          height: 85px;
-      }
+    .app-icon {
+      width: 85px;
+      height: 85px;
+    }
 
-      .app-icon img {
-          width: 40px;
-          height: 40px;
-      }
+    .app-icon img {
+      width: 40px;
+      height: 40px;
+    }
 
-      .app-icon span {
-          font-size: 13px;
-      }
+    .app-icon span {
+      font-size: 13px;
+    }
   }
 
   /* 📱 Celulares (4 columnas) */
   @media (max-width: 768px) {
-      .menu {
-          padding-top: 60px;
-      }
+    .menu {
+      padding-top: 60px;
+    }
 
-      .container-app {
-          grid-template-columns: repeat(4, 1fr); /* ✅ Cuatro íconos por fila */
-          gap: 15px;
-          width: 95%;
-      }
+    .container-app {
+      grid-template-columns: repeat(4, 1fr);
+      /* ✅ Cuatro íconos por fila */
+      gap: 15px;
+      width: 95%;
+    }
 
-      .app-icon {
-          width: 80px;
-          height: 80px;
-          border-radius: 12px;
-      }
+    .app-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+    }
 
-      .app-icon img {
-          width: 38px;
-          height: 38px;
-      }
+    .app-icon img {
+      width: 38px;
+      height: 38px;
+    }
 
-      .app-icon span {
-          font-size: 11px;
-      }
+    .app-icon span {
+      font-size: 11px;
+    }
   }
 
   /* 📱 Teléfonos pequeños */
   @media (max-width: 480px) {
-      .container-app {
-          grid-template-columns: repeat(4, 1fr); /* Mantén 4 íconos pero más compactos */
-          gap: 10px;
-      }
+    .container-app {
+      grid-template-columns: repeat(4, 1fr);
+      /* Mantén 4 íconos pero más compactos */
+      gap: 10px;
+    }
 
-      .app-icon {
-          width: 70px;
-          height: 70px;
-          padding: 10px;
-      }
+    .app-icon {
+      width: 70px;
+      height: 70px;
+      padding: 10px;
+    }
 
-      .app-icon img {
-          width: 32px;
-          height: 32px;
-      }
+    .app-icon img {
+      width: 32px;
+      height: 32px;
+    }
 
-      .app-icon span {
-          font-size: 10px;
-      }
+    .app-icon span {
+      font-size: 10px;
+    }
   }
 
   .shortcuts-label {
-      display: none;
-      position: absolute;
-      transform: translateY(280%);
-      font-size: 0.8rem;
-      pointer-events: none;
-      opacity: 0.7;
+    display: none;
+    position: absolute;
+    transform: translateY(280%);
+    font-size: 0.8rem;
+    pointer-events: none;
+    opacity: 0.7;
   }
 
-  .form-control{
+  .form-control {
     background-color: white;
     padding: .5rem;
   }
 
-        /* Estilo de cada App */
-        .app-item {
-            width: 100px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+  /* Estilo de cada App */
+  .app-item {
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
 
-        /* Contenedor del Icono (Cuadrado Odoo) */
-        .app-icon {
-            width: 70px;
-            height: 70px;
-            background-color: #ffffff;
-            border-radius: 6px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            margin-bottom: 8px;
-            position: relative;
-            transition: box-shadow 0.2s;
-        }
+  /* Contenedor del Icono (Cuadrado Odoo) */
+  .app-icon {
+    width: 70px;
+    height: 70px;
+    background-color: #ffffff;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 8px;
+    position: relative;
+    transition: box-shadow 0.2s;
+  }
 
-        .app-item .app-icon {
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+  .app-item .app-icon {
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
 
-        .app-item:hover .app-icon {
-            transform: translateY(-2px);
-        }
+  .app-item:hover .app-icon {
+    transform: translateY(-2px);
+  }
 
-        /* Imagen del Icono */
-        .app-icon img {
-            width: 48px;
-            height: 48px;
-            object-fit: contain;
-        }
+  /* Imagen del Icono */
+  .app-icon img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+  }
 
-        /* Etiquetas de Texto */
-        .app-label {
-            font-size: 13px;
-            color: #333333;
-            text-align: center;
-            width: 100%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
-        }
-
+  /* Etiquetas de Texto */
+  .app-label {
+    font-size: 13px;
+    color: #333333;
+    text-align: center;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  }
 </style>
 
 
 <div class="plus-app-modal" id="appMenu">
   <ul class="ul-menu-bar">
-      <label for="check" class="btn-menu-bar">
-          <i class="fi-des fi-br-menu-burger menu-toggle" id="btn-navbar-open" step="btnNavBar"></i>
-          <i class="fi-des fi-br-cross" id="btn-navbar-cancel"></i>
-      </label>
+    <label for="check" class="btn-menu-bar">
+      <i class="fi-des fi-br-menu-burger menu-toggle" id="btn-navbar-open" step="btnNavBar"></i>
+      <i class="fi-des fi-br-cross" id="btn-navbar-cancel"></i>
+    </label>
   </ul>
 
   <div class="menu">
-      <input type="text" placeholder="Search an App" class="form-control" style="width: 25%;" id="searchInput" t="menu.search">
-      <button class="close-menu" onclick="window.closeModalApp()">×</button>
+    <input type="text" placeholder="Search an App" class="form-control" style="width: 25%;" id="searchInput"
+      t="menu.search">
+    <button class="close-menu" onclick="window.closeModalApp()">×</button>
 
-      <div class="container-app" id="plus-appGrid">
-          {% for app in apps %}
-          <div class="app-item" data-name="discusiones" onclick="nextWeb('{{ app.path }}{{ app.path }}')" data-id="{{ app.name }}">
-              <div class="app-icon"><img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy"></div>
-              <div class="app-label"><span class="app-name">{{ app.name }}</span></div>
-          </div>
-          {% endfor %}
-
-          <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-
-            <button class="app-item" style="border:none; background-color: transparent;" data-id="app-plus-exit">
-                <div class="app-icon"><img src="{% static 'img/icons/exit1.webp' %}" alt="{{ app.name }}" loading="lazy"></div>
-                <div class="app-label">SALIDA</div>
-            </button>
-          </form>
+    <div class="container-app" id="plus-appGrid">
+      {% for app in apps %}
+      <div class="app-item" data-name="discusiones" onclick="nextWeb('{{ app.path }}{{ app.path }}')"
+        data-id="{{ app.name }}">
+        <div class="app-icon"><img src="{% static app.icon %}" alt="{{ app.name }}" loading="lazy"></div>
+        <div class="app-label"><span class="app-name">{{ app.name }}</span></div>
       </div>
+      {% endfor %}
+
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+
+        <button class="app-item" style="border:none; background-color: transparent;" data-id="app-plus-exit">
+          <div class="app-icon"><img src="{% static 'img/icons/exit1.webp' %}" alt="{{ app.name }}" loading="lazy">
+          </div>
+          <div class="app-label">SALIDA</div>
+        </button>
+      </form>
+    </div>
   </div>
-  
+
 </div>
 
-
 <script>
-  const typeMenu=2; //1=apps , 2=navbar
+  const typeMenu = 2; //1=apps , 2=navbar
   function openModalApp() {
-    if (typeMenu==1) {
+    if (typeMenu == 1) {
       const appMenu = document.getElementById("appMenu");
       appMenu.style.display = "flex";
       appMenu.querySelector(".menu").classList.add("active");
@@ -294,10 +297,10 @@
 
   }
   function closeModalApp() {
-    if (typeMenu==1) {
+    if (typeMenu == 1) {
       const appMenu = document.getElementById("appMenu");
       appMenu.style.display = "none";
-      appMenu.querySelector(".menu").classList.remove("active"); 
+      appMenu.querySelector(".menu").classList.remove("active");
     } else {
       closeSideMenu();
     }
@@ -306,7 +309,7 @@
   const searchInput = document.getElementById('searchInput');
   const appContainers = document.querySelectorAll('.plus-app-app');
 
-  searchInput.addEventListener('input', function() {
+  searchInput.addEventListener('input', function () {
     const filter = this.value.toLowerCase();
 
     appContainers.forEach(app => {
@@ -341,7 +344,7 @@
     background: rgba(0, 0, 0, 0.2);
     z-index: 9998;
     transition: opacity 0.3s ease;
-    
+
   }
 
   /* Menú lateral */
@@ -394,183 +397,440 @@
 
   .side-menu a:hover {
     background: #E6EFF6;
-    color:var(--primary);
+    color: var(--primary);
   }
-  .image-icon-user-menu{
+
+  .image-icon-user-menu {
     border-radius: 15px;
     width: 70px;
     height: 70px;
   }
 
-/* Logo empresa */
-.info-branch {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 25px;
-}
-
-.icon-company-menu {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.name_company {
-  font-weight: 600;
-  font-size: 16px;
-  color: #222;
-}
-/* Info empleado */
-.info-employee {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.image-icon-user-menu {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #fff;
-}
-
-.employee-details {
-  display: flex;
-  flex-direction: column;
-  font-size: 13px;
-  color: #222;
-}
-
-.name-menu {
-  font-weight: 600;
-}
-.departament-menu, .area-menu {
-  font-weight: 400;
-  color: #555;
-}
-
-.menu-links {
-  flex: 1; /* ocupa espacio disponible */
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.menu-links a {
-  text-decoration: none;
-  color: #222;
-  font-weight: 500;
-  padding: 10px;
-  border-radius: 8px;
-  transition: background 0.2s, color 0.2s;
-}
-
-.menu-links a:hover{
-  cursor: pointer;
-}
-
-/* Scroll personalizado */
-.menu-links::-webkit-scrollbar {
-  width: 6px;
-}
-.menu-links::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.2);
-  border-radius: 4px;
-}
-.menu-links::-webkit-scrollbar-thumb:hover {
-  background: rgba(0,0,0,0.35);
-}
-
-/* Botón salir siempre abajo */
-.btn-exit {
-  margin-top: auto;
-  background: #075EAB;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.2s, transform 0.2s;
-  width: 100%;
-}
-
-.btn-exit:hover {
-  background: #054a87;
-}
-
-
-
-/* ✅ Adaptación para celulares */
-@media (max-width: 768px) {
-  .side-menu {
-    width: 80%;
-    max-width: 270px;
-    left: -100%;
-    padding: 18px 16px;
-    border-radius: 0;
-  }
-
-  .side-menu.active {
-    left: 0;
-  }
-
-  .menu-links a {
-    font-size: 15px;
-    padding: 10px;
-  }
-
+  /* Logo empresa */
   .info-branch {
-    flex-direction: row;
-    justify-content: flex-start;
-    margin-bottom: 10px;
-  }
-
-  .name_company {
-    font-size: 15px;
-  }
-
-  .image-icon-user-menu {
-    width: 44px;
-    height: 44px;
-  }
-
-  .employee-details {
-    font-size: 12px;
-  }
-
-  .btn-exit {
-    font-size: 15px;
-    padding: 10px;
-  }
-}
-
-/* ✅ Ultra compacto para móviles muy pequeños */
-@media (max-width: 480px) {
-  .side-menu {
-    width: 85%;
-    max-width: 250px;
-    padding: 14px;
-  }
-
-  .menu-links a {
-    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
   }
 
   .icon-company-menu {
-    width: 42px;
-    height: 42px;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
   }
 
   .name_company {
-    font-size: 14px;
+    font-weight: 600;
+    font-size: 16px;
+    color: #222;
   }
+
+  /* Info empleado */
+  .info-employee {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .image-icon-user-menu {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+  }
+
+  .employee-details {
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    color: #222;
+  }
+
+  .name-menu {
+    font-weight: 600;
+  }
+
+  .departament-menu,
+  .area-menu {
+    font-weight: 400;
+    color: #555;
+  }
+
+  .menu-links {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 4px;
+    overflow-y: scroll;
+  }
+
+  .menu-links a {
+    text-decoration: none;
+    color: #222;
+    font-weight: 500;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .menu-links a:hover {
+    cursor: pointer;
+  }
+
+  /* Scroll personalizado */
+  .menu-links::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .menu-links::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  .menu-links::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  /* Botón salir siempre abajo */
+  .btn-exit {
+    margin-top: auto;
+    background: #075EAB;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s, transform 0.2s;
+    width: 100%;
+  }
+
+  .btn-exit:hover {
+    background: #054a87;
+  }
+
+
+
+  /* ✅ Adaptación para celulares */
+  @media (max-width: 768px) {
+    .side-menu {
+      width: 80%;
+      max-width: 270px;
+      left: -100%;
+      padding: 18px 16px;
+      border-radius: 0;
+    }
+
+    .side-menu.active {
+      left: 0;
+    }
+
+    .menu-links a {
+      font-size: 15px;
+      padding: 10px;
+    }
+
+    .info-branch {
+      flex-direction: row;
+      justify-content: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .name_company {
+      font-size: 15px;
+    }
+
+    .image-icon-user-menu {
+      width: 44px;
+      height: 44px;
+    }
+
+    .employee-details {
+      font-size: 12px;
+    }
+
+    .btn-exit {
+      font-size: 15px;
+      padding: 10px;
+    }
+  }
+
+  /* ✅ Ultra compacto para móviles muy pequeños */
+  @media (max-width: 480px) {
+    .side-menu {
+      width: 85%;
+      max-width: 250px;
+      padding: 14px;
+    }
+
+    .menu-links a {
+      font-size: 14px;
+    }
+
+    .icon-company-menu {
+      width: 42px;
+      height: 42px;
+    }
+
+    .name_company {
+      font-size: 14px;
+    }
+  }
+
+
+
+  .info-branch {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    position: relative;
+    /* Necesario para posicionar el dropdown */
+  }
+
+  .icon-company-menu {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #f5f5f7;
+  }
+
+  /* Contenedor del selector interactivo */
+  .branch-selector-container {
+    flex: 1;
+    position: relative;
+  }
+
+  /* Botón que simula el select */
+  .branch-trigger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 6px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .branch-trigger-btn:hover {
+    background: #f4f4f6;
+  }
+
+  .branch-trigger-btn:focus {
+    outline: none;
+    background: #f4f4f6;
+    border-color: #e2e8f0;
+  }
+
+  .branch-name-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .company-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #8a8a93;
+    font-weight: 600;
+  }
+
+  .name_company {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1c1c1e;
+  }
+
+  /* Icono de flecha (Chevron) */
+  .chevron-icon {
+    font-size: 10px;
+    color: #8a8a93;
+    transition: transform 0.2s ease;
+  }
+
+  .branch-trigger-btn.active .chevron-icon {
+    transform: rotate(180deg);
+  }
+
+  /* El Popover / Dropdown Menu */
+  .branch-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #e5e5ea;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    z-index: 10000;
+    overflow: hidden;
+    padding: 6px;
+    animation: slideDown 0.2s ease;
+  }
+
+  .branch-dropdown-menu.show {
+    display: block;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Lista de sucursales */
+  .branch-options-list {
+    max-height: 160px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  /* Scroll sutil para la lista */
+  .branch-options-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .branch-options-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
+
+  /* Opción individual */
+  .branch-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    font-size: 13.5px;
+    color: #3a3a3c;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .branch-item:hover {
+    background: #E6EFF6;
+    color: #075EAB;
+  }
+
+  .branch-item.selected {
+    background: #f4f4f6;
+    color: #075EAB;
+    font-weight: 600;
+  }
+
+  .check-icon {
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  /* Divisor */
+  .dropdown-divider {
+    height: 1px;
+    background: #f2f2f7;
+    margin: 6px 4px;
+  }
+
+  /* Botón de agregar sucursal */
+  .btn-add-branch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    background: transparent;
+    border: 1px dashed #c7c7cc;
+    color: #075EAB;
+    padding: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .btn-add-branch:hover {
+    background: #f4f9fd;
+    border-color: #075EAB;
+  }
+
+  .hiden-pop-branch{
+    display: none;
+  }
+
+/* Contenedor principal (Fondo oscuro transparente) */
+.pop-add-branch {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo negro con 50% de opacidad */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050; /* Por encima de cualquier otro elemento (estilo Bootstrap) */
+}
+
+/* Caja blanca interna que contiene tu formulario */
+.pop-add-branch .pop-branch-content {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 500px; /* Ancho máximo del formulario */
+    position: relative; /* Necesario para posicionar la X */
+    animation: popIn 0.3s ease-out; /* Animación suave al aparecer */
+}
+
+/* El botón 'X' para cerrar */
+.pop-add-branch .pop-branch-close {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #6c757d;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+/* Efecto al pasar el mouse por la X */
+.pop-add-branch .pop-branch-close:hover {
+    color: #343a40;
+}
+
+/* Pequeño espacio para que tu botón de crear no quede pegado al input */
+.pop-add-branch .btn-add {
+    margin-top: 20px;
+    width: 100%; /* Opcional: hace que el botón ocupe todo el ancho */
+}
+
+/* Animación de entrada */
+@keyframes popIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }
 </style>
 <!-- Fondo desenfocado -->
@@ -581,14 +841,55 @@
   <button class="close-btn" onclick="closeSideMenu()">✕</button>
 
   <!-- Logo empresa -->
+  <br>
   <div class="info-branch">
     {% if request.user.company.logo %}
-      <img src="{{ request.user.company.logo.url }}?v=1.3" alt="{{ request.user.company.company_name }}" class="icon-company-menu">
+    <img src="{{ request.user.company.logo.url }}?v=1.3" alt="{{ request.user.company.company_name }}"
+      class="icon-company-menu">
     {% else %}
-      <img src="{% static 'img/logo.png' %}?v=1.3" alt="icon for default" class="icon-company-menu">
+    <img src="{% static 'img/logo.png' %}?v=1.3" alt="Logo corporativo" class="icon-company-menu">
     {% endif %}
-    <span class="name_company">{{ request.user.branch.branch_name }}</span>
+
+    <div class="branch-selector-container">
+      <!-- Botón Gatillo del Popover -->
+      <button class="branch-trigger-btn" id="branchTrigger" onclick="toggleBranchDropdown(event)">
+        <div class="branch-name-wrapper">
+          <span class="company-label">{{ request.user.branch.name_branch }}</span>
+          <span class="name_company" id="currentBranchName">{{ request.user.branch.branch_name }}</span>
+        </div>
+        <span class="chevron-icon">▼</span>
+      </button>
+
+      <!-- Menú Desplegable (Popover) -->
+      <div class="branch-dropdown-menu" id="branchDropdown">
+        <div class="branch-options-list">
+          {% for item in branches %}
+          <div class="branch-item {% if branch.id == item.id %}selected{% endif %}" data-value="{{ item.id }}"
+            onclick="selectBranch('{{ item.id }}', '{{ item.name_branch }}')">
+            <span>{{ item.name_branch }}</span>
+            {% if branch.id == item.id %}
+            <span class="check-icon">✓</span>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="dropdown-divider"></div>
+
+        <!-- Botón Agregar Sucursal (Acción vacía por ahora) -->
+        <button class="btn-add-branch" onclick="open_pop_add_branch()">
+          <span>+ Agregar sucursal</span>
+        </button>
+      </div>
+    </div>
+    
   </div>
+
+  <!-- Formulario oculto para procesar el cambio de sucursal en el backend si lo necesitas -->
+  <form id="branchChangeForm" method="POST" action="" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="branch_id" id="selectedBranchInput">
+  </form>
 
 
   <!-- Menú módulos -->
@@ -600,9 +901,9 @@
 
   <div class="info-employee">
     {% if request.user.avatar %}
-      <img src="{{ request.user.avatar.url }}" alt="Avatar de {{ request.user.username }}" class="image-icon-user-menu">
+    <img src="{{ request.user.avatar.url }}" alt="Avatar de {{ request.user.username }}" class="image-icon-user-menu">
     {% else %}
-      <img src="{% static 'img/photo-profile.webp' %}" alt="avatar for default" class="image-icon-user-menu">
+    <img src="{% static 'img/photo-profile.webp' %}" alt="avatar for default" class="image-icon-user-menu">
     {% endif %}
 
     <div class="employee-details">
@@ -619,6 +920,24 @@
   </form>
 </div>
 
+<!-- Contenedor principal del Popup (Fondo oscuro) -->
+<div id="popupBranchContainer" class="pop-add-branch" style="display: none;">
+  <!-- Caja blanca del contenido -->
+  <div class="pop-branch-content">
+    <!-- Botón de cerrar (X) -->
+    <span class="pop-branch-close" onclick="closePopupBranch()">&times;</span>
+    
+    <!-- Tu Formulario Original -->
+    <div class="row">
+      <div class="col">
+        <label for="name_branch" class="form-label">Nombre de la nueva sucursal</label>
+        <plus-title type="text" class="form-control" id="name_branch" placeholder="Ejemplo: Sucursal Centro"></plus-title>
+      </div>
+    </div>
+    <button class="btn btn-success btn-add" onclick="add_new_branch()">Crear Sucursal</button>
+  </div>
+</div>
+
 <script>
   function openSideMenu() {
     document.getElementById("sideMenu").classList.add("active");
@@ -629,4 +948,249 @@
     document.getElementById("sideMenu").classList.remove("active");
     document.getElementById("menuOverlay").style.display = "none";
   }
+</script>
+<script>
+  function closePopupBranch() {
+    const popupBranch = document.getElementById('popupBranchContainer');
+      popupBranch.style.display = 'none';
+  }
+
+  // Función para ABRIR el popup (llámala desde el botón donde quieras activarlo)
+  function openPopupBranch() {
+    const popupBranch = document.getElementById('popupBranchContainer');
+    popupBranch.style.display = 'flex'; 
+    document.getElementById('name_branch').value = ''; 
+  }
+
+  function open_pop_add_branch() {
+    closeSideMenu();
+    openPopupBranch()
+  }
+
+  async function add_new_branch() {
+    const nameBranchInput = document.getElementById('name_branch');
+    const branchName = nameBranchInput.value.trim();
+    if (branchName === '') {
+
+      alert('Por favor, ingresa un nombre para la sucursal.');
+
+      return;
+    }
+
+    try {
+
+      const formData = new FormData();
+
+      formData.append('name_branch', branchName);
+
+      const response = await fetch(
+        "{% url 'create_branch' %}",
+        {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: formData
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+
+        // Limpiar input
+        nameBranchInput.value = '';
+
+        // Agregar nueva branch al frontend
+        const container = document.getElementById('branchContainer');
+
+        // Deseleccionar anteriores
+        document.querySelectorAll('.branch-item').forEach(item => {
+          item.classList.remove('selected');
+
+          const check = item.querySelector('.check-icon');
+
+          if (check) {
+            check.remove();
+          }
+        });
+
+        const newBranch = document.createElement('div');
+
+        newBranch.className = 'branch-item selected';
+
+        newBranch.setAttribute('data-value', data.branch.id);
+
+        newBranch.setAttribute(
+          'onclick',
+          `selectBranch('${data.branch.id}', '${data.branch.name}')`
+        );
+
+        newBranch.innerHTML = `
+                <span>${data.branch.name}</span>
+                <span class="check-icon">✓</span>
+            `;
+
+        //container.appendChild(newBranch);
+
+        // Recargar para cargar datos de nueva sucursal
+        window.location.reload();
+
+      } else {
+
+        alert(window.translate_text(data.message));
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert('Error creating branch');
+
+    }
+
+  }
+
+  async function selectBranch(branchId, branchName) {
+
+    try {
+
+      const formData = new FormData();
+
+      formData.append('branch_id', branchId);
+
+      const response = await fetch(
+        "{% url 'change_branch' %}",
+        {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: formData
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+
+        // Cambiar visualmente
+        document.querySelectorAll('.branch-item').forEach(item => {
+
+          item.classList.remove('selected');
+
+          const check = item.querySelector('.check-icon');
+
+          if (check) {
+            check.remove();
+          }
+
+        });
+
+        const selectedItem = document.querySelector(
+          `[data-value="${branchId}"]`
+        );
+
+        selectedItem.classList.add('selected');
+
+        selectedItem.innerHTML = `
+                <span>${branchName}</span>
+                <span class="check-icon">✓</span>
+            `;
+
+        // Refrescar ERP
+        window.location.reload();
+
+      } else {
+
+        alert(window.translate_text(data.message));
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert('Error changing branch');
+
+    }
+
+  }
+
+  // Control del Popover de Sucursales
+  function toggleBranchDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('branchDropdown');
+    const trigger = document.getElementById('branchTrigger');
+
+    dropdown.classList.toggle('show');
+    trigger.classList.toggle('active');
+  }
+
+  // Manejo de la selección de una sucursal
+  async function selectBranch(branchId, branchName) {
+    // 1. Enviar petición al backend
+    try {
+
+      const formData = new FormData();
+
+      formData.append('branch_id', branchId);
+
+      const response = await fetch(
+        "{% url 'change_branch' %}",
+        {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: formData
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+
+        // 3. Refrescar ERP completo
+        window.location.reload();
+
+      } else {
+
+        alert(window.translate_text(data.message) || 'Error changing branch');
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert('Server connection error');
+
+    }
+
+  }
+
+  // Botón agregar nueva sucursal (No hace nada por ahora)
+  function addNewBranch(event) {
+    event.stopPropagation();
+    console.log("Hiciste clic en agregar una nueva sucursal.");
+    // Aquí abrirías un modal o redirigirías en el futuro.
+    closeBranchDropdown();
+  }
+
+  function closeBranchDropdown() {
+    const dropdown = document.getElementById('branchDropdown');
+    const trigger = document.getElementById('branchTrigger');
+    if (dropdown) dropdown.classList.remove('show');
+    if (trigger) trigger.classList.remove('active');
+  }
+
+  // Cerrar el dropdown si se hace clic en cualquier otra parte de la pantalla
+  document.addEventListener('click', function (event) {
+    const container = document.querySelector('.branch-selector-container');
+    if (container && !container.contains(event.target)) {
+      closeBranchDropdown();
+    }
+  });
 </script>

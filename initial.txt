@@ -9,7 +9,7 @@ python manage.py migrate
 #---SETP 3 RUN THIS COMMAND FOR RUN THE SERVER
 python manage.py runserver
 python manage.py runserver 0.0.0.0:8000
-
+npm run build
 
 ------------------------------------------------------------------------------------------------------------------
 python manage.py qcluster --this is for run the server of notifications
@@ -32,3 +32,7 @@ celery -A proyecto worker --concurrency=1 -P solo
 python manage.py runserver
 celery -A core worker -l info --pool=solo
 celery -A core beat -l info
+
+cel> 887685567763313
+
+DESKTOP || CLOUD

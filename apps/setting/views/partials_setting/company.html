@@ -1,13 +1,12 @@
 <label t="setting.module.company" desc="" icon="fi fi-rs-building"></label>
 <hr>
+{% load static %}
 <form id="form_company">
     {% csrf_token %}
     <div class="row section">
-        <!---
         <div class="col-3">
-            <image-uploader name="logo" value="{{ company.logo }}"></image-uploader>
+            <image-uploader name="logo" value-1="{{ company.company_logo_url }}" version="1"></image-uploader>
         </div>
-        --->
         <div class="col">
             <plus-title 
                 label="setting.label.company_name" 

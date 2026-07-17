@@ -43,6 +43,9 @@
                             <option value="O" t="gender.other"></option>
                         </plus-select>
                     </div>
+                    <div class="col">
+                        <input-field type="date" label="customer.label.date_of_birth" name="date_of_birth" value="{{customer.date_of_birth}}"></input-field>
+                    </div>
                 </div>
 
                 <show-more text="add-info-address-customer" onclick="show_pop('pop-data-address')" description='({{customer.state}} {{customer.city}}.{{customer.country}})'></show-more>
@@ -151,7 +154,7 @@
 
             <div class="row section">
                 <div class="col">
-                    <plus-country name="country" requerid value="{{customer.country}}"></plus-country>
+                    <plus-country name="country" requerid value="{{customer.country}}" id="input_country"></plus-country>
                 </div>
                 <div class="col">
                     <input-field type="text" label="label-postal_code" placeholder="placeholder-postal_code"
@@ -261,10 +264,14 @@
     async function add_a_new_customer(){
         const server=await send_form_to_the_server('form_create_customer','/customers/add_customer/');
         if(server.success){
+            //restart the form of the customer
             window.restart_form('form_create_customer');
-            show_alert('success', 'customers.message.succes-save-customer', 'customers.message.success-description-save', server.error || '');
+            window.set_value_plus_select('input_country', 'MX');
+            window.set_value_plus_select('number_of_price_of_sale', '1');
+
+            window.show_alert('success', 'customers.message.succes-save-customer', 'customers.message.success-description-save', server.error || '');
         }else{
-            show_alert('error', 'customers.message.error-save-customer', server.message || 'customers.message.error-description-customer', server.error || 'Error in the server');
+            window.show_alert('error', 'customers.message.error-save-customer', server.message || 'customers.message.error-description-customer', server.error || 'Error in the server');
         }
     }
 

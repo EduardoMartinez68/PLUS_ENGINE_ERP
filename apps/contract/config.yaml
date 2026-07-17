@@ -1,0 +1,15 @@
+
+name: "contract"
+version: "1.0.0"
+
+appName: "contract"
+icon: "contract/icon.webp"
+iconF: "fi fi-rs-rocket-lunch"
+
+path: "/contract"
+dbInit: true
+public: false
+permissionsFile: 'permissions.json'
+dependencies:
+  - "services"
+  - "sales"

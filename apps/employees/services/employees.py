@@ -81,6 +81,33 @@ def valid_the_form_of_employee(company, branch, data , employee_id=None):
     name = (data.get("name") or "").strip()
     email = (data.get("email") or "").strip().lower()
     username = data.get("username") or name or email
+
+    #we will see if exist the name and the password are equals
+    if not name:
+        return {"success": False, "message":"employees.message.the-name-is-need" ,"error": "Name is required for employee creation."}
+            
+    #we will see if the user need eval the password that send the user front the frontend, if not need do, is because the user is editing a employee
+    if employee_id==None:
+        #here we will see if the email already exist in the system
+        if employee_id==None:
+            pass
+        else:
+            if CustomUser.objects.filter(email=email).exclude(id=employee_id).exists():
+                return {"success": False, "message":"employees.message.email-exist", "error": "Email already registered."}
+
+
+    return {"success":True}
+
+
+def valid_the_form_of_user(company, branch, data , employee_id=None):
+    # --- See if the branch exist in the company ---
+    if branch.company_id != company.id:
+        return {"success": False, "message":"employees.error.this-branch-not-exit","error": "The branch does not belong to the provided company."}
+
+    # --- basic inputs ---
+    name = (data.get("name") or "").strip()
+    email = (data.get("email") or "").strip().lower()
+    username = data.get("username") or name or email
     password1 = (data.get("password") or "").strip()
     password2 = (data.get("confirm-password") or "").strip()
 
@@ -116,6 +143,118 @@ def save_employee(company: Company, branch: Branch, data: dict)->list:
 
     #we will see if the form that send the frontend is success or need other data
     result=valid_the_form_of_employee(company, branch, data)
+    if not result["success"]:
+        return {"success": False, "message":result["message"], "error": result["error"]} 
+    
+
+    try:
+        # --- basic inputs ---
+        name = (data.get("name") or "").strip()
+        email = (data.get("email") or "").strip().lower()
+        username = data.get("username") or name or email
+        password1 = 'Dentycloud1*'
+
+        if email == "":
+            email = None
+            print('email')
+            print(email)
+
+        #now if exist all the field of the form and the email is valid, now we will to create to employee
+        with transaction.atomic():
+            employee = CustomUser()
+
+            employee.company = company
+            employee.branch = branch
+            employee.username = username
+
+            # --- SAVE THE BASIC INFORMATION ---
+            employee.name = name
+            employee.email = email
+            employee.address = data.get("address", "")
+            employee.phone = data.get("phone", "")
+            employee.cellphone = data.get("cellphone", "")
+
+            #get the birth and if not is of type date, we will to save a null
+            dob = data.get("date_of_birth")
+            if isinstance(dob, (datetime, date)):
+                employee.date_of_birth = dob if isinstance(dob, date) else dob.date()
+            else:
+                try:
+                    employee.date_of_birth = datetime.strptime(str(dob), "%Y-%m-%d").date()
+                except (ValueError, TypeError):
+                    employee.date_of_birth = None
+
+            employee.set_password(password1)
+
+            # --- OTHER OPTIONS ---
+            employee.language = data.get("language", "es")
+            employee.timezone = data.get("timezone", "America/Mexico_City")
+            employee.country = data.get("country", "MX")
+            employee.postal_code = data.get("postal_code", "")
+
+            # --- ROLE AND DEPARTAMENTS (only if exist) ---
+            role_id = data.get("user_role")
+            employee.user_role = UserRole.objects.filter(id=role_id).first() if role_id else None
+
+            dept_id = data.get("user_department")
+            employee.user_department = UserDepartment.objects.filter(id=dept_id).first() if dept_id else None
+
+            # --- date of hiring ---
+            employee.hiring_date = data.get("hiring_date") or None
+
+            # --- PROCESAR AVATAR (base64 opcional) ---
+            avatar_data = data.get("avatar")
+            if avatar_data and "," in avatar_data:
+                try:
+                    fmt, imgstr = avatar_data.split(",", 1)
+                    img_data = base64.b64decode(imgstr)
+                    img = Image.open(BytesIO(img_data))
+                    if img.mode in ("RGBA", "P"):
+                        img = img.convert("RGB")
+
+                    # Redimensionar
+                    max_size = (400, 400)
+                    img.thumbnail(max_size, Image.LANCZOS)
+
+                    # Guardar en WebP
+                    buffer = BytesIO()
+                    img.save(buffer, format="WEBP", quality=85)
+                    buffer.seek(0)
+
+                    unique_filename = f"{uuid.uuid4().hex}_avatar.webp"
+                    employee.avatar.save(unique_filename, ContentFile(buffer.read()), save=False)
+                except Exception as e:
+                    print("Error processing avatar:", e)
+
+            employee.is_active = Plus.to_bool(data.get("is_active", True))
+            employee.is_staff = Plus.to_bool(data.get("is_staff", False))
+            employee.superuser = False
+
+            # --- save employee ---
+            employee.save()
+
+            return {
+                "success": True,
+                "message": f"Employee '{name}' created successfully.",
+                "employee_id": employee.id,
+                "error":""
+            }
+
+    except ValidationError as e:
+        return {"success": False, "message":"employees.message.we-not-can-add-this-employee","error": str(e)}
+    except Exception as e:
+        traceback.print_exc()
+        return {"success": False, "message":"employees.message.we-not-can-add-this-employee", "error": str(e)}
+    
+
+def save_users(company: Company, branch: Branch, data: dict)->list:
+    """
+    Create a new employee in the company and branch specific.
+    Verify that the branch belongs to the company before creating the employee.
+    """
+
+    #we will see if the form that send the frontend is success or need other data
+    result=valid_the_form_of_user(company, branch, data)
     if not result["success"]:
         return {"success": False, "message":result["message"], "error": result["error"]} 
     
@@ -194,11 +333,17 @@ def save_employee(company: Company, branch: Branch, data: dict)->list:
                 except Exception as e:
                     print("Error processing avatar:", e)
 
-            employee.is_active = data.get("is_active", True)
-            employee.is_staff = data.get("is_staff", False)
+            employee.is_active = Plus.to_bool(data.get("is_active", True))
+            employee.is_staff = Plus.to_bool(data.get("is_staff", False))
+            employee.superuser = False
+
             # --- save employee ---
             employee.save()
 
+            #here update the status of employee to user 
+            employee.user_account=True 
+            employee.save()
+            
             return {
                 "success": True,
                 "message": f"Employee '{name}' created successfully.",
@@ -410,7 +555,7 @@ def get_information_of_employee_by_id(company: Company, employee_id: int) -> dic
             "id": employee.id,
             "name": employee.name,
             "username": employee.username,
-            "email": employee.email,
+            "email": employee.email if employee.email else '',
             "avatar": employee.avatar.url if employee.avatar else None,
             "address": employee.address,
             "country": employee.country,

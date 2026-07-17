@@ -1,4 +1,38 @@
 <style>
+    .detail-action-container {
+        margin-top: 10px;
+        padding: 5px 0;
+    }
+
+    .btn-plus-link {
+        background: transparent;
+        border: none;
+        color: #008784;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 6px 12px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+
+    .btn-plus-link:hover {
+        background-color: #f0f4f4;
+        color: #005f5d;
+        text-decoration: underline;
+    }
+
+
+    .btn-plus-link:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0, 135, 132, 0.2);
+    }
+
     .form-header {
         margin-bottom: 25px;
         border-bottom: 1px solid #eee;
@@ -31,75 +65,126 @@
         gap: 12px;
         margin-top: 30px;
     }
+
+    .type_product {
+        display: none;
+    }
 </style>
 <message-pop title="services.title.form-speed" name="form-pop-services-speed">
-<div class="container-pop">
-    <form id="formSpeedProduct">
-        <input type="hidden" name="id" id="id_product_speed">
-        <input type="hidden" name="pack_type" value="1">
-
-        <div class="row section">
-            <div class="col">
-                <plus-title label="services.input.name-services" name="name" placeholder="services.placeholder.name-services" required>
-                </plus-title>
+    <div class="container-pop">
+        <form id="formSpeedProduct">
+            <input type="hidden" name="id" id="id_product_speed">
+            <input type="hidden" id="pack_type" name="pack_type" value="1">
+            <div id="more-information" class="detail-action-container">
+                <button type="button" onclick="edit_combo_items()" class="btn-plus-link"
+                    t="services.info.setting-services"></button>
             </div>
-        </div>
-        <div class="row section">
-            <div class="col">
-                <label t="services.input.sku"></label>
-                <plus-tags id="tags_products_flash" name="skus" label="services.input.sku" t="services.input.sku" required></plus-tags>
+            <div class="row section">
+                <div class="col">
+                    <plus-title label="services.input.name-services" name="name"
+                        placeholder="services.placeholder.name-services" required>
+                    </plus-title>
+                </div>
             </div>
-        </div>
-        <div class="row section">
-            <div class="col">
-                <input-field label="services.input.price" name="base_price" required type="number"></input-field>
+            <div class="row section">
+                <div class="col">
+                    <label t="services.input.sku"></label>
+                    <plus-tags id="tags_products_flash" name="skus" label="services.input.sku" t="services.input.sku"
+                        required></plus-tags>
+                </div>
             </div>
-            <div class="col">
-                <plus-multiselect id="select_taxes_form_speed" name="taxes" label="services.select.taxes" link="/services/search_tax/" method="GET"
-                add="open_pop_tax" edit_data="open_pop_tax">
-                </plus-multiselect>
+            <div class="row section">
+                <div class="col">
+                    <input-field label="services.input.price" name="base_price" required type="number"></input-field>
+                </div>
+                <div class="col">
+                    <plus-multiselect id="select_taxes_form_speed" name="taxes" label="services.select.taxes"
+                        link="/services/search_tax/" method="GET" add="open_pop_tax" edit_data="open_pop_tax">
+                    </plus-multiselect>
+                </div>
             </div>
-        </div>
-        <div class="row section">
-            <div class="col">
-                <plus-select label="services.select.departament" id="departament-form-speed" name="department"
-                add="open_pop_departament" link="/services/search_departament/" method="GET" 
-                edit_data="open_pop_departament" 
-                delete_data="/services/delete_departament/" btn_delete_title="services.question.do-you-delete-departament" btn_delete_text="services.question.delete-departament">
-                </plus-select>
+            <div class="row section">
+                <div class="col">
+                    <plus-select label="services.select.departament" id="departament-form-speed" name="department"
+                        add="open_pop_departament" link="/services/search_departament/" method="GET"
+                        edit_data="open_pop_departament" delete_data="/services/delete_departament/"
+                        btn_delete_title="services.question.do-you-delete-departament"
+                        btn_delete_text="services.question.delete-departament">
+                    </plus-select>
+                </div>
+                <div class="col">
+                    <plus-select label="services.select.category" id="category-form-speed" name="category"
+                        add="open_pop_category" link="/services/search_category/" method="GET"
+                        edit_data="open_pop_category" delete_data="/services/delete_category/"
+                        btn_delete_title="services.question.do-you-delete-category"
+                        btn_delete_text="services.question.delete-category">
+                    </plus-select>
+                </div>
             </div>
-            <div class="col">
-                <plus-select label="services.select.category" id="category-form-speed" name="category"
-                add="open_pop_category" link="/services/search_category/" method="GET" 
-                edit_data="open_pop_category"
-                delete_data="/services/delete_category/" btn_delete_title="services.question.do-you-delete-category" btn_delete_text="services.question.delete-category">
-                </plus-select>
+            <div class="row section">
+                <div class="col">
+                    <plus-select label="services.select.type-unity" id="unity_type" name="unity_type" value="1">
+                        <option value="0" t="services.option.liter"></option>
+                        <option value="1" t="services.option.pza"></option>
+                        <option value="2" t="services.option.metro"></option>
+                        <option value="3" t="services.option.box"></option>
+                        <option value="4" t="services.option.kilogram"></option>
+                        <option value="5" t="services.option.services"></option>
+                    </plus-select>
+                </div>
             </div>
-        </div>
-        <div class="row section">
-            <div class="col">
-                <label t="services.input.description"></label>
-                <textarea t-placeholder="services.placeholder.description" name="description"></textarea>
+            <div class="row section">
+                <div class="col">
+                    <label t="services.input.description"></label>
+                    <textarea t-placeholder="services.placeholder.description" name="description"></textarea>
+                </div>
             </div>
-        </div>
-    </form>
-</div>
-<div class="row" id="buttons-form-speed-add">
-    <div class="col-8">
-        <button type="button" class="btn btn-success btn-add" t="btn.save" onclick="send_form_product_speed()"></button>
+            <div class="row">
+                <div class="col">
+                    <plus-switch text="services.switch.show-for-sale" name="show_fo_sale"
+                        id="show_fo_sale"></plus-switch>
+                </div>
+            </div>
+            <div class="div_inventory" id="div_inventory">
+                <div class="row">
+                    <div class="col">
+                        <plus-switch text="services.label.use_inventory" name="track_inventory"
+                            id="track_inventory"></plus-switch>
+                    </div>
+                </div>
+                <div class="row section">
+                    <div class="col">
+                        <input-field label="services.label.stock" placeholder="services.placeholder.stock" name="stock"
+                            type="number"></input-field>
+                    </div>
+                    <div class="col">
+                        <input-field label="services.label.min_stock" placeholder="services.placeholder.min_stock"
+                            name="min_stock" type="number"></input-field>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
-    <div class="col-4">
-        <button type="button" class="btn btn-success btn-cancel" t="btn.cancel" onclick="window.hide_pop('form-pop-services-speed')"></button>
+    <div class="row" id="buttons-form-speed-add">
+        <div class="col-8">
+            <button type="button" class="btn btn-success btn-add" t="btn.save"
+                onclick="send_form_product_speed()"></button>
+        </div>
+        <div class="col-4">
+            <button type="button" class="btn btn-success btn-cancel" t="btn.cancel"
+                onclick="window.hide_pop('form-pop-services-speed')"></button>
+        </div>
     </div>
-</div>
-<div class="row" id="buttons-form-speed-update">
-    <div class="col-8">
-        <button type="button" class="btn btn-success btn-edit" t="btn.update" onclick="send_form_product_speed()"></button>
+    <div class="row" id="buttons-form-speed-update">
+        <div class="col-8">
+            <button type="button" class="btn btn-success btn-edit" t="btn.update"
+                onclick="send_form_product_speed()"></button>
+        </div>
+        <div class="col-4">
+            <button type="button" class="btn btn-success btn-delete-tr" t="btn.delete"
+                onclick="window.delete_product_speed()"></button>
+        </div>
     </div>
-    <div class="col-4">
-        <button type="button" class="btn btn-success btn-delete-tr" t="btn.delete" onclick="window.delete_product_speed()"></button>
-    </div>
-</div>
 </message-pop>
 {% include 'services/partials/formPopDepartament.html' %}
 {% include 'services/partials/formPopCategory.html' %}
@@ -107,39 +192,66 @@
 
 
 <script>
-    
-    (()=>{
-        function restart_form(){
+    function edit_combo_items() {
+        const input_product_speed=document.getElementById('id_product_speed')
+        if(!input_product_speed){
+            return;
+        }
+
+        const id_product_speed=input_product_speed.value;
+        window.nextWeb(`/services/view_combo/${id_product_speed}/`);
+    }
+
+    (() => {
+        //window.nextWeb('/services/view_combo/')
+        function restart_form() {
             window.restart_form('formSpeedProduct');
             window.hide_pop('form-pop-services-speed');
 
             //document.getElementById('departament-form-speed').reset()
             //document.getElementById('category-form-speed').reset()
             document.getElementById('select_taxes_form_speed').reset()
+            document.getElementById('unity_type').reset()
         }
 
-        async function get_information_product(product_id){
+        async function get_information_product(product_id) {
             //this function is for get the information of the departament 
-            const backend=await window.send_message_to_the_server(`/services/get_information_product/${product_id}/`, {}, true, 'GET')
-            if(backend.success){
+            const backend = await window.send_message_to_the_server(`/services/get_information_product/${product_id}/`, {}, true, 'GET')
+            if (backend.success) {
                 //if get the information from the server now we will update the form 
-                const data=backend.answer;
-                window.update_inputs_of_the_form('formSpeedProduct',data);
+                const data = backend.answer;
+                window.update_inputs_of_the_form('formSpeedProduct', data);
 
-                document.getElementById('id_product_speed').value=product_id;
+                document.getElementById('id_product_speed').value = product_id;
 
-                if(data.department){
+                if (data.department) {
                     set_value_plus_select('departament-form-speed', data.department.id, data.department.name)
                 }
 
-                if(data.category){
+                if (data.category) {
                     set_value_plus_select('category-form-speed', data.category.id, data.category.name)
                 }
-                
-                if(data.taxes){
+
+                if (data.taxes) {
                     set_value_plus_select_multiple('select_taxes_form_speed', data.taxes)
                 }
-                
+
+                if(data.unity_type){
+                    set_value_plus_select('unity_type', data.unity_type)
+                }
+
+                window.set_status_plus_switch('track_inventory', data.track_inventory)
+                window.set_status_plus_switch('show_fo_sale', data.show_fo_sale)
+                const type = data.pack_type;
+                document.getElementById('pack_type').value = type;
+
+                if (type == 0) {
+                    document.getElementById('div_inventory').style.display = 'block';
+                    document.getElementById('more-information').style.display = 'none';
+                } else {
+                    document.getElementById('div_inventory').style.display = 'none';
+                    document.getElementById('more-information').style.display = 'block';
+                }
 
                 window.show_pop('form-pop-services-speed');
                 return;
@@ -148,20 +260,22 @@
             window.show_alert('error', 'services.message.not-can-get-the-information-departament', backend.message || '', backend.error || '');
         }
 
-
-        async function open_pop_speed(id=null){
+        async function open_pop_speed(id = null) {
             restart_form();
+            window.set_status_plus_switch('track_inventory', false);
+            window.set_status_plus_switch('show_fo_sale', true);
+            document.getElementById('more-information').style.display = 'none';
 
             //buttons of the form
             const addButtons = document.getElementById('buttons-form-speed-add');
             const updateButtons = document.getElementById('buttons-form-speed-update');
 
             //if have a ID of the departament we will to call to the function for get his information
-            if((Number.isInteger(id))){
+            if ((Number.isInteger(id))) {
                 //here we will see if exist a id for open the pop.
                 //If exist an id is because the user would like update a departament and we will to update the input in the input
                 //else is because the user would like add a new departament
-                document.getElementById('id_product_speed').value=id;
+                document.getElementById('id_product_speed').value = id;
 
                 //if the user would like edit the product, now will to show the buttons of type edit
                 if (addButtons) addButtons.style.display = 'none';
@@ -176,13 +290,13 @@
             if (updateButtons) updateButtons.style.display = 'none';
 
 
-            document.getElementById('id_product_speed').value='';
+            document.getElementById('id_product_speed').value = '';
             window.show_pop('form-pop-services-speed');
         }
 
-        async function update_product(id){
-            const backend=await window.send_form_to_the_server('formSpeedProduct', '/services/update_services/');
-            if(backend.success){
+        async function update_product(id) {
+            const backend = await window.send_form_to_the_server('formSpeedProduct', '/services/update_services/');
+            if (backend.success) {
                 restart_form();
 
                 //here we will see if the partial of <formSpeed> is in the home of services, for update his container
@@ -197,9 +311,9 @@
             window.show_alert('alert', 'services.message.the-product-not-was-update', backend.message || '', backend.error || '');
         }
 
-        async function add_procut(){
-            const backend=await window.send_form_to_the_server('formSpeedProduct', '/services/add_services/');
-            if(backend.success){
+        async function add_procut() {
+            const backend = await window.send_form_to_the_server('formSpeedProduct', '/services/add_services/');
+            if (backend.success) {
                 restart_form();
 
                 //here we will see if the partial of <formSpeed> is in the home of services, for update his container
@@ -214,11 +328,11 @@
             window.show_alert('alert', 'services.message.the-product-not-was-created', backend.message || '', backend.error || '');
         }
 
-        async function send_form_product_speed(){
+        async function send_form_product_speed() {
             //here we will see if exist or not exist the ID in the form
             //if exist the ID is because the user would like update the departament
-            const id=document.getElementById('id_product_speed').value;
-            if(id && id.trim() !== ""){
+            const id = document.getElementById('id_product_speed').value;
+            if (id && id.trim() !== "") {
                 await update_product(id);
                 return;
             }
@@ -227,11 +341,11 @@
             await add_procut();
         }
 
-        async function delete_product_speed(){
+        async function delete_product_speed() {
             if (await show_message_question('services.question.delete-service', 'services.question.do-you-delete-service')) {
-                const id=document.getElementById('id_product_speed').value;
-                const backend=await window.send_form_to_the_server('formSpeedProduct', `/services/delete_services/${id}/`);
-                if(backend.success){
+                const id = document.getElementById('id_product_speed').value;
+                const backend = await window.send_form_to_the_server('formSpeedProduct', `/services/delete_services/${id}/`);
+                if (backend.success) {
                     restart_form();
 
                     //here we will see if the partial of <formSpeed> is in the home of services, for update his container
@@ -245,8 +359,27 @@
             }
         }
 
-        window.send_form_product_speed=send_form_product_speed;
-        window.open_pop_speed=open_pop_speed;
-        window.delete_product_speed=delete_product_speed;
+        window.send_form_product_speed = send_form_product_speed;
+        window.open_pop_speed = open_pop_speed;
+        window.delete_product_speed = delete_product_speed;
+
+        function open_type_pop_speed(type = 0) {
+            document.getElementById('pack_type').value = type;
+
+            if (type == 0) {
+                document.getElementById('div_inventory').style.display = 'block';
+            } else {
+                document.getElementById('div_inventory').style.display = 'none';
+            }
+
+            window.open_pop_speed();
+            if (type == 0) {
+                set_value_plus_select('unity_type', 1)
+            } else {
+                set_value_plus_select('unity_type', 5)
+            }
+        }
+
+        window.open_type_pop_speed = open_type_pop_speed;
     })();
 </script>

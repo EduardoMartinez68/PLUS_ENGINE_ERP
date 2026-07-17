@@ -110,19 +110,27 @@
 
 </style>
 
-
 <!---seeker---->
 <div class="row">
-    <div class="col-9">
-        
+    <div class="col-6">
+        <br>
+        <plus-help-video 
+            videos='[
+            {"title":"¿Cómo Crear un Usuario en tu clinica Denta?","url":"https://www.youtube.com/embed/bOIFv_jMND0?si=srHgstmgzeIPFN4n"},
+            {"title":"¿Cómo Crear un Empleado en tu clinica Denta?","url":"https://www.youtube.com/embed/20uMFimmstQ?si=FFFh4HD7FSsfzwNa"}
+            ]'>
+        </plus-help-video> 
     </div>
-    <div class="col-3 p-3">
+    <div class="col-6 p-3">
         <plus-search input_id="search-employee">
             <search-option>
                 <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-employee')"><i class="fi fi-rr-settings-sliders"></i></button>
             </search-option>
             <search-option>
-                <button class="btn btn-add" onclick="window.nextWeb('employees/add_employee/')">+</button>
+                <list-button>
+                    <button onclick="window.nextWeb('employees/add_user/')" t="employees.label.create-user" icon="fi fi-rr-user"></button>
+                    <button onclick="window.nextWeb('employees/add_employee/')" t="employees.label.create-employee" icon="fi fi-rr-user-md"></button>
+                </list-button>
             </search-option>
         </plus-search>
     </div>
@@ -142,7 +150,14 @@
             </plus-select>
         </div>
     </div>
-    <button class="btn btn-edit btn-success" t="message.success" onclick="window.hide_pop('pop-filter-employee')"></button>
+    <div class="row">
+        <div class="col-8">
+            <button class="btn btn-edit btn-success" t="message.success" onclick="window.hide_pop('pop-filter-employee')"></button>
+        </div>
+        <div class="col-4">
+            <button t="employees.label.reset-filter" class="btn btn-secondary btn-success" onclick="restart_filters()"></button>
+        </div>
+    </div>
 </message-pop>
 
 <!---table of the departament--->
@@ -200,6 +215,22 @@
 
 
 <script>
+    function reload_moves(){
+        window.update_container_from_the_server(
+        ['search-employee', 'branch-id-select', 'status-employe'],
+        'employee-list',
+        get_struct_div(),
+        '/employees/search_employee/1/',
+        'GET',
+        true);
+    }
+
+    function restart_filters(){
+        document.getElementById('branch-id-select').reset();
+        document.getElementById('status-employe').reset();
+        reload_moves()
+    }
+    
     function get_struct_div(){
         return `
             <div class="plus-employee-card" onclick="window.nextWeb('employees/edit_employee/{id}/')">
@@ -228,16 +259,14 @@
     }
 
 
-
-
-
     //here we will to start the container dynamic of the employees
     window.update_container_with_seeker(
         ['search-employee', 'branch-id-select', 'status-employe'],
         'employee-list',
         get_struct_div(),
         '/employees/search_employee/1/',
-        'GET'
+        'GET',
+        true
     );
 
 

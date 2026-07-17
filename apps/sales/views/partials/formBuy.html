@@ -105,7 +105,7 @@
     }
 
     /* Inputs con enfoque elegante */
-    .input-field-buy{
+    .input-field-buy {
         margin-bottom: var(--space-3);
     }
 
@@ -286,19 +286,36 @@
             <div class="payment-method-item">
                 <img src="https://cdn-icons-png.flaticon.com/512/426/426107.png" class="method-icon">
                 <label t="sales.label.paycash"></label>
-                <input type="number" id="payCash" class="payment-input" placeholder="0.00" onclick="setActiveInput(this)">
+                <input type="number" id="payCash" class="payment-input" placeholder="0.00"
+                    onclick="setActiveInput(this)">
             </div>
 
             <div class="payment-method-item">
                 <img src="https://cdn-icons-png.flaticon.com/512/609/609713.png" class="method-icon">
                 <label t="sales.label.paydebit"></label>
-                <input type="number" id="payDebit" class="payment-input" placeholder="0.00" onclick="setActiveInput(this)">
+                <input type="number" id="payDebit" class="payment-input" placeholder="0.00"
+                    onclick="setActiveInput(this)">
             </div>
 
             <div class="payment-method-item">
                 <img src="https://cdn-icons-png.flaticon.com/512/147/147258.png" class="method-icon">
                 <label t="sales.label.paycredit"></label>
-                <input type="number" id="payCredit" class="payment-input" placeholder="0.00" onclick="setActiveInput(this)">
+                <input type="number" id="payCredit" class="payment-input" placeholder="0.00"
+                    onclick="setActiveInput(this)">
+            </div>
+
+            <div class="payment-method-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/2656/2656425.png" class="method-icon">
+                <label t="sales.label.terminal"></label>
+                <input type="number" id="payTerminal" class="payment-input" placeholder="0.00"
+                    onclick="setActiveInput(this)">
+            </div>
+
+            <div class="payment-method-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/2721/2721121.png" class="method-icon">
+                <label t="sales.label.transfer"></label>
+                <input type="number" id="payTransfer" class="payment-input" placeholder="0.00"
+                    onclick="setActiveInput(this)">
             </div>
         </div>
         <div class="shortcuts-grid">
@@ -422,6 +439,68 @@
         border-color: var(--primary-light);
         color: var(--primary-dark);
     }
+
+    /* Contenedor principal del adjunto */
+    .attachment-box {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        background-color: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-top: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .attachment-box:hover {
+        border-color: #0454aa;
+        background-color: #f0f7ff;
+    }
+
+    /* Icono del archivo (Color PDF rojo por defecto) */
+    .attachment-icon {
+        font-size: 24px;
+        color: #dc3545;
+        margin-right: 15px;
+    }
+
+    /* Información del texto */
+    .attachment-info {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .file-name {
+        font-weight: 600;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .file-size {
+        font-size: 12px;
+        color: #777;
+    }
+
+    /* Badge de estado */
+    .status-badge {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    /* Label de sección */
+    .attachment-label {
+        font-size: 13px;
+        font-weight: bold;
+        color: #555;
+        margin-bottom: 5px;
+        display: block;
+    }
 </style>
 <message-pop name="buyPanelInfo" title="Cobro Realizado">
     <div class="div-information-sales-buy">
@@ -469,34 +548,74 @@
             --->
         </div>
         <br>
-        <button onclick="window.hide_pop('buyPanelInfo')" class="btn btn-success btn-edit" id="buttonChangeText"></button>
+        <button onclick="window.hide_pop('buyPanelInfo')" class="btn btn-success btn-edit"
+            id="buttonChangeText"></button>
     </div>
 </message-pop>
 
+<message-pop name="pop-send-email" title="Sale.title.send_email">
+    <div class="row section">
+        <div class="col">
+            <input-field label="sales.label.email" id="emailToSendBuy" type="email"></input-field>
+        </div>
+    </div>
+    <div class="row section">
+        <div class="col">
+            <label class="attachment-label">Archivo a enviar:</label>
+            <div class="attachment-box">
+                <div class="attachment-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <div class="attachment-info">
+                    <span class="file-name" id="name_sale_email"></span>
+                    <span class="file-size">1.2 MB</span>
+                </div>
+                <div class="attachment-status">
+                    <span class="status-badge">Listo</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-edit btn-success" onclick="send_email_of_the_buy()" t="sales.btn.send-email">Enviar</button>
+</message-pop>
 
 <script>
-    (()=>{
+    (() => {
         let activeInput = null;
-        let totalBuy=0;
+        let totalBuy = 0;
         window.totalBuy = totalBuy;
-        window.activeInput=activeInput;
+        window.activeInput = activeInput;
     })();
 
     function send_buy_for_email() {
-        //here we will send the information of the buy for email, for that we will send a post to the backend with the id of the sale and the email of the customer
-        const email=prompt("Please enter the customer's email:");
-        if(!email){
-            return;
-        }
-        
-        if(!window.idSales){
+        if (!window.idSales) {
             window.show_notification('error', 'sales.error.cant-send-email');
             return;
         }
 
-        window.send_message_to_the_server(`/sales/send_buy_email/${window.idSales}/`, {email: email}, true, 'POST');
-        window.show_notification('success', 'sales.message.email-sent');
+
+        document.getElementById('name_sale_email').textContent = `Folio #${window.idSales}.pdf`;
+        window.show_pop('pop-send-email');
     }
+
+    function send_email_of_the_buy() {
+        //here we will send the information of the buy for email, for that we will send a post to the backend with the id of the sale and the email of the customer
+        const email = document.getElementById('emailToSendBuy');
+        if (email.value.trim() == '') {
+            window.show_notification('error', 'sales.error.cant-send-email');
+            return;
+        }
+
+        if (!window.idSales) {
+            window.show_notification('error', 'sales.error.cant-send-email');
+            return;
+        }
+
+        window.send_message_to_the_server(`/sales/send_buy_email/${window.idSales}/`, { email: email }, true, 'POST');
+        window.show_notification('success', 'sales.message.email-sent');
+        window.hide_pop('pop-send-email');
+    }
+
 
     function btn_print_buy() {
 
@@ -511,46 +630,50 @@
         //first we will see if the sale can be completed, for example if the change is negative we can not complete the sale because the customer did not pay enough money
         //get all the money that the user put in the inputs
         const payCash = parseFloat(document.getElementById('payCash').value) || 0;
-        const payDebit   = parseFloat(document.getElementById('payDebit').value) || 0;
-        const payCredit  = parseFloat(document.getElementById('payCredit').value) || 0;
-        const totalPaid = payCash + payDebit + payCredit;
+        const payDebit = parseFloat(document.getElementById('payDebit').value) || 0;
+        const payCredit = parseFloat(document.getElementById('payCredit').value) || 0;
+        const payTerminal=parseFloat(document.getElementById('payTerminal').value) || 0;
+        const payTransfer=parseFloat(document.getElementById('payTransfer').value) || 0;
+        const totalPaid = payCash + payDebit + payCredit+payTerminal+payTransfer;
 
         // we will see if exist a totelBuy in the window, if not we set it to 0, 
         // this is because in the POS we set the totalBuy when open the panel but in the sales form we can not be sure that exist that variable
         const totalBuy = window.totalBuy || 0;
         const change = totalPaid - totalBuy;
-        let existChange=true;
+        let existChange = true;
 
         //now we will see if exist the input
-        const payment_term_days=document.getElementById('payment_term_days');
-        if(payment_term_days && payment_term_days.value && parseInt(payment_term_days.value)>0){
+        const payment_term_days = document.getElementById('payment_term_days');
+        if (payment_term_days && payment_term_days.value && parseInt(payment_term_days.value) > 0) {
             //if exist the input of payment term days and the value is greater than 0, 
             // this mean that the sale is on credit, for that reason we not need to see the change because the customer will pay later
             //for that reason we set the change to 0 for avoid problems in the backend
-            existChange=false;
+            existChange = false;
         }
 
         //if the change is negative and existChange is true, 
         // this mean that the customer did not pay enough money for complete the sale, 
         // for that reason we will show an alert for the user and we will not complete the sale
-        if(change<0 && existChange){
-            const text=window.translate_text('sales.error.sale-not-completed-amount', {money: window.format_currency(Math.abs(change), 'MXN')});
+        if (change < 0 && existChange) {
+            const text = window.translate_text('sales.error.sale-not-completed-amount', { money: window.format_currency(Math.abs(change), 'MXN') });
             window.show_alert('alert', 'sales.error.insufficient-payment', text);
             return;
         }
 
         //if the change is ok we can complete the sale, 
         // we will send the post to the backend for complete the sale 
-        const body={
-            cash_received:totalPaid,
+        const body = {
+            cash_received: totalPaid,
             payCash: payCash,
             payDebit: payDebit,
             payCredit: payCredit,
+            payTerminal:payTerminal,
+            payTransfer:payTransfer,
             totalBuy: totalBuy,
         }
 
         //now here we will see if exist a ID of the sale. If not exist maybe is because the user is in the POS
-        if(!window.idSales){
+        if (!window.idSales) {
             //if the user maybe is in the POS we need create first the sale for after do the buy
             //for know if the user is in the POS ww will see if exist the function of create_payload of the pos
             if (typeof create_the_payload_of_the_sale_from_the_pos !== "function") {
@@ -570,13 +693,13 @@
             }
 
             //now we will update the 'reference' in the screen with the reference that generate the backend for the sale
-            const answer=backend.answer;
+            const answer = backend.answer;
             window.idSales = answer.id;
         }
 
         //when exist a <idSales> is because the user already do a sale previously and now can create a buy
-        const backend=await window.send_message_to_the_server(`/sales/do_a_sale/${window.idSales}/`, body, true, 'POST');
-        if(!backend.success){
+        const backend = await window.send_message_to_the_server(`/sales/do_a_sale/${window.idSales}/`, body, true, 'POST');
+        if (!backend.success) {
             window.show_alert('error', 'sales.error.insufficient-payment-server', backend.message || 'sales.error.sale-not-completed');
             return;
         }
@@ -585,13 +708,13 @@
         document.getElementById('informationBoxAndFolio').textContent = `${backend.answer.point_of_sale} - Folio #${backend.answer.reference}`;
         document.getElementById('buyPanel').hide();
 
-        const changeBackend=backend.answer.change_given || 0;
-        const textChange=window.format_currency(changeBackend, 'MXN', true);
+        const changeBackend = backend.answer.change_given || 0;
+        const textChange = window.format_currency(changeBackend, 'MXN', true);
         document.getElementById('txtChangeToBuyBox').textContent = window.translate_text('sales.label.change') + ': ' + textChange;
         document.getElementById('buttonChangeText').textContent = window.translate_text('sales.label.change') + ': ' + textChange;
 
         //here we will to update the information of buy of the UI
-        window.totalBuy=backend.answer.balance;
+        window.totalBuy = backend.answer.balance;
 
         window.show_pop('buyPanelInfo');
 
@@ -611,9 +734,11 @@
     function calculate_change() {
         //get all the money that the user put in the inputs
         const payCash = parseFloat(document.getElementById('payCash').value) || 0;
-        const payDebit   = parseFloat(document.getElementById('payDebit').value) || 0;
-        const payCredit  = parseFloat(document.getElementById('payCredit').value) || 0;
-        const totalPaid = payCash + payDebit + payCredit;
+        const payDebit = parseFloat(document.getElementById('payDebit').value) || 0;
+        const payCredit = parseFloat(document.getElementById('payCredit').value) || 0;
+        const payTerminal=parseFloat(document.getElementById('payTerminal').value) || 0;
+        const payTransfer=parseFloat(document.getElementById('payTransfer').value) || 0;
+        const totalPaid = payCash + payDebit + payCredit+payTerminal+payTransfer;
 
         // we will see if exist a totelBuy in the window, if not we set it to 0, 
         // this is because in the POS we set the totalBuy when open the panel but in the sales form we can not be sure that exist that variable
@@ -633,15 +758,17 @@
         //this is for know if exist the variable totalBuy in the window, 
         // if not we set it to 0, this is for avoid problems in the POS
         //  because in the POS we set the totalBuy when open the panel but in the sales form we can not be sure that exist that variable
-        if(window.totalBuy==0){
+        if (window.totalBuy == 0) {
             window.totalBuy = total;
         }
-        
+
         //first we will to clear all the inputs of the panel for avoid problems 
         // if the user open again the panel for do another sale,
         document.getElementById('payCash').value = '';
         document.getElementById('payDebit').value = '';
         document.getElementById('payCredit').value = '';
+        document.getElementById('payTerminal').value = '';
+        document.getElementById('payTransfer').value = '';
 
         //update the information of the panel 
         document.getElementById('txtMoneyToBuy').textContent = window.format_currency(totalBuy, 'MXN', true);

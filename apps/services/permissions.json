@@ -11,7 +11,8 @@
         "delete_products",
         "restore_products",
         "manage_product_categories",
-        "manage_product_taxes"
+        "manage_product_taxes",
+        "update_inventory"
     ],
     "translate": {
         "es": {
@@ -30,7 +31,8 @@
 
             "manage_product_categories": "Permite crear y administrar categorías o departamentos de productos y servicios.",
             
-            "manage_product_taxes": "Permite asignar y modificar los impuestos aplicados a los productos o servicios."
+            "manage_product_taxes": "Permite asignar y modificar los impuestos aplicados a los productos o servicios.",
+            "update_inventory": "Permite actualizar el inventario de los productos."
         }
     }
 }

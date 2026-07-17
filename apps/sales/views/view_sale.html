@@ -1,9 +1,9 @@
 {% include 'sales/partials/navbar.html' %}
 <style>
-.container-history-sales {
-        height: 70vh; 
+    .container-history-sales {
+        height: 70vh;
         overflow-y: auto;
-        overflow-x: hidden; 
+        overflow-x: hidden;
         padding: 10px;
         border: 1px solid #eee;
         border-radius: 10px;
@@ -13,7 +13,7 @@
     .history-item {
         width: 100%;
         max-width: 100%;
-        word-wrap: break-word; 
+        word-wrap: break-word;
     }
 </style>
 <div class="row">
@@ -34,6 +34,7 @@
 
 <script>
     (async () => {
+        window.url_buy = ''
         function add_ew_row(data) {
             const container = document.querySelector('.scroll-container');
 
@@ -79,28 +80,40 @@
         // Update form fields with sale information
         document.getElementById('currency').value = answer.currency;
         document.getElementById('payment_term_days').value = answer.payment_term_days;
-        
+
         if (answer.expiration_date) {
             const date = new Date(answer.expiration_date);
             document.getElementById('expiration_date').value =
                 date.toISOString().split('T')[0];
         }
-        
+
         //update the selects
         if (answer.customer) {
-            const customerName=answer.customer.name;
+            const customerName = answer.customer.name;
             document.getElementById('customer').setValue(answer.customer.id, customerName);
 
             //if have a customer assigned, we update the input of the name of the contract
-            const responsibleName=document.getElementById('responsibleName')
-            if(responsibleName){
-                responsibleName.value=customerName;
+            const responsibleName = document.getElementById('responsibleName')
+            if (responsibleName) {
+                responsibleName.value = customerName;
                 document.getElementById("previewNombre").textContent = customerName;
+            }
+
+            //update the input of the form of email with the email of the customer 
+            const emailToSendBuy = document.getElementById('emailToSendBuy')
+            if (emailToSendBuy) {
+                emailToSendBuy.value = answer.customer.email || '';
             }
         }
 
         if (answer.employee) {
             document.getElementById('employee').setValue(answer.employee.id, answer.employee.name);
+        }
+
+        //update the link of buy 
+        const link_buy = answer.link_pay_online_url
+        if (link_buy) {
+            window.url_buy = link_buy;
         }
 
         //here we will update the text of the name sale only if exist, else we will to show the information global of a sale
@@ -126,7 +139,7 @@
         window.reference_sales = answer.reference;
         window.totalBuy = answer.balance;
         document.getElementById('reference').textContent = window.reference_sales;
-        
+
         //now we will block all the fields of the form for avoid that the user can edit the information of the sale,
         //  because this is only for see the information of the sale, if the user want to edit the sale, he need to go to the edit page
         if (typeof window.set_form_read_only === 'function') {
@@ -135,7 +148,7 @@
 
 
         //now we will see if the sale was cancelled, if was cancelled we need show the note in the screen
-        document.getElementById('note_sales_cancelled').textContent=answer.note_cancelled || '';
+        document.getElementById('note_sales_cancelled').textContent = answer.note_cancelled || '';
     })();
 
 
@@ -192,7 +205,7 @@
             `;
         }
 
-        async function render_history_sale(){
+        async function render_history_sale() {
             const sale_id = document.querySelector('input[name="sale_id"]').value;
             const backend = await window.send_message_to_the_server(`/sales/get_sale_history/${sale_id}/`, {}, true, 'GET');
             if (!backend.success) {
@@ -202,7 +215,6 @@
             const container = document.querySelector('.container-history-sales');
             container.innerHTML = '';
             backend.answer.forEach(item => {
-                console.log(item);
                 const div = document.createElement('div');
                 div.className = 'history-item';
                 div.innerHTML = get_div(item);
@@ -213,9 +225,30 @@
         await render_history_sale();
 
 
-        window.render_history_sale=render_history_sale;
+        window.render_history_sale = render_history_sale;
     })();
 
 
+    function open_link_buy() {
+        const sale_id=document.querySelector('input[name="sale_id"]').value;
+        if(sale_id===''){
+            window.show_alert('alert', 'sales.error.not-exit-link', 'sales.message.not-exit-link', '', '');
+            return;  
+        }
+
+        if (!window.url_buy) {
+            window.show_alert('alert', 'sales.error.not-exit-link', 'sales.message.not-exit-link', '', '');
+            return;
+        }
+
+        let url = window.url_buy;
+
+        // if the URL not have http o https, we will to add
+        if (!url.match(/^https?:\/\//i)) {
+            url = 'http://' + url;
+        }
+
+        const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+    }
 
 </script>

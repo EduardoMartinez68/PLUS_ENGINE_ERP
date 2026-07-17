@@ -179,6 +179,23 @@ class MessagePop extends HTMLElement {
         </div>
       `;
   }
+
+  setTitle(newTitle) {
+    //save the new name
+    this.setAttribute('title', newTitle);
+
+    //translate the text if exist
+    const translatedTitle = window.translate_text(newTitle);
+
+    //search the element of the title
+    const titleElement = this.querySelector('.my-pop-title');
+
+    //if exist we will to update the title
+    if (titleElement) {
+      titleElement.innerText = translatedTitle;
+      titleElement.setAttribute('t', translatedTitle);
+    }
+  }
 }
 
 class PlusPanel extends HTMLElement {
@@ -1823,8 +1840,9 @@ class PlusSelect extends HTMLElement {
     this._thisSlectSendDataToTheServer = false;
     this._textSelected = null;
     this._textLabelTranslate=null;
-    this._method = 'GET'
+    this._method = 'GET';
   }
+
 
   async connectedCallback() {
     const self = this;
@@ -1908,9 +1926,15 @@ class PlusSelect extends HTMLElement {
 
       // Asegúrate de que el DOM ya tiene el botón antes de agregar el evento
       const addButton = searchWrapper.querySelector('.search-add-btn');
-      if (addButton && typeof window[functionName] === 'function') {
-        addButton.addEventListener('click', window[functionName]);
-      }
+      addButton.addEventListener('click', (e) => {
+        this.dispatchEvent(new CustomEvent('plus-select:add', {
+          bubbles: true,
+          detail: {
+            component: this,
+            functionName
+          }
+        }));
+      });
     } else {
       //if not exist the attribute 'add' we only show the input
       searchWrapper.innerHTML = `
@@ -2202,6 +2226,17 @@ class PlusSelect extends HTMLElement {
             searchInput.value = '';
             filterOptions('');
             self.dispatchEvent(new Event('change', { bubbles: true }));
+
+            // get function name from attribute
+            const functionName = self.getAttribute('onselectoption');
+
+            // run function if exists
+            if (functionName && typeof window[functionName] === 'function') {
+                window[functionName](data);
+            }
+
+            // dispatch native event
+            self.dispatchEvent(new Event('change', { bubbles: true }));
           });
 
           options.push(div);
@@ -2308,6 +2343,10 @@ class PlusSelect extends HTMLElement {
     return this._hiddenInput ? this._hiddenInput.value : null;
   }
 
+  getText(){
+    return this._selectText ? this._selectText.textContent : null;
+  }
+  
   //this is for restart the form when a form be send
   reset() {
     if (this._hiddenInput) {
@@ -2923,6 +2962,7 @@ class PlusCountry extends HTMLElement {
     if (this.hasAttribute('name')) plusSelect.setAttribute('name', this.getAttribute('name'));
     if (this.hasAttribute('requerid')) plusSelect.setAttribute('requerid', '');
     if (this.hasAttribute('link')) plusSelect.setAttribute('link', this.getAttribute('link'));
+    if (this.hasAttribute('id')) plusSelect.setAttribute('id', this.getAttribute('id'));
 
     //Add all country options
     countries.forEach(country => {
@@ -3267,6 +3307,154 @@ class PlusHelp extends HTMLElement {
     if (window.loadzy) loadzy(); // Lazy load
   }
 }
+
+class PlusHelpVideo extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+    this.open = false;
+  }
+
+  connectedCallback() {
+    this.render();
+  }
+
+  toggle() {
+    this.open = !this.open;
+    this.render();
+  }
+
+  // Función para convertir URL normal de YT a URL de inserción (embed)
+  formatYoutubeUrl(url) {
+    try {
+      const parsedUrl = new URL(url);
+
+      // Caso: youtube.com/watch?v=VIDEO_ID
+      if (parsedUrl.hostname.includes("youtube.com")) {
+        const videoId = parsedUrl.searchParams.get("v");
+        if (videoId) {
+          return `https://www.youtube.com/embed/${videoId}`;
+        }
+      }
+
+      // Caso: youtu.be/VIDEO_ID
+      if (parsedUrl.hostname.includes("youtu.be")) {
+        const videoId = parsedUrl.pathname.replace("/", "");
+        return `https://www.youtube.com/embed/${videoId}`;
+      }
+
+      return url;
+    } catch (e) {
+      return url;
+    }
+  }
+  render() {
+    const videos = JSON.parse(this.getAttribute("videos") || "[]");
+    const textHelp=window.translate_text('message.do-you-need-tutorial')
+    const textClose=window.translate_text('message.close-help')
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          display: block;
+          font-family: 'Inter', sans-serif;
+          --primary: #2c3e50;
+        }
+
+        .btn {
+          background: white;
+          color: var(--primary);
+          border: 1px solid #e2e8f0;
+          padding: 10px 20px;
+          border-radius: 100px;
+          cursor: pointer;
+          font-size: 13px;
+          font-weight: 500;
+          transition: all 0.3s ease;
+          display: block;
+          margin: 0px 50px;
+        }
+
+        .btn:hover {
+          background: #f8fafc;
+        }
+
+        .videos-container {
+          max-height: 0;
+          overflow: hidden;
+          opacity: 0;
+          transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+          display: grid;
+          grid-template-columns: repeat(3, 1fr); /* 3 columnas */
+          gap: 16px;
+        }
+
+        .videos-container.open {
+          max-height: 2000px;
+          opacity: 1;
+          margin-top: 20px;
+        }
+
+        .item {
+          width: 100%;
+          max-width: 500px; /* AQUÍ CONTROLAS EL TAMAÑO MÁXIMO */
+          background: #fff;
+          padding: 12px;
+          border-radius: 16px;
+          border: 1px solid #f1f5f9;
+        }
+
+        .item p {
+          font-size: 13px;
+          color: var(--primary);
+          margin-bottom: 10px;
+          text-align: center;
+        }
+
+        .video-wrapper {
+          position: relative;
+          padding-bottom: 56.25%;
+          height: 0;
+          border-radius: 8px;
+          overflow: hidden;
+        }
+
+        iframe {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          border: none;
+        }
+      </style>
+
+      <button class="btn">
+        ${this.open ? textClose : textHelp}
+      </button>
+
+      <div class="videos-container ${this.open ? "open" : ""}">
+        ${videos.map(v => `
+          <div class="item">
+            <p>${v.title}</p>
+            <div class="video-wrapper">
+              <iframe 
+                src="${this.formatYoutubeUrl(v.url)}"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+
+    this.shadowRoot.querySelector(".btn").onclick = () => this.toggle();
+  }
+}
+
+
 
 class CreateHelp {
   constructor(key) {
@@ -4182,44 +4370,121 @@ class PlusSearch extends HTMLElement {
   }
 
   connectedCallback() {
-    // Crear contenedor principal
+
+    // CONTENEDOR
     const container = document.createElement("div");
     container.classList.add("plus-search-container");
 
-    // Contenedor input con icono
+    // =====================
+    // 🔍 INPUT
+    // =====================
     const inputWrapper = document.createElement("div");
     inputWrapper.classList.add("plus-search-input");
 
-    // Icono lupa
     const icon = document.createElement("i");
     icon.className = "fi fi-rs-search";
 
-    // Input
     const idInput = this.getAttribute('input_id') || generate_unique_dom_id();
-    const input = document.createElement("input");
-    input.type = "search";
-    input.placeholder = this.getAttribute("placeholder") || "message.search";
-    input.setAttribute('t-placeholder', input.placeholder);
-    input.setAttribute('id', idInput);
 
+    const input = document.createElement("input");
+    input.type = "input-search";
+    input.placeholder = this.getAttribute("placeholder") || "Buscar...";
+    input.id = idInput;
+    input.addEventListener('input', (e) => {
+
+        this.dispatchEvent(
+            new CustomEvent('search', {
+                detail: {
+                    value: e.target.value
+                },
+                bubbles: true,
+                composed: true
+            })
+        );
+
+    });
+
+    
     inputWrapper.appendChild(icon);
     inputWrapper.appendChild(input);
 
-    // Contenedor de opciones
+    // =====================
+    // 📦 CONTENEDORES
+    // =====================
     const optionsContainer = document.createElement("div");
     optionsContainer.classList.add("plus-search-options");
 
-    // Mover los hijos <search-option>
+    const dropdown = document.createElement("div");
+    dropdown.classList.add("plus-search-dropdown");
+
+    const moreBtn = document.createElement("button");
+    moreBtn.classList.add("btn", "btn-transparent", "plus-search-more");
+    moreBtn.innerHTML = "<i class='fi fi-br-menu-dots-vertical'></i>";
+
+    // =====================
+    // 🔁 MOVER OPCIONES (SIN CLONAR)
+    // =====================
     const options = this.querySelectorAll("search-option");
+    const buttons = [];
+
     options.forEach(opt => {
-      optionsContainer.appendChild(opt.firstElementChild);
+      const element = opt.firstElementChild;
+      if (element) buttons.push(element);
     });
 
-    // Limpiar y renderizar
+    // =====================
+    // 📱 / 💻 RESPONSIVE LOGIC
+    // =====================
+    const renderLayout = () => {
+      optionsContainer.innerHTML = "";
+      dropdown.innerHTML = "";
+
+      if (window.innerWidth <= 600) {
+        buttons.forEach(el => {
+          dropdown.appendChild(el.cloneNode(true)); // 🔥 CLONE
+        });
+        moreBtn.style.display = "block";
+      } else {
+        buttons.forEach(el => {
+          optionsContainer.appendChild(el);
+        });
+        moreBtn.style.display = "none";
+        dropdown.classList.remove("active");
+      }
+    };
+
+    // =====================
+    // 🎯 EVENTOS
+    // =====================
+    moreBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle("active");
+    });
+
+    document.addEventListener("click", () => {
+      dropdown.classList.remove("active");
+    });
+
+    dropdown.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+
+    window.addEventListener("resize", renderLayout);
+
+    // =====================
+    // 🧹 RENDER
+    // =====================
     this.innerHTML = "";
+
     container.appendChild(inputWrapper);
     container.appendChild(optionsContainer);
+    container.appendChild(moreBtn);
+    container.appendChild(dropdown);
+
     this.appendChild(container);
+
+    // Inicial
+    renderLayout();
   }
 }
 
@@ -7360,10 +7625,14 @@ function attach_click(triggerSelector, callback) {
   }
 }
 
-function load_script(src) {
+function load_script(src, isModule = false) {
   return new Promise((resolve, reject) => {
+    const selector = isModule
+        ? `script[type="module"][src="${src}"]`
+        : `script[src="${src}"]`;
+
     //we will check if the script already exist in the document
-    if (document.querySelector(`script[src="${src}"]`)) {
+    if (document.querySelector(selector)) {
       resolve();
       return;
     }
@@ -7372,6 +7641,9 @@ function load_script(src) {
     //if not exist the script, we will create a new script element and add it to the document
     const script = document.createElement('script');
     script.src = src;
+    if (isModule) {
+        script.type = "module";
+    }
     script.async = false;
     script.onload = () => resolve();
     script.onerror = () => reject(`The script could not be loaded ${src}`);
@@ -7546,6 +7818,9 @@ function transform_my_labels_erp() {
     customElements.define('plus-navbar', PlusNavbar);
   }
   
+  if(!customElements.get("plus-help-video")){
+    customElements.define("plus-help-video", PlusHelpVideo);
+  }
 }
 
 /**---------------------------------TAB----------------------------- */

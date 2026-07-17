@@ -1,0 +1,19 @@
+{
+    "character": {
+        "icon": "fi fi-ts-cash-register"
+    },
+    "permissions": [
+        "view_move_box",
+        "add_move_box",
+        "aproved_move_box"
+    ],
+    "translate": {
+        "es": {
+            "app_name": "Movimientos de Dinero",
+            "description": "Permite gestionar los movimientos de dinero dentro de la clínica.",
+            "view_move_box": "Permite ver el listado y detalle de los movimientos de dinero.",
+            "add_move_box": "Permite crear nuevos movimientos de dinero.",
+            "aproved_move_box": "Aprueba los movimientos de dinero registrados por otros usuarios."
+        }
+    }
+}

@@ -1,5 +1,4 @@
 import openpyxl
-from openpyxl import Workbook
 import tempfile
 from django.http import HttpResponse
 from openpyxl import Workbook
@@ -157,35 +156,35 @@ def get_the_data_of_the_file_excel(excel_file)->list:
 
             #save the information in a list of data fro after save in the database
             data.append({
-                "name": row[0] if len(row) > 0 else None,
-                "email": row[1] if len(row) > 1 else None,
-                "phone": row[2] if len(row) > 2 else None,
-                "cellphone": row[3] if len(row) > 3 else None,
-                "date_of_birth": row[4] if len(row) > 4 else None,
-                "gender": row[5] if len(row) > 5 else None,
-                "country": row[6] if len(row) > 6 else None,
-                "address": row[7] if len(row) > 7 else None,
-                "city": row[8] if len(row) > 8 else None,
-                "state": row[9] if len(row) > 9 else None,
-                "postal_code": row[10] if len(row) > 10 else None,
-                "num_ext": row[11] if len(row) > 11 else None,
-                "num_int": row[12] if len(row) > 12 else None,
-                "reference": row[13] if len(row) > 13 else None,
-                "this_customer_is_a_company": row[14] if len(row) > 14 else None,
-                "company_name": row[15] if len(row) > 15 else None,
-                "contact_name": row[16] if len(row) > 16 else None,
-                "contact_email": row[17] if len(row) > 17 else None,
-                "contact_phone": row[18] if len(row) > 18 else None,
-                "contact_cellphone": row[19] if len(row) > 19 else None,
-                "website": row[20] if len(row) > 20 else None,
-                "note": row[21] if len(row) > 21 else None,
-                "points": row[22] if len(row) > 22 else None,
-                "credit": row[23] if len(row) > 23 else None,
-                "tags": row[24] if len(row) > 24 else None,
-                "customer_type": row[25] if len(row) > 25 else None,
-                "source": row[26] if len(row) > 26 else None,
-                "priority": row[27] if len(row) > 27 else None,
-                "number_of_price_of_sale": row[28] if len(row) > 28 else None,
+                "name": row[1] if len(row) > 0 else None,
+                "email": row[2] if len(row) > 1 else None,
+                "phone": row[3] if len(row) > 2 else None,
+                "cellphone": row[4] if len(row) > 3 else None,
+                "date_of_birth": row[5] if len(row) > 4 else None,
+                "gender": row[6] if len(row) > 5 else None,
+                "country": row[7] if len(row) > 6 else None,
+                "address": row[8] if len(row) > 7 else None,
+                "city": row[9] if len(row) > 8 else None,
+                "state": row[10] if len(row) > 9 else None,
+                "postal_code": row[11] if len(row) > 10 else None,
+                "num_ext": row[12] if len(row) > 11 else None,
+                "num_int": row[13] if len(row) > 12 else None,
+                "reference": row[14] if len(row) > 13 else None,
+                "this_customer_is_a_company": row[15] if len(row) > 14 else None,
+                "company_name": row[16] if len(row) > 15 else None,
+                "contact_name": row[17] if len(row) > 16 else None,
+                "contact_email": row[18] if len(row) > 17 else None,
+                "contact_phone": row[19] if len(row) > 18 else None,
+                "contact_cellphone": row[20] if len(row) > 19 else None,
+                "website": row[21] if len(row) > 20 else None,
+                "note": row[22] if len(row) > 21 else None,
+                "points": row[23] if len(row) > 22 else None,
+                "credit": row[24] if len(row) > 23 else None,
+                "tags": row[25] if len(row) > 24 else None,
+                "customer_type": row[26] if len(row) > 25 else None,
+                "source": row[27] if len(row) > 26 else None,
+                "priority": row[28] if len(row) > 27 else None,
+                "number_of_price_of_sale": row[29] if len(row) > 28 else None,
             })
 
         return data
@@ -278,7 +277,7 @@ def upload_customers_with_excel(user, excel_file)->bool:
         if not answer:
             all_the_customer_was_added=False
             message_answer='customers.message.not-all-the-customer-was-added'
-            customers_that_not_was_add+=customer["name"]+','
+            customers_that_not_was_add+=str(customer.get("name", "Unknown")) + ','
 
 
     return {

@@ -141,3 +141,5 @@ class Customer(models.Model):
             name = "Null"
         company = "Company" if self.this_customer_is_a_company else "Null"
         return f"{name} ({company})"
+
+

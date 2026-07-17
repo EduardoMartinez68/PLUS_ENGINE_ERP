@@ -1,0 +1,23 @@
+{
+    "character": {
+        "icon": "fi fi-rr-chart-pie-alt"
+    },
+    "permissions": [
+        "watch_reports_sales",
+        "watch_reports_move_money",
+        "watch_reports_inventory",
+        "whatch_reports_appointments"
+    ],
+    "translate": {
+        "es": {
+            "app_name": "Reportes",
+            "description": "Permite crear y generar reportes de las operaciones de la clínica.",
+
+
+            "watch_reports_sales":"Ver y Generar Reportes de Ventas",
+            "watch_reports_move_money":"Ver y Generar Reportes de Movimiento de Dinero",
+            "watch_reports_inventory":"Ver y Generar Reportes del Inventario",
+            "whatch_reports_appointments":"Ver y Generar Reportes de Citas para cofepris"
+        }
+    }
+}

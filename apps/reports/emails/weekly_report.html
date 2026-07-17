@@ -1,0 +1,177 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte Semanal de Actividad</title>
+    <style>
+        /* Reset de estilos para clientes de correo */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        table { border-collapse: collapse !important; }
+        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f4f6f9; font-family: 'Segoe UI', Helvetica, Arial, sans-serif; color: #333333; }
+
+        /* Estilos del Contenedor Principal */
+        .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        /* Encabezado */
+        .header { background: linear-gradient(135deg, #0f4c81 0%, #1d72b8 100%); padding: 32px 24px; text-align: center; }
+        .logo { max-width: 140px; height: auto; margin-bottom: 12px; }
+        .header h1 { color: #ffffff; margin: 0; font-size: 22px; font-weight: 600; letter-spacing: 0.5px; }
+        .header p { color: #e1f0fa; margin: 5px 0 0 0; font-size: 14px; }
+
+        /* Contenido del Correo */
+        .content { padding: 28px 24px; }
+        .welcome-text { font-size: 16px; line-height: 1.5; color: #4a5568; margin-top: 0; margin-bottom: 24px; }
+        .welcome-text strong { color: #0f4c81; }
+
+        /* Bloques de sección */
+        .section-title { font-size: 16px; font-weight: 700; color: #0f4c81; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; border-bottom: 2px solid #edf2f7; padding-bottom: 6px; }
+        
+        /* Celdas de estadísticas */
+        .stat-table { width: 100%; margin-bottom: 24px; }
+        .stat-card { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; text-align: center; width: 31%; }
+        .stat-card-4 { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 8px; text-align: center; width: 23%; }
+        
+        .stat-value { font-size: 20px; font-weight: 700; color: #1d72b8; margin-bottom: 2px; }
+        .stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 600; }
+        
+        /* Modificadores de color para estados */
+        .text-success { color: #10b981; }
+        .text-warning { color: #f59e0b; }
+        .text-danger { color: #ef4444; }
+
+        /* Tablas de desglose financiero */
+        .financial-table { width: 100%; margin-bottom: 28px; background-color: #f8fafc; border-radius: 6px; border-collapse: separate !important; border: 1px solid #e2e8f0; }
+        .financial-table td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #edf2f7; }
+        .financial-table tr:last-child td { border-bottom: none; }
+        .financial-label { color: #4a5568; font-weight: 500; }
+        .financial-value { text-align: right; font-weight: 600; color: #1e293b; }
+        .financial-total { background-color: #e0f2fe; }
+        .financial-total td { color: #0369a1; font-size: 15px; font-weight: 700; }
+
+        /* Botón de acción */
+        .btn-container { text-align: center; margin: 28px 0 12px 0; }
+        .btn { background-color: #1d72b8; color: #ffffff !important; padding: 12px 28px; text-decoration: none; font-weight: 600; font-size: 14px; border-radius: 5px; display: inline-block; }
+
+        /* Pie de página */
+        .footer { background-color: #f1f5f9; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0; }
+        .footer p { margin: 0; font-size: 12px; color: #94a3b8; line-height: 1.5; }
+        .footer .powered-by { font-size: 13px; color: #64748b; font-weight: 600; margin-top: 6px; }
+        .footer a { color: #1d72b8; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f4f6f9; padding: 20px 0;">
+        <tr>
+            <td>
+                <div class="email-container">
+                    
+                    <!-- ENCABEZADO -->
+                    <div class="header">
+                        <img src="https://denty.cloud/img/logo.webp?v=1.1" alt="Logo Denty" class="logo">
+                        <h1>Resumen Semanal de Desempeño</h1>
+                        <p>Período: {{ week.start|date:"d M" }} - {{ week.end|date:"d M, Y" }}</p>
+                    </div>
+
+                    <!-- CONTENIDO -->
+                    <div class="content">
+                        <p class="welcome-text">
+                            Hola, <strong>{{ company }}</strong>.<br>
+                            Aquí tienes el desglose y las métricas clave de la actividad de tu clínica correspondiente a la última semana.
+                        </p>
+
+                        <!-- SECCIÓN VENTAS (CANTIDADES) -->
+                        <div class="section-title">Control de Ventas (Órdenes)</div>
+                        <table class="stat-table" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td class="stat-card">
+                                    <div class="stat-value">{{ sales.total_sales|default:"0" }}</div>
+                                    <div class="stat-label">Totales</div>
+                                </td>
+                                <td width="3%">&nbsp;</td>
+                                <td class="stat-card">
+                                    <div class="stat-value text-success">{{ sales.paid|default:"0" }}</div>
+                                    <div class="stat-label">Pagadas</div>
+                                </td>
+                                <td width="3%">&nbsp;</td>
+                                <td class="stat-card">
+                                    <div class="stat-value text-warning">{{ sales.pending|default:"0" }}</div>
+                                    <div class="stat-label">Pendientes</div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- SECCIÓN FINANCIERA (DINERO) -->
+                        <div class="section-title">Resumen Financiero</div>
+                        <table class="financial-table" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td class="financial-label">Ingresos Totales Generados</td>
+                                <td class="financial-value">${{ sales_money.generated|default:"0"|floatformat:2|intcomma }}</td>
+                            </tr>
+                            <tr>
+                                <td class="financial-label">Monto Total Pagado</td>
+                                <td class="financial-value text-success">${{ sales_money.paid|default:"0"|floatformat:2|intcomma }}</td>
+                            </tr>
+                            <tr class="financial-total">
+                                <td class="financial-label">Balance Pendiente por Cobrar</td>
+                                <td class="financial-value">${{ sales_money.pending|default:"0"|floatformat:2|intcomma }}</td>
+                            </tr>
+                        </table>
+
+                        <!-- SECCIÓN AGENDA / CITAS -->
+                        <div class="section-title">Estado de la Agenda</div>
+                        <table class="stat-table" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td class="stat-card-4">
+                                    <div class="stat-value">{{ appointments.total|default:"0" }}</div>
+                                    <div class="stat-label">Citas</div>
+                                </td>
+                                <td width="2%">&nbsp;</td>
+                                <td class="stat-card-4">
+                                    <div class="stat-value text-success">{{ appointments.completed|default:"0" }}</div>
+                                    <div class="stat-label">Listas</div>
+                                </td>
+                                <td width="2%">&nbsp;</td>
+                                <td class="stat-card-4">
+                                    <div class="stat-value text-warning">{{ appointments.pending|default:"0" }}</div>
+                                    <div class="stat-label">Pendientes</div>
+                                </td>
+                                <td width="2%">&nbsp;</td>
+                                <td class="stat-card-4">
+                                    <div class="stat-value text-danger">{{ appointments.cancelled|default:"0" }}</div>
+                                    <div class="stat-label">Canceladas</div>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- Alerta condicional opcional para Inasistencias (No-Show) -->
+                        {% if appointments.no_show > 0 %}
+                        <div style="font-size: 13px; color: #64748b; background-color: #fffbeb; border: 1px solid #fef3c7; padding: 10px; border-radius: 6px; margin-top: -12px; text-align: center;">
+                            ⚠️ Tuviste <strong>{{ appointments.no_show }}</strong> cita(s) con estatus de inasistencia (No-Show) esta semana.
+                        </div>
+                        {% endif %}
+
+                        <!-- BOTÓN AL DASHBOARD -->
+                        <div class="btn-container">
+                            <a href="https://denty.cloud/dashboard" class="btn" target="_blank">Ir al Dashboard Completo</a>
+                        </div>
+                    </div>
+
+                    <!-- PIE DE PÁGINA -->
+                    <div class="footer">
+                        <p>Recibiste este correo automático porque estás registrado como administrador en nuestra plataforma.</p>
+                        <p>Por favor, no respondas directamente a este mensaje.</p>
+                        <div class="powered-by">power by <a href="https://denty.cloud" target="_blank">denty.cloud</a></div>
+                    </div>
+
+                </div>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

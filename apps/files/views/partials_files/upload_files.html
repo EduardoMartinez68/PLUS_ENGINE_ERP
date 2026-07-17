@@ -1,0 +1,372 @@
+<style>
+    /* Eliminado el bloque de estilos duplicado para limpiar código */
+    .file-drop {
+        border: 2px dashed var(--primary);
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        color: #aaa;
+        transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .file-drop:hover {
+        border-color: var(--primary-dark);
+        color: #aaaaaa;
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .file-drop.dragover {
+        border-color: var(--primary-dark);
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    #upload-file {
+        position: absolute;
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        z-index: -1;
+    }
+
+    /* Contenedor Grid para las miniaturas múltiples */
+    #fileInfoContainer {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .file-info {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--primary);
+        border-radius: 10px;
+        padding: 0.5rem;
+        text-align: center;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        color: #797979;
+        font-size: 0.8rem;
+        height: 160px;
+        overflow: hidden;
+    }
+    .file-info > div:last-child {
+        width: 100%;
+        overflow: hidden;
+    }
+    .file-info strong {
+        display: block;
+        color: var(--primary);
+        white-space: nowrap;      
+        overflow: hidden;         
+        text-overflow: ellipsis;
+        width: 100%;
+        margin-bottom: 4px;
+        box-sizing: border-box;
+    }
+
+    .file-preview-holder {
+        width: 100%;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        margin-bottom: 5px;
+    }
+
+    .file-preview-holder img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+
+    /* Icono / Silueta genérica para documentos */
+    .file-icon-silueta {
+        font-size: 2.5rem;
+        color: var(--primary);
+        opacity: 0.7;
+    }
+
+    .remove-file {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(0, 0, 0, 0.5);
+        border: none;
+        color: #ff6b6b;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+        z-index: 10;
+    }
+
+    .remove-file:hover {
+        background: rgba(0, 0, 0, 0.8);
+        color: #ff4444;
+    }
+</style>
+
+<message-pop name="upload-files" title="files.title.upload-files">
+    <div class="container-pop">
+        <form id="uploadForm" enctype="multipart/form-data" action="files/view_upload_file/">
+            <div class="upload-card">
+                    <input type="hidden" name="folder_father_id" id="folder_father_id_file">
+                    <div class="section">
+                        <input-field label="files.label.name-file" placeholder="files.placeholder.name-file"
+                            name="name" id="name"></input-field>
+                    </div>
+
+                    <div class="mb-3 section">
+                        <label t="files.label.description"></label>
+                        <textarea name="description"></textarea>
+                    </div>
+
+                    <plus-switch name="anchored" text="files.label.anchored"></plus-switch>
+                    <div id="fileInfoContainer"></div>
+                    <div id="container-upload-file">
+                        <label for="file" class="form-label" t="files.label.file"></label>
+                        <div class="file-drop" id="dropZone">
+                            <p t="files.label.message-info-upload">Arrastra tus archivos aquí o haz clic para buscar</p>
+                            <input type="file" id="upload-file" name="files" multiple
+                                accept=".pdf,.jpg,.png,.jpeg,.doc,.docx,.xls,.xlsx">
+                        </div>
+                    </div>
+
+                    
+            </div>
+        </form>
+    </div>
+    <br>
+    <button type="button" class="btn btn-edit btn-success" t="files.btn.upload"
+        onclick="upload_file_to_the_backend()">Upload File</button>
+</message-pop>
+
+<script>
+    let selectedFilesArray = [];
+
+    // Esta función amarra los eventos de forma segura garantizando que el modal ya existe
+    function initUploadListeners() {
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('upload-file');
+
+        if (!dropZone || !fileInput) return;
+
+        // Evitamos duplicar listeners si la función se ejecuta de nuevo
+        if (dropZone.dataset.listenersAttached) return;
+
+        // Abrir el explorador nativo al hacer clic
+        dropZone.addEventListener('click', (e) => {
+            // Evitamos que haga clic si se pulsó el input mismo (bucle)
+            if (e.target !== fileInput) {
+                fileInput.click();
+            }
+        });
+
+        // Eventos Drag & Drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                handleFilesSelection(e.dataTransfer.files);
+            }
+        });
+
+        // Evento cambio de Input File
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFilesSelection(e.target.files);
+            }
+        });
+
+        // Aseguramos que los hijos no rompan el dragover
+        dropZone.querySelectorAll('*').forEach(child => {
+            if(child !== fileInput) child.style.pointerEvents = 'none';
+        });
+
+        // Bandera para no duplicar eventos nunca mas
+        dropZone.dataset.listenersAttached = "true";
+    }
+
+    function open_form_upload_file() {
+        const folderFatherElement = document.getElementById('path_folder_id1');
+
+        if (folderFatherElement?.value == '') {
+            window.show_alert(
+                'alert',
+                'files.error.no-can-upload-a-file-in-root',
+                'files.description.no-can-upload-a-file-in-root'
+            );
+            return;
+        }
+        
+        resetUploadForm();
+        window.show_pop('upload-files');
+
+        // Ejecutar inmediatamente después de abrir el pop-up para asegurar que los nodos existan
+        setTimeout(initUploadListeners, 100);
+    }
+
+    function formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function handleFilesSelection(files) {
+        const newFiles = Array.from(files);
+        
+        newFiles.forEach(file => {
+            if (!selectedFilesArray.some(f => f.name === file.name && f.size === file.size)) {
+                selectedFilesArray.push(file);
+            }
+        });
+
+        const inputName = document.getElementById('name');
+        if (inputName && !inputName.value.trim() && selectedFilesArray.length > 0) {
+            inputName.value = selectedFilesArray[0].name;
+        }
+
+        renderPreviews();
+    }
+
+    function renderPreviews() {
+        const container = document.getElementById("fileInfoContainer");
+        container.innerHTML = "";
+
+        selectedFilesArray.forEach((file, index) => {
+            const fileSize = formatBytes(file.size);
+            
+            const fileInfoDiv = document.createElement('div');
+            fileInfoDiv.className = 'file-info';
+            
+            fileInfoDiv.innerHTML = `
+                <button type="button" class="remove-file" onclick="removeSelectedFile(${index})">✕</button>
+                <div class="file-preview-holder" id="preview-holder-${index}"></div>
+                <div>
+                    <strong title="${file.name}">${file.name}</strong>
+                    <span>${fileSize}</span>
+                </div>
+            `;
+            
+            container.appendChild(fileInfoDiv);
+
+            const previewHolder = document.getElementById(`preview-holder-${index}`);
+
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewHolder.innerHTML = `<img src="${e.target.result}" alt="${file.name}">`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewHolder.innerHTML = `<span class="file-icon-silueta">📄</span>`;
+            }
+        });
+    }
+
+    function removeSelectedFile(index) {
+        selectedFilesArray.splice(index, 1);
+        renderPreviews();
+        
+        if(selectedFilesArray.length === 0) {
+            const inputName = document.getElementById('name');
+            if (inputName) inputName.value = '';
+        }
+    }
+
+    function resetUploadForm() {
+        selectedFilesArray = [];
+        const form = document.getElementById('uploadForm');
+        if (form) form.reset();
+        
+        const container = document.getElementById('fileInfoContainer');
+        if (container) container.innerHTML = '';
+        
+        const fileInput = document.getElementById('upload-file');
+        if (fileInput) fileInput.value = '';
+    }
+
+    function getCSRFToken() {
+        const name = "csrftoken";
+        const cookieValue = document.cookie
+            .split("; ")
+            .find(row => row.startsWith(name + "="));
+        return cookieValue ? decodeURIComponent(cookieValue.split("=")[1]) : "";
+    }
+
+    async function uploadSingleFile(file) {
+        const formData = new FormData();
+        formData.append("files", file);
+        
+        const folderFather = document.getElementById('path_folder_id1');
+        formData.append("folder_father_id", folderFather ? folderFather.value : "");
+
+        const descElement = document.querySelector('textarea[name="description"]');
+        formData.append("description", descElement ? descElement.value : "");
+
+        const response = await fetch("files/view_upload_file/", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": getCSRFToken(),
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        });
+
+        return await response.json();
+    }
+
+    async function upload_file_to_the_backend() {
+        if (!selectedFilesArray.length) {
+            window.show_alert('error', 'Error', 'No files selected');
+            return;
+        }
+
+        try {
+            const batchSize = 3;
+            for (let i = 0; i < selectedFilesArray.length; i += batchSize) {
+                const batch = selectedFilesArray.slice(i, i + batchSize);
+                await Promise.all(batch.map(file => uploadSingleFile(file)));
+            }
+
+            resetUploadForm();
+
+            window.show_alert(
+                'success',
+                'files.title.file-upload',
+                'files.message.file-upload'
+            );
+
+            window.hide_pop('upload-files');
+
+            if (typeof update_container_files === "function") {
+                update_container_files();
+            }
+
+        } catch (error) {
+            console.error(error);
+            window.show_alert('error', 'Error', error.message);
+        }
+    }
+</script>

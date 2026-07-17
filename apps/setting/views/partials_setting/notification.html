@@ -1,0 +1,651 @@
+<style>
+    /* Contenedor Principal */
+    #container-user-notifications {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        /* Un poco más de espacio entre tarjetas */
+        width: 100%;
+        margin: 20px auto;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* Tarjeta de Usuario (Base - Estilo Clínico y Limpio) */
+    .user-card {
+        display: flex;
+        align-items: center;
+        padding: 14px 18px;
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        /* Borde más delgado y sutil */
+        border-radius: 12px;
+        /* Esquinas ligeramente más suaves */
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        /* Sutil sombra base */
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+        user-select: none;
+    }
+
+    /* Estado Seleccionado (Azul Elegante ERP) */
+    .user-card.selected {
+        border-color: #0070f3;
+        /* Azul vibrante pero profesional */
+        background-color: #f0f7ff;
+        /* Fondo azul muy ligero y limpio */
+        box-shadow: 0 4px 10px rgba(0, 112, 243, 0.08);
+    }
+
+    /* Elementos Internos de la Tarjeta */
+    .user-avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 16px;
+        background-color: #e2e8f0;
+        border: 2px solid #ffffff;
+        box-shadow: 0 0 0 1px #e2e8f0;
+        /* Contorno fino para el avatar */
+    }
+
+    .user-card.selected .user-avatar {
+        box-shadow: 0 0 0 1px #0070f3;
+        /* El contorno del avatar se adapta al azul */
+    }
+
+    .user-info {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: #1e293b;
+        /* Gris oscuro azulado, menos agresivo que el #333 */
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .user-email {
+        color: #64748b;
+        /* Gris medio limpio */
+        margin: 0;
+        font-size: 0.85rem;
+    }
+
+    /* Botón Check Círculo */
+    .user-check-btn {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 2px solid #cbd5e1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: transparent;
+        font-weight: bold;
+        font-size: 0.75rem;
+        transition: all 0.2s ease;
+        background-color: #fff;
+    }
+
+    /* Check Activo en Azul */
+    .user-card.selected .user-check-btn {
+        border-color: #0070f3;
+        background-color: #0070f3;
+        color: white;
+    }
+
+    /* ==========================================
+       Efecto Skeleton Mejorado
+    ============================================ */
+    .skeleton {
+        position: relative;
+        overflow: hidden;
+        background-color: #f1f5f9;
+    }
+
+    .skeleton::after {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        transform: translateX(-100%);
+        background-image: linear-gradient(90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.6) 20%,
+                rgba(255, 255, 255, 0.6) 60%,
+                rgba(255, 255, 255, 0) 100%);
+        animation: shimmer 1.6s infinite;
+        content: '';
+    }
+
+    .skeleton-text {
+        height: 10px;
+        border-radius: 4px;
+    }
+
+    .skeleton-text:first-child {
+        width: 40%;
+        height: 14px;
+        margin-bottom: 4px;
+    }
+
+    .skeleton-text:last-child {
+        width: 65%;
+    }
+
+    @keyframes shimmer {
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    .container-users {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 8px 4px;
+        width: 100%;
+    }
+</style>
+<label t="setting.show.setting-notification" icon="fi fi-rr-bell"></label>
+<hr>
+
+<form id="form-notification-low-inventory">
+    <div class="section">
+        <h4 t="setting.title.product-with-low-inventory"></h4>
+        <label t="setting.info.product-with-low-inventory"></label>
+        <div class="row">
+            <div class="col">
+                <plus-switch text="setting.btn.activate-notification-for-email" name="send_for_email"></plus-switch>
+            </div>
+            <div class="col">
+                <plus-switch text="setting.btn.activate-notification-for-system" name="send_for_system"></plus-switch>
+            </div>
+        </div>
+
+        <show-more text="setting.title-select-user" onclick="show_member_notification()"></show-more>
+        <button class="btn btn-success btn-edit" t="btn.save"
+            onclick="window.send_form_to_the_server('form-notification-low-inventory','/setting/save_notification_setting/inventory_low/')"
+            type="button"></button>
+    </div>
+</form>
+
+<select-users-pop title="setting.title-select-user" name="pop-info-member-notification"
+    read-users-url="/employees/search_employee/1/" read-selected-url="/setting/get_user_notification/inventory_low/"
+    save-users-url="/setting/save_user_notification/inventory_low/"></select-users-pop>
+
+<script>
+    if (!customElements.get("select-users-pop")) {
+        class SelectUsersPop extends HTMLElement {
+
+            constructor() {
+                super();
+
+                //links
+                this.readUsersUrl = this.getAttribute('read-users-url');
+                this.readSelectedUrl = this.getAttribute('read-selected-url');
+                this.saveUsersUrl = this.getAttribute('save-users-url');
+
+                //data
+                this.users = [];
+                this.selectedUsers = new Set();
+
+                //pagination
+                this.page = 1;
+                this.hasNext = false;
+
+                //filters
+                this.search = '';
+                this.type = true;
+            }
+
+            connectedCallback() {
+                this.render();
+                this.addEvents();
+            }
+
+            render() {
+                this.innerHTML = `
+                <message-pop 
+                    title="${this.getAttribute('title')}" 
+                    name="${this.getAttribute('name')}"
+                >
+                    <div class='container-pop'>
+                        <plus-search input_id="search-users-component"></plus-search>
+
+                        <div class="pop-container">
+                            <div class="container-users"></div>
+                        </div>
+                    </div>
+                    <br><br>
+
+                    <button class="btn btn-success btn-edit btn-save-users" t="btn.success"></button>
+
+                </message-pop>
+            `;
+
+                this.containerUsers = this.querySelector('.container-users');
+                this.searchInput = this.querySelector('#search-users-component');
+                this.btnSave = this.querySelector('.btn-save-users');
+            }
+
+            addEvents() {
+                const searchComponent = this.querySelector('plus-search');
+
+                if (searchComponent) {
+
+                    searchComponent.addEventListener(
+                        'search',
+                        async (e) => {
+
+                            // clear previous timeout
+                            clearTimeout(this.searchTimeout);
+
+                            // wait before searching
+                            this.searchTimeout = setTimeout(async () => {
+
+                                this.search = e.detail.value;
+                                this.page = 1;
+
+                                this.showSkeleton();
+
+                                await this.loadUsers();
+
+                            }, 400); // 400ms delay
+
+                        }
+                    );
+
+                }
+
+                if (this.btnSave) {
+
+                    this.btnSave.addEventListener(
+                        'click',
+                        async () => {
+
+                            await this.saveUsers();
+
+                        }
+                    );
+
+                }
+
+            }
+
+            /*
+            =========================================
+            OPEN POP
+            =========================================
+            */
+
+            async open() {
+
+                window.show_pop(this.getAttribute('name'));
+
+                this.showSkeleton();
+
+                await this.loadSelectedUsers();
+                await this.loadUsers();
+
+            }
+
+            /*
+            =========================================
+            LOAD USERS
+            =========================================
+            */
+
+            async loadUsers() {
+
+                try {
+                    console.log(this.search)
+                    const filters = `${this.search},,true`;
+
+                    const backend = await window.send_message_to_the_server(
+                        `${this.readUsersUrl}?page=${this.page}&allFilters=${filters}`,
+                        {},
+                        false,
+                        'GET'
+                    );
+
+                    if (!backend.success) {
+                        return window.show_notification('alert',
+                            backend.error || 'Error loading users'
+                        );
+                    }
+
+                    this.users = backend.answer || [];
+                    this.hasNext = backend.pagination?.has_next || false;
+
+                    this.renderUsers();
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    window.show_notification('error',
+                        'Unexpected error loading users'
+                    );
+                }
+            }
+
+            /*
+            =========================================
+            LOAD SELECTED USERS
+            =========================================
+            */
+
+            async loadSelectedUsers() {
+
+                try {
+
+                    const backend = await window.send_message_to_the_server(
+                        this.readSelectedUrl,
+                        {},
+                        false,
+                        'GET'
+                    );
+
+                    if (!backend.success) {
+                        return;
+                    }
+
+                    this.selectedUsers.clear();
+
+                    const answer = backend.answer || [];
+
+                    answer.forEach(item => {
+                        this.selectedUsers.add(item.id);
+                    });
+
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            /*
+            =========================================
+            RENDER USERS
+            =========================================
+            */
+
+            renderUsers() {
+
+                this.containerUsers.innerHTML = '';
+
+                if (!this.users.length) {
+
+                    this.containerUsers.innerHTML = `
+                    <div class="empty-users">
+                        No users found
+                    </div>
+                `;
+
+                    return;
+                }
+
+                this.users.forEach(user => {
+
+                    const isSelected = this.selectedUsers.has(user.id);
+
+                    const card = document.createElement('div');
+
+                    card.className = `
+                    user-card
+                    ${isSelected ? 'selected' : ''}
+                `;
+
+                    card.innerHTML = `
+                    <img 
+                        src="${user.avatar}" 
+                        class="user-avatar"
+                    >
+
+                    <div class="user-info">
+
+                        <p class="user-name">
+                            ${user.name || ''}
+                        </p>
+
+                        <p class="user-email">
+                            ${user.email || ''}
+                        </p>
+
+                    </div>
+
+                    <div class="user-check-btn">
+                        ✓
+                    </div>
+                `;
+
+                    card.addEventListener('click', () => {
+
+                        if (this.selectedUsers.has(user.id)) {
+
+                            this.selectedUsers.delete(user.id);
+                            card.classList.remove('selected');
+
+                        } else {
+
+                            this.selectedUsers.add(user.id);
+                            card.classList.add('selected');
+
+                        }
+
+                    });
+
+                    this.containerUsers.appendChild(card);
+
+                });
+
+            }
+
+            /*
+            =========================================
+            SAVE USERS
+            =========================================
+            */
+
+            async saveUsers() {
+                try {
+
+                    const users = [...this.selectedUsers];
+
+                    const backend = await window.send_message_to_the_server(
+                        this.saveUsersUrl,
+                        {
+                            users
+                        },
+                        true,
+                        'POST'
+                    );
+
+                    if (!backend.success) {
+
+                        return window.show_notification('alert',
+                            backend.error || 'Error saving users'
+                        );
+
+                    }
+
+                    window.show_notification('success',
+                        'Usuarios guardados correctamente'
+                    );
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    window.show_notification('error',
+                        'Unexpected error saving users'
+                    );
+                }
+
+            }
+
+            /*
+            =========================================
+            SKELETON
+            =========================================
+            */
+
+            showSkeleton() {
+
+                this.containerUsers.innerHTML = '';
+
+                for (let i = 0; i < 3; i++) {
+
+                    const skeleton = document.createElement('div');
+
+                    skeleton.className = 'user-card';
+
+                    skeleton.innerHTML = `
+                    <div class="user-avatar skeleton"></div>
+
+                    <div class="user-info">
+
+                        <div class="skeleton-text skeleton"></div>
+                        <div class="skeleton-text skeleton"></div>
+
+                    </div>
+
+                    <div class="user-check-btn skeleton"></div>
+                `;
+
+                    this.containerUsers.appendChild(skeleton);
+                }
+            }
+
+            /*
+            =========================================
+            GET SELECTED USERS
+            =========================================
+            */
+            getSelectedUsers() {
+                return [...this.selectedUsers];
+            }
+
+        }
+
+        customElements.define(
+            'select-users-pop',
+            SelectUsersPop
+        );
+    }
+
+
+    (async () => {
+        async function show_member_notification() {
+            const component = document.querySelector('select-users-pop');
+
+            component.open();
+        }
+
+        async function save_setting_notification(form_id, link) {
+            const backend = await send_form_to_the_server(form_id, link);
+        }
+
+        async function load_notification_setting(
+            formId,
+            typeNotification
+        ) {
+
+            try {
+
+                const backend =
+                    await window.send_message_to_the_server(
+
+                        '/setting/get_all_notification_settings/',
+                        {},
+                        false,
+                        'GET'
+                    );
+
+                if (!backend.success) {
+
+                    return window.show_notification(
+                        'alert',
+                        backend.error || 'Error loading settings'
+                    );
+
+                }
+
+                const notifications =
+                    backend.answer || [];
+
+                const notification =
+                    notifications.find(
+                        item =>
+                            item.type_notification ===
+                            typeNotification
+                    );
+
+                if (!notification) {
+                    return;
+                }
+
+                const form =
+                    document.getElementById(formId);
+
+                if (!form) {
+                    return;
+                }
+
+                // EMAIL SWITCH
+                const emailSwitch =
+                    form.querySelector(
+                        '[name="send_for_email"]'
+                    );
+
+                if (
+                    emailSwitch &&
+                    typeof emailSwitch.setChecked === 'function'
+                ) {
+
+                    emailSwitch.setChecked(
+                        notification.notify_by_email
+                    );
+
+                }
+
+                // SYSTEM SWITCH
+                const systemSwitch =
+                    form.querySelector(
+                        '[name="send_for_system"]'
+                    );
+
+                if (
+                    systemSwitch &&
+                    typeof systemSwitch.setChecked === 'function'
+                ) {
+
+                    systemSwitch.setChecked(
+                        notification.notify_by_system
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+                window.show_notification(
+                    'error',
+                    'Unexpected error loading notification settings'
+                );
+
+            }
+
+        }
+
+        await load_notification_setting('form-notification-low-inventory', 'inventory_low');
+        window.show_member_notification = show_member_notification;
+    })();
+</script>

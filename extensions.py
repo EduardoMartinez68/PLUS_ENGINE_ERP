@@ -2,6 +2,54 @@ import os
 import glob
 import json
 import shutil
+from pathlib import Path
+import json
+
+# 1. get the path of the file cache_files.json
+cacheFiles = Path(__file__).resolve().parent / 'cache_files.json'
+
+# if not exist the file of the cache we will to create, if exist load his information
+if not cacheFiles.exists():
+    container_files_cache = {}
+    print("The file cache_files not exist.")
+else:
+    with open(cacheFiles, 'r', encoding='utf-8') as file:
+        container_files_cache = json.load(file) #read the file of the cache
+
+def this_file_have_change(file_path):
+    modified_timestamp = os.path.getmtime(file_path) #get the new time of the file for save in the cache
+
+    #here we will see the old modification of the file 
+    value_in_cache = container_files_cache.get(file_path) #get the value of the cache
+
+    #now we will see if the date are equals or exist a change 
+    return not (modified_timestamp==value_in_cache)
+
+def update_cache_file(file_path, newValue=None):
+    new_date_of_creation = os.path.getmtime(file_path) #get the new time of the file for save in the cache
+    container_files_cache[file_path] = new_date_of_creation 
+    print(f'➤ the file {file_path} was updated')
+
+def get_folder_mtime(folder_path):
+    """
+    It scans the folder and returns the modification date
+    of the most recently found file within it.
+    """
+    max_mtime = 0
+    
+    # os.walk read all the folder , subfolder and files
+    for root, dirs, files in os.walk(folder_path):
+        for file in files:
+            file_path = os.path.join(root, file)
+            try:
+                mtime = os.path.getmtime(file_path)
+                if mtime > max_mtime:
+                    max_mtime = mtime
+            except FileNotFoundError:
+                # this is the file is delete of the memory while we is reading
+                continue
+    
+    return max_mtime
 
 def get_plugin_directories(plugins_base_path):
     """
@@ -46,6 +94,11 @@ def create_the_file_locale(app_path, core_folder, plugins_base_folder):
 
         # --- PART A: Read the CORE (Base) ---
         core_file = os.path.join(core_locale_folder, lang, 'translate.json')
+
+        #here we will see in the cache of the files is exist change in the translate, if not exist we not create the new file
+        if not this_file_have_change(core_file):
+            continue
+
         if os.path.exists(core_file):
             with open(core_file, 'r', encoding='utf-8') as f:
                 merged_data.update(json.load(f))
@@ -72,6 +125,8 @@ def create_the_file_locale(app_path, core_folder, plugins_base_folder):
         with open(final_file_path, 'w', encoding='utf-8') as f_out:
             json.dump(merged_data, f_out, indent=4, ensure_ascii=False)
 
+        update_cache_file(core_file) #update the cache of the file
+
 def build_app_views(app_path):
     """
     Main function to merge core HTML files with plugin extensions.
@@ -89,7 +144,7 @@ def build_app_views(app_path):
     
     # 2. Get all available plugin directories
     available_plugins = get_plugin_directories(plugins_base_folder) 
-    
+
     # 3. Locate all base HTML files in the core folder
     # We use normpath to prevent issues with mixed slashes (/ vs \)
     core_search_pattern = os.path.normpath(os.path.join(views_folder, "*.html"))
@@ -98,6 +153,11 @@ def build_app_views(app_path):
     for file_path in core_files:
         # Get filename with extension (e.g., 'home.html')
         filename = os.path.basename(file_path)
+        
+        #here we will see the old modification of the file 
+        if not this_file_have_change(file_path):
+            continue
+
         # Get filename without extension for matching (e.g., 'home')
         view_name, _ = os.path.splitext(filename)
 
@@ -124,6 +184,7 @@ def build_app_views(app_path):
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
+        
         #now we will to create the folder of the app in the views folder if not exist 
         output_folder = os.path.join("templates", os.path.basename(app_path))
         if not os.path.exists(output_folder):
@@ -131,8 +192,14 @@ def build_app_views(app_path):
 
         optimized_html=final_html_content
         final_output_path = os.path.join(output_folder, filename)
+
+        #here we will see if exist a change in the template for after save in the cache
         with open(final_output_path, 'w', encoding='utf-8') as f_out:
             f_out.write(optimized_html)
+
+            #save the file in the cache 
+        update_cache_file(file_path)
+
 
 
     #Now we will to create the locale files merging the core with the plugins locale files
@@ -155,20 +222,18 @@ def migrate_partials_to_templates(app):
         # only folders
         if os.path.isdir(source_path):
             destination_path = os.path.join(target_folder, item)
-
-            #if exist the folder we skip it
-            if os.path.exists(destination_path):
-                continue
-
+            
+            #here we will see if the folder have change 
+            if os.path.isdir(destination_path):
+                shutil.rmtree(destination_path) #if exist a change we will to delete all the folder of the partials
             shutil.copytree(source_path, destination_path)
-
 
 def load_plugins_and_extensions():
     #1. Create the folder templates if not exist and when exist delete all the subfolder of the apps in the views folder
     output_folder = os.path.join("templates")
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
-    shutil.rmtree(output_folder) #delete all the subfolder of the apps in the views folder
+    #shutil.rmtree(output_folder) #delete all the subfolder of the apps in the views folder
 
     # --- Execution ---
     # Set the root path of your application module
@@ -180,5 +245,9 @@ def load_plugins_and_extensions():
         migrate_partials_to_templates(app)
 
 
+    #update all the cache of the date of the files
+    with open(cacheFiles, 'w', encoding='utf-8') as file:
+        json.dump(container_files_cache, file, indent=4)
 
     print('All the plugins was upload with success')
+

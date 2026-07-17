@@ -1,5 +1,33 @@
 <!DOCTYPE html>
+<style>
+.btn-info-bay {
+  background-color: #2b6cb0;
+  color: #ffffff;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+}
 
+.btn-info-bay:hover {
+  background-color: #2c5282; /* Un tono más oscuro para el efecto hover */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.btn-info-bay:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+</style>
 <html>
 <body style="margin:0; padding:0; background:#f4f6f8; font-family:Arial, Helvetica, sans-serif;">
 
@@ -22,7 +50,7 @@
     </td>
     <td align="right">
         {% if company.logo %}
-            <img src="{{ company.logo.url }}" style="height:60px;">
+        <img src="{{ company.logo.url }}" alt="Logo" style="height:65px; width:auto; filter: grayscale(20%);">
         {% endif %}
     </td>
 </tr>
@@ -98,7 +126,14 @@
         {% endif %}
     </td>
 </tr>
-
+<tr>
+    <td colspan="2" align="center" style="padding-top: 25px; padding-bottom: 20px;">
+        <div style="margin-bottom: 10px;">
+            <a href="{{link_pay_online_url}}" class="btn-info-bay" target="_blank">Pagar ahora</a>
+        </div>
+        <a href="{{link_pay_online_url}}" target="_blank">{{link_pay_online_url}}</a>
+    </td>
+</tr>
 {% if payments %}
 <h3 style="margin-top:25px; font-size:16px; color:#0f172a;">
 Historial de pagos

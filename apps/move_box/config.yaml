@@ -1,0 +1,14 @@
+
+name: "move_box"
+version: "1.0.0"
+
+appName: "move_box"
+icon: "move_box/icon.webp"
+iconF: "fi fi-rs-cash-register"
+
+path: "/move_box"
+dbInit: true
+public: true
+permissionsFile: 'permissions.json'
+dependencies:
+  - "sales"

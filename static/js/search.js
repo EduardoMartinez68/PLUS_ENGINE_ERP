@@ -122,7 +122,18 @@ function render_pagination_controls(fieldId, pagination = null, reloadFunction =
                 🡪 <i class="fas fa-chevron-right" style="margin-left:5px"></i>
             </button>
         `;
-        field.after(paginationDiv);
+
+        // logic for create the paginator outside of the table 
+        // if 'field' is the tbody or that that is inside of a table, search the table more nearby
+        let tableElement = field.closest('table');
+
+        if (tableElement) {
+            // if we found the table, we will to outside the paginator of the tabla
+            tableElement.after(paginationDiv);
+        } else {
+            // if not exist a table, we will to put the paginator after the field
+            field.after(paginationDiv);
+        }
     }
 
     // 3. update dynamic the information with the JSON 'pagination' that send the backend
@@ -164,6 +175,7 @@ function render_pagination_controls(fieldId, pagination = null, reloadFunction =
         };
     }
 }
+
 
 function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, method='POST', loadingImage=null, delay = 500, type='tr') {
     /*
@@ -273,27 +285,46 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
 
                 render_pagination_controls(fieldId, data.pagination, send_information_to_the_server); //here we will to create the pagination of the div
             } else {
-                //if exist an answer, we will show a message to the user
-                const answer=t("info.no_results");
-                if(loadingImage===null){
+                // 1. here we will see if the field that we need update is a table or a div normal for put the message of "no results" with the structure of the image
+                const isTableBody = field.tagName.toLowerCase() === 'tbody';
+
+                // 2. get the number of columns if is a table for put the message in the center of the table with colspan, 
+                // if not is a table we will to put the message in the center of the div normal
+                const columnCount = isTableBody ? field.closest('table').querySelectorAll('thead th').length : 1;
+                const answer = t("info.no_results");
+                let contentHtml = "";
+                // 3. create the structure of the message with the image and the text, 
+                // if loadingImage is null we will to put only the text, 
+                // if loadingImage is true we will to put a image of empty and the text,
+                //  if loadingImage is a string we will to put the image that send the user in the parameter and the text
+                if (loadingImage === null) {
+                    contentHtml = `${answer}`;
+                } else if (loadingImage === true) {
+                    contentHtml = `
+                        <img src="${EMPTY_IMAGE_URL}" alt="empty" style="width: 20%; height: auto;"/><br>
+                        ${answer}`;
+                } else {
+                    contentHtml = `
+                        <img src="${loadingImage}" alt="Loading..." style="width: 20%; height: auto;"/><br>
+                        ${answer}`;
+                }
+                // 4. add the contentHtml in the field with the structure of the table or div 
+                if (isTableBody) {
+                    // if is a table, we will to put the message in the center of the table with colspan
                     field.innerHTML = `
-                    <div class='full-center' style="width: 100%; height: 100%;">
-                            <b>${answer}<b>
-                    </div>`;
-                }else if(loadingImage===true){
+                        <tr>
+                            <td colspan="${columnCount}" style="text-align: center; padding: 0px;">
+                                <div class='full-center'>
+                                    ${contentHtml}
+                                </div>
+                            </td>
+                        </tr>`;
+                } else {
+                    // if not is a table, we will to put the message in the center of the div normal
                     field.innerHTML = `
-                    <div class='full-center' style="width: 100%; height: 100%;">
-                            <img src="${EMPTY_IMAGE_URL}" alt="empty" style="width: 50%; height: auto;"/><br>
-                            <b>${answer}<b>
-                    </div>`;
-                }else{
-                    field.innerHTML = `
-                    <div class='full-center'>
-                        <center>
-                            <img src="${loadingImage}" alt="Loading..." style="width: 100%; height: auto;"/>
-                            ${answer}
-                        </center>
-                    </div>`;
+                        <div class='full-center' style="width: 100%; height: 100%; text-align: center;">
+                            ${contentHtml}
+                        </div>`;
                 }
             }
         } else {
@@ -421,16 +452,56 @@ function update_container_from_the_server(inputsId, fieldId, divHtml, searchUrl,
         if (data.success) {
             field.innerHTML = '';
             if (data.answer && data.answer.length > 0) {
-                data.answer.forEach(item => {
-                    const el = document.createElement(type);
-                    el.innerHTML = renderTemplate(divHtml, item);
-                    field.appendChild(el);
+                //if exist container, we will show in the field
+                data.answer.forEach(dataItem => {
+                    //here we will get the card or table that need add to the field or table
+                    const html = renderTemplate(divHtml, dataItem);
+                    field.insertAdjacentHTML('beforeend', html);
                 });
 
                 render_pagination_controls(fieldId, data.pagination, send_information_to_the_server); //here we will to create the pagination of the div
             } else {
+                // 1. here we will see if the field that we need update is a table or a div normal for put the message of "no results" with the structure of the image
+                const isTableBody = field.tagName.toLowerCase() === 'tbody';
+
+                // 2. get the number of columns if is a table for put the message in the center of the table with colspan, 
+                // if not is a table we will to put the message in the center of the div normal
+                const columnCount = isTableBody ? field.closest('table').querySelectorAll('thead th').length : 1;
                 const answer = t("info.no_results");
-                field.innerHTML = `<tr><td colspan="6" style="text-align:center;">${answer}</td></tr>`;
+                let contentHtml = "";
+                // 3. create the structure of the message with the image and the text, 
+                // if loadingImage is null we will to put only the text, 
+                // if loadingImage is true we will to put a image of empty and the text,
+                //  if loadingImage is a string we will to put the image that send the user in the parameter and the text
+                if (loadingImage === null) {
+                    contentHtml = `${answer}`;
+                } else if (loadingImage === true) {
+                    contentHtml = `
+                        <img src="${EMPTY_IMAGE_URL}" alt="empty" style="width: 200px; height: auto;"/><br>
+                        ${answer}`;
+                } else {
+                    contentHtml = `
+                        <img src="${loadingImage}" alt="Loading..." style="width: 100px; height: auto;"/><br>
+                        ${answer}`;
+                }
+                // 4. add the contentHtml in the field with the structure of the table or div 
+                if (isTableBody) {
+                    // if is a table, we will to put the message in the center of the table with colspan
+                    field.innerHTML = `
+                        <tr>
+                            <td colspan="${columnCount}" style="text-align: center; padding: 0px;">
+                                <div class='full-center'>
+                                    ${contentHtml}
+                                </div>
+                            </td>
+                        </tr>`;
+                } else {
+                    // if not is a table, we will to put the message in the center of the div normal
+                    field.innerHTML = `
+                        <div class='full-center' style="width: 100%; height: 100%; text-align: center;">
+                            ${contentHtml}
+                        </div>`;
+                }
             }
         } else {
             const answer = t("info.no_results");

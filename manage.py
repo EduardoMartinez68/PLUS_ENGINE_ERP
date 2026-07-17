@@ -8,7 +8,8 @@ import hashlib
 import json
 from django.apps import AppConfig
 from django.db.utils import OperationalError, ProgrammingError
-#---------------------------------------------------------------CREATE THE DATA OF ENCRYPT FOR SAVE THE INFORMATION------------------------------
+
+#--------------------------------------------------------------CREATE THE DATA OF ENCRYPT FOR SAVE THE INFORMATION------------------------------
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
 load_dotenv() #load the variables
@@ -54,31 +55,68 @@ if not os.path.isfile(source_file):
 
 source_hash = file_hash(source_file)
 
+# 1. get the path of the file cache_files.json
+from pathlib import Path
+cacheFiles = Path(__file__).resolve().parent / 'cache_files.json'
+PlusExtension = source_file
+
+# if not exist the file of the cache we will to create, if exist load his information
+container_files_cache={}
+if not cacheFiles.exists():
+    print("The file cache_files not exist.")
+else:
+    with open(cacheFiles, 'r', encoding='utf-8') as file:
+        container_files_cache = json.load(file) #read the file of the cache
+
+def this_file_have_change(file_path):
+    modified_timestamp = os.path.getmtime(file_path) #get the new time of the file for save in the cache
+
+    #here we will see the old modification of the file 
+    value_in_cache = container_files_cache.get(str(file_path)) #get the value of the cache
+
+    #now we will see if the date are equals or exist a change 
+    return modified_timestamp != value_in_cache
+
+
+def update_cache_file(file_path, newValue=None):
+    file_path = str(file_path)
+    modified_timestamp = os.path.getmtime(file_path)
+    container_files_cache[file_path] = modified_timestamp
+    print(f'➤ the file {file_path} was updated')
+
+
 # read all the folders 'apps'
-for app_name in os.listdir(apps_dir):
-    app_path = os.path.join(apps_dir, app_name)
-    if os.path.isdir(app_path):
-        dest_file = os.path.join(app_path, 'plus_wrapper.py')
-        shutil.copy2(source_file, dest_file)  # Copy and overwrite
+if this_file_have_change(PlusExtension):
+    for app_name in os.listdir(apps_dir):
+        app_path = os.path.join(apps_dir, app_name)
+        if os.path.isdir(app_path):
+            dest_file = os.path.join(app_path, 'plus_wrapper.py')
+            shutil.copy2(source_file, dest_file)  # Copy and overwrite
 
 
-        #here also we will read the file of permissions if exist for after add the new permissions to the model <Roles_And_Permissions>
-        '''
-        
-        permissions_file = os.path.join(app_path, 'permissions.json')
-        if os.path.isfile(permissions_file):
-            from core.models import Permits
+            #here also we will read the file of permissions if exist for after add the new permissions to the model <Roles_And_Permissions>
+            '''
+            
+            permissions_file = os.path.join(app_path, 'permissions.json')
+            if os.path.isfile(permissions_file):
+                from core.models import Permits
 
-            try:
-                with open(permissions_file, "r", encoding="utf-8") as f:
-                    permissions = json.load(f)
+                try:
+                    with open(permissions_file, "r", encoding="utf-8") as f:
+                        permissions = json.load(f)
 
-                for perm in permissions:
-                    Permits.objects.get_or_create(name=perm)
-            except (OperationalError, ProgrammingError):
-                # Esto evita error si la tabla aún no está creada (ej. antes de migraciones)
-                pass
-        '''
+                    for perm in permissions:
+                        Permits.objects.get_or_create(name=perm)
+                except (OperationalError, ProgrammingError):
+                    # Esto evita error si la tabla aún no está creada (ej. antes de migraciones)
+                    pass
+            '''
+
+    update_cache_file(PlusExtension)
+    #update all the cache of the date of the files
+    with open(cacheFiles, 'w', encoding='utf-8') as file:
+        json.dump(container_files_cache, file, indent=4)
+
 #---------------------------------------------------------------LOAD ALL THE PLUGINS IN THE ERP FOR CREATE THE NEW VIEWS-----------------------------------
 from extensions import load_plugins_and_extensions
 load_plugins_and_extensions()
@@ -89,7 +127,6 @@ load_plugins_and_extensions()
 if __name__ == "__main__":
     # Set the default Django settings module environment variable
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
-
     try:
         # Import the Django management command executor
         from django.core.management import execute_from_command_line

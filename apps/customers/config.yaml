@@ -3,7 +3,7 @@ appName: "Clientes"
 icon: "/customers/static/icon.webp"
 path: "/customers"
 dbInit: true
-public: true
+public: false
 permissionsFile: 'permissions.json'
 
 

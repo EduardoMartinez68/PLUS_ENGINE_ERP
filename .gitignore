@@ -2,6 +2,7 @@
 media/*
 templates/*
 views/*
+node_modules/
 
 apps/agenda/config/credentials.json
 
@@ -23,3 +24,6 @@ db.sqlite3
 media/
 
 staticfiles/
+
+#cache of file 
+cache_files.json

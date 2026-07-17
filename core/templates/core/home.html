@@ -24,7 +24,7 @@
     
     <!--our styles-->
     <link rel="icon" href="{% static 'img/favicon.ico' %}?v=1.1" type="image/x-icon">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=2.27">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=2.394">
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}?v=2.1">
     <link rel="stylesheet" href="{% static 'css/subMenuApp.css' %}?v=2.0">
     <link rel="stylesheet" href="{% static 'css/tableAndSearch.css' %}?v=2.0">
@@ -74,31 +74,53 @@
     <script>
         //this variable be use for default in the UI
         window.STATIC_URLS = {
-            emptyImage: "{% static 'img/info/empty.webp' %}",
-            imageDefault:"{% static '/img/imageDefault.webp' %}"
+            emptyImage: "{% static 'img/info/empty.webp' %}?v=1.0",
+            emptyServuices: "{% static 'img/info/services_load.webp' %}?v=1.0",
+            emptyOdontograma: "{% static 'img/info/odontograma_load.webp' %}?v=1.0",
+            imageDefault:"{% static '/img/imageDefault.webp' %}?v=1.0",
+            scriptEditorText:"{% static 'dist/js/editor.js' %}"
         };
 
-        const VERSION_LANGUAGES_PLUS = '1.0.9'; //here is the version of the software PLUS
+        const VERSION_LANGUAGES_PLUS = '1.0.14'; //here is the version of the software PLUS
+        window.VERSION_LANGUAGES_PLUS=VERSION_LANGUAGES_PLUS;
     </script>
 
     <!---library-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="{% static 'js/library/js-yaml.min.js' %}" defer></script>
     <script src="{% static 'js/library/pdf.min.js' %}" defer></script>
     <!--<script src="{% static 'js/library/Sortable.min.js' %}" defer></script>-->
 
     
-    <script src="{% static 'js/translate.js' %}?v=2.51"></script>
+    <script src="{% static 'js/translate.js' %}?v=2.53"></script>
     <script src="{% static 'js/sendDataToTheServer.js' %}?v=2.25" defer></script>
-    <script src="{% static 'js/navbar.js' %}?v=2.24" defer></script>
+    <script src="{% static 'js/navbar.js' %}?v=2.33" defer></script>
     <script src="{% static 'js/shortcuts.js' %}?v=2.1" defer></script>
-    <script src="{% static 'js/styles.js' %}?v=2.79" defer></script>
+    <script src="{% static 'js/styles.js' %}?v=2.859" defer></script>
     <script src="{% static 'js/selectStatus.js' %}?v=2.0" defer></script>
-    <script src="{% static 'js/search.js' %}?v=2.17" defer></script>
-    <script src="{% static 'js/currency.js' %}?v=2.0" defer></script>
+    <script src="{% static 'js/search.js' %}?v=2.192" defer></script>
+    <script src="{% static 'js/currency.js' %}?v=2.1" defer></script>
     <script src="{% static 'js/library/chart.js' %}" defer></script>
+
+    
+    <script src="{% static 'js/library/quill.js' %}" defer></script>
+
     <script>
         //here we will to translate the ads 
         window.translate_dynamic_content(document.getElementById('main-content'));
+    </script>
+    <script>
+        //this script is for that the function select-plus can open his functions of type add in the UI
+        //if not exist this function the user not can open the function of the event <add> of the select
+        document.addEventListener('plus-select:add', (e) => {
+            const { functionName, component } = e.detail;
+
+            if (functionName && typeof window[functionName] === 'function') {
+                window[functionName](component);
+            } else {
+                console.warn(`Función ${functionName} no existe aún`);
+            }
+        });
     </script>
 </body>
 

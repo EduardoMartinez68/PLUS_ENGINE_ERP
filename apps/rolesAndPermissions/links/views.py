@@ -35,6 +35,12 @@ def get_all_the_permissions_of_the_erp(request):
 from apps.rolesAndPermissions.services.role import save_a_new_role, get_role_by_id, update_rol_by_id, change_status_of_a_role, duplicate_role
 def add_a_new_rol(request):
     if request.method == "POST":
+        if not Plus.this_user_have_this_permission(request.user, 'add_rol'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         try:
             data = json.loads(request.body)
         except Exception as e:
@@ -57,6 +63,12 @@ def add_a_new_rol(request):
 
 def edit_rol(request, rol_id):
     if request.method == "POST":
+        if not Plus.this_user_have_this_permission(request.user, 'update_rol'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         try:
             data = json.loads(request.body)
         except Exception as e:
@@ -111,6 +123,12 @@ def get_information_rol(request, rol_id):
 
 def change_status(request):
     if request.method == "POST":
+        if not Plus.this_user_have_this_permission(request.user, 'update_rol'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        
         body_json = json.loads(request.body)
 
         #if the frontend send the <role_id> is because the user is in the app update the information of the rol

@@ -12,4 +12,9 @@ urlpatterns = [
     path('do_a_sale/<int:sale_id>/', views.do_a_sale, name='do_a_sale'),
     path('cancel_sale/<int:sale_id>/', views.cancel_sale, name='cancel_sale'),
     path('send_buy_email/<int:sale_id>/', views.send_buy_email, name='send_buy_email'),
+    path('save_signature/<int:sale_id>/', views.save_signature, name='save_signature'),
+    path('view_upload_excel/', views.view_upload_excel, name='view_upload_excel'),
+    path('download_excel_template/', views.download_excel_template, name='download_excel_template'),
+    path('upload_excel_sales/', views.upload_excel_sales, name='upload_excel_sales'),
+    path('pay_sale/<slug:slug>/', views.pay_sale, name='pay_sale'),
 ]

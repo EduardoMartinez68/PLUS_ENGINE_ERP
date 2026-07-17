@@ -1,6 +1,7 @@
 {
     "setting.module.system": "Sistema",
     "setting.module.company": "Empresa",
+    "setting.module.logo": "Logo de la empresa",
     "setting.module.branch": "Sucursal",
     "setting.module.google": "Enviar email",
     "setting.module.drives": "Dispositivos/Perifericos",
@@ -184,5 +185,16 @@
     "setting.text.template_four-day-before":"Hola {paciente} 👋<br><br>Te recordamos que tu cita <span class='example-w-bold'>“{nombre_cita}”</span> está programada para el día <span class='example-w-bold'>{fecha}</span>.<br><br>Por favor confirma tu asistencia en el siguiente enlace 👇<br><br><span class='example-w-bold'>{link}</span><br><br>¡Te esperamos! 😊",
     "setting.text.template_a-day-before":"Hola {paciente} 👋<br><br>Te recordamos que tu cita <span class='example-w-bold'>“{nombre_cita}”</span> está programada para <span class='example-w-bold'>mañana {fecha}</span>.<br><br>Si aún no has confirmado tu asistencia, puedes hacerlo en el siguiente enlace 👇<br><br><span class='example-w-bold'>{link}</span><br><br>¡Te esperamos! 😊",
     "setting.text.template_today":"Hola {paciente} 👋<br><br>Te recordamos que tu cita <span class='example-w-bold'>“{nombre_cita}”</span> está programada para <span class='example-w-bold'>hoy {fecha}</span> ⏰.<br><br>Te esperamos. ¡Que tengas un excelente día! 😊",
-    "setting.text.a-hrs-after":"Hola {paciente} 👋<br><br>¡Gracias por confiar en nosotros! 🙌<br>Tu opinión es muy importante para seguir mejorando nuestro servicio.<br><br>Nos encantaría conocer tu experiencia. Puedes dejarnos tu calificación aquí ⭐👇<br><br><span class='example-w-bold'>TU LINK</span><br><br>¡Muchas gracias por tu tiempo! 😊"
+    "setting.text.a-hrs-after":"Hola {paciente} 👋<br><br>¡Gracias por confiar en nosotros! 🙌<br>Tu opinión es muy importante para seguir mejorando nuestro servicio.<br><br>Nos encantaría conocer tu experiencia. Puedes dejarnos tu calificación aquí ⭐👇<br><br><span class='example-w-bold'>TU LINK</span><br><br>¡Muchas gracias por tu tiempo! 😊",
+    "setting.module.notification": "Notificaciones",
+    "setting.show.setting-notification": "Configuración avanzada de notificaciones",
+    "setting.title.product-with-low-inventory": "Producto con inventario bajo",
+    "setting.info.product-with-low-inventory": "Recibirás una notificación cuando el inventario de un producto esté por debajo del nivel mínimo establecido. Esto te ayudará a mantener un control adecuado de tu stock y evitar situaciones de falta de productos.",
+    "setting.btn.activate-notification-for-email": "Activar notificación por Email",
+    "setting.btn.activate-notification-for-system": "Activar notificación por Sistema",
+    "setting.btn.send-notification-for-email": "Enviar notificación de prueba por Email",
+    "setting.btn.send-notification-for-system": "Enviar notificación de prueba por Sistema",
+    "setting.title-select-user": "Selecciona los Usuarios que recibirán las notificaciones",
+    "setting.error.error-to-search-users": "Ocurrió un error al buscar los usuarios",
+    "setting.label.template-basic-of-whatsapp":"Plantilla basica de whatsapp web"
 }

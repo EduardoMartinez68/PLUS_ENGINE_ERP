@@ -1,6 +1,6 @@
 {
     "character": {
-        "icon": "fi fi-rr-cube"
+        "icon": "fi fi-rs-receipt"
     },
     "permissions": [
         "view_sales",
@@ -11,7 +11,8 @@
         "cancel_sales",
         "cancelled_sales",
         "apply_discount",
-        "change_price"
+        "change_price",
+        "save_signature"
     ],
     "translate": {
         "es": {
@@ -25,7 +26,8 @@
             "edit_sales": "Permite modificar ventas existentes antes de ser finalizadas.",
             "cancel_sales": "Permite cancelar o anular ventas realizadas.",
             "apply_discount": "Permite aplicar descuentos a los productos o al total de la venta.",
-            "change_price": "Permite modificar el precio de los productos o servicios durante la venta."
+            "change_price": "Permite modificar el precio de los productos o servicios durante la venta.",
+            "save_signature": "Guardar la firma del responsable del paciente en los tratamientos."
         }
     }
 }

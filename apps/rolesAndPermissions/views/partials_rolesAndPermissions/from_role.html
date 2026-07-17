@@ -56,6 +56,10 @@
 
 
                 <input-field label="rolesAndPermissions.form.label.name-rol" placeholder="rolesAndPermissions.form.placeholder.name-rol" name="name_role" id="name_role" required></input-field>
+                <div class="section">
+                    <label t="rolesAndPermissions.form.label.description"></label>
+                    <textarea name="description" id="description">{{role.description}}</textarea>
+                </div>
             </div>
         </div>
 
@@ -63,11 +67,6 @@
         <!---here is save all the module of the permissions--->
         <div id="permissions-container">
 
-        </div>
-
-        <div class="section">
-            <label t="rolesAndPermissions.form.label.description"></label>
-            <textarea name="description" id="description">{{role.description}}</textarea>
         </div>
 
     </form>

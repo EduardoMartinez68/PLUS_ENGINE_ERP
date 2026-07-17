@@ -37,7 +37,49 @@ def update_branch(user, data) -> dict:
 
     return result
 
+def get_branches(user, key=None):
 
+    try:
+
+        query = Branch.objects.filter(
+            company=user.company,
+            activated=True
+        )
+
+        # 🔎 Buscar por nombre de sucursal
+        if key:
+
+            query = query.filter(
+                name_branch__icontains=key
+            )
+
+        # 🔥 Ordenar
+        query = query.order_by('name_branch')
+
+        results = []
+
+        for branch in query:
+
+            results.append({
+                "id": branch.id,
+                "name": branch.name_branch
+            })
+
+        return {
+            "success": True,
+            "message": "",
+            "error": "",
+            "answer": results
+        }
+
+    except Exception as e:
+
+        return {
+            "success": False,
+            "message": "",
+            "error": str(e),
+            "answer": []
+        }
 from django.utils import timezone
 from core.models import WhatsAppAccount
 def update_token_branch(user, data):
@@ -67,6 +109,7 @@ def update_token_branch(user, data):
             "status": "connected",
             "token_expires_at": None,
             "messages_sent_this_month": 0,
+            "template":data.get('template','')
         }
     )
 
@@ -111,7 +154,10 @@ def get_whatsapp_credentials(user):
             "success": False,
             "message": "El token de WhatsApp ha expirado."
         }
+    
 
+    messageTemplate = whatsapp_account.template  
+    template = "" if messageTemplate is None else messageTemplate
     return {
         "success": True,
         "access_token": whatsapp_account.access_token,
@@ -120,5 +166,6 @@ def get_whatsapp_credentials(user):
         "template_day_before":whatsapp_account.template_day_before,
         "template_four_before":whatsapp_account.template_four_before,
         "template_qualification":whatsapp_account.template_qualification,
-        "template_birthday":whatsapp_account.template_birthday
+        "template_birthday":whatsapp_account.template_birthday,
+        "template":template
     }

@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    "axes", #avoid brute force attacks.
     #'database',
     'core'
 ]+APPS_NAME #your apps ERP
@@ -61,6 +63,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    #this is for avoid brute force attacks.
+    "axes.middleware.AxesMiddleware",
     
     #this is for know if the subscription of the user expired
     'core.middleware.SubscriptionCheckMiddleware'
@@ -118,18 +123,7 @@ if TYPE_VERSION=='CLOUD':
     #here we will configure the tasks that will be run in background with celery
     #here after we will to read all the task that exist in all the apps for if one have event that would like meminder
     CELERY_BEAT_SCHEDULE = {
-        # Task 1: send reminders to the customers of the appoints of the user (this run 24/7)
-        "enviar-recordatorios-cada-5-min": {
-            "task": "apps.agenda.tasks.send_reminders",
-            "schedule": 300,  # this is run by 5 minutes
-        },
-
         
-        # Task 2: Monthly Renewal for can send more message of whatsapp (run only the day 1 of the month to 1:00 AM)
-            "renovar-limites-mensuales": {
-                "task": "apps.agenda.tasks.renovar_limites_mensuales", 
-                "schedule": crontab(day_of_month=1, hour=1, minute=0),
-            },
     }
 
 
@@ -154,13 +148,25 @@ if(TYPE_VERSION=='CLOUD'):
         }
     }
 else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME', 'default_db_name'),
+            'USER': os.getenv('DB_USER', 'default_user'),
+            'PASSWORD': os.getenv('DB_PASS', 'default_password'),
+            'HOST': os.getenv('DB_HOST', 'localhost'),
+            'PORT': os.getenv('DB_PORT', '5432')
+        }
+    }
     #when the software is intall in a desktop, we will use sqlite 
+    '''
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'plus.sqlite3',  # file SQLite local
         }
     }
+    '''
 
 # Password validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -202,6 +208,11 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = [
+#this is for avoid brute force attacks.
+"axes.backends.AxesStandaloneBackend",
+"django.contrib.auth.backends.ModelBackend",
+
+#
 'core.backends.EmailHashBackend'
 ]
 
@@ -235,3 +246,9 @@ else:
     #if the version is of desktop, we will to save the file in the drive of the user
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media' 
+
+
+#this is for config the security for that a user not try login for very time
+AXES_FAILURE_LIMIT = 5          # 5 try of login
+AXES_COOLOFF_TIME = 10 / 60         # 10 minutes block
+AXES_LOCKOUT_PARAMETERS = ["ip_address", "username"]

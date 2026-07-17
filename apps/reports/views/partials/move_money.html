@@ -1,0 +1,1100 @@
+<style>
+    /* Forzar que el Custom Element se comporte como un bloque al 100% */
+    card-history-inventory {
+        display: block;
+        width: 100%;
+    }
+
+    /* Estructura base de la Card */
+    .history-card {
+        background-color: #ffffff;
+        padding: 12px 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        width: 100%;
+        /* Ocupa el 100% del contenedor padre */
+        box-sizing: border-box;
+    }
+
+    /* Bordes fijos según la lógica interna sin animaciones de hover */
+    .history-card.movement-increase {
+        border-left: 4px solid #0284c7;
+        /* Azul Entrada */
+    }
+
+    .history-card.movement-decrease {
+        border-left: 4px solid #ef4444;
+        /* Rojo Salida/Egreso */
+    }
+
+    .history-card.movement-no-change {
+        border-left: 4px solid #64748b;
+        /* Gris Sin Cambios */
+    }
+
+    /* Columnas internas */
+    .card-column {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    /* Tipografías */
+    .pack-name {
+        font-weight: 600;
+        font-size: 14px;
+        color: #1e293b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .stock-label {
+        font-size: 10px;
+        color: #94a3b8;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    .stock-value {
+        font-weight: 600;
+        font-size: 14px;
+        color: #334155;
+    }
+
+    /* Badges de Diferencia */
+    .difference-badge {
+        font-weight: 700;
+        padding: 5px 12px;
+        font-size: 13px;
+        display: inline-block;
+        border-radius: 8px;
+    }
+
+    .movement-increase .difference-badge {
+        background-color: #e0f2fe;
+        color: #0284c7;
+    }
+
+    .movement-decrease .difference-badge {
+        background-color: #fee2e2;
+        color: #ef4444;
+    }
+
+    .movement-no-change .difference-badge {
+        background-color: #f1f5f9;
+        color: #64748b;
+    }
+
+    /* Adaptación para pantallas pequeñas */
+    @media (max-width: 768px) {
+        .history-card {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .card-column {
+            width: 100%;
+            text-align: left !important;
+            align-items: flex-start !important;
+        }
+
+        .card-column[style*="text-align: right"] {
+            border-top: 1px dashed #e2e8f0;
+            padding-top: 8px;
+        }
+    }
+
+    .hidden-accessible {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    /* Contenedor del disparador */
+    .filter-container {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 0;
+    }
+
+    /* Botón principal de Filtro */
+    .btn-filter-trigger {
+        background-color: #ffffff;
+        border: 1px solid #cbd5e1;
+        padding: 8px 16px;
+        color: #334155;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Fila de botones inferiores */
+    .popover-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        margin-top: 20px;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 15px;
+    }
+
+    /* Botón Limpiar */
+    .btn-action-clean {
+        background: transparent;
+        border: 1px solid #e2e8f0;
+        color: #94a3b8;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+    .btn-action-clean:hover {
+        background-color: #f8fafc;
+        color: #64748b;
+    }
+
+    /* Botón Buscar (Estilo Azul de tu imagen) */
+    .btn-action-search {
+        background-color: var(--primary);
+        border: none;
+        color: #ffffff;
+        padding: 8px 24px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .btn-action-search:hover {
+        background-color: var(--primary-dark);
+    }
+
+    .custom-popover {
+        display: none;
+    }
+
+    .custom-popover.active {
+        display: block;
+    }
+
+    /* CAMBIA ESTO: #popover-filters por .custom-popover */
+    .custom-popover {
+        padding: 20px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        width: 900px;
+        box-sizing: border-box;
+        margin: 0;
+        overflow: visible;
+        position: fixed !important;
+        z-index: 100;
+        display: none;
+        /* Oculto por defecto */
+    }
+
+    /* Agrega la clase active para mostrarlo */
+    .custom-popover.active {
+        display: block !important;
+    }
+
+    /* CAMBIA ESTOS TAMBIÉN: para que afecte a la estructura interna de cualquier popover */
+    .custom-popover .row.section {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .custom-popover .col {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+</style>
+
+
+<div class="filter-container">
+    <button class="btn-filter-trigger" data-target="popover-filters-move">
+        <i class="fi fi-rr-filter"></i> <span t="reports.label.filters"></span>
+    </button>
+
+    <div id="popover-filters-move" class="custom-popover">
+        <div class="row section">
+            <div class="col">
+                <input-field label="sales.filter.date_start" type="date" id="date-start-move"></input-field>
+            </div>
+            <div class="col">
+                <input-field label="sales.filter.date_finish" type="date" id="date-finish-move"></input-field>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col">
+                <plus-select id="select-branch-move" link="/setting/search_branches/"
+                    label="reports.label.select-branch">
+                </plus-select>
+            </div>
+            <div class="col">
+                <plus-select id="select-user-move" label="reports.select.user"
+                    link="/departament_employee/search_employee/" method="GET">
+
+                </plus-select>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col">
+                <plus-select label="move_box.filter.method" name="status" id="select-method-move">
+                    <option value="all" t="move_box.general.all"></option>
+                    <option value="cash" t="move_box.status.cash"></option>
+                    <option value="card" t="move_box.status.card"></option>
+                    <option value="transfer" t="move_box.status.transfer"></option>
+                    <option value="change" t="move_box.status.change"></option>
+                </plus-select>
+            </div>
+            <div class="col">
+                <plus-select id="select-details-move" label="reports.label.add-details" value="0">
+                    <option value="1" t="reports.option.yes"></option>
+                    <option value="0" t="reports.option.not"></option>
+                </plus-select>
+            </div>
+        </div>
+
+        <div class="row popover-actions">
+            <button class="btn-action-clean" t="sale.btn.delete-filter" onclick="restart_filters_move()">
+                Limpiar (0)
+            </button>
+            <button class="btn-action-search" popovertarget="popover-filters" popovertargetaction="hide"
+                onclick="update_table_move()" t="reports.label.make-report">
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<table-move id="table-move-reports"></table-move>
+
+<message-pop title="reports.title.download-move-box" name="pop-download-move">
+    <div class="row">
+        <div class="col">
+            <download-file id="btnDownloadExcelMove" type="excel" filename="" records="" date-range=""
+                onclick="download_excel_move('xlsx')">
+            </download-file>
+        </div>
+        <div class="col">
+            <download-file id="btnDownloadPdfMove" type="pdf" filename="" records="" date-range=""
+                onclick="download_excel_move('pdf')">
+            </download-file>
+        </div>
+    </div>
+    <br><br><br>
+    <button class="btn btn-edit btn-success" t="btn.success" onclick="window.hide_pop('pop-download-move')"></button>
+</message-pop>
+
+
+
+
+
+
+<script>
+    function togglePopover(popoverId, triggerElement) {
+        const popover = document.getElementById(popoverId);
+        if (!popover || !triggerElement) return;
+
+        const isOpen = popover.classList.contains('active');
+
+        // 1. Cerrar TODOS los popovers activos antes de abrir uno nuevo
+        document.querySelectorAll('.custom-popover.active').forEach(el => {
+            el.classList.remove('active');
+        });
+
+        // 2. Si no estaba abierto, lo mostramos y posicionamos
+        if (!isOpen) {
+            popover.classList.add('active');
+
+            // Calculamos la posición respecto al botón que se presionó
+            const rect = triggerElement.getBoundingClientRect();
+
+            popover.style.top = `${rect.bottom + 8}px`;
+            popover.style.left = `${rect.right - popover.offsetWidth}px`;
+        }
+    }
+
+    (() => {
+
+        // Escuchar clicks en cualquier botón de filtros de la página
+        document.addEventListener('click', (e) => {
+            const trigger = e.target.closest('.btn-filter-trigger');
+
+            if (trigger) {
+                e.stopPropagation();
+                const targetId = trigger.getAttribute('data-target');
+                togglePopover(targetId, trigger);
+            }
+        });
+
+        // Cerrar cualquier popover activo si se hace click afuera de él o de sus botones
+        document.addEventListener('click', (e) => {
+            const activePopover = document.querySelector('.custom-popover.active');
+            if (!activePopover) return;
+
+            // Si el click NO fue dentro del popover activo y NO fue dentro de un botón disparador
+            if (!activePopover.contains(e.target) && !e.target.closest('.btn-filter-trigger')) {
+                activePopover.classList.remove('active');
+            }
+        });
+
+    })();
+</script>
+
+<script>
+    async function update_table_move() {
+        const tableElement = document.getElementById('table-move-reports');
+        if (tableElement && typeof tableElement.loadData === 'function') {
+            await tableElement.loadData();
+        }
+    }
+
+    if (!customElements.get("table-move")) {
+        class TableMove extends HTMLElement {
+
+            constructor() {
+                super();
+                this.attachShadow({ mode: 'open' });
+                this.page = 1;
+                this.loading = false;
+
+                this.data = [];
+                this.pagination = {};
+                this.summary = {};
+
+            }
+
+            connectedCallback() {
+                this.render();
+                this.loadData();
+            }
+
+            getUpdateTextDate() {
+
+            }
+
+            getFilters() {
+                return {
+                    page: this.page,
+                    key: document.getElementById('search_move')?.value || '',
+                    branch_id: document.getElementById('select-branch-move').getValue() || '',
+                    user_id: document.getElementById('select-user-move').getValue() || '',
+                    method: document.getElementById('select-method-move').getValue() || '',
+                    date_start: document.getElementById('date-start-move')?.value || '',
+                    date_end: document.getElementById('date-finish-move')?.value || ''
+                };
+            }
+
+            async loadData() {
+                try {
+                    this.loading = true;
+                    this.render();
+                    const dataToServer = JSON.stringify(this.getFilters());
+
+                    const data = await window.send_message_to_the_server('reports/search_reports_move/', dataToServer, false, 'GET');
+                    this.data = data.answer || [];
+                    this.pagination = data.pagination || {};
+                    this.summary = data.summary || {};
+                } catch (error) {
+                    console.error(error);
+                    this.data = [];
+                } finally {
+                    this.loading = false;
+                    this.render();
+                }
+            }
+
+            renderSkeleton() {
+                let html = '';
+                for (let i = 0; i < 5; i++) {
+                    html += `
+                <tr>
+                    <td colspan="6">
+                        <div class="skeleton-row"></div>
+                    </td>
+                </tr>`;
+                }
+                return html;
+            }
+
+            renderRows() {
+
+                if (!this.data.length) {
+                    return `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #64748b;">
+                        No se encontraron movimientos en este periodo.
+                    </td>
+                </tr>`;
+                }
+
+                return this.data.map(item => {
+                    // Evaluamos si es entrada o salida según la respuesta de tu API
+                    const isIncome = item.type_move === 'inside';
+
+                    // Formateadores opcionales por si vienen como strings o números
+                    const entrada = parseFloat(item.amount);
+                    //const entrada = isIncome ? `${parseFloat(item.amount).toFixed(2)}` : '';
+                    // Extraemos datos extra si vienen en tu objeto (comentarios, subetiquetas, sucursal, etc.)
+                    const subLabel = item.reference_label ? `<span class="badge-sub">${item.reference_label}</span>` : '';
+                    const caja = item.cash_register || 'Caja 1';
+                    const sucursal = item.branch_name || '';
+                    const comentario = item.comment ? `<div class="sub-text">${item.comment}</div>` : '';
+
+                    return `
+                <tr>
+                    <td>
+                        <div class="status-pill status-${item.method}"><center>${window.translate_text(`move_box.td.${item.method}`)}</center></div>
+                        <div class="date-text">${item.date || '06/10/2025'}</div>
+                    </td>
+                    
+                    <td>
+                        <div class="user-cell">
+                            <img src="${item.photo_user || 'https://via.placeholder.com/32'}" class="user-avatar" alt="Avatar">
+                            <span class="main-text">${item.user || 'Usuario'}</span>
+                        </div>
+                    </td>
+                    
+                    <td>
+                        <div class="main-text">${caja}</div>
+                        <div class="sub-text">${sucursal}</div>
+                    </td>
+                    
+                    <td>
+                        <div class="payment-cell">
+                            ${comentario}
+                        </div>
+                    </td>
+                    
+                    <td class="amount-in text-right">${window.format_currency(entrada, window.get_currency_system(), false, true)}</td>
+                    
+                </tr>`;
+                }).join('');
+            }
+
+            changePage(page) {
+                if (page < 1 || page > this.pagination.total_pages || page === this.page) return;
+                this.page = page;
+                this.loadData();
+            }
+
+            renderPagination() {
+                const { page, total_pages, has_next, has_previous } = this.pagination;
+                if (!total_pages || total_pages <= 1) return '';
+
+                // Generar números de página dinámicos compactos
+                let pagesHtml = '';
+                let startPage = Math.max(1, page - 2);
+                let endPage = Math.min(total_pages, page + 2);
+
+                for (let i = startPage; i <= endPage; i++) {
+                    pagesHtml += `
+                    <button class="page-num ${i === page ? 'active' : ''}" data-page="${i}">
+                        ${i}
+                    </button>
+                `;
+                }
+
+                return `
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    Mostrando página <strong>${page}</strong> de <strong>${total_pages}</strong>
+                </div>
+                <div class="pagination-buttons">
+                    <button class="page-nav" ${!has_previous ? 'disabled' : ''} data-page="${page - 1}">
+                        &larr; Anterior
+                    </button>
+                    ${pagesHtml}
+                    <button class="page-nav" ${!has_next ? 'disabled' : ''} data-page="${page + 1}">
+                        Siguiente &rarr;
+                    </button>
+                </div>
+            </div>`;
+            }
+
+            setupPaginationEvents() {
+                // Manejador de clicks para la paginación dentro del Shadow DOM
+                const buttons = this.shadowRoot.querySelectorAll('.pagination-buttons button');
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const pageTarget = parseInt(button.getAttribute('data-page'));
+                        if (pageTarget) this.changePage(pageTarget);
+                    });
+                });
+
+                // Evento para el botón de descargar nativo del componente
+                const btnDownload = this.shadowRoot.querySelector('.btn-download');
+                if (btnDownload) {
+                    btnDownload.addEventListener('click', () => {
+                        if (typeof window.open_pop_reports_move === 'function') {
+                            window.open_pop_reports_move();
+                        } else {
+                            console.warn('window.open_pop_reports_move no está definida');
+                        }
+                    });
+                }
+            }
+
+            render() {
+                this.shadowRoot.innerHTML = `
+            <style>
+                :host { 
+                    --blue-brand: #0284c7;
+                    --blue-brand-hover: #0369a1;
+                    --text-main: #1e293b;
+                    --text-muted: #64748b;
+                    --text-light: #94a3b8;
+                    --border: #edf2f7;
+                    --row-hover: #f8fafc;
+                    --bg-card: #ffffff;
+                    
+                    display: block;
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                    -webkit-font-smoothing: antialiased;
+                }
+
+                .card {
+                    background: var(--bg-card);
+                    border: 1px solid #e2e8f0;
+                    border-radius: 16px;
+                    padding: 24px;
+                    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+                }
+
+                .header { 
+                    display: flex; 
+                    justify-content: space-between; 
+                    align-items: center; 
+                    margin-bottom: 24px; 
+                }
+                
+                h3 { 
+                    margin: 0; 
+                    color: var(--text-main); 
+                    font-size: 1.25rem;
+                    font-weight: 700; 
+                }
+                
+                .btn-download {
+                    background: #f1f5f9; 
+                    color: var(--text-main); 
+                    border: 1px solid #e2e8f0;
+                    padding: 8px 16px; 
+                    border-radius: 8px; 
+                    font-weight: 600; 
+                    font-size: 0.875rem;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+                .btn-download:hover {
+                    background: #e2e8f0;
+                }
+
+                /* Estilos de la Tabla */
+                .table-container {
+                    width: 100%;
+                    max-height: 50vh; /* Ajusta esta altura (ej: 400px o 50vh) según lo largo que desees el contenedor */
+                    overflow-y: auto;  /* Activa el scrollbar vertical cuando el contenido exceda el max-height */
+                    overflow-x: auto;  /* Mantiene el soporte para scroll horizontal en pantallas móviles */
+                    position: relative; /* Es indispensable para fijar el elemento superior (thead) */
+                }
+
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    text-align: left;
+                }
+                
+                th { 
+                    padding: 14px 16px; 
+                    color: var(--text-muted); 
+                    font-size: 0.8rem; 
+                    font-weight: 600;
+                    text-transform: uppercase; 
+                    letter-spacing: 0.05em;
+                    border-bottom: 1px solid var(--border); 
+                    background: #fafafa;
+                }
+                
+                td { 
+                    padding: 16px; 
+                    border-bottom: 1px solid var(--border); 
+                    color: var(--text-main); 
+                    font-size: 0.925rem;
+                    vertical-align: top;
+                }
+                
+                tr:hover td {
+                    background-color: var(--row-hover);
+                }
+
+                /* Tipografías específicas de la imagen */
+                .date-text {
+                    font-size: 0.75rem;
+                    color: var(--text-light);
+                    margin-bottom: 2px;
+                }
+                .main-text {
+                    color: var(--text-main);
+                    font-size: 0.9rem;
+                }
+                .font-bold {
+                    font-weight: 700;
+                }
+                .sub-text {
+                    font-size: 0.8rem;
+                    color: var(--text-muted);
+                    margin-top: 2px;
+                }
+
+                /* Badges / Etiquetas grises */
+                .badge-sub {
+                    display: inline-block;
+                    background: #e2e8f0;
+                    color: #475569;
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                    padding: 2px 6px;
+                    border-radius: 4px;
+                    margin-top: 4px;
+                    text-transform: uppercase;
+                }
+                
+                /* Estilos de Celdas Complejas */
+                .user-cell { 
+                    display: flex; 
+                    align-items: center; 
+                    gap: 12px; 
+                }
+                
+                .user-avatar { 
+                    width: 36px; 
+                    height: 36px; 
+                    border-radius: 50%; 
+                    object-fit: cover;
+                    border: 1px solid #e2e8f0;
+                }
+
+                .payment-cell {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 10px;
+                }
+
+                .icon-cash {
+                    color: #2563eb;
+                    margin-top: 2px;
+                }
+
+                /* Montos alineados y con colores correctos */
+                .text-right {
+                    text-align: right;
+                }
+                .amount-in { 
+                    color: #0f172a; 
+                    font-weight: 600; 
+                }
+                .amount-out { 
+                    color: #0f172a; 
+                    font-weight: 600; 
+                }
+
+                /* Barra de totales / Resumen */
+                .summary-bar {
+                    display: flex; 
+                    justify-content: flex-end; 
+                    flex-wrap: wrap;
+                    gap: 32px; 
+                    margin-top: 24px; 
+                    padding-top: 20px; 
+                    border-top: 1px solid var(--border);
+                }
+                
+                .summary-item { 
+                    text-align: right; 
+                }
+                
+                .summary-item label { 
+                    display: block; 
+                    font-size: 0.75rem; 
+                    color: var(--text-muted); 
+                    font-weight: 500;
+                    margin-bottom: 4px;
+                }
+                
+                .summary-item span { 
+                    font-size: 1.15rem; 
+                    font-weight: 700; 
+                    color: var(--text-main); 
+                }
+
+                /* Componente de Paginación Mejorado */
+                .pagination-container {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-top: 24px;
+                    padding-top: 16px;
+                    border-top: 1px solid var(--border);
+                }
+
+                .pagination-info {
+                    font-size: 0.85rem;
+                    color: var(--text-muted);
+                }
+
+                .pagination-buttons {
+                    display: flex;
+                    gap: 6px;
+                    align-items: center;
+                }
+
+                .pagination-buttons button {
+                    background: #ffffff;
+                    border: 1px solid #e2e8f0;
+                    padding: 6px 12px;
+                    border-radius: 8px;
+                    font-size: 0.85rem;
+                    font-weight: 500;
+                    color: var(--text-main);
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+
+                .pagination-buttons button:hover:not([disabled]) {
+                    background: #f1f5f9;
+                    border-color: #cbd5e1;
+                }
+
+                .pagination-buttons button[disabled] {
+                    color: var(--text-light);
+                    background: #f8fafc;
+                    cursor: not-allowed;
+                    opacity: 0.6;
+                }
+
+                .pagination-buttons button.page-num {
+                    width: 36px;
+                    height: 36px;
+                    padding: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .pagination-buttons button.page-num.active {
+                    background: var(--blue-brand);
+                    color: #ffffff;
+                    border-color: var(--blue-brand);
+                    font-weight: 600;
+                }
+
+                /* Skeleton Loader Animado */
+                .skeleton-row {
+                    height: 48px;
+                    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+                    background-size: 200% 100%;
+                    animation: loading 1.5s infinite;
+                    border-radius: 6px;
+                }
+
+                @keyframes loading {
+                    0% { background-position: 200% 0; }
+                    100% { background-position: -200% 0; }
+                }
+
+                /* Píldoras de Estado (Method) */
+                .status-pill {
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    text-transform: capitalize;
+                }
+
+                /* Colores por método */
+                .status-cash {
+                    background-color: #def7ec;
+                    color: #03543f;
+                }
+
+                .status-card {
+                    background-color: #e1effe;
+                    color: #1e429f;
+                }
+
+                .status-transfer {
+                    background-color: #e5edff;
+                    color: #42389d;
+                }
+
+                /* 'Change' resaltado en rojo porque implica salida de dinero */
+                .status-change {
+                    background-color: #fde8e8;
+                    color: #9b591c;
+                }
+
+                /* Pequeño detalle para el monto negativo en 'change' */
+                .status-change + .amount {
+                    color: #c56c30;
+                }
+
+
+                .status-outside {
+                    background-color: #fde8e8;
+                    color: #9b1c1c;
+                }
+
+                .status-outside + .amount {
+                    color: #c53030;
+                }
+
+                .status-inside {
+                    background-color: #def7ec;
+                    color: #03543f;
+                }
+
+.status-terminal {
+    background-color: #feecdc;
+    color: #b43403;
+}
+
+.status-terminal + .amount {
+    color: #b43403;
+}
+
+.status-transfer + .amount {
+    color: #42389d;
+}
+            </style>
+            
+            <div class="card">
+                <div class="header">
+                    <h3></h3>
+                    <button class="btn-download">Descargar</button>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 18%;"></th>
+                                <th style="width: 20%;">Usuario</th>
+                                <th style="width: 18%;">Caja/Sucursal</th>
+                                <th style="width: 20%;">Comentario</th>
+                                <th style="width: 12%; text-align: right;">Movimiento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${this.loading ? this.renderSkeleton() : this.renderRows()}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="summary-bar">
+                    <div class="summary-item">
+                        <label>Movimientos</label>
+                        <span>${this.pagination.total_records || 0}</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Total Entradas</label>
+                        <span style="color: #10b981;">${window.format_currency(this.summary.total_income || 0, window.get_currency_system(), false, true)}</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Total Salidas</label>
+                        <span style="color: #ef4444;">-${window.format_currency(this.summary.total_expense || 0, window.get_currency_system(), false, true)}</span>
+                    </div>
+                    <div class="summary-item">
+                        <label>Balance Neto</label>
+                        <span style="color: ${parseFloat(this.summary.net_balance || 0) >= 0 ? '#0284c7' : '#ef4444'}">
+                            ${window.format_currency(this.summary.net_balance || 0, window.get_currency_system(), false, true)}
+                        </span>
+                    </div>
+                </div>
+
+                ${this.renderPagination()}
+            </div>
+            `;
+
+                // Escuchar eventos de la nueva paginación mapeada en el shadowRoot
+                this.setupPaginationEvents();
+            }
+        }
+        customElements.define('table-move', TableMove);
+    }
+
+    (() => {
+        // 1. select the table for see
+        const targetTable = document.getElementById('table-move-reports');
+        if (targetTable) {
+            // 2. here we will to create the observer
+            const observer = new IntersectionObserver((entries, observerInstance) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // 3. run the function fot update the container
+                        window.set_initial_week_inputs('date-start-move', 'date-finish-move');
+                        update_table_move();
+                        observerInstance.unobserve(entry.target);
+                    }
+                });
+            }, {
+                root: null,
+                threshold: 0.1
+            });
+
+            // 5. activate the watchment of the table
+            observer.observe(targetTable);
+        }
+    })();
+
+</script>
+
+<script>
+    (() => {
+        function open_pop_reports_move() {
+            const title = window.translate_text('reports.title.reports-move-box');
+
+            const date_start = document.getElementById('date-start-move')?.value || '';
+            const date_finish = document.getElementById('date-finish-move')?.value || '';
+            let rangeDate = `${date_start}/${date_finish}`
+            if (date_start == '' && date_finish == '') {
+                rangeDate = window.translate_text('reports.label.all-date');
+            }
+
+
+            const records = '';
+            const btnDownloadExcelMove = document.getElementById('btnDownloadExcelMove')
+            if (btnDownloadExcelMove) {
+                btnDownloadExcelMove.setFilename(title);
+                btnDownloadExcelMove.setDateRange(rangeDate);
+                btnDownloadExcelMove.setRecords('XLSX');
+            }
+
+
+            const btnDownloadPdfMove = document.getElementById('btnDownloadPdfMove');
+            if (btnDownloadPdfMove) {
+                btnDownloadPdfMove.setFilename(title);
+                btnDownloadPdfMove.setDateRange(rangeDate);
+                btnDownloadPdfMove.setRecords('PDF');
+            }
+
+            window.show_pop('pop-download-move');
+        }
+
+        function restart_filters_move() {
+            const date_start = document.getElementById('date-start-move').value = '';
+            const date_finish = document.getElementById('date-finish-move').value = '';
+            const user = document.getElementById('select-user-move')?.reset() || '';
+            const branch = document.getElementById('select-branch-move')?.reset() || '';
+            const method = document.getElementById('select-method-move')?.reset() || '';
+            const details = document.getElementById('select-details-move')?.reset() || '';
+        }
+
+        function download_excel_move(type = 'xlsx') {
+            //get all the values of the data 
+            const date_start = document.getElementById('date-start-move')?.value || '';
+            const date_finish = document.getElementById('date-finish-move')?.value || '';
+            const user = document.getElementById('select-user-move')?.getValue() || '';
+            const branch = document.getElementById('select-branch-move')?.getValue() || '';
+            const method = document.getElementById('select-method-move')?.getValue() || '';
+            const details = document.getElementById('select-details-move')?.getValue() || '';
+
+            // 2. Construir los Query Parameters para la URL
+            const params = new URLSearchParams({
+                start_date: date_start,
+                end_date: date_finish,
+                user_id: user,
+                branch_id: branch,
+                method: method,
+                details: details
+            });
+
+            // 3. Mostrar la pantalla de carga
+            const loader = document.getElementById('report-loader-overlay');
+            if (loader) loader.classList.remove('report-loader-hidden');
+
+            // 4. URL de tu vista de Django (ajusta la ruta según tus urls.py)
+            let link = 'download_excel_payment_methods'
+            if (type == 'pdf') {
+                link = 'download_pdf_payment_methods'
+            }
+            const url = `/reports/${link}/?${params.toString()}`;
+
+            // 5. Petición HTTP asíncrona
+            fetch(url, { method: 'GET' })
+                .then(response => {
+                    // Verificar si el servidor respondió correctamente
+                    if (!response.ok) throw new Error('Error al generar el reporte');
+
+                    // Validar si el backend devolvió un JSON de error de permisos
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.includes("application/json")) {
+                        return response.json().then(json => {
+                            if (!json.success) alert(`Error: ${json.error || 'Sin permisos'}`);
+                            return null;
+                        });
+                    }
+
+                    // Si es el archivo binario (Excel), procedemos a transformarlo a Blob
+                    return response.blob();
+                })
+                .then(blob => {
+                    if (!blob) return; // Si ocurrió un error controlado arriba
+
+                    // 6. Crear un link temporal invisible para gatillar la descarga del navegador
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+
+                    // Nombre por defecto del archivo descargado
+                    a.download = `Reporte_Movimientos_${new Date().toISOString().slice(0, 10)}.${type}`;
+
+                    document.body.appendChild(a);
+                    a.click(); // Simular click
+
+                    // Limpieza del DOM
+                    a.remove();
+                    window.URL.revokeObjectURL(downloadUrl);
+                })
+                .catch(error => {
+                    console.error('Error en la descarga:', error);
+                    alert('Ocurrió un problema al descargar el reporte. Inténtalo de nuevo.');
+                })
+                .finally(() => {
+                    // 7. Ocultar siempre la pantalla de carga al finalizar (éxito o error)
+                    if (loader) loader.classList.add('report-loader-hidden');
+                });
+        }
+
+        window.restart_filters_move = restart_filters_move;
+        window.open_pop_reports_move = open_pop_reports_move;
+        window.download_excel_move = download_excel_move;
+    })();
+</script>

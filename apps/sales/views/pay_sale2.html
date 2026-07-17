@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen de Cuenta | {{ sale.reference }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-light: #4388C6;
+            --primary: #2b6cb0;
+            --secondary: #1C74C2;
+            --primary-dark: #064985;
+
+            --bg-body: #f4f7fb;
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.2);
+
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+
+            --accent: #22c55e;
+
+            --radius-lg: 18px;
+            --radius-sm: 10px;
+
+            --shadow-soft: 0 10px 30px rgba(0,0,0,0.08);
+            --shadow-focus: 0 20px 40px rgba(43,108,176,0.25);
+        }
+.card {
+    background: var(--card-bg);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--glass-border);
+}
+
+body {
+    background: radial-gradient(circle at 20% 20%, #e0ecff, transparent 40%),
+                radial-gradient(circle at 80% 0%, #dbeafe, transparent 40%),
+                #f4f7fb;
+}
+
+.btn-checkout {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    box-shadow: 0 10px 20px rgba(43,108,176,0.3);
+    font-size: 1.05rem;
+    letter-spacing: 0.03em;
+}
+
+.btn-checkout:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: var(--shadow-focus);
+}
+
+.summary-header {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    border-bottom: none;
+}
+
+.card {
+    animation: fadeUp 0.6s ease;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+        /* Top Header / Branding */
+        .header-branding {
+            background: white;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 40px;
+        }
+
+        .header-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container img {
+            max-height: 50px;
+            object-fit: contain;
+        }
+
+
+        /* Trust Signals */
+        .trust-footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .payment-icons {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            font-size: 1.4rem;
+            opacity: 0.5;
+        }
+
+/* Footer */
+        .footer-branding {
+            text-align: center;
+            margin-top: 60px;
+            padding-bottom: 40px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .footer-branding a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .footer-branding a:hover {
+            color: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-branding">
+        <div class="header-content">
+            <div class="logo-container">
+                {% if sale.logo_url %}
+                    <img src="{{ sale.logo_url }}" alt="Logo Clínica">
+                {% else %}
+                    <div style="font-weight: 800; color: var(--primary); font-size: 1.5rem;">
+                        <i class="fas fa-tooth"></i> DENTAL<span style="color: var(--text-main)">SOFT</span>
+                    </div>
+                {% endif %}
+            </div>
+            <div style="text-align: right;">
+                <div style="font-weight: 600; font-size: 0.9rem;">{{ sale.branch_name }}</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="checkout-wrapper">
+        
+        <!-- Left Column: Details -->
+        <div class="card">
+            <div class="card-header">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <span class="status-badge status-{{ sale.status }}">{{ sale.status }}</span>
+                        <h1 style="margin: 10px 0 5px 0; font-size: 1.5rem;">Resumen de Tratamiento</h1>
+                        <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Ref: #{{ sale.reference }}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Paciente</p>
+                        <p style="margin: 0; font-weight: 700;">{{ sale.customer_name }}</p>
+                    </div>
+                </div>
+                <div class="payment-info">
+                    <strong>Información de pago</strong><br>
+
+                    {% if branch.bank_account %}
+                        {{ branch.bank_name }}: {{ branch.bank_account }}
+                    {% elif company.bank_account %}
+                        {{ company.bank_name }}: {{ company.bank_account }}
+                    {% else %}
+                        No hay información bancaria disponible.
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <table class="dental-table">
+                    <thead>
+                        <tr>
+                            <th>Descripción del Servicio</th>
+                            <th style="text-align: center;">Cant.</th>
+                            <th style="text-align: right;">Precio Unit.</th>
+                            <th style="text-align: right;">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in sale.items %}
+                        <tr>
+                            <td>
+                                <span class="item-name">{{ item.name }}</span>
+                                <span class="item-sub">Servicio Odontológico Especializado</span>
+                            </td>
+                            <td style="text-align: center;">{{ item.quantity|floatformat:0 }}</td>
+                            <td style="text-align: right;">${{ item.unit_price|floatformat:2 }}</td>
+                            <td style="text-align: right; font-weight: 600;">${{ item.total|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Right Column: Payment Summary -->
+        <aside>
+            <div class="card summary-card">
+                <div class="summary-header">
+                    <p style="margin: 0; font-size: 0.8rem; text-transform: uppercase; opacity: 0.8;">Total a Pagar</p>
+                    <h2 style="margin: 5px 0 0 0; font-size: 2.2rem;">${{ sale.total|floatformat:2 }} <span style="font-size: 1rem;">{{ sale.currency }}</span></h2>
+                </div>
+                
+                <div class="summary-body">
+                    <div class="price-line">
+                        <span>Subtotal bruto</span>
+                        <span>${{ sale.subtotal|floatformat:2 }}</span>
+                    </div>
+                    <div class="price-line">
+                        <span>IVA / Impuestos</span>
+                        <span>${{ sale.tax_total|floatformat:2 }}</span>
+                    </div>
+                    {% if sale.discount_total > 0 %}
+                    <div class="price-line" style="color: var(--accent); font-weight: 600;">
+                        <span>Descuento aplicado</span>
+                        <span>-${{ sale.discount_total|floatformat:2 }}</span>
+                    </div>
+                    {% endif %}
+
+                    <div class="price-line total">
+                        <span>Total Neto</span>
+                        <span>${{ sale.total|floatformat:2 }}</span>
+                    </div>
+
+                    {% if sale.amount_paid > 0 %}
+                    <div class="balance-alert">
+                        <i class="fas fa-check-circle" style="color: var(--accent); font-size: 1.1rem;"></i>
+                        <div>
+                            Abonado: <strong>${{ sale.amount_paid|floatformat:2 }}</strong><br>
+                            Restante: <strong>${{ sale.balance|floatformat:2 }}</strong>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <button class="btn-checkout" onclick="processPayment()">
+                        <i class="fas fa-shield-check"></i> FINALIZAR PAGO
+                    </button>
+
+                    <div class="trust-footer">
+                        <p><i class="fas fa-lock"></i> Pago procesado de forma segura y encriptada</p>
+                        <div class="payment-icons">
+                            <i class="fab fa-cc-visa"></i>
+                            <i class="fab fa-cc-mastercard"></i>
+                            <i class="fab fa-cc-amex"></i>
+                            <i class="fab fa-apple-pay"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+    <footer class="footer-branding">
+        &copy; 2024 {{ sale.branch_name }}. Todos los derechos reservados.
+        <p>Powered by <a href="https://denty.cloud" target="_blank">denty.cloud</a> Software Dental</p>
+    </footer>
+
+    <script>
+        function processPayment() {
+            const btn = document.querySelector('.btn-checkout');
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Procesando...';
+            btn.disabled = true;
+            
+            console.log("Iniciando pasarela para Venta ID: {{ sale.id }}");
+            // Aquí llamarías a Stripe.redirectToCheckout o similar
+        }
+    </script>
+</body>
+</html>

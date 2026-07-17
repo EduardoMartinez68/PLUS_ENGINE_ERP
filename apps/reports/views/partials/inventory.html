@@ -1,0 +1,253 @@
+<div class="row section">
+    <div class="col">
+        <input-field label="sales.filter.date_start" type="date" id="date-start-inventory"></input-field>
+    </div>
+    <div class="col">
+        <input-field label="sales.filter.date_finish" type="date" id="date-finish-inventory"></input-field>
+    </div>
+</div>
+<div class="row section">
+    <div class="col">
+        <plus-select id="select-branch-inventory" link="/setting/search_branches/" label="reports.label.select-branch">
+        </plus-select>
+    </div>
+    <div class="col">
+        <plus-select id="select-user-inventory" label="reports.select.user" link="/departament_employee/search_employee/"
+            method="GET">
+
+        </plus-select>
+    </div>
+</div>
+<div class="row section">
+    <div class="col">
+        <plus-select id="select-pack-inventory" label="reports.select.item-incluye" link="/services/search_pack/1/"
+            method="GET">
+
+        </plus-select>
+    </div>
+    <div class="col">
+        <plus-select label="services.select.type-unity" id="select-unity-inventory" name="unity_type" value="all">
+            <option value="all" t="reports.option.all"></option>
+            <option value="0" t="services.option.liter"></option>
+            <option value="1" t="services.option.pza"></option>
+            <option value="2" t="services.option.metro"></option>
+            <option value="3" t="services.option.box"></option>
+            <option value="4" t="services.option.kilogram"></option>
+            <option value="5" t="services.option.services"></option>
+        </plus-select>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-8">
+        <button t="reports.bt.download" class="btn btn-edit btn-success" onclick="open_pop_reports_inventory()"></button>
+    </div>
+    <div class="col-4">
+        <button t="sale.btn.delete-filter" class="btn btn-secondary btn-success"
+            onclick="restart_filters_inventory()"></button>
+    </div>
+</div>
+
+<message-pop title="reports.title.download-inventory" name="pop-download-inventory">
+    <div class="row">
+        <div class="col">
+            <download-file id="btnDownloadExcelInventory" type="excel" filename="" records=""
+                date-range="" onclick="download_excel_inventory()">
+            </download-file>
+        </div>
+        <div class="col">
+            <download-file id="btnDownloadExcelInventoryReports" type="excel" filename="" records=""
+                date-range="" onclick="download_excel_inventory_personality()">
+            </download-file>
+        </div>
+    </div>
+    <br><br><br>
+    <button class="btn btn-edit btn-success" t="btn.success" onclick="window.hide_pop('pop-download-inventory')"></button>
+</message-pop>
+
+
+
+<script>
+    (()=>{
+        function restart_filters_inventory(){
+            const date_start = document.getElementById('date-start-inventory').value='';
+            const date_finish = document.getElementById('date-finish-inventory').value='';
+            const user = document.getElementById('select-user-inventory')?.reset() || '';
+            const customer = document.getElementById('select-unity-inventory')?.reset() || '';
+            const pack_id = document.getElementById('select-pack-inventory')?.reset() || '';
+            const branch_id=document.getElementById('select-branch-inventory')?.reset() || '';
+        }
+
+        function open_pop_reports_inventory(){
+            const title=window.translate_text('reports.title.reports-inventory');
+            
+            const date_start = document.getElementById('date-start-inventory')?.value || '';
+            const date_finish = document.getElementById('date-finish-inventory')?.value || '';
+            let rangeDate=`${date_start}/${date_finish}`
+            if(date_start=='' && date_finish==''){
+                rangeDate=window.translate_text('reports.label.all-date');
+            }
+
+
+            const records='';
+
+            const btnDownloadExcelInventory=document.getElementById('btnDownloadExcelInventory')
+            if(btnDownloadExcelInventory){
+                const date = new Intl.DateTimeFormat('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                }).format(new Date());
+                btnDownloadExcelInventory.setFilename(title);
+                btnDownloadExcelInventory.setDateRange(`${date}-${date}`);
+                btnDownloadExcelInventory.setRecords('XLSX');
+            }
+
+
+            const btnDownloadExcelInventoryReports=document.getElementById('btnDownloadExcelInventoryReports');
+            if(btnDownloadExcelInventoryReports){
+                btnDownloadExcelInventoryReports.setFilename(window.translate_text('reports.title.reports-inventory-personality'));
+                btnDownloadExcelInventoryReports.setDateRange(rangeDate);
+                btnDownloadExcelInventoryReports.setRecords('XLSX');
+            }
+
+            window.show_pop('pop-download-inventory');
+        }
+        
+
+        function download_excel_inventory() {
+            // 2. Construir los Query Parameters para la URL
+            const params = new URLSearchParams({
+            });
+
+            // 3. Mostrar la pantalla de carga
+            const loader = document.getElementById('report-loader-overlay');
+            if (loader) loader.classList.remove('report-loader-hidden');
+
+            // 4. URL de tu vista de Django (ajusta la ruta según tus urls.py)
+            const url = `/reports/get_report_inventory/`;
+
+            // 5. Petición HTTP asíncrona
+            fetch(url, { method: 'GET' })
+                .then(response => {
+                    // Verificar si el servidor respondió correctamente
+                    if (!response.ok) throw new Error('Error al generar el reporte');
+
+                    // Validar si el backend devolvió un JSON de error de permisos
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.includes("application/json")) {
+                        return response.json().then(json => {
+                            if (!json.success) alert(`Error: ${json.error || 'Sin permisos'}`);
+                            return null;
+                        });
+                    }
+
+                    // Si es el archivo binario (Excel), procedemos a transformarlo a Blob
+                    return response.blob();
+                })
+                .then(blob => {
+                    if (!blob) return; // Si ocurrió un error controlado arriba
+
+                    // 6. Crear un link temporal invisible para gatillar la descarga del navegador
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+
+                    // Nombre por defecto del archivo descargado
+                    a.download = `Reporte_Inventario_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+                    document.body.appendChild(a);
+                    a.click(); // Simular click
+
+                    // Limpieza del DOM
+                    a.remove();
+                    window.URL.revokeObjectURL(downloadUrl);
+                })
+                .catch(error => {
+                    console.error('Error en la descarga:', error);
+                    alert('Ocurrió un problema al descargar el reporte. Inténtalo de nuevo.');
+                })
+                .finally(() => {
+                    // 7. Ocultar siempre la pantalla de carga al finalizar (éxito o error)
+                    if (loader) loader.classList.add('report-loader-hidden');
+                });
+        }
+
+        function download_excel_inventory_personality() {
+            //get all the values of the data 
+            const date_start = document.getElementById('date-start-inventory')?.value || '';
+            const date_finish = document.getElementById('date-finish-inventory')?.value || '';
+            const user = document.getElementById('select-user-inventory')?.getValue() || '';
+            const pack = document.getElementById('select-pack-inventory')?.getValue() || '';
+            const unity = document.getElementById('select-unity-inventory')?.getValue() || '';
+            const branch_id=document.getElementById('select-branch-inventory')?.getValue() || '';
+
+            // 2. Construir los Query Parameters para la URL
+            const params = new URLSearchParams({
+                start_date: date_start,
+                end_date: date_finish,
+                user_id: user,
+                pack_id: pack,
+                unity:unity,
+                branch_id: branch_id
+            });
+
+            // 3. Mostrar la pantalla de carga
+            const loader = document.getElementById('report-loader-overlay');
+            if (loader) loader.classList.remove('report-loader-hidden');
+
+            // 4. URL de tu vista de Django (ajusta la ruta según tus urls.py)
+            const url = `/reports/get_report_history_inventory/?${params.toString()}`;
+
+            // 5. Petición HTTP asíncrona
+            fetch(url, { method: 'GET' })
+                .then(response => {
+                    // Verificar si el servidor respondió correctamente
+                    if (!response.ok) throw new Error('Error al generar el reporte');
+
+                    // Validar si el backend devolvió un JSON de error de permisos
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.includes("application/json")) {
+                        return response.json().then(json => {
+                            if (!json.success) alert(`Error: ${json.error || 'Sin permisos'}`);
+                            return null;
+                        });
+                    }
+
+                    // Si es el archivo binario (Excel), procedemos a transformarlo a Blob
+                    return response.blob();
+                })
+                .then(blob => {
+                    if (!blob) return; // Si ocurrió un error controlado arriba
+
+                    // 6. Crear un link temporal invisible para gatillar la descarga del navegador
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+
+                    // Nombre por defecto del archivo descargado
+                    a.download = `Reporte_Ventas_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+                    document.body.appendChild(a);
+                    a.click(); // Simular click
+
+                    // Limpieza del DOM
+                    a.remove();
+                    window.URL.revokeObjectURL(downloadUrl);
+                })
+                .catch(error => {
+                    console.error('Error en la descarga:', error);
+                    alert('Ocurrió un problema al descargar el reporte. Inténtalo de nuevo.');
+                })
+                .finally(() => {
+                    // 7. Ocultar siempre la pantalla de carga al finalizar (éxito o error)
+                    if (loader) loader.classList.add('report-loader-hidden');
+                });
+        }
+
+        window.restart_filters_inventory=restart_filters_inventory;
+        window.open_pop_reports_inventory=open_pop_reports_inventory;
+        window.download_excel_inventory=download_excel_inventory;
+        window.download_excel_inventory_personality=download_excel_inventory_personality;
+    })();
+</script>

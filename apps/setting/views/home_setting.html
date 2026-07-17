@@ -5,7 +5,6 @@
     </plus-module>
     {% endif %}
 
-
     {% if permissions.edit_company %}
     <plus-module name="setting.module.company" desc="" icon="fi fi-rs-building">
         {% include 'setting/partials_setting/company.html' %}
@@ -27,7 +26,12 @@
     </plus-module>
     {% endif %}
     --->
-
+    {% if permissions.edit_notification %}
+    <plus-module name="setting.module.notification" desc="" icon="fi fi-rr-bell">
+        {% include 'setting/partials_setting/notification.html' %}
+    </plus-module>
+    {% endif %}
+    
     {% if permissions.edit_schedule %}
     <plus-module name="setting.module.schedule" desc="" icon="fi fi-rr-clock-three">
         {% include 'setting/partials_setting/schedule.html' %}

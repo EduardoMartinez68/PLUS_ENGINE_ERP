@@ -1,10 +1,111 @@
-<plus-navbar>
-    <option t="sales.navbar.sales" link="sales/sales/"></option>
-    <option t="sales.navbar.new" link="sales/add_sale/"></option>
-    <option t="sales.navbar.products">
-        <sub-option t="sales.navbar.see-products" link="services/services/"></sub-option>
-    </option>
-    <option t="sales.btn.print" onclick="btn_print_buy()"></option>
-    <option t="sales.btn.send_email" onclick="send_buy_for_email()"></option>
-    <option t="sales.btn.cancell" onclick="cancel_sale()"></option>
-</plus-navbar>
+<style>
+:root {
+    /* Paleta Odoo 17 / Enterprise */
+    --odoo-primary: #00A09D; /* Verde azulado característico */
+    --odoo-primary-dark: #008784;
+    --odoo-bg-bar: #ffffff;
+    --odoo-border: #dee2e6;
+    --odoo-hover: #e9ecef;
+    --text-main: #4c4c4c;
+    --text-dark: #111827;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.command-bar {
+    margin: 16px 20px;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--odoo-bg-bar);
+    border-bottom: 1px solid var(--odoo-border);
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 4px; /* Odoo usa espacios muy ajustados */
+    box-shadow: var(--shadow-sm);
+}
+
+.nav-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-main);
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    gap: 8px;
+}
+
+/* Estilo para los botones secundarios/iconos */
+.nav-item:hover {
+    background-color: var(--odoo-hover);
+    color: var(--text-dark);
+}
+
+/* Botón de acción principal (como el botón 'Nuevo' o 'Guardar') */
+.nav-item-primary {
+    background-color: var(--primary);
+    color: #ffffff !important;
+    border-color: var(--primary);
+}
+
+.nav-item-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+/* Ajuste para los iconos de Flaticon */
+.nav-item i[class^="fi-"] {
+    display: flex;
+    align-items: center;
+    font-size: 16px; /* Tamaño ligeramente mayor para visibilidad */
+    line-height: 1;
+}
+
+/* Separador sutil entre grupos de botones */
+.divider {
+    width: 1px;
+    height: 20px;
+    background-color: var(--odoo-border);
+    margin: 0 8px;
+}
+
+.spacer {
+    flex: 1;
+}
+</style>
+
+<nav class="command-bar">
+    <button class="nav-item nav-item-primary" t="sales.navbar.new" onclick="nextWeb('/sales/add_sale/')">
+        <i class="fi fi-rr-plus"></i>
+        <span t="sales.navbar.new"></span>
+    </button>
+
+    <div class="divider"></div>
+
+    <button class="nav-item" t="sales.navbar.sales" onclick="nextWeb('sales/sales/')">
+        <i class="fi fi-rr-list"></i>
+    </button>
+
+    <button class="nav-item" t="sales.btn.print" onclick="btn_print_buy()">
+        <i class="fi fi-rr-print"></i>
+    </button>
+
+    <button class="nav-item" t="sales.btn.send_email" onclick="send_buy_for_email()">
+        <i class="fi fi-rr-envelope"></i>
+    </button>
+
+    <button class="nav-item" t="sales.btn.open_link_buy" onclick="open_link_buy()">
+        <i class="fi fi-rr-envelope"></i>
+    </button>
+
+    <div class="spacer"></div>
+
+    <button class="nav-item" t="sales.btn.cancell" onclick="cancel_sale()" style="color: #d9534f;">
+        <i class="fi fi-rr-trash"></i>
+    </button>
+</nav>

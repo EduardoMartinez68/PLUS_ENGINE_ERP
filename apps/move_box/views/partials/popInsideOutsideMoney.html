@@ -1,0 +1,252 @@
+<style>
+    .input-money {
+        width: 100%;
+        /* Tamaño extra grande y centrado */
+        font-size: 3.5rem; 
+        font-weight: 600;
+        text-align: center;
+        
+        /* Reset de bordes y fondos */
+        border: none;
+        border-bottom: 2px solid transparent;
+        background-color: transparent;
+        outline: none;
+        
+        /* Color del texto y espaciado */
+        color: var(--primary, #075DA8);
+        padding: 1rem 0;
+        margin-bottom: 1.5rem;
+        
+        /* Transición suave para la línea */
+        transition: border-bottom 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Quitar las flechas (spinners) de los inputs de tipo número */
+    .input-money::-webkit-outer-spin-button,
+    .input-money::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    .input-money[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    /* Efecto al pasar el mouse (hover) */
+    .input-money:hover {
+        border-bottom: 2px solid #e0e0e0; /* Una línea muy sutil */
+    }
+
+    /* Efecto cuando el usuario está escribiendo (focus) */
+    .input-money:focus {
+        border-bottom: 2px solid var(--primary, #075DA8);
+        transform: scale(1.02); /* Un ligero énfasis */
+    }
+
+    /* Estilo para el placeholder */
+    .input-money::placeholder {
+        color: #ccc;
+        opacity: 0.6;
+    }
+
+    /* Contenedor de comentarios rápidos */
+    .quick-comments-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    /* Botones minimalistas */
+    .btn-quick-comment {
+        background-color: transparent;
+        color: var(--primary, #075DA8);
+        border: 1px solid var(--primary, #075DA8);
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+
+    .btn-quick-comment:hover {
+        background-color: var(--primary, #075DA8);
+        color: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .exit-money-input{
+        color: var(rgb(250, 103, 103), #a80707);
+    }
+
+    .exit-money-input:focus {
+        border-bottom: 2px solid var(rgb(243, 93, 93), #a80707);
+        transform: scale(1.02); /* Un ligero énfasis */
+    }
+
+    .hidden{
+        display: none !important;
+    }
+</style>
+
+
+<message-pop title="move_box.title.inside-money" name="pop-inside-outside-money" id="pop_inside_outside_money">
+    <div class="container-pop">
+        <div class="row section">
+            <div class="col">
+                <plus-select label="move_box.label.payment-method" name="payment_method" id="select_move" value="cash">
+                    <option value="cash" t="move_box.option.cash"></option>
+                    <option value="card" t="move_box.option.card"></option>
+                    <option value="credit" t="move_box.option.credit"></option>
+                    <option value="terminal" t="move_box.option.terminal"></option>
+                    <option value="transfer" t="move_box.option.transfer"></option>
+                </plus-select>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col">
+                <label t="move_box.label.amount"></label>
+                <input class="input-money" type="number" placeholder="0.00" id="input_move_money">
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col">
+                <label t="move_box.label.comment-outside-inside-money"></label>
+                <div class="quick-comments-container move-hidden" id="container-comment-flash-outside">
+                    <button type="button" class="btn-quick-comment" onclick="fillCommentMoveMoney(this)" t="move_box.btn.supplies"></button>
+                    <button type="button" class="btn-quick-comment" onclick="fillCommentMoveMoney(this)" t="move_box.btn.pay-whater"></button>
+                    <button type="button" class="btn-quick-comment" onclick="fillCommentMoveMoney(this)" t="move_box.btn.pay-light"></button>
+                    <button type="button" class="btn-quick-comment" onclick="fillCommentMoveMoney(this)" t="move_box.btn.pay-paper"></button>
+                    <button type="button" class="btn-quick-comment" onclick="fillCommentMoveMoney(this)" t="move_box.btn.pay-employees"></button>
+                    <button type="button" class="btn-quick-comment" onclick="fillCommentMoveMoney(this)" t="move_box.btn.pay-laboratory"></button>
+                    <button type="button" class="btn-quick-comment" onclick="fillCommentMoveMoney(this)" t="move_box.btn.pay-manteniment"></button>
+                    <button type="button" class="btn-quick-comment" onclick="fillCommentMoveMoney(this)" t="move_box.btn.pay-clear"></button>
+                </div>
+                <textarea rows="5" t-placeholder="move_box.label.comment" id="input_comment_move_money"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-success btn-add" t="btn.save" onclick="save_the_move_of_money()"></button>
+        </div>
+    </div>
+</message-pop>
+
+
+<script>
+    (()=>{
+        window.typeMoveForm=0;
+
+        async function save_inside_money(type){
+            //type 1==outside 
+            //type 0==inside
+            //now we will see if the user can do this move 
+            const input=document.getElementById('input_move_money');
+            const value=parseFloat(input.value);
+            if(value<=0 && type==0){
+                window.show_alert('alert', 'move_box.error.no-can-save-this-move', 'move_box.error.the-move-need-be-more-than-zero');
+                return;
+            }
+
+            if(value>=0 && type==1){
+                window.show_alert('alert', 'move_box.error.no-can-save-this-move', 'move_box.error.the-move-need-be-minor-than-zero');
+                return;
+            }
+
+
+            //now we will see if the user have all the information need for do this move
+            const select_move=document.getElementById('select_move');
+            if(!select_move.getValue()){
+                window.show_alert('alert', 'move_box.error.no-can-save-this-move', 'move_box.error.need-do-a-payment-method');
+                return false;
+            }
+
+            const input_comment_move_money=document.getElementById('input_comment_move_money')
+            if(input_comment_move_money.value.trim() === ''){
+                window.show_alert('alert', 'move_box.error.no-can-save-this-move', 'move_box.error.need-do-a-comment');
+                return false;
+            }
+
+            //if can save the move, we will to send this information to the backend
+            const body={
+                type: type,
+                payment_method: select_move.getValue(),
+                amount: value.toFixed(2),
+                comment: input_comment_move_money.value
+            }
+
+            const backend=await window.send_message_to_the_server('/move_box/save_move/', body, true);
+            if(!backend.success){
+                window.show_alert('error', 'move_box.error.no-can-save-this-move', backend.message || 'move_box.error.unknown-error', backend.error || 'move_box.error.unknown-error');
+                return;
+            }
+
+            //if the move was saved successfully, we will to update the ui
+            window.show_notification('success', 'move_box.message.success');
+            window.hide_pop('pop-inside-outside-money');
+
+            //restart inputs 
+            input.value='';
+            input_comment_move_money.value='';
+            select_move.reset();
+
+            //refresh the table of move 
+            if (typeof reload_moves === "function") {
+                window.reload_moves();
+            }
+        }
+
+        async function save_the_move_of_money(){
+            await save_inside_money(window.typeMoveForm);
+        }
+
+
+        window.save_the_move_of_money=save_the_move_of_money;
+    })();
+
+    function fillCommentMoveMoney(button) {
+        const text=button.textContent;
+        const textarea = document.getElementById('input_comment_move_money');
+        textarea.value = text;
+        textarea.dispatchEvent(new Event('input'));
+    }
+
+    function restart_form_inside_outside_money(){
+        const input=document.getElementById('input_move_money');
+        const select_move=document.getElementById('select_move')
+        const input_comment_move_money=document.getElementById('input_comment_move_money')
+        
+        //restart inputs 
+        input.value='';
+        input_comment_move_money.value='';
+        select_move.reset();
+    }
+
+    function open_pop_inside_money() {
+        restart_form_inside_outside_money();
+        window.typeMoveForm=0;
+
+        //hidden the container of the buttns flash 
+        const containerButtons=document.getElementById('container-comment-flash-outside')
+        containerButtons.classList.add('hidden');
+
+        //change the title and show the pop 
+        document.getElementById('pop_inside_outside_money').setTitle('move_box.title.inside-money');
+        window.show_pop('pop-inside-outside-money');
+    }
+
+    function open_pop_outside_money() {
+        restart_form_inside_outside_money();
+        window.typeMoveForm=1;
+
+        //show the container of the buttns flash 
+        const containerButtons=document.getElementById('container-comment-flash-outside')
+        containerButtons.classList.remove('hidden');
+
+        //change the title and show the pop 
+        document.getElementById('pop_inside_outside_money').setTitle('move_box.title.outside-money');
+        window.show_pop('pop-inside-outside-money');
+    }
+</script>

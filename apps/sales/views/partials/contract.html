@@ -130,8 +130,8 @@
                 const responsibleName=document.getElementById('responsibleName').value;
                 const signature = { 
                     date: new Date(), 
-                    strokes: strokes ,
-                    responsibleName
+                    patiente_signature_json: strokes ,
+                    patient_name:responsibleName
                 }; 
 
                 return signature;//JSON.stringify(signature, null, 2); 
@@ -145,21 +145,22 @@
 
                 //now see if exist the name of the customer of the signature and his signature
                 const dataSignature=create_json_signature();
-                if(!dataSignature.responsibleName || dataSignature.responsibleName.trim() === ''){
-                    window.show_alert('error', 'sales.error.not-id-of-sale', 'sales.error.not-id-of-sale', 'you sale not have a ID');
+                if(!dataSignature.patient_name || dataSignature.patient_name.trim() === ''){
+                    window.show_alert('error', 'sales.error.need-the-name-of-the-responsible');
+                    return;
                 }
 
                 //second we need see that exist information of the signature in json
-                if(!dataSignature.strokes){
-                    window.show_alert('error', 'sales.error.not-id-of-sale', 'sales.error.not-id-of-sale', 'you sale not have a ID');
+                if(!dataSignature.patiente_signature_json){
+                    window.show_alert('error', 'sales.error.need-the-signature', 'sales.error.need-the-signature');
+                    return;
                 }
-
-
 
                 //when all the information exist in the contract, now we will to send the information to the backend 
                 const backend=await window.send_message_to_the_server(`/sales/save_signature/${window.idSales}/`, {dataSignature}, true, 'POST');
                 if(!backend.success){
-                    window.show_alert('error', 'sales.error.cancel-sale', backend.message || 'sales.error.cancel-sale', backend.error || '');
+                    window.show_alert('error', 'sales.error.no-save-the-signature', backend.message || 'sales.error.no-save-the-signature', backend.error || '');
+                    return;
                 }
 
                 //also change the status of the sale 
@@ -171,6 +172,9 @@
                 window.status=answer.status;
                 document.getElementById('reference').textContent = window.reference_sales;
                 window.show_notification('success', 'sales.message.sales-updated');
+
+                //close the pop of the sale 
+                window.hide_pop('pop_signature')
             }
 
             window.clear_signature = clear_signature;
@@ -186,5 +190,8 @@
             }
         });
         observer.observe(document.body, { childList: true, subtree: true });
+
+
+        
     })();
 </script>

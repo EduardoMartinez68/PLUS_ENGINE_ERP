@@ -1,6 +1,6 @@
 from django.db import models
 from decimal import Decimal
-from core.models import Company, Branch
+from core.models import Company, Branch, CustomUser
 
 # -------------------------------------------------
 # INFORMATION OPTIONAL
@@ -91,6 +91,18 @@ class Pack(models.Model):
     # date of creation or update
     creation_date = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
+    track_inventory = models.BooleanField(default=True) #add this for know if the product have inventory
+    show_fo_sale = models.BooleanField(default=True)
+
+    PACK_TYPE_UNITY = [
+        (0, 'liter'),
+        (1, 'pza'),
+        (2, 'metro'),
+        (3, 'box'),
+        (4, 'kilogram'),
+        (5, 'service')
+    ]
+    unity_type = models.IntegerField(choices=PACK_TYPE_UNITY, default=1, help_text="Type unity") #0--product, 1--service, 2--pack (combo)
 
     class Meta:
         db_table = "services_packs"
@@ -144,6 +156,62 @@ class BranchPack(models.Model):
         ]
 
 
+#Inventory 
+class Inventory(models.Model):
+    id = models.BigAutoField(primary_key=True)
+
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    pack = models.ForeignKey(Pack, on_delete=models.CASCADE)
+
+    stock = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    min_stock = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    last_update = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("branch", "pack")
+
+class PackItem(models.Model):
+    id = models.BigAutoField(primary_key=True)
+
+    pack = models.ForeignKey(
+        Pack,
+        on_delete=models.CASCADE,
+        related_name="items"
+    )
+
+    product = models.ForeignKey(
+        Pack,
+        on_delete=models.CASCADE,
+        related_name="used_in"
+    )
+
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1)
+
+    class Meta:
+        db_table = "pack_items"
+
+class HistoryInventory(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    pack = models.ForeignKey(Pack, on_delete=models.CASCADE, related_name="pack_to_update")
+
+    old_stock=models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    new_stock=models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    PACK_TYPE_UNITY = [
+        ('liter', 'liter'),
+        ('pza', 'pza'),
+        ('metro', 'metro'),
+        ('box', 'box'),
+        ('kilogram', 'kilogram'),
+        ('service', 'service')
+    ]
+    unity_type = models.IntegerField(choices=PACK_TYPE_UNITY, default=1, help_text="Type unity")
+
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,null=True, blank=True,) #the user that update the inventory
+    update_date = models.DateTimeField(auto_now_add=True) #when the user update the inventory
 # -------------------------------------------------
 # Relación Pack <-> Tax
 # -------------------------------------------------

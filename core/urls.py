@@ -22,8 +22,17 @@ urlpatterns = [
     path('singup/', views.register, name='singup'),
     path('whatsapp/webhook/', setting_views.whatsapp_callback, name='whatsapp_webhook'), #this is for whatsapp webhook
     path('terms_and_conditions/', views.terms_and_conditions, name='terms_and_conditions'),
+    path(
+        'change-branch/',
+        views.change_branch,
+        name='change_branch'
+    ),
+    path(
+        'create-branch/',
+        views.create_branch,
+        name='create_branch'
+    ),
 
-    
     #---------------------restart web-------------------
     path('login/reset_password/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('login/reset_password_sent/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),

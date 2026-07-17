@@ -1,0 +1,193 @@
+<style>
+    .storage-wrapper {
+        display: flex;
+        justify-content: center;
+        width: 320px; 
+        padding: 8px;
+    }
+
+    .storage-card {
+        width: 100%;
+        padding: 12px 16px;
+    }
+
+    .storage-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #666;
+    }
+
+    .storage-icon {
+        font-size: 18px;
+        color: var(--primary, #2196f3);
+    }
+
+    .storage-amount {
+        font-size: 13px;
+        font-weight: 600;
+        color: #666;
+    }
+
+    .storage-total {
+        font-size: 11px;
+        color: #666;
+        margin-left: 4px;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 4px; 
+        background: #222;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: #2196f3;
+        transition: width .8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .storage-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 6px;
+    }
+
+    #percentText {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    /* === STATUS OF THE SPACE === */
+    .storage-ok .progress-fill { background: #2196f3; }
+    .storage-ok #percentText { color: #2196f3; }
+
+    .storage-warning .progress-fill { background: #ff9800; }
+    .storage-warning #percentText { color: #ff9800; }
+
+    .storage-danger .progress-fill { background: #f44336; }
+    .storage-danger #percentText { color: #f44336; }
+
+    /* Animate of load */
+    .storage-card.loading { opacity: 0.6; pointer-events: none; }
+    .storage-card.loading .progress-fill {
+        width: 40% !important;
+        animation: pulse-loading 1.5s infinite ease-in-out;
+    }
+    @keyframes pulse-loading {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(250%); }
+    }
+</style>
+
+<div class="storage-wrapper">
+    <div class="storage-card loading" id="storage" data-used="{{ dataUsed }}" data-max="{{ dataMax }}">
+
+        <div class="storage-header">
+            <div class="storage-icon">☁</div>
+            <span t="files.title.storage"></span>
+        </div>
+
+        <div class="storage-main">
+            <div>
+                <div class="storage-amount" id="usedText">0 MB</div>
+                <div class="storage-total" id="maxText">0 GB</div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+
+        <div class="storage-footer">
+            <span id="percentText">0%</span>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    (async ()=>{
+        //this function is for show the form success the information of the GB of the user 
+        function formatSize(mb) {
+            if (mb >= 1024 * 1024) return (mb / (1024 * 1024)).toFixed(2) + ' TB';
+            if (mb >= 1024) return (mb / 1024).toFixed(2) + ' GB';
+            return mb.toFixed(2) + ' MB';
+        }
+
+        function render_storage(dataUsed, dataMax){
+            //convert the information to number
+            const used = parseFloat(dataUsed);
+            const max = parseFloat(dataMax);
+            const storage = document.getElementById('storage');
+
+            //delete the load bar 
+            storage.classList.remove('loading');
+
+            //update all the information of the UI in the load bar 
+            const percent = Math.min((used / max) * 100, 100);
+            const textUse = window.translate_text('files.title.used')
+            document.getElementById('usedText').textContent =
+                `${used} GB ${textUse}`;
+
+            document.getElementById('maxText').textContent =
+                `${max} GB`;
+
+            document.getElementById('percentText').textContent =
+                `${percent.toFixed(1)}% ${textUse}`;
+
+            document.getElementById('progress').style.width = percent + '%';
+
+            //add the status 
+            storage.classList.remove('storage-ok', 'storage-warning', 'storage-danger');
+            if (percent < 60) {
+                storage.classList.add('storage-ok');
+            } else if (percent < 85) {
+                storage.classList.add('storage-warning');
+            } else {
+                storage.classList.add('storage-danger');
+            }
+        }
+
+        function save_storage_with_expiry(data) {
+            const now = new Date();
+            const item = {
+                answer: data,
+                expiry: now.getTime() + (5 * 60 * 1000), //this variable are save for 5 minutes
+            };
+            localStorage.setItem('user_storage', JSON.stringify(item));
+        }
+
+        //first we will to see if the user have the information in this web for avoid send very requests to the server
+        const cachedData = localStorage.getItem('user_storage');
+        if (cachedData) {
+            //get the data old for after show in the screen 
+            const data=JSON.parse(cachedData);
+            const answer=data.answer;
+            render_storage(answer.dataUsed, answer.dataMax);
+            return;
+        }
+
+        //else, if not exist in memory the information we will to get the data of the server 
+        const backend=await send_message_to_the_server(`/files/get_settings_storge/`, {}, false, 'POST')
+        if(backend.success){
+            //get the answer of the server and update the information in screen about the storage of the user
+            const answer=backend.answer;
+            save_storage_with_expiry(answer); //save this data in the memory of the web
+            render_storage(answer.dataUsed, answer.dataMax); //render the information
+        }
+    })();
+</script>

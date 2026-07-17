@@ -29,7 +29,7 @@ let translateOld={};
 let lastUrl=''; //here we will save the last loaded URL for avoid loading the same URL again
 let numberLanguageLoad=0;
 let allTheDictionary=[];
-const MAX_DICTIONARIES = 5;
+const MAX_DICTIONARIES = 20;
 
 //here we will see if exist in memory the dictionary that the user can save
 const storedDict = localStorage.getItem('allTheDictionary');
@@ -73,7 +73,7 @@ async function load_language(langUrl, first=true) {
     //return;
   }
 
-  const MAX_DICTIONARIES = 8;
+  const MAX_DICTIONARIES = 20;
 
   //we will see if already exist the dictionary in the memory not coming back to load the dictionary
   //and translate the web 

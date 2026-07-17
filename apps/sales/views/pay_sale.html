@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen de Cuenta | {{ sale.reference }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="{% static 'img/favicon.ico' %}?v=1.1" type="image/x-icon">
+    <style>
+        :root {
+            /* Palette: Tu Identidad Corporativa */
+            --primary-light: #4388C6;
+            --primary: #2b6cb0;
+            --secondary: #1C74C2;
+            --primary-dark: #064985;
+            
+            --accent: #10b981;
+            --bg-body: #f4f7fa;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-subtle: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+            --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Branding Header */
+        .header-branding {
+            background: white;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 40px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container img {
+            max-height: 64px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        }
+
+        /* Main Layout */
+        .checkout-wrapper {
+            max-width: 1200px;
+            margin: 0 auto 80px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 40px;
+            padding: 0 25px;
+        }
+
+        @media (max-width: 992px) {
+            .checkout-wrapper { grid-template-columns: 1fr; }
+            .summary-card { position: relative !important; top: 0 !important; }
+        }
+
+        /* Card Elegance */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 35px;
+            border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+        }
+
+        .card-body { padding: 35px; }
+
+        /* Badges Refined */
+        .badge-status {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-pending { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
+        .status-accepted { background: #eff6ff; color: var(--primary); border: 1px solid #dbeafe; }
+        .status-paid { background: #ecfdf5; color: #065f46; border: 1px solid #d1fae5; }
+        .status-cancelled { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+
+        /* Modern Table */
+        .dental-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .dental-table th {
+            text-align: left;
+            padding: 15px 10px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--bg-body);
+        }
+
+        .dental-table td {
+            padding: 20px 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .item-name { font-weight: 600; color: var(--text-main); font-size: 1rem; }
+        .item-sub { font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 2px; }
+
+        /* Sidebar Summary */
+        .summary-card {
+            position: sticky;
+            top: 40px;
+            border: none;
+            box-shadow: var(--shadow-premium);
+        }
+
+        .summary-header {
+            background: var(--primary-dark);
+            color: white;
+            padding: 35px 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .summary-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 4px;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .summary-body { padding: 30px; }
+
+        .price-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .price-line.total {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* NEW: Bank Info Box */
+        .bank-info-box {
+            background: #f8fafc;
+            border: 1px dashed var(--primary-light);
+            padding: 18px;
+            border-radius: var(--radius-md);
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        .bank-info-box strong {
+            display: block;
+            color: var(--primary);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        /* Action Button */
+        .btn-checkout {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(43, 108, 176, 0.2);
+        }
+
+        .btn-checkout:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(43, 108, 176, 0.3);
+        }
+
+        .btn-checkout:active { transform: translateY(0); }
+
+        /* Trust Signals */
+        .trust-footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .payment-icons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            font-size: 1.5rem;
+            opacity: 0.4;
+        }
+
+        /* Footer */
+        .footer-branding {
+            text-align: center;
+            margin-top: 80px;
+            padding: 40px 0;
+            background: white;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .footer-branding a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-branding">
+        <div class="header-content">
+            <div class="logo-container">
+                {% if sale.logo_url %}
+                    <img src="{{ sale.logo_url }}" alt="Logo Clínica">
+                {% else %}
+                    <div style="font-weight: 800; color: var(--primary); font-size: 1.6rem; letter-spacing: -0.5px;">
+                        <i class="fas fa-tooth" style="color: var(--primary-light);"></i> DENTY<span style="color: var(--text-main); font-weight: 300;">CLOUD</span>
+                    </div>
+                {% endif %}
+            </div>
+            <div style="text-align: right; border-left: 3px solid var(--primary-light); padding-left: 15px;">
+                <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">{{ sale.branch_name }}</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Centro Odontológico</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="checkout-wrapper">
+        
+        <!-- Left Column: Details -->
+        <div class="card">
+            <div class="card-header">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+                    <div>
+                        <span class="badge-status status-{{ sale.status }}">
+                            <i class="fas fa-circle" style="font-size: 0.5rem;"></i> {{ sale.status }}
+                        </span>
+                        <h1 style="margin: 15px 0 5px 0; font-size: 1.8rem; font-weight: 800; color: var(--primary-dark);">Resumen de Tratamiento</h1>
+                        <p style="margin: 0; color: var(--text-muted); font-size: 0.95rem;">Referencia de seguimiento: <span style="color: var(--text-main); font-weight: 600;">#{{ sale.reference }}</span></p>
+                    </div>
+                    <div style="text-align: right; background: var(--bg-body); padding: 15px 20px; border-radius: var(--radius-md);">
+                        <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Paciente</p>
+                        <p style="margin: 0; font-weight: 700; color: var(--primary-dark); font-size: 1.1rem;">{{ sale.customer_name }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <table class="dental-table">
+                    <thead>
+                        <tr>
+                            <th>Descripción del Servicio</th>
+                            <th style="text-align: center;">Cant.</th>
+                            <th style="text-align: right;">Precio Unit.</th>
+                            <th style="text-align: right;">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in sale.items %}
+                        <tr>
+                            <td>
+                                <span class="item-name">{{ item.name }}</span>
+                                <span class="item-sub">Servicio Odontológico Especializado</span>
+                            </td>
+                            <td style="text-align: center; font-weight: 500;">{{ item.quantity|floatformat:0 }}</td>
+                            <td style="text-align: right; color: var(--text-muted);">${{ item.unit_price|floatformat:2 }}</td>
+                            <td style="text-align: right; font-weight: 700; color: var(--text-main);">${{ item.total|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Right Column: Payment Summary -->
+        <aside>
+            <div class="card summary-card">
+                <div class="summary-header">
+                    <p style="margin: 0; font-size: 0.85rem; text-transform: uppercase; font-weight: 600; opacity: 0.9; letter-spacing: 1px;">Monto Total</p>
+                    <h2 style="margin: 5px 0 0 0; font-size: 2.5rem; font-weight: 800;">${{ sale.total|floatformat:2 }} <span style="font-size: 1rem; font-weight: 400;">{{ sale.currency }}</span></h2>
+                </div>
+                
+                <div class="summary-body">
+                    <div class="price-line">
+                        <span style="color: var(--text-muted);">Subtotal bruto</span>
+                        <span style="font-weight: 500;">${{ sale.subtotal|floatformat:2 }}</span>
+                    </div>
+                    <div class="price-line">
+                        <span style="color: var(--text-muted);">IVA / Impuestos</span>
+                        <span style="font-weight: 500;">${{ sale.tax_total|floatformat:2 }}</span>
+                    </div>
+                    
+                    {% if sale.discount_total > 0 %}
+                    <div class="price-line" style="color: var(--accent); font-weight: 600;">
+                        <span>Descuento aplicado</span>
+                        <span>-${{ sale.discount_total|floatformat:2 }}</span>
+                    </div>
+                    {% endif %}
+
+                    <div class="price-line total">
+                        <span>Total Neto</span>
+                        <span>${{ sale.total|floatformat:2 }}</span>
+                    </div>
+
+                    {% if sale.amount_paid > 0 %}
+                    <div style="margin-top: 20px; padding: 15px; background: #f0fdf4; border-radius: var(--radius-sm); border: 1px solid #dcfce7;">
+                        <div class="price-line" style="margin-bottom: 5px; font-size: 0.85rem;">
+                            <span style="color: #166534;">Total Abonado</span>
+                            <span style="font-weight: 700; color: #166534;">${{ sale.amount_paid|floatformat:2 }}</span>
+                        </div>
+                        <div class="price-line" style="margin-bottom: 0; font-weight: 700; color: #1e293b;">
+                            <span>Saldo Restante</span>
+                            <span style="color: #b91c1c;">${{ sale.balance|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- INFO DE PAGO SECCIÓN -->
+                    <div class="bank-info-box">
+                        <strong><i class="fas fa-university"></i> Información de pago</strong>
+                        {% if sale.data_bank.bank_account %}
+                            <div style="margin-bottom: 4px;">{{ sale.data_bank.bank_name }}</div>
+                            <div style="font-family: monospace; font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; color: var(--primary-dark);">{{ sale.data_bank.bank_account }}</div>
+                        {% else %}
+                            <span style="color: var(--text-muted); font-style: italic;">No hay información bancaria disponible.</span>
+                        {% endif %}
+                    </div>
+                    <!---
+                    <button class="btn-checkout" onclick="processPayment()">
+                        <i class="fas fa-lock"></i> PAGAR AHORA
+                    </button>
+                    --->
+
+                    <div class="trust-footer">
+                        <p><i class="fas fa-shield-alt" style="color: var(--accent);"></i> Transacción segura y protegida</p>
+                        <div class="payment-icons">
+                            <i class="fab fa-cc-visa"></i>
+                            <i class="fab fa-cc-mastercard"></i>
+                            <i class="fab fa-cc-amex"></i>
+                            <i class="fab fa-apple-pay"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+
+    <footer class="footer-branding">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 25px;">
+            <p style="margin-bottom: 10px;">&copy; 2026 <strong>{{ sale.branch_name }}</strong>. Todos los derechos reservados.</p>
+            <p style="opacity: 0.7;">Este es un documento oficial de cobro. Ante cualquier duda, contacte a su clínica.</p>
+            <p style="margin-top: 20px; font-size: 0.75rem;">Powered by <a href="https://denty.cloud" target="_blank" style="text-decoration: underline;">denty.cloud</a> Software Dental</p>
+        </div>
+    </footer>
+
+    <script>
+        function processPayment() {
+            const btn = document.querySelector('.btn-checkout');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESANDO...';
+            btn.style.opacity = '0.7';
+            btn.style.pointerEvents = 'none';
+            
+            console.log("Iniciando pasarela para Venta ID: {{ sale.id }}");
+            // Aquí iría tu lógica de Stripe / MercadoPago / etc.
+        }
+    </script>
+</body>
+</html>

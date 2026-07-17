@@ -33,21 +33,37 @@
     }
 }
 
+list-button {
+    display: block;
+    margin-top: 6px; /* ajusta el valor */
+}
 </style>
 {% include 'services/partials/navbar.html' %}
+
 <input type="hidden" id="pageServices">
 <div class="container-section">
     <div class="row">
-        <div class="col-8">
+        <plus-help-video 
+            videos='[
+            {"title":"¿Cómo Agregar Nuevos Servicios en tu Clínica Dental?","url":"https://www.youtube.com/embed/9RUcr4Q0ZVY?si=UKBW8Hfw95qGjv1V"},
+            {"title":"¿Cómo Descontar Insumos Automáticamente?" , "url":"https://youtu.be/XpUcJJMEsJU"}
+            ]'>
+        </plus-help-video>
+    </div>
+    <div class="row">
+        <div class="col-5">
             
         </div>
-        <div class="col-4 p-3">
+        <div class="col-6 p-3">
             <plus-search input_id="search-services">
                 <search-option>
                     <button class="btn btn-transparent" onclick="open_pop_services_delete()"><i class="fi fi-ss-trash-restore-alt"></i></button>
                 </search-option>
                 <search-option>
-                    <button class="btn btn-add" onclick="open_pop_speed()">+</button>
+                    <list-button class="mt-custom">
+                        <button onclick="open_type_pop_speed(0)" t="services.label.add-new-product"></button>
+                        <button onclick="open_type_pop_speed(1)" t="services.label.add-new-services"></button>
+                    </list-button>
                 </search-option>
             </plus-search>
         </div>
@@ -134,8 +150,12 @@
                 const name = this.getAttribute('name') || '';
                 const description = this.getAttribute('description') || '';
                 const category = this.getAttribute('category') || '';
-                const price = this.getAttribute('price') || '0.00';
-                const oldPrice = this.getAttribute('base_price') || '0.00';
+                const priceA = this.getAttribute('price') || '0.00';
+                const oldPriceA = this.getAttribute('base_price') || '0.00';
+
+                const price = window.format_currency(priceA, window.get_currency_system(), false, false);
+                const oldPrice = window.format_currency(oldPriceA, window.get_currency_system(), false, false);
+
                 const skus=this.getAttribute('skus') || {};
                 const department=this.getAttribute('department') || '';
 
@@ -301,7 +321,12 @@
             'listServices',
             get_struct_div(),
             '/services/search_pack/1/',
-            'GET'
+            'GET',
+            window.STATIC_URLS.emptyServuices
         );
     })();
 </script>
+
+
+
+

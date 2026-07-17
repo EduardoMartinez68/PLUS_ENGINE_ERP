@@ -6,6 +6,12 @@ from django.http import JsonResponse
 def services_home(request):
     return render(request, 'services/home.html')
 
+def view_combo(request, id_pack):
+    context = {
+        'id_pack': id_pack,
+    }
+    return render(request, 'services/view_combo.html', context)
+
 #------------------------------------------------------------------SERVICES----------------------------------------------
 from apps.services.services.Pack import PackService
 def search_pack(request, activate):
@@ -19,8 +25,11 @@ def search_pack(request, activate):
         key = data[0] if len(data) > 0 else ""
         page = request.GET.get("page", 1)
         amountOfData = request.GET.get("amountOfData", 20)
+        status=None
+        if request.GET.get('status'):
+            status= Plus.to_bool(request.GET.get('status'))
 
-        result = PackService.search(request.user, key, page, Plus.to_bool(activate), amountOfData)
+        result = PackService.search(request.user, key, page, Plus.to_bool(activate), amountOfData, status)
 
         return JsonResponse({
             "success": result.get('success', False),
@@ -72,7 +81,30 @@ def update_services(request):
         try:
             data = json.loads(request.body)
             can_update_prices=Plus.this_user_have_this_permission(request.user, 'update_product_price')
-            result = PackService.update(request.user, data, can_update_prices)
+            can_update_inventory=Plus.this_user_have_this_permission(request.user, 'update_inventory')
+            result = PackService.update(request.user, data, can_update_prices, can_update_inventory)
+            return JsonResponse({
+                "success": result.get('success',False),
+                "message": result.get('message',''),
+                "error": result.get('error','')
+            }, status=200) 
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "success": False,
+                "message": "message.invalid-json",
+                "error": "Invalid JSON"
+            }, status=400)
+        
+def update_item_pack(request, services_id):
+    if request.method == "POST":
+        if not Plus.this_user_have_this_permission(request.user, 'update_products'):
+            return JsonResponse(
+                {"success": False, "answer": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+                status=200
+            )
+        try:
+            data = json.loads(request.body)
+            result = PackService.update_item_pack(request.user, services_id,data)
             return JsonResponse({
                 "success": result.get('success',False),
                 "message": result.get('message',''),

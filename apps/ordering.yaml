@@ -1,13 +1,15 @@
 app_order:
-  - dashboard
-  - pos
   - sales
+  - move_box
   - services
-  
+  - inventory
+
   - customers
+  - files
 
   - employees
   - departament_employee
+  - reports
 
   - rolesAndPermissions
   - setting

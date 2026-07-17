@@ -1,159 +1,6 @@
 <style>
-    /* Reset de impresión y base */
-    .print-document {
-        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        padding: 50px;
-        color: #2d3748;
-        background: white;
-        line-height: 1.5;
-    }
-
-    /* Header Estilo Moderno */
-    .doc-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 40px;
-    }
-
-    .clinic-logo-placeholder {
-        border-left: 4px solid #1a365d;
-        padding-left: 15px;
-    }
-
-    .clinic-info h1 {
-        margin: 0;
-        font-size: 24px;
-        letter-spacing: -0.5px;
-        color: #1a365d;
-        text-transform: uppercase;
-    }
-
-    .clinic-info p {
-        margin: 2px 0;
-        font-size: 13px;
-        color: #718096;
-    }
-
-    .doc-title {
-        text-align: right;
-    }
-
-    .doc-title h2 {
-        margin: 0;
-        font-size: 28px;
-        font-weight: 300;
-        color: #1a365d;
-        letter-spacing: 2px;
-    }
-
-    .meta-data {
-        margin-top: 10px;
-        font-size: 13px;
-    }
-
-    /* Información del Paciente */
-    .patient-card {
-        background: #f8fafc;
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 30px;
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .patient-card div b {
-        display: block;
-        text-transform: uppercase;
-        font-size: 11px;
-        color: #4a5568;
-        margin-bottom: 4px;
-    }
-
-    /* Tabla Elegante */
-    .doc-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-
-    .doc-table th {
-        border-bottom: 2px solid #1a365d;
-        color: #1a365d;
-        text-transform: uppercase;
-        font-size: 12px;
-        letter-spacing: 1px;
-        padding: 12px 10px;
-        text-align: left;
-    }
-
-    .doc-table td {
-        padding: 15px 10px;
-        border-bottom: 1px solid #edf2f7;
-        font-size: 14px;
-    }
-
-    /* Resumen y Totales */
-    .summary-container {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 30px;
-    }
-
-    .payment-methods {
-        width: 50%;
-        font-size: 12px;
-    }
-
-    .payment-methods h4 {
-        margin-bottom: 10px;
-        color: #1a365d;
-        text-transform: uppercase;
-        font-size: 11px;
-    }
-
-    .totals-table {
-        width: 35%;
-    }
-
-    .total-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-    }
-
-    .total-row.grand-total {
-        border-top: 2px solid #1a365d;
-        margin-top: 10px;
-        padding-top: 15px;
-        font-size: 18px;
-        font-weight: bold;
-        color: #1a365d;
-    }
-
-    /* Firmas y Validez */
-    .signatures {
-        margin-top: 60px;
-        display: flex;
-        justify-content: space-around;
-        text-align: center;
-        font-size: 12px;
-    }
-
-    .sig-line {
-        border-top: 1px solid #cbd5e0;
-        width: 200px;
-        padding-top: 10px;
-    }
-
-    .terms {
-        margin-top: 50px;
-        padding-top: 20px;
-        border-top: 1px dashed #cbd5e0;
-        font-size: 11px;
-        color: #a0aec0;
-        text-align: center;
-    }
+    /* Google Fonts para un toque más profesional */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 
     @media print {
         body * {
@@ -182,6 +29,27 @@
         display: none;
     }
 
+    .cancel-watermark {
+        position: absolute;
+        top: 80%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        font-size: 120px;
+        font-weight: 800;
+        color: red;
+        opacity: 0.15;
+        pointer-events: none;
+        text-transform: uppercase;
+        letter-spacing: 10px;
+        white-space: nowrap;
+        z-index: 9999;
+        display: none;
+    }
+
+    .print-cancelled .cancel-watermark {
+        display: block;
+    }
+
     @media print {
 
         body * {
@@ -202,93 +70,312 @@
         }
     }
 
+    .print-document {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        padding: 40px;
+        color: #1e293b;
+        background: white;
+        line-height: 1.6;
+        max-width: 850px;
+        margin: auto;
+    }
+
+    /* Header con acento de color refinado */
+    .doc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 50px;
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 30px;
+    }
+
+    .clinic-info h1 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+        color: #0f172a;
+        letter-spacing: -0.025em;
+    }
+
+    .clinic-info p {
+        margin: 2px 0;
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    .doc-title {
+        text-align: right;
+    }
+
+    .doc-title h2 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 300;
+        color: #334155;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+    }
+
+    .meta-data {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #94a3b8;
+    }
+
+    /* Tarjeta de Paciente Minimalista */
+    .patient-card {
+        background: #f8fafc;
+        padding: 12px;
+        margin-bottom: 20px;
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+    }
+
+    .patient-label {
+        text-transform: uppercase;
+        font-size: 10px;
+        font-weight: 700;
+        color: #64748b;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .patient-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    /* Tabla de Servicios Estilo Boutique */
+    .doc-table {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        margin-top: 20px;
+        border: none;
+        box-shadow: none;
+    }
+
+    .doc-table th {
+        background-color: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        color: #475569;
+        text-transform: uppercase;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        padding: 16px 12px;
+        text-align: left;
+    }
+
+    .doc-table td {
+        padding: 18px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 13px;
+    }
+
+    .doc-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Sección de Totales */
+    .summary-container {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 40px;
+        margin-top: 40px;
+        padding-top: 20px;
+    }
+
+    .payment-methods {
+        border-radius: 8px;
+        padding: 20px;
+        background: #ffffff;
+        border: 1px dashed #bec1c7;
+    }
+
+    .payment-methods h4 {
+        margin-top: 0;
+        color: #334155;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+
+    .total-row-table {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        font-size: 14px;
+    }
+
+    .grand-total-print {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 2px solid #0f172a;
+        font-size: 20px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    /* Firma y Footer */
+    .signatures {
+        margin-top: 80px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 100px;
+        text-align: center;
+    }
+
+    .sig-line {
+        border-top: 1px solid #cbd5e0;
+        padding-top: 12px;
+        font-size: 11px;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Watermark Mejorada */
+    .cancel-watermark {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-15deg);
+        font-size: 100px;
+        font-weight: 900;
+        color: #ef4444;
+        opacity: 0.08;
+        border: 15px solid #ef4444;
+        padding: 20px 60px;
+        border-radius: 20px;
+        pointer-events: none;
+        z-index: 0;
+        display: none;
+    }
+
+    .print-cancelled .cancel-watermark {
+        display: block;
+    }
+
+    /* Footer "Power by" mejorado */
+    .brand-footer {
+        margin-top: 60px;
+        text-align: center;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 20px;
+    }
+
+    .brand-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+        font-size: 11px;
+        color: #94a3b8;
+        transition: color 0.2s;
+    }
+
+    .brand-link strong {
+        color: #64748b;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    @media print {
+        .print-document {
+            padding: 20px;
+        }
+
+        body {
+            background: white;
+        }
+    }
 
 
+    #print-reference {
+        font-size: 12px;
+        color: var(--primary);
+    }
 
+    .link-denty-cloud {
+        color: var(--primary);
+    }
 
+    .doc-title h2 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 300;
+        color: #1a365d;
+        letter-spacing: 2px;
+        font-weight: bold;
+    }
 
+/* Firma y Footer */
+    .signatures {
+        margin-top: 80px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 100px;
+        text-align: center;
+    }
 
+    .sig-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
+    .sig-line {
+        width: 100%;
+        border-top: 1px solid #cbd5e0;
+        padding-top: 12px;
+        font-size: 11px;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
 
-
-
-
-
-
-.cancel-watermark {
-    position: absolute;
-    top: 80%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-45deg);
-    font-size: 120px;
-    font-weight: 800;
-    color: red;
-    opacity: 0.15;
-    pointer-events: none;
-    text-transform: uppercase;
-    letter-spacing: 10px;
-    white-space: nowrap;
-    z-index: 9999;
-    display: none;
-}
-
-.print-cancelled .cancel-watermark {
-    display: block;
-}
+    .sig-name {
+        margin-top: 5px;
+        font-size: 13px;
+        color: #0f172a;
+        font-weight: 500;
+    }
 </style>
 
-<div id="printArea" class="print-document print-cancelled">
-    <div class="cancel-watermark">
-       <h1 id="legend_print_buy">CANCELADA</h1>
-    </div>
+
+
+
+
+
+<div id="printArea" class="print-document">
+    <div class="cancel-watermark">CANCELADA</div>
 
     <div class="doc-header">
         {% with branch=request.user.branch company=request.user.company %}
-        <div class="clinic-logo-placeholder" style="display:flex; align-items:center; gap:15px;">
-
-            <!-- Logo -->
+        <div style="display:flex; align-items:center; gap:20px;">
             {% if company.logo %}
-                <img src="{{ company.logo.url }}" alt="Logo" style="height:70px; width:auto;">
+            <img src="{{ company.logo.url }}" alt="Logo" style="height:65px; width:auto; filter: grayscale(20%);">
             {% endif %}
 
             <div class="clinic-info">
-                <!-- Nombre de la clínica -->
-                <h1 style="margin:0;">
-                    {% if branch.name_branch %}
-                        {{ branch.name_branch }}
-                    {% else %}
-                        {{ company.company_name }}
-                    {% endif %}
+                <h1>{% if branch.name_branch %}{{ branch.name_branch }}{% else %}{{ company.company_name }}{% endif %}
                 </h1>
-
-                <!-- Responsable -->
-                <p style="margin:2px 0;">
-                    {% if branch.name_of_the_person_in_charge %}
-                        {{ branch.name_of_the_person_in_charge }}
-                    {% else %}
-                        {{ company.name_of_the_person_in_charge }}
-                    {% endif %}
-                </p>
-
-                <!-- Teléfono / Celular -->
-                <p style="margin:2px 0;">
-                    {% if branch.phone %}📞 {{ branch.phone }}{% elif company.phone %}📞 {{ company.phone }}{% endif %}
+                <p>{% if branch.name_of_the_person_in_charge %}{{ branch.name_of_the_person_in_charge }}{% else
+                    %}{{company.name_of_the_person_in_charge }}{% endif %}</p>
+                <p>
+                    {% if branch.phone %}<span>telefono. {{ branch.phone }}</span>{% elif company.phone
+                    %}<span>telefono. {{company.phone }}</span>{% endif %}
                     {% if branch.cellphone %}
-                        | 📱 {{ branch.cellphone }}
+                    | <span>celular. {{ branch.cellphone }} </span>
                     {% elif company.cellphone %}
-                        | 📱 {{ company.cellphone }}
+                    | <span>celular. {{ company.cellphone }}</span>
                     {% endif %}
                 </p>
-
-                <!-- Email -->
-                <p style="margin:2px 0;">
-                    ✉️ 
-                    {% if branch.email_branch %}
-                        {{ branch.email_branch }}
-                    {% else %}
-                        {{ company.support_email }}
-                    {% endif %}
-                </p>
+                <p>{{ branch.email_branch|default:company.support_email }}</p>
             </div>
         </div>
         {% endwith %}
@@ -296,30 +383,30 @@
         <div class="doc-title">
             <h2 id="text_status_print_buy">COTIZACIÓN</h2>
             <div class="meta-data">
-                <p>Ref: <strong id="print-reference">#2024-001</strong></p>
-                <p>Emisión: <span id="print-date">15 Oct, 2024</span></p>
+                <p>REFERENCIA <strong id="print-reference">#2024-001</strong></p>
+                <p>FECHA DE EMISIÓN <span id="print-date">15 Oct, 2024</span></p>
             </div>
         </div>
     </div>
 
     <div class="patient-card">
         <div>
-            <b>Paciente</b>
-            <span id="print-customer" style="font-size: 16px;">Cargando nombre...</span>
+            <span class="patient-label">Paciente</span>
+            <span id="print-customer" class="patient-value">Cargando datos...</span>
         </div>
         <div style="text-align: right;">
-            <b>Validez</b>
-            <span id="textInformationDay">7 días naturales</span>
+            <span class="patient-label">Validez de Oferta</span>
+            <span id="textInformationDay" class="patient-value" style="font-size:14px;">7 días naturales</span>
         </div>
     </div>
 
     <table class="doc-table">
         <thead>
             <tr>
-                <th style="width: 50%;">Descripción del Servicio</th>
+                <th style="width: 45%;">Servicio / Tratamiento</th>
                 <th style="text-align: center;">Cant.</th>
                 <th style="text-align: right;">P. Unitario</th>
-                <th style="text-align: right;">Descuento</th>
+                <th style="text-align: right;">Desc.</th>
                 <th style="text-align: right;">Impuestos</th>
                 <th style="text-align: right;">Subtotal</th>
             </tr>
@@ -330,73 +417,67 @@
 
     <div class="summary-container">
         <div class="payment-methods">
-            <h4>Información de Pago</h4>
-            {% if request.user.branch.bank_name %}
-                <p>
-                    <strong>{{ request.user.branch.bank_name }}:</strong> 
-                    {{ request.user.branch.bank_account }}
-                </p>
+            <h4>Instrucciones de Pago</h4>
+            <p style="font-size: 13px; color: #475569; margin: 5px 0;">
+                {% if request.user.branch.bank_name %}
+            <p>
+                <strong>{{ request.user.branch.bank_name }}:</strong><br>
+                {{ request.user.branch.bank_account }}
+            </p>
             {% elif request.user.company.bank_name %}
-                <p>
-                    <strong>{{ request.user.company.bank_name }}:</strong> 
-                    {{ request.user.company.bank_account }}
-                </p>
+            <p>
+                <strong>{{ request.user.company.bank_name }}:</strong><br>
+                {{ request.user.company.bank_account }}
+            </p>
             {% else %}
-                <p>No hay información bancaria disponible.</p>
+            <p>Consulte métodos de pago disponibles en recepción.</p>
             {% endif %}
-
-            <p style="margin-top: 10px; color: #718096;">
-                * Aceptamos tarjetas de crédito y transferencias bancarias.
+            </p>
+            <p style="margin-top: 12px; font-size: 11px; color: #94a3b8; font-style: italic;">
+                * Los precios pueden variar según hallazgos clínicos adicionales durante el tratamiento.
             </p>
         </div>
 
         <div class="totals-table">
             <div class="total-row">
-                <span>Subtotal:</span>
-                <span>$850.00</span>
+                <span style="color: #64748b;">Subtotal</span>
+                <span id="subtotalprint">$0.00</span>
             </div>
-            <div class="total-row">
-                <span>Impuestos:</span>
+            <div class="total-row-table">
+                <span style="color: #64748b;">Impuestos</span>
                 <span id="print-taxes">$0.00</span>
             </div>
-            <div class="total-row grand-total">
-                <span>Total:</span>
+            <div class="total-row-table grand-total-print">
+                <span>Total</span>
                 <span id="print-grand-total">$850.00</span>
             </div>
         </div>
     </div>
 
     <div class="signatures">
-        <div class="sig-line">
-            Firma del Especialista
+        <div class="sig-container">
+            <div class="sig-line">Dr(a). Especialista Responsable</div>
+            <div id="nameUserSale" class="sig-name"></div>
         </div>
-        <div class="sig-line">
-            Aceptación del Paciente
+        <div class="sig-container">
+            <div class="sig-line">Firma de Conformidad Paciente</div>
+            <div id="nameCustomerSale" class="sig-name"></div>
         </div>
     </div>
 
-    {% with branch=request.user.branch company=request.user.company %}
-    <div class="terms" style="margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 10px; font-size: 13px; color: #4a5568;">
-        
-        <p>
-            Esta cotización es informativa y puede modificarse según la evolución clínica del paciente.
-        </p>
-
-        <p>
+    <div class="brand-footer">
+        <p style="font-size: 11px; color: #94a3b8; margin-bottom: 15px;">
             {% if branch.address %}{{ branch.address }}{% elif company.address %}{{ company.address }}{% endif %}
             {% if branch.city %}, {{ branch.city }}{% elif company.city %}, {{ company.city }}{% endif %}
             {% if branch.state %}, {{ branch.state }}{% elif company.state %}, {{ company.state }}{% endif %}
             |
             {% if branch.website %}{{ branch.website }}{% elif company.website %}{{ company.website }}{% endif %}
         </p>
-
-        <p style="margin-top: 8px; font-size: 11px; color: #a0aec0; text-align: right;">
-            Powered by <strong>denty.cloud</strong>
-        </p>
-
+        <a href="https://www.denty.cloud" class="brand-link">
+            <span>Powered by</span>
+            <strong class="link-denty-cloud" style="color: #3367b1;">www.denty.cloud</strong>
+        </a>
     </div>
-    {% endwith %}
-
 </div>
 
 <script>
@@ -405,12 +486,13 @@
         tbody.innerHTML = "";
         let totalTaxesGlobal = 0;
         let grandTotal = 0;
+        let subTotal = 0;
         const currency = 'MXN';
-        console.log(data)
-        const payment_term_days=document.getElementById('payment_term_days');
-        let days=null;
-        if(payment_term_days){
-            days=payment_term_days.value;
+
+        const payment_term_days = document.getElementById('payment_term_days');
+        let days = null;
+        if (payment_term_days) {
+            days = payment_term_days.value;
         }
         document.getElementById('textInformationDay').textContent = (days ? `${days} días naturales` : 'Pago en una sola exhibición');
 
@@ -444,6 +526,7 @@
             // 5. Acumular globales
             totalTaxesGlobal += lineTaxesTotal;
             grandTotal += lineTotal;
+            subTotal += baseAfterDiscount;
 
             // 6. print the table
             tbody.innerHTML += `
@@ -462,9 +545,14 @@
         document.getElementById("print-reference").textContent = data.reference;
         document.getElementById("print-date").textContent = data.date;
         document.getElementById("print-customer").textContent = data.customer || window.translate_text('sales.no-customer');
-        document.getElementById("print-taxes").textContent = window.format_currency(totalTaxesGlobal,currency, false);
-        document.getElementById("print-grand-total").textContent = window.format_currency(grandTotal, currency, false);
 
+        document.getElementById("subtotalprint").textContent = window.format_currency(subTotal, currency, true);
+        document.getElementById("print-taxes").textContent = window.format_currency(totalTaxesGlobal, currency, true);
+        document.getElementById("print-grand-total").textContent = window.format_currency(grandTotal, currency, true);
+
+        //update the information of firma 
+        document.getElementById("nameUserSale").textContent = data?.user || '';
+        document.getElementById("nameCustomerSale").textContent = data?.customer || '';
         window.print();
     }
 </script>

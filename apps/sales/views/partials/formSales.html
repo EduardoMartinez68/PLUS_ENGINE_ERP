@@ -1,36 +1,414 @@
 <style>
-
-    item-sales {
-        position: relative;
-        z-index: 1;
+    :root {
+        --bg-light: #f0f2f5;
+        --border-color: #dee2e6;
+        --text-dark: #4c4c4c;
+        --white: #ffffff;
     }
 
-    item-sales:focus-within {
-        z-index: 100;
+    .plus-card {
+        background: var(--white);
+        max-width: 1300px;
+        margin: 0 auto;
+        border-radius: 4px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border-color);
+    }
+
+    /* Barra de herramientas superior */
+    .status-bar {
+        padding: 10px 20px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fdfdfd;
+    }
+
+    .breadcrumb {
+        color: var(--primary);
+        font-weight: 500;
+        font-size: 1.1rem;
+    }
+
+    /* Sección de inputs principales */
+    .sheet {
+        padding: 40px;
+    }
+
+    .main-title-input {
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid transparent;
+        font-size: 2rem;
+        font-weight: 500;
+        margin-bottom: 25px;
+        color: #212529;
+        outline: none;
+    }
+
+    .main-title-input:focus {
+        border-bottom: 1px solid var(--secondary);
+    }
+
+    .form-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 30px;
+    }
+
+    .group-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .group-row label {
+        width: 140px;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .group-row input,
+    .group-row select {
+        flex: 1;
+        border: 1px solid transparent;
+        border-bottom: 1px solid var(--border-color);
+        padding: 6px 4px;
+        font-size: 0.95rem;
+        outline: none;
+    }
+
+    .group-row input:focus,
+    .group-row select:focus {
+        border-bottom: 1px solid var(--border-color);
+        background-color: #f8f9fa;
+    }
+
+    /* Tabla de líneas de pedido */
+    .tab-header {
+        border-bottom: 2px solid var(--border-color);
+        display: inline-block;
+        padding: 10px 20px;
+        font-weight: 500;
+        color: var(--primary);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    th {
+        background-color: #f8f9fa;
+        text-align: left;
+        padding: 10px;
+        font-size: 0.85rem;
+        border-bottom: 1px solid var(--border-color);
+        color: #444;
+    }
+
+    td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .input-table {
+        border: none;
+        width: 100%;
+        padding: 5px;
+        outline: none;
+        font-size: 0.9rem;
+    }
+
+    .input-table:focus {
+        background: #f1f1f1;
+    }
+
+    /* Botón de acción principal */
+    .footer-actions {
+        padding: 20px 40px;
+        background: #fcfcfc;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 4px;
+        border: none;
+        font-weight: 500;
+        cursor: pointer;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+    }
+
+    .btn-primary:hover {
+        filter: brightness(1.1);
+    }
+
+    .btn-secondary {
+        background-color: white;
+        color: #4c4c4c;
+        padding: 8px 16px;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+        font-weight: 500;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+
+    .total-section {
+        float: right;
+        width: 500px;
+        margin-top: 20px;
+    }
+
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-top: 1px solid #eee;
+    }
+
+    .total-bold {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary);
+        border-top: 2px solid var(--primary);
     }
 
 
-    .container-sales {
-        margin: 2rem auto;
-        padding: 0 20px;
+    .section-header {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .reference-info {
+        font-size: 13px;
+        color: #64748b;
+    }
+
+    #reference {
+        background: #eff6ff;
+        color: var(--primary);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+
+
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .section-header {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .reference-info {
+        font-size: 13px;
+        color: #64748b;
+    }
+
+    #reference {
+        color: var(--primary);
+        font-weight: 500;
+    }
+
+    .table-header {
+        display: grid;
+        grid-template-columns: 40px 2.5fr 1fr 1fr 1fr 1fr 1.2fr 40px;
+        padding: 12px 10px;
+        background: #f9fafb;
+        border: none;
+        border-bottom: 1px solid #e5e7eb;
+        border-radius: 10px 10px 0 0;
+        color: #64748b;
+        font-size: 11px;
+        letter-spacing: .05em;
+    }
+
+    .scroll-container {
+        border: 1px solid #f1f5f9;
+        border-top: none;
+        border-radius: 0 0 10px 10px;
+        background: #fff;
+    }
+
+    .add-line-container {
+        border: none;
+        background: transparent;
+        padding: 12px 0;
     }
 
     .container-total {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 6px;
-        width: 100%;
-    }
-
-    .container-total p {
-        margin: 0;
+        font-size: 16px;
+        font-weight: 500;
     }
 
     #grandTotal {
-        font-weight: 600;
-        font-size: 18px;
+        font-size: 22px;
+        font-weight: 700;
+        color: #111827;
     }
+
+
+    .section {
+        margin-bottom: 24px;
+    }
+
+
+    .total-section {
+        float: right;
+        width: 500px;
+        margin-top: 20px;
+    }
+
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-top: 1px solid #eee;
+    }
+
+    .total-bold {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary);
+        border-top: 2px solid var(--primary);
+    }
+
+
+    /*---------------------------------------------*/
+    @media (min-width: 768px) and (max-width: 1024px) {
+        .container-sales {
+            min-height: 100vh;
+        }
+
+        #formSales {
+            overflow-y: auto;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .scroll-container {
+            overflow-y: auto;
+            height: 23vh;
+            max-height: 23vh;
+        }
+    }
+
+
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .table-header {
+        display: grid;
+        grid-template-columns: 40px 2.5fr 1fr 1fr 1fr 1fr 1.2fr 40px;
+        padding: 10px 8px;
+        background-color: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-bottom: none;
+        border-radius: 4px 4px 0 0;
+        color: #888;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .section-header {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .reference-info {
+        font-size: 13px;
+        color: #64748b;
+    }
+
+    #reference {
+        color: var(--primary);
+        font-weight: 500;
+    }
+
+    .table-header {
+        display: grid;
+        grid-template-columns: 40px 2.5fr 1fr 1fr 1fr 1fr 1.2fr 40px;
+        padding: 12px 10px;
+        background: #f9fafb;
+        border: none;
+        border-bottom: 1px solid #e5e7eb;
+        border-radius: 10px 10px 0 0;
+        color: #64748b;
+        font-size: 11px;
+        letter-spacing: .05em;
+    }
+
+    .scroll-container {
+        border: 1px solid #f1f5f9;
+        border-top: none;
+        border-radius: 0 0 10px 10px;
+        background: #fff;
+    }
+
+    .add-line-container {
+        border: none;
+        background: transparent;
+        padding: 12px 0;
+    }
+
+    .container-total {
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    #grandTotal {
+        font-size: 22px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+
+    .section {
+        margin-bottom: 24px;
+    }
+
+
+    .total-section {
+        float: right;
+        width: 500px;
+        margin-top: 20px;
+    }
+
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-top: 1px solid #eee;
+    }
+
+    .total-bold {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary);
+        border-top: 2px solid var(--primary);
+    }
+
 
     /**/
     .add-line-container {
@@ -63,215 +441,129 @@
         font-weight: bold;
     }
 
-
-    /* styles of the header */
-    .table-header {
-        display: grid;
-        grid-template-columns: 40px 2.5fr 1fr 1fr 1fr 1fr 1.2fr 40px;
-        padding: 10px 8px;
-        background-color: #f8f9fa;
-        border: 1px solid #e0e0e0;
-        border-bottom: none;
-        border-radius: 4px 4px 0 0;
-        color: #888;
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-    /* Scroll */
-    .scroll-container {
-        width: 100%;
-        height: 23vh;
-        max-height: 23vh;
-        border: 1px solid #e0e0e0;
-        border-radius: 0 0 4px 4px;
-        overflow-y: visible;
-        background: #fff;
-        z-index: 400;
-    }
-
-    .inline {
-        display: inline;
-        margin-left: 6px;
-    }
-
-    @media (max-width: 768px) {
-
-        .table-header {
-            min-width: 900px;
-        }
-
-        item-sales {
-            min-width: 900px;
-            display: block;
-        }
-
-    }
-
-    /*---------------------------------------------*/
-    @media (min-width: 768px) and (max-width: 1024px) {
-        .container-sales {
-            min-height: 100vh;
-        }
-
-        #formSales {
-            overflow-y: auto;
-        }
-    }
-
-    @media (min-width: 768px) {
-        .scroll-container {
-            overflow-y: auto;
-            height: 23vh;
-            max-height: 23vh;
-        }
-    }
-
-    /* Etapas (arriba) */
-    status-stepper {
-        flex-shrink: 0;
-        margin: 0px 0;
-    }
-
-    /* Formulario ocupa todo el espacio disponible */
-    .container-form {
-        flex: 1;
-        overflow-y: auto;
-        min-height: 0;
-        /* importante para que el scroll funcione en flex */
-        padding-right: 5px;
-        overflow-x: hidden;
-    }
-
-    /* Sección inferior (total + botón) */
-    .container-footer {
-        flex-shrink: 0;
-    }
-
-    /* Total alineado a la derecha */
-    .container-total {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 6px;
-        margin-bottom: 10px;
-    }
-
-    .plus-navbar {
-        margin: 0 0;
-    }
-
-    #container-print{
+    #container-print {
         display: none;
     }
 
-    .table-container {
-        width: 100%;
-        overflow-x: auto; 
+
+    #note-container {
+        border: none !important;
+        height: 300px;
     }
+
+    /* Contenedor principal de Quill */
+    #note-container .ql-container {
+        border: none !important;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 14px;
+    }
+
 </style>
+<br>
 
-<form id="formSales">
-    <div class="container-sales">
 
-        <div class="container-form section">
+<div class="plus-card">
+    <div class="status-bar">
+        <div class="breadcrumb">
+            <plus-title id="name_title_sale" label="" name="name_sale" required="true" maxlength="400"></plus-title>
+        </div>
+        <div style="color: #adb5bd;">
+            <status-stepper steps="['draft','pending', 'accepted', 'paid', 'cancelled']" current="draft"
+                id="statusSales">
+            </status-stepper>
+        </div>
+    </div>
 
-            <div class="row">
-                <div class="col">
-                    <div class="section-header">
-                        <plus-title id="name_title_sale" label="" name="name_sale" required="true" maxlength="400"></plus-title>
-                        <div class="reference-info">
-                            <span class="inline" t="sales.label.reference"></span>
-                            <span id="reference" style="color: #2B6CB0;" class="inline"
-                                t="sales.label.self-generated"></span>
+    <div class="sheet">
+        <div class="section-header">
+            <div class="reference-info">
+                <span class="inline" t="sales.label.reference"></span>
+                <span id="reference" style="color: #2B6CB0;" class="inline" t="sales.label.self-generated"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <plus-select link="/customers/customers_search/" label="sales.label.customer" name="customer"
+                    id="customer"></plus-select>
+            </div>
+            <div class="col">
+                <plus-select link="/departament_employee/search_employee/" label="sales.label.employee" name="employee"
+                    id="employee"></plus-select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <input-field label="sales.label.maturity" type="date" id="expiration_date"></input-field>
+            </div>
+            <div class="col">
+                <input-field label="sales.label.payment-term" placeholder="0" type="number"
+                    id="payment_term_days"></input-field>
+            </div>
+            <div class="col">
+                <plus-select label="sales.label.currency" name="currency" value="MXN" id="currency">
+                    <option value="MXN">MXN</option>
+                    <option value="USD">USD</option>
+                </plus-select>
+            </div>
+        </div>
+
+        <plus-tabs>
+            <plus-tab text="sale.label.line-items">
+                <div class="tabs-container">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div></div>
+                            <div t="sales.table.product"></div>
+                            <div t="sales.table.quantity"></div>
+                            <div t="sales.table.price"></div>
+                            <div t="sales.table.discount"></div>
+                            <div t="sales.table.taxes"></div>
+                            <div t="sales.table.total"></div>
+                            <div></div>
+                        </div>
+
+                        <div class="scroll-container">
                         </div>
                     </div>
+                    <div class="add-line-container">
+                        <button type="button" class="btn-add-line" onclick="addNewRow()">
+                            <span class="plus-icon">+</span>
+                            <p t="sales.btn.add-line"></p>
+                        </button>
+                    </div>
                 </div>
-                <div class="col">
-                    <status-stepper steps="['draft','pending', 'accepted', 'paid', 'cancelled']" current="draft" id="statusSales">
-                    </status-stepper>
-                </div>
+            </plus-tab>
+        </plus-tabs>
+        <div class="total-section">
+            <div class="total-row">
+                <span t="sales.label.sub-total"></span>
+                <span id="grandsubTotal">$0.00</span>
             </div>
-
-            <div class="row">
-                <div class="col">
-                    <plus-select link="/customers/customers_search/" label="sales.label.customer" name="customer"
-                        id="customer"></plus-select>
-                </div>
-                <div class="col">
-                    <input-field label="sales.label.maturity" type="date" id="expiration_date"></input-field>
-                </div>
-                <div class="col">
-                    <input-field label="sales.label.payment-term" placeholder="0" type="number"
-                        id="payment_term_days"></input-field>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col">
-                    <plus-select link="/departament_employee/search_employee/" label="sales.label.employee"
-                        name="employee" id="employee"></plus-select>
-                </div>
-                <div class="col">
-                    <plus-select label="Moneda" name="currency" value="MXN" id="currency">
-                        <option value="MXN">MXN</option>
-                        <option value="USD">USD</option>
-                    </plus-select>
-                </div>
-                <div class="col"></div>
-            </div>
-
-            <div class="table-container">
-                <div class="table-header">
-                    <div></div>
-                    <div t="sales.table.product"></div>
-                    <div t="sales.table.quantity"></div>
-                    <div t="sales.table.price"></div>
-                    <div t="sales.table.discount"></div>
-                    <div t="sales.table.taxes"></div>
-                    <div t="sales.table.total"></div>
-                    <div></div>
-                </div>
-
-                <div class="scroll-container">
-                </div>
-            </div>
-            <div class="add-line-container">
-                <button type="button" class="btn-add-line" onclick="addNewRow()">
-                    <span class="plus-icon">+</span>
-                    <p t="sales.btn.add-line"></p>
-                </button>
-            </div>
-
-            <!--
-            <div class="row section">
-                <div class="col">
-                    <label t="sales.label.notes"></label>
-                    <textarea></textarea>
-                </div>
-            </div>
-            ---->
-        </div>
-
-        <div class="container-footer">
-            <div class="container-total">
-                <p t="sales.label.total"></p>
-                <span id="grandTotal">0.00</span>
+            <div class="total-row total-bold">
+                <span t="sales.label.total"></span>
+                <span id="grandTotal">$0.00</span>
             </div>
         </div>
-
+        <div style="clear: both;"></div>
     </div>
-</form>
-    <div class="row" id="container-print">
-        <div class="col-8">
-            <button class="btn btn-success btn-edit" t="sales.btn.print-quote" type="button" onclick="print_table_sales()"></button>
+
+    <div class="">
+        <div class="row" id="container-print">
+            <div class="col-8" id="col-signature">
+                <button class="btn btn-success btn-edit" t="sales.btn.signature" type="button"
+                    onclick="window.show_pop('pop_signature')"></button>
+            </div>
+            <div class="col">
+                <button class="btn btn-success btn-add" t="sales.btn.accept-quote" type="button" id="txtButton2Info"
+                    onclick="update_sales()"></button>
+            </div>
         </div>
-        <div class="col-4">
-            <button class="btn btn-success btn-add" t="sales.btn.accept-quote" type="button" id="txtButton2Info" onclick="update_sales()"></button>
-        </div>
+        
+        <button id="statusButton" class="btn btn-success btn-add" t="sales.btn.create-quote" type="button"
+            onclick="saveSale()">
+        </button>
     </div>
-    <button id="statusButton" class="btn btn-success btn-add" t="sales.btn.create-quote" type="button" onclick="saveSale()">
-</button>
+</div>
 
 {% include 'sales/partials/contract.html' %}
 {% include 'sales/partials/formBuy.html' %}
@@ -285,6 +577,7 @@
 </message-pop>
 
 
+
 <script>
     (() => {
         window.reference_sales = null;
@@ -292,6 +585,7 @@
         window.status = 'draft'
         window.idSales = 0;
         window.totalSale = 0;
+        window.subTotalGlobal = 0;
 
         function set_form_read_only(formId, readOnly = true) {
             const form = document.getElementById(formId);
@@ -351,90 +645,84 @@
         }
 
         function create_the_payload_of_the_sale(data) {
-            let totalTaxesGlobal = 0;
-            let grandTotal = 0;
-            let subTotalGlobal=0;
-            let discountTotalGlobal=0;
+            let totalTaxesGlobal = 0; 
+            let grandTotal = 0; 
+            let subTotalGlobal = 0; 
+            let discountTotalGlobal = 0;
 
-            //here get all the information of the form for send to the backend
-            const customer = document.getElementById('customer').getValue();
-            const employee = document.getElementById('employee').getValue();
-            const currency = document.getElementById('currency').getValue();
-            const expiration_date = document.getElementById('expiration_date').value;
-            const payment_term_days = document.getElementById('payment_term_days').value;
-            const name_sale=document.getElementById('name_title_sale').value;
+            //here get all the information of the form for send to the backend 
+            const customer = document.getElementById('customer').getValue(); 
+            const employee = document.getElementById('employee').getValue(); 
+            const currency = document.getElementById('currency').getValue(); 
+            const expiration_date = document.getElementById('expiration_date').value; 
+            const payment_term_days = document.getElementById('payment_term_days').value; 
+            const name_sale = document.getElementById('name_title_sale').value; 
 
             data.forEach(line => {
-
                 // 1. subtotal 
-                const base = line.quantity * line.unit_price;
-                subTotalGlobal+=base;
+                const base = line.quantity * line.unit_price; subTotalGlobal += base;
+                // 2. discount 
+                const discountAmount = base * ((line.discount || 0) / 100); 
+                const baseAfterDiscount = base - discountAmount; 
+                discountTotalGlobal += discountAmount;
 
-                // 2. discount
-                const discountAmount = base * ((line.discount || 0) / 100);
-                const baseAfterDiscount = base - discountAmount;
-                discountTotalGlobal+=discountAmount;
-
-                // 3. taxes
-                let lineTaxesTotal = 0;
-
-                if (line.taxes && line.taxes.length > 0) {
-                    line.taxes.forEach(tax => {
-                        const taxAmount = baseAfterDiscount * (tax.rate / 100);
-                        lineTaxesTotal += taxAmount;
-                    });
+                // 3. taxes 
+                let lineTaxesTotal = 0; 
+                if (line.taxes && line.taxes.length > 0) { 
+                    line.taxes.forEach(tax => { 
+                        const taxAmount = baseAfterDiscount * (tax.rate / 100); lineTaxesTotal += taxAmount; }
+                    ); 
                 }
 
-                // 4. Total with taxes
+                // 4. Total with taxes 
                 const lineTotal = baseAfterDiscount + lineTaxesTotal;
 
-                // save the object
-                line.subtotal = baseAfterDiscount;
-                line.taxes_total = lineTaxesTotal;
-                line.total = lineTotal;
+                // save the object 
+                line.subtotal = baseAfterDiscount; line.taxes_total = lineTaxesTotal; line.total = lineTotal;
 
                 // 5. Acumular globales
-                totalTaxesGlobal += lineTaxesTotal;
-                grandTotal += lineTotal;
-            });
-            
-            const payload = {
-                customer,
-                name_sale,
-                employee,
-                currency,
-                subtotal:subTotalGlobal,
-                discount_total:discountTotalGlobal,
-                tax_total: totalTaxesGlobal,
-                total: grandTotal,
-                expiration_date,
-                payment_term_days,
-                items:data
-            };
+                totalTaxesGlobal += lineTaxesTotal; grandTotal += lineTotal;
+            }); 
 
+            const payload = {
+                customer, 
+                name_sale,
+                employee, 
+                currency, 
+                subtotal: subTotalGlobal, 
+                discount_total: discountTotalGlobal, 
+                tax_total: totalTaxesGlobal, 
+                total: grandTotal, 
+                expiration_date, 
+                payment_term_days, 
+                items: data 
+            }; 
             return payload;
         }
+
 
         function change_status_button(status) {
             const btn = document.getElementById('statusButton');
             const btnInfo = document.getElementById('txtButton2Info');
 
-            const containerPrint=document.getElementById('container-print');
-            const legend_print_buy=document.getElementById('legend_print_buy');
-            const text_status_print_buy=document.getElementById('text_status_print_buy');
+            const containerPrint = document.getElementById('container-print');
+            const legend_print_buy = document.getElementById('legend_print_buy');
+            const text_status_print_buy = document.getElementById('text_status_print_buy');
+            const colSignature = document.getElementById('col-signature');
+
             //clear the configuration of the button 
             btn.onclick = null;
             set_form_read_only('formSales', true);
 
             //btn.classList.remove('btn-warning');
             //btn.classList.add('btn-success');      
-            
+
             //if exist the <printArea> we will to delete the status of cancelled
             const printArea = document.getElementById("printArea");
-            if(printArea){
+            if (printArea) {
                 printArea.classList.remove("print-cancelled");
             }
-            
+
             if (status == 'pending') {
                 btn.textContent = window.translate_text('sales.btn.accept-quote');
                 btnInfo.textContent = window.translate_text('sales.btn.accept-quote');
@@ -447,13 +735,14 @@
                 btnInfo.textContent = window.translate_text('sales.btn.accept-buy');
 
                 //add the new event to the button for open the panel for accept the buy
-                btnInfo.onclick=null;
+                btnInfo.onclick = null;
                 btnInfo.onclick = function () {
                     window.open_buy_panel(window.totalSale);
                 };
 
                 containerPrint.style.display = 'flex';
                 btn.style.display = 'none';
+                colSignature.style.display = 'none';
             } else if (status == 'paid') {
                 btn.textContent = window.translate_text('sales.btn.print');
                 btnInfo.textContent = window.translate_text('sales.btn.print');
@@ -468,9 +757,9 @@
                     print_table_sales();
                 };
             }
-            else if(status=='cancelled'){
+            else if (status == 'cancelled') {
                 btn.textContent = window.translate_text('sales.btn.print');
-                btnInfo.textContent = window.translate_text('sales.btn.print');  
+                btnInfo.textContent = window.translate_text('sales.btn.print');
                 btn.classList.remove('btn-add');
                 btn.classList.add('btn-edit');
                 containerPrint.style.display = 'none';
@@ -481,16 +770,16 @@
 
 
                 //if exist the UI for print the sale, we will add the legend of cancelled
-                if(printArea){
+                if (printArea) {
                     printArea.classList.add("print-cancelled");
                 }
             }
 
             //translate the text of the legend of the sale
-            const textStatus=window.translate_text(`sales.status.${status}`);
-            if(legend_print_buy && text_status_print_buy){
-                legend_print_buy.textContent=textStatus;
-                text_status_print_buy.textContent=textStatus;
+            const textStatus = window.translate_text(`sales.status.${status}`);
+            if (legend_print_buy && text_status_print_buy) {
+                legend_print_buy.textContent = textStatus;
+                text_status_print_buy.textContent = textStatus;
             }
 
             //change the status in the stepper
@@ -498,7 +787,7 @@
             stepper.setCurrentStep(status);
 
             //here we will see if exist the function of render history for activate
-            if(typeof render_history_sale === 'function'){
+            if (typeof render_history_sale === 'function') {
                 render_history_sale();
             }
         }
@@ -513,17 +802,11 @@
             return status;
         }
 
-        async function update_sales(){
-            //see the status of the customer for 
-            if(window.status){
-                window.show_pop('pop_signature')
-                return;
-            }
-
+        async function update_sales() {
             //send the information to the server and try update the sale
-            const body={
-                id:window.idSales,
-                status:get_new_status(window.status),
+            const body = {
+                id: window.idSales,
+                status: get_new_status(window.status),
             }
 
             const backend = await window.send_message_to_the_server('/sales/update_sale/', body, true, 'POST');
@@ -534,13 +817,13 @@
 
             //if we can update the sale, we will to get his information for show in the screen
             const answer = backend.answer;
-            
+
 
             //now we will update the 'reference' in the screen with the reference that generate the backend for the sale
             change_status_button(answer.status);
             window.idSales = answer.id;
             window.reference_sales = answer.reference;
-            window.status=answer.status;
+            window.status = answer.status;
             document.getElementById('reference').textContent = window.reference_sales;
 
             window.show_notification('success', 'sales.message.sales-updated');
@@ -567,12 +850,12 @@
             }
 
             //here we will see if the expiration date is correct, the expiration date not can be less than the current date
-            const expiration_date=document.getElementById('expiration_date');
-            if(expiration_date && expiration_date.value){
+            const expiration_date = document.getElementById('expiration_date');
+            if (expiration_date && expiration_date.value) {
                 const expirationDateValue = new Date(expiration_date.value);
                 const now = new Date();
                 if (expirationDateValue < now) {
-                    window.show_alert('alert','sales.title.sale-not-saved' ,'sales.error.expiration-date');
+                    window.show_alert('alert', 'sales.title.sale-not-saved', 'sales.error.expiration-date');
                     return;
                 }
             }
@@ -600,49 +883,50 @@
             window.nextWeb(`/sales/view_sale/${window.idSales}/`);
         }
 
-        async function cancel_sale(){
+        async function cancel_sale() {
             //here we will to send the information to the backend for try cancelled
             //first we will see if the user have the ID of the sale
-            if(!window.idSales){
+            if (!window.idSales) {
                 window.show_notification('error', 'sales.error.not-id-of-sale');
                 return;
             }
 
             //now we will to do a question to the user for know if would like cancel the sale 
-            if(!await show_message_question('sales.question.cancel-sale', 'sales.question.do-you-cancel-sale')){
+            if (!await show_message_question('sales.question.cancel-sale', 'sales.question.do-you-cancel-sale')) {
                 return;
             }
 
             window.show_pop('note_cancelled_sales');
         }
 
-        async function cancel_sale_backend(){
+        async function cancel_sale_backend() {
             //first we will see if exist a comment for cancelled the sale
-            const input_note_cancelled=document.getElementById('note_cancelled')
+            const input_note_cancelled = document.getElementById('note_cancelled')
             if (!input_note_cancelled || input_note_cancelled.value.trim() === '') {
-               window.show_alert('alert', 'sales.error.cancel-sale', 'sales.message.not-add-comment-cancel-sale');
-               return;
+                window.show_alert('alert', 'sales.error.cancel-sale', 'sales.message.not-add-comment-cancel-sale');
+                return;
             }
 
             //if have the ID of the sale, now we will send the information to the server
-            const note_cancelled=input_note_cancelled.value;
-            const backend=await window.send_message_to_the_server(`/sales/cancel_sale/${window.idSales}/`, {note_cancelled:note_cancelled}, true, 'POST');
-            if(!backend.success){
+            const note_cancelled = input_note_cancelled.value;
+            const backend = await window.send_message_to_the_server(`/sales/cancel_sale/${window.idSales}/`, { note_cancelled: note_cancelled }, true, 'POST');
+            if (!backend.success) {
                 window.show_alert('error', 'sales.error.cancel-sale', backend.message || 'sales.error.cancel-sale', backend.error || '');
+                return;
             }
 
             //hidden the pop of comment and clear his input 
-            window.hide_pop('note_cancelled_sales'); 
-            input_note_cancelled.value='';
+            window.hide_pop('note_cancelled_sales');
+            input_note_cancelled.value = '';
 
             //if we can cancel the sale now show a notification and change the status of the sale
             window.show_notification('success', 'sales.success.cancel-sale');
             change_status_button('cancelled');
 
             //if we is in the UI of edit sale show because the user cancelled the sale
-            const note_sales_cancelled=document.getElementById('note_sales_cancelled')
-            if(note_sales_cancelled){
-                note_sales_cancelled.textContent=note_cancelled;
+            const note_sales_cancelled = document.getElementById('note_sales_cancelled')
+            if (note_sales_cancelled) {
+                note_sales_cancelled.textContent = note_cancelled;
             }
         }
 
@@ -662,21 +946,22 @@
             print_sale({
                 reference: window.reference_sales,
                 date: new Date().toLocaleDateString(),
-                customer: document.getElementById('customer').value,
+                user: document.getElementById('employee').getText(),
+                customer: document.getElementById('customer').getText(),
                 total: window.totalSale,
                 lines: items
             });
         }
-        
-        
-        document.getElementById('name_title_sale').value=window.translate_text('sales.navbar.new');
-        
+
+
+        document.getElementById('name_title_sale').value = window.translate_text('sales.navbar.new');
+
         window.saveSale = saveSale;
         window.change_status_button = change_status_button;
-        window.print_table_sales=print_table_sales;
-        window.update_sales =update_sales ;
-        window.cancel_sale=cancel_sale;
-        window.cancel_sale_backend=cancel_sale_backend;
+        window.print_table_sales = print_table_sales;
+        window.update_sales = update_sales;
+        window.cancel_sale = cancel_sale;
+        window.cancel_sale_backend = cancel_sale_backend;
     })();
 
 </script>
@@ -814,7 +1099,7 @@
                 try {
                     const backend = await window.send_message_to_the_server(
                         '/services/search_pack/1/',
-                        { allFilters: [query], amountOfData: 5 },
+                        { allFilters: [query], amountOfData: 5 , status: true},
                         false,
                         'GET'
                     );
@@ -1530,12 +1815,14 @@
 
     function calculateGrandTotal() {
         let total = 0;
-
+        let subtotal = 0;
         document.querySelectorAll('item-sales').forEach(item => {
             total += parseFloat(item.getAttribute('total')) || 0;
+            subtotal += parseFloat(item.getAttribute('subtotal')) || 0;
         });
         window.totalSale = total;
         document.getElementById('grandTotal').textContent = window.format_currency(total.toFixed(2), window.current, true);
+        document.getElementById('grandsubTotal').textContent = window.format_currency(subtotal.toFixed(2), window.current, true);
     }
     document.addEventListener('item-change', calculateGrandTotal);
     window.addEventListener('load', calculateGrandTotal);
@@ -1567,4 +1854,75 @@
         // Hacemos scroll automático al nuevo producto
         container.scrollTop = container.scrollHeight;
     }
+</script>
+<script>
+    function activate_screen_load(){
+        //here we will see if the user come from the agenda 
+        const cache = localStorage.getItem('sale_from_appoint');
+
+        // if not exist cache, finish, else we will activate the screen load 
+        if (!cache) return;
+
+        const screenLoad = document.getElementById('loadingOverlay')
+        screenLoad.style.display = 'flex';
+    }
+
+    function load_sale_from_appoint_cache() {
+        const screenLoad = document.getElementById('loadingOverlay')
+
+        try {
+            const cache = localStorage.getItem('sale_from_appoint');
+            // if not exist cache, finish
+            if (!cache) return;
+            screenLoad.style.display = 'flex';
+            const data = JSON.parse(cache);
+
+            // get the selects
+            const customerSelect = document.getElementById('customer');
+            const employeeSelect = document.getElementById('employee');
+            const titleInput = document.getElementById('name_title_sale');
+
+            // update customer select
+            if (
+                data.customer_id &&
+                customerSelect &&
+                typeof customerSelect.setValue === 'function'
+            ) {
+                customerSelect.setValue(
+                    data.customer_id,
+                    data.customer_name || ''
+                );
+            }
+
+            titleInput.value = data.title || 'Appointment';
+
+            // update employee select
+            if (
+                data.user_id &&
+                employeeSelect &&
+                typeof employeeSelect.setValue === 'function'
+            ) {
+                employeeSelect.setValue(
+                    data.user_id,
+                    data.user_name || ''
+                );
+            }
+
+            // remove cache after use
+            localStorage.removeItem('sale_from_appoint');
+        } catch (error) {
+            console.error('Error loading sale_from_appoint:', error);
+
+            // remove corrupted cache
+            localStorage.removeItem('sale_from_appoint');
+        }
+
+        screenLoad.style.display = 'none';
+    }
+
+    // execute when page finish load
+    setTimeout(() => {
+        load_sale_from_appoint_cache();
+    }, 1000);
+    activate_screen_load();
 </script>

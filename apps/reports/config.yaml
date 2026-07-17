@@ -1,0 +1,17 @@
+
+name: "reports"
+version: "1.0.0"
+
+appName: "reports"
+icon: "reports/icon.webp"
+iconF: "fi fi-rs-rocket-lunch"
+
+path: "/reports"
+dbInit: true
+public: true
+permissionsFile: 'permissions.json'
+dependencies:
+  - "services"
+  - "sales"
+  - "move_box"
+  - "agenda"

@@ -1,10 +1,12 @@
 from django.shortcuts import render
+
+from core.settings import BASE_DIR
 from ..plus_wrapper import Plus
 from django.http import JsonResponse
 import json
-
+import os 
 from ..services.schedule import get_branch_schedule_all
-from ..services.branch import get_whatsapp_credentials
+from ..services.branch import get_whatsapp_credentials, get_branches
 def setting_home(request):
     if request.method != "GET":
         return JsonResponse(
@@ -22,14 +24,17 @@ def setting_home(request):
     user=request.user
     company = user.company
     branch = user.branch
-
+    company.company_logo_url=company.logo.url if company.logo else ""
+  
     #here we will to construct the permissions that have the user in the view of the settings 
     permissions=Plus.get_user_permissions(user, 
     ["edit_system","edit_company", 
      "edit_branch", "edit_drivers", 
      "edit_schedule", "edit_email", 
      "edit_data_facture", 
-     "edit_data_whatsapp_bussiness"]
+     "edit_data_whatsapp_bussiness",
+     "edit_notification"
+     ]
     ) 
 
     #here we will see if have permission for edit the schedule for get from the function
@@ -41,11 +46,40 @@ def setting_home(request):
     facebook_id=settings.FB_APP_ID
     facebook_redirect_uri=f'https://{settings.PLUS_URL}/setting/whatsapp_callback'
 
+
     whatsapp_account=get_whatsapp_credentials(request.user)
     return render(request, 'setting/home_setting.html', {"user": user, "company": company, "branch":branch, "permissions": permissions, "schedule": schedule, "facebook_id":facebook_id, "facebook_redirect_uri":facebook_redirect_uri, "whatsapp_account":whatsapp_account})
 
 
+def search_branches(request):
+    if request.method != "GET":
+        return JsonResponse(
+            {"success": False, "answer": "Invalid JSON", "error": "method not success"}, 
+            status=400
+        )  
+    
+    try:
+        result = get_branches(request.user, request.GET.get("search", None))
+        return JsonResponse({
+            "success": result.get('success', False),
+            "message": result.get('message', ''),
+            "answer": result.get('answer', []),
+            "error": result.get('error', ''),
+            "pagination": result.get('pagination', {})
+        }, status=200)
 
+    except Exception as e:
+        return JsonResponse(
+            {"success": False, "answer": "Error fetching branches", "error": str(e)},
+            status=200
+        )
+
+    return JsonResponse({
+        "success": True,
+        "message": "",
+        "error": "",
+        "answer": results
+    }, status=200)
 
 from ..services.company import update_company
 def view_update_company(request):
@@ -69,7 +103,6 @@ def view_update_company(request):
             {"success": False, "answer": "Invalid JSON", "error": str(e)}, 
             status=400
         )   
-
 
     #here we will to construct the permissions that have the user in the view of the settings 
     result=update_company(request.user, data) 
@@ -367,3 +400,192 @@ def view_update_profile_user(request):
         "message": result.get('message',''),
         "error": result.get('error',"")
     }, status=200)   
+
+
+from apps.setting.models import NotificationSetting, NotificationSettingUser, CustomUser
+def get_user_notification(request, slug):
+    type_notification=slug
+
+    if request.method != 'GET':
+        return JsonResponse({
+            "success": False,
+            "answer": [],
+            "error": "Method not allowed"
+        }, status=405)
+
+    try:
+
+        notification = NotificationSetting.objects.prefetch_related(
+            'users__user'
+        ).get(
+            company=request.user.company,
+            branch=request.user.branch,
+            type_notification=type_notification
+        )
+
+    except NotificationSetting.DoesNotExist:
+
+        return JsonResponse({
+            "success": True,
+            "answer": [],
+            "error": ""
+        }, status=200)
+
+    users = []
+
+    for relation in notification.users.all():
+
+        users.append({
+            "id": relation.user.id
+        })
+
+    return JsonResponse({
+        "success": True,
+        "answer": users,
+        "error": ""
+    }, status=200)
+
+def save_user_notification(request, slug):
+    type_notification=slug
+    try:
+
+        body = json.loads(request.body)
+
+        users_ids = body.get('users', [])
+
+        # create or get notification
+        notification, created = NotificationSetting.objects.get_or_create(
+            company=request.user.company,
+            branch=request.user.branch,
+            type_notification=type_notification,
+            defaults={
+                "notify_by_email": True,
+                "notify_by_system": True
+            }
+        )
+
+        # delete old users
+        NotificationSettingUser.objects.filter(
+            notification=notification
+        ).delete()
+
+        # get valid users
+        users = CustomUser.objects.filter(
+            company=request.user.company,
+            branch=request.user.branch,
+            id__in=users_ids
+        )
+
+        # create relations
+        relations = []
+
+        for user in users:
+
+            relations.append(
+                NotificationSettingUser(
+                    notification=notification,
+                    user=user
+                )
+            )
+
+        NotificationSettingUser.objects.bulk_create(relations)
+
+        return JsonResponse({
+            "success": True,
+            "answer": "Users saved successfully",
+            "error": ""
+        })
+
+    except Exception as e:
+
+        return JsonResponse({
+            "success": False,
+            "answer": "",
+            "error": str(e)
+        }, status=500)
+    
+def save_notification_setting(request, slug):
+
+    if request.method != 'POST':
+
+        return JsonResponse({
+            "success": False,
+            "answer": "",
+            "error": "Method not allowed"
+        }, status=405)
+
+    try:
+
+        body = json.loads(request.body)
+
+        send_for_email = Plus.to_bool(body.get('send_for_email',False))
+        send_for_system =  Plus.to_bool(body.get('send_for_system',False))
+
+        notification, created = (
+            NotificationSetting.objects.update_or_create(
+
+                company=request.user.company,
+                branch=request.user.branch,
+                type_notification=slug,
+
+                defaults={
+                    "notify_by_email": send_for_email,
+                    "notify_by_system": send_for_system
+                }
+            )
+        )
+
+        return JsonResponse({
+
+            "success": True,
+
+            "answer": {
+                "id": notification.id,
+                "type_notification": notification.type_notification,
+                "notify_by_email": notification.notify_by_email,
+                "notify_by_system": notification.notify_by_system,
+                "created": created
+            },
+
+            "error": ""
+
+        })
+
+    except Exception as e:
+
+        return JsonResponse({
+
+            "success": False,
+            "answer": "",
+            "error": str(e)
+
+        }, status=500)
+    
+
+def get_all_notification_settings(request):
+
+    try:
+
+        notifications = NotificationSetting.objects.filter(
+            company=request.user.company
+        ).values(
+            'id',
+            'type_notification',
+            'notify_by_email',
+            'notify_by_system',
+            'branch_id'
+        )
+
+        return JsonResponse({
+            "success": True,
+            "answer": list(notifications),
+            "error": ""
+        })
+
+    except Exception as e:
+
+        return JsonResponse({
+            "success": False,
+            "answer": [],
+            "error": str(e)
+        }, status=500)

@@ -2,252 +2,560 @@
 <!---show the table of the customers and his information--->
 {% load static %}
 <style>
-/* === Tarjeta principal === */
-.info-customer-card {
-  padding: 28px 32px;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.02);
-  margin: 20px auto;
-  transition: all 0.3s ease;
-  width: 100%;
-}
+  /* === Tarjeta principal === */
+  .info-customer-card {
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: -40px;
+  }
 
-/* === Encabezado del cliente === */
-.customer-header {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  margin-bottom: 28px;
-  border-bottom: 2px solid #f0f0f5;
-  padding-bottom: 20px;
-}
-
-.customer-avatar {
-  width: 90px;
-  height: 90px;
-  border-radius: 10%;
-  object-fit: cover;
-  border: 4px solid #e6ebf2;
-}
-
-.customer-header h2 {
-  margin: 0;
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #1c1e21;
-}
-
-.status {
-  margin-left: auto;
-  padding: 6px 16px;
-  border-radius: 50px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.status.active {
-  background: #e6f9f0;
-  color: #219150;
-  border: 1px solid #a8e5c1;
-}
-
-.fi-whatsapp{
-  color: #219150;
-}
-
-.status.inactive {
-  background: #fdecec;
-  color: #d93025;
-  border: 1px solid #f5b9b9;
-}
-
-/* === Detalles del cliente === */
-.customer-details {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18px 24px;
-  margin-top: 10px;
-}
-
-.customer-details .detail-box {
-  background: #ffffff;
-  border: 1px solid #f0f2f6;
-  border-radius: 14px;
-  padding: 14px 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-  transition: all 0.2s ease;
-}
-
-.customer-details .detail-box:hover {
-  background: #f8faff;
-  border-color: #d9e4f5;
-}
-
-.detail-label {
-  font-size: 0.75rem;
-  color: #6b7280;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-  display: block;
-}
-
-.detail-value {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1f2937;
-  line-height: 1.4;
-}
-
-
-/* === Mensaje de error elegante === */
-.error-message {
-  background: #fff2f2;
-  color: #b91c1c;
-  padding: 16px;
-  border-radius: 14px;
-  text-align: center;
-  font-weight: 600;
-  border: 1px solid #f5c2c2;
-}
-
-
-.stars {
-    color: #FFD700; /* amarillo brillante para estrellas */
-    font-size: 1.4rem;
-}
-
-.star.filled {
-    color: #FFD700;
-}
-
-.star {
-    color: #ccc;
-}
-
-.status-points {
+  /* === Encabezado del cliente === */
+  .customer-header {
     display: flex;
-    gap: 10px; /* Espacio entre tags */
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 28px;
+    border-bottom: 2px solid #f0f0f5;
+    padding-bottom: 20px;
+  }
+
+  .customer-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 10%;
+    object-fit: cover;
+    border: 4px solid #e6ebf2;
+  }
+
+  .customer-header h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1c1e21;
+  }
+
+  .status {
+    margin-left: auto;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .status.active {
+    background: #e6f9f0;
+    color: #219150;
+    border: 1px solid #a8e5c1;
+  }
+
+  .fi-whatsapp {
+    color: #219150;
+  }
+
+  .status.inactive {
+    background: #fdecec;
+    color: #d93025;
+    border: 1px solid #f5b9b9;
+  }
+
+  /* === Detalles del cliente === */
+  .customer-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px 24px;
+    margin-top: 10px;
+  }
+
+  .customer-details .detail-box {
+    background: #ffffff;
+    border: 1px solid #f0f2f6;
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+  }
+
+  .customer-details .detail-box:hover {
+    background: #f8faff;
+    border-color: #d9e4f5;
+  }
+
+  .detail-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .detail-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    line-height: 1.4;
+  }
+
+
+  /* === Mensaje de error elegante === */
+  .error-message {
+    background: #fff2f2;
+    color: #b91c1c;
+    padding: 16px;
+    border-radius: 14px;
+    text-align: center;
+    font-weight: 600;
+    border: 1px solid #f5c2c2;
+  }
+
+
+  .stars {
+    color: #FFD700;
+    /* amarillo brillante para estrellas */
+    font-size: 1.4rem;
+  }
+
+  .star.filled {
+    color: #FFD700;
+  }
+
+  .star {
+    color: #ccc;
+  }
+
+  .status-points {
+    display: flex;
+    gap: 10px;
+    /* Espacio entre tags */
     margin: 10px 0;
     font-weight: 500;
     align-items: center;
-}
+  }
 
-/* Estilo común para los tags */
-.status-points span {
+  /* Estilo común para los tags */
+  .status-points span {
     display: inline-block;
     padding: 6px 12px;
-    border-radius: 20px; /* Redondeado completo */
+    border-radius: 20px;
+    /* Redondeado completo */
     font-size: 0.7rem;
     font-weight: 600;
     color: white;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-/* Tag de puntos */
-.status-points .points {
-    background: #4c7faf; /* Verde agradable */
-}
-
-/* Tag de crédito */
-.status-points .credit {
-    background: #798ebb; /* Naranja cálido */
-}
-
-.customers-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
-  padding-right: 2.5rem;
-  box-sizing: border-box; 
-}
-
-.container-padding {
-  padding-top: 0px;
-  padding-right: 30px;
-  padding-bottom: 0px;
-  padding-left: 30px;
-}
-
-
-.info-customer{
-  margin-top: -58px;
-}
-
-
-/**/
-
-/**/
-.btn-mobile {
-  display: none;
-}
-
-/**/
-.input-actions-wrapper {
-  display: flex;
-  align-items: center; /* centra verticalmente */
-  gap: 8px; /* espacio entre elementos */
-  padding: 0px 32px; /* espacio interno: 8px arriba/abajo, 12px izquierda/derecha */
-  box-sizing: border-box; /* asegura que el padding no rompa el ancho */
-  width: 50%;
-}
-
-.input-actions-wrapper input {
-  flex: 1; /* ocupa todo el espacio restante */
-}
-
-.input-actions-wrapper button,
-.input-actions-wrapper plus-actions {
-  flex: 0 0 auto; /* tamaño según su contenido */
-}
-
-#customer-list {
-  max-height: 83vh;
-  overflow-y: auto;  /* Scroll vertical */
-  overflow-x: hidden; /* Evita scroll horizontal */
-}
-
-
-@media (max-width: 768px) {
-  .btn-mobile {
-    display: inline-block;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   }
 
+  /* Tag de puntos */
+  .status-points .points {
+    background: #4c7faf;
+    /* Verde agradable */
+  }
+
+  /* Tag de crédito */
+  .status-points .credit {
+    background: #798ebb;
+    /* Naranja cálido */
+  }
+
+  .customers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    padding-right: 2.5rem;
+    box-sizing: border-box;
+  }
+
+  .container-padding {
+    padding-top: 0px;
+    padding-right: 30px;
+    padding-bottom: 0px;
+    padding-left: 30px;
+  }
+
+
+  .info-customer {
+    margin-top: -58px;
+  }
+
+
+  /**/
+
+  /**/
+  .btn-mobile {
+    display: none;
+  }
+
+  /**/
   .input-actions-wrapper {
+    display: flex;
+    align-items: center;
+    /* centra verticalmente */
+    gap: 8px;
+    /* espacio entre elementos */
+    padding: 0px 32px;
+    /* espacio interno: 8px arriba/abajo, 12px izquierda/derecha */
+    box-sizing: border-box;
+    /* asegura que el padding no rompa el ancho */
+    width: 50%;
+  }
+
+  .input-actions-wrapper input {
+    flex: 1;
+    /* ocupa todo el espacio restante */
+  }
+
+  .input-actions-wrapper button,
+  .input-actions-wrapper plus-actions {
+    flex: 0 0 auto;
+    /* tamaño según su contenido */
+  }
+
+  #customer-list {
+    max-height: 83vh;
+    overflow-y: auto;
+    /* Scroll vertical */
+    overflow-x: hidden;
+    /* Evita scroll horizontal */
+  }
+
+
+  @media (max-width: 768px) {
+    .btn-mobile {
+      display: inline-block;
+    }
+
+    .input-actions-wrapper {
+      width: 100%;
+    }
+  }
+</style>
+<style>
+  /* Contenedor Principal con prefijo cus-info- */
+  .cus-info-card {
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  /* Barra de Navegación / Botones superiores */
+  .cus-info-nav {
+    display: flex;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+  }
+
+  .cus-info-tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+    outline: none;
+  }
+
+  .cus-info-tab-btn i {
+    font-size: 18px;
+    color: #94a3b8;
+    transition: color 0.25s ease;
+  }
+
+  /* Efecto Hover */
+  .cus-info-tab-btn:hover {
+    background-color: #f1f5f9;
+    color: #334155;
+  }
+
+  /* Estado Activo (Estilo similar a tu captura: fondo azul claro sutil) */
+  .cus-info-tab-btn.cus-info-active {
+    background-color: #e0f2fe;
+    color: #0369a1;
+  }
+
+  .cus-info-tab-btn.cus-info-active i {
+    color: #0284c7;
+  }
+
+  /* Separadores visuales entre botones no activos */
+  .cus-info-tab-btn:not(:last-child) {
+    border-right: 1px solid #e2e8f0;
+  }
+
+  /* Contenedores de Información */
+  .cus-info-content-section {
+    display: none;
+    /* Oculto por defecto */
+    animation: cusInfoFadeIn 0.3s ease;
+    padding: 20px;
+  }
+
+  /* Clase para mostrar la sección activa */
+  .cus-info-content-section.cus-info-show {
+    display: block;
+  }
+
+  /* Animación suave de transición */
+  @keyframes cusInfoFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Estilos de ejemplo para simular la estructura limpia de precios de tu imagen */
+  .cus-info-grid {
+    display: flex;
+    gap: 40px;
+  }
+
+  .cus-info-data-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .cus-info-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+
+  .cus-info-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  /* === Contenedor de la lista de ventas (Opcional, por si quieres agruparlos) === */
+  .cus-info-sales-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     width: 100%;
   }
-}
-</style>
 
+  /* === Tarjeta de Venta Individual === */
+  .cus-info-sale-card {
+    background: #ffffff;
+    border: 1px solid #f0f2f6;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    transition: all 0.25s ease;
+  }
+
+  /* Efecto hover elegante */
+  .cus-info-sale-card:hover {
+    border-color: #d9e4f5;
+    background: #f8faff;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+  }
+
+  /* Fila Superior: Referencia, Nombre y Estado */
+  .cus-info-sale-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .cus-info-sale-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .cus-info-sale-ref {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .cus-info-sale-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  /* Fila Media: Usuario (Avatar) y Fecha */
+  .cus-info-sale-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed #e5e7eb;
+    padding-bottom: 12px;
+  }
+
+  .cus-info-sale-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cus-info-sale-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e6ebf2;
+  }
+
+  .cus-info-sale-username {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+  }
+
+  .cus-info-sale-date {
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+
+  /* Fila Inferior: Desglose de Precios / Saldos */
+  .cus-info-sale-footer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .cus-info-sale-price-box {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .cus-info-sale-price-label {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .cus-info-sale-price-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  /* Resaltado especial para el balance pendiente */
+  .cus-info-sale-price-box.balance .cus-info-sale-price-value {
+    color: #d93025;
+    /* O el color que uses para saldos */
+  }
+
+  .cus-info-sale-currency {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-weight: 500;
+    margin-left: 4px;
+  }
+
+  /* Status badges */
+  .status {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Status colors */
+  .status-pending {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  .status-accepted {
+    background: #fff3cd;
+    color: #856404;
+  }
+
+  .status-paid {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+  }
+
+  .status-expired {
+    background: #ffe5b4;
+    color: #8a5700;
+  }
+
+  /* Container de ventas con scroll controlado */
+  #container-table-sales {
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .container-sales-info {
+    margin-top: -40px;
+  }
+</style>
 <!---this is the pop for filter the customer that the user would like search---->
 <message-pop title="title-filter" name="pop-filter-customer">
-    <div class="row">
-        <div class="col">
-            <label t="select-priority"></label>
-            <select label="select-priority" id="filter-priority-customer">
-                <option value="" t="select-priority-0"></option>
-                <option value="1" t="select-priority-1"></option>
-                <option value="2" t="select-priority-2"></option>
-                <option value="3" t="select-priority-3"></option>
-            </select>
-        </div>
-        <div class="col">
-            <label t="customers.options.status-customer"></label>
-            <select label="customers.options.status-customer" id="status-customer">
-                <option value="true" t="option-status-activated">Activate</option>
-                <option value="false" t="option-status-deleted">Delete</option>
-                <option value="" t="option-status-all">All</option>
-            </select>
-        </div>
+  <div class="row">
+    <div class="col">
+      <label t="select-priority"></label>
+      <select label="select-priority" id="filter-priority-customer">
+        <option value="" t="select-priority-0"></option>
+        <option value="1" t="select-priority-1"></option>
+        <option value="2" t="select-priority-2"></option>
+        <option value="3" t="select-priority-3"></option>
+      </select>
     </div>
+    <div class="col">
+      <label t="customers.options.status-customer"></label>
+      <select label="customers.options.status-customer" id="status-customer">
+        <option value="true" t="option-status-activated">Activate</option>
+        <option value="false" t="option-status-deleted">Delete</option>
+        <option value="" t="option-status-all">All</option>
+      </select>
+    </div>
+  </div>
 
-    <button t="message.success" class="btn btn-edit btn-success" onclick="hide_pop('pop-filter-customer')">Search</button>
+  <button t="message.success" class="btn btn-edit btn-success" onclick="hide_pop('pop-filter-customer')">Search</button>
 </message-pop>
 <br>
+<plus-help-video videos='[
+    {"title":"¿Cómo Gestionar mis Pacientes?","url":"https://www.youtube.com/embed/LF36wkQuWAI?si=2_u4Od4tuCOgIoN4"}
+    ]'>
+</plus-help-video><br>
 <plus-switch-column id="customers-switch">
   <div slot="col1">
     <plus-search input_id="search-customer">
@@ -255,14 +563,17 @@
         <button class="btn btn-add" onclick="nextWeb('customers/add_customer')">+</button>
       </search-option>
       <search-option>
-        <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-customer')"><i class="fi fi-rr-settings-sliders"></i></button>
+        <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-customer')"><i
+            class="fi fi-rr-settings-sliders"></i></button>
       </search-option>
       <search-option>
-          <plus-actions>
-            <plus-action text="title-source" onclick="open_pop_table_source" icon="fi-rr-filter"></plus-action>
-            <plus-action text="title-type-customer" onclick="open_pop_table_type_customer" icon="fi-rs-category"></plus-action>
-            <plus-action text="customers.module.upload-customer-with-excel" onclick="change_web" icon="fi-rr-upload"></plus-action>
-          </plus-actions>
+        <plus-actions>
+          <plus-action text="title-source" onclick="open_pop_table_source" icon="fi-rr-filter"></plus-action>
+          <plus-action text="title-type-customer" onclick="open_pop_table_type_customer"
+            icon="fi-rs-category"></plus-action>
+          <plus-action text="customers.module.upload-customer-with-excel" onclick="change_web"
+            icon="fi-rr-upload"></plus-action>
+        </plus-actions>
       </search-option>
     </plus-search>
     <br>
@@ -282,16 +593,16 @@
         <div class="skeleton skeleton-rect" style="width: 80%;"></div>
         <div class="skeleton skeleton-input"></div>
       </div>
-    </div>  
+    </div>
   </div>
 
   <div slot="col2">
     <button class="btn btn-edit btn-mobile" onclick="toggle_switch_column('customers-switch',false)">×</button>
     <div class="info-customer" id="info-customer">
-        <div class="full-center">
-            <img src="{% static 'img/customer_home.webp' %}" alt="Customer Home" loading="lazy">
-            <h3 t="dashboard-no-customer-selected">No customer selected</h3>
-        </div>
+      <div class="full-center">
+        <img src="{% static 'img/customer_home.webp' %}" alt="Customer Home" loading="lazy">
+        <h3 t="dashboard-no-customer-selected">No customer selected</h3>
+      </div>
     </div>
   </div>
 </plus-switch-column>
@@ -299,11 +610,11 @@
 
 
 <script>
-  function change_web(){
+  function change_web() {
     window.nextWeb('customers/upload_customer_with_excel/');
   }
 
-  async function clear_div_data_customer(){
+  async function clear_div_data_customer() {
     // Render of the template
     const container = document.getElementById('info-customer');
     container.innerHTML = ""; //clear the container
@@ -313,7 +624,7 @@
         <h3 t="dashboard-no-customer-selected">No customer selected</h3>
       </center>
     `;
-    
+
     //update the table of the customers
     const divHtml = `
     <plus-customers 
@@ -352,24 +663,24 @@
   }
 
   function render_stars(priority) {
-        let stars = '';
-        const maxStars = 3;
-        for (let i = 1; i <= maxStars; i++) {
-            if (i <= priority) {
-                stars += '<span class="star filled">★</span>';
-            } else {
-                stars += '<span class="star">☆</span>';
-            }
-        }
-        return stars;
+    let stars = '';
+    const maxStars = 3;
+    for (let i = 1; i <= maxStars; i++) {
+      if (i <= priority) {
+        stars += '<span class="star filled">★</span>';
+      } else {
+        stars += '<span class="star">☆</span>';
+      }
     }
-  
-  async function open_pop_delete_customer(customer_id){
+    return stars;
+  }
+
+  async function open_pop_delete_customer(customer_id) {
     //here we will do a question to the user, if the would like desactivate the customer
     if (await show_message_question('customer.question.title.do-you-delete-this-customer', 'customer.question.description.do-you-delete-this-customer')) {
 
       //send the information to the server for know if can desactivate the customer
-      const answer = await send_message_to_the_server('/customers/change_status_customer/', {customer_id: customer_id, status:false}, true);
+      const answer = await send_message_to_the_server('/customers/change_status_customer/', { customer_id: customer_id, status: false }, true);
       if (answer.success) {
         await clear_div_data_customer();
         show_alert('success', 'customer.message.title.delte-customer', 'customer.message.description.delte-customer')
@@ -378,13 +689,13 @@
       }
     }
   }
-  
-  async function open_pop_recover_customer(customer_id){
+
+  async function open_pop_recover_customer(customer_id) {
     //here we will do a question to the user, if the would like desactivate the customer
     if (await show_message_question('customer.button.recover-customer', 'customer.message.description.recover-customer')) {
 
       //send the information to the server for know if can desactivate the customer
-      const answer = await send_message_to_the_server('/customers/change_status_customer/', {customer_id: customer_id, status:true}, true);
+      const answer = await send_message_to_the_server('/customers/change_status_customer/', { customer_id: customer_id, status: true }, true);
       if (answer.success) {
         await clear_div_data_customer();
         show_alert('success', 'customers.message.title.the-customer-was-recover', 'customers.message.description.the-customer-was-recover')
@@ -394,45 +705,76 @@
     }
   }
 
-  function format_whatsApp_number(phone, extension='52') {
-      // 1. Eliminar todo lo que no sea un número (espacios, +, -, paréntesis)
-      let cleaned = phone.replace(/\D/g, '');
+  function format_whatsApp_number(phone, extension = '52') {
+    // 1. Eliminar todo lo que no sea un número (espacios, +, -, paréntesis)
+    let cleaned = phone.replace(/\D/g, '');
 
-      // 2. Si el número tiene 10 dígitos, asumimos que es México (sin código de país)
-      // Ejemplo: "444 357 9030" -> "4443579030" -> le falta el 52
-      if (cleaned.length === 10) {
-          cleaned = extension + cleaned;
-      }
+    // 2. Si el número tiene 10 dígitos, asumimos que es México (sin código de país)
+    // Ejemplo: "444 357 9030" -> "4443579030" -> le falta el 52
+    if (cleaned.length === 10) {
+      cleaned = extension + cleaned;
+    }
 
-      // 3. Si el número ya tiene 12 o más dígitos (como 52 1 ... o 52 ...), 
-      // lo dejamos como está tras la limpieza.
-      
-      return cleaned;
+    // 3. Si el número ya tiene 12 o más dígitos (como 52 1 ... o 52 ...), 
+    // lo dejamos como está tras la limpieza.
+
+    return cleaned;
   }
 
-  async function update_information_div_customer(id_customer){
+
+  function calculate_old(fechaNacimiento) {
+
+    try {
+
+      // Convert string -> Date
+      fechaNacimiento = new Date(fechaNacimiento);
+      const hoy = new Date();
+
+      let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+
+      const diferenciaMeses =
+        hoy.getMonth() - fechaNacimiento.getMonth();
+
+      if (
+        diferenciaMeses < 0 ||
+        (
+          diferenciaMeses === 0 &&
+          hoy.getDate() < fechaNacimiento.getDate()
+        )
+      ) {
+        edad--;
+      }
+
+      return edad;
+
+    } catch (error) {
+      return window.translate_text('customer.info.aStranger')
+    }
+  }
+
+  async function update_information_div_customer(id_customer) {
     //this function is for update the div information use the information that the user selected 
-    const answer=await send_message_to_the_server('/customers/get_information_of_the_customer/', {id_customer}, true, 'GET');
-    if(answer.success){
-        //if get a answer of the server, we will get his data and update the div <info-customer> with all the information of the server
-        const data=answer.answer;
+    const answer = await send_message_to_the_server('/customers/get_information_of_the_customer/', { id_customer }, true, 'GET');
+    if (answer.success) {
+      //if get a answer of the server, we will get his data and update the div <info-customer> with all the information of the server
+      const data = answer.answer;
 
-        // Render of the template
-        const container = document.getElementById('info-customer');
-        container.innerHTML = ""; //clear the container
-        
-        //here we will get a image beta if the customer not have a photo
-        let image="{% static '/img/profile.webp' %}";
-        if(data.avatar){
-          image = data.avatar;
-          if(image=='None' || image==null || image=='null'){
-            image="{% static '/img/profile.webp' %}";
-          }    
+      // Render of the template
+      const container = document.getElementById('info-customer');
+      container.innerHTML = ""; //clear the container
+
+      //here we will get a image beta if the customer not have a photo
+      let image = "{% static '/img/profile.webp' %}";
+      if (data.avatar) {
+        image = data.avatar;
+        if (image == 'None' || image == null || image == 'null') {
+          image = "{% static '/img/profile.webp' %}";
         }
+      }
 
-        //here we will see if this customer is activated in the database. 
-        //when the user is activate we will show two button, the button for edit and the button for delete
-        let buttonEdit=`
+      //here we will see if this customer is activated in the database. 
+      //when the user is activate we will show two button, the button for edit and the button for delete
+      let buttonEdit = `
           <div class="col-8 d-flex justify-content-start">
               <button class="btn btn-edit btn-success" t='btn.edit' onclick=nextWeb('/customers/edit_customer/${id_customer}')>${window.translate_text('btn.edit')}</button>
           </div>
@@ -441,32 +783,48 @@
           </div>
         `
 
-        //when the customer not is activate we will to show only a button for recover the customer
-        if(!window.is_true(data.activated)){
-          buttonEdit=`
+      //when the customer not is activate we will to show only a button for recover the customer
+      if (!window.is_true(data.activated)) {
+        buttonEdit = `
           <div class="col d-flex justify-content-start">
               <button class="btn btn-edit btn-success" t='customer.button.recover-customer' onclick="window.open_pop_recover_customer('${id_customer}')"><i class="fi fi-sr-trash-restore-alt"></i> ${window.translate_text('customer.button.recover-customer')}</button>
           </div>
           `
-        }
+      }
 
-        //now we will show all the information of the customer for that the user know the information that need
-        const textEmail=data.email || window.translate_text('customers.info.without-email');
-        const textCellphone=data.cellphone || window.translate_text('customers.info.without-cellphone');
-        const textPhone=data.phone || window.translate_text('customers.info.without-phone');
-        const textDataTypeCustomer = data.customer_type?.customer ?? window.translate_text('customers.info.customer');
-        const dataTypeCustomerColor = data.customer_type?.color ?? '#3B82F6';
-        const textSource = data.source?.name ?? '';
-        const avatar_updated_at = data.avatar_updated_at || "1";
-        
-        //here we will see if this customer is a company or is a person with help of a icon
-        let iconCompany=`<i class="fi fi-rr-building"></i>`;
-        if(window.is_true(data.this_customer_is_a_company)){
-          iconCompany=`<i class="fi fi-ss-building"></i>`;
-        }
+      //now we will show all the information of the customer for that the user know the information that need
+      const textEmail = data.email || window.translate_text('customers.info.without-email');
+      const textCellphone = data.cellphone || window.translate_text('customers.info.without-cellphone');
+      const textPhone = data.phone || window.translate_text('customers.info.without-phone');
+      const textDataTypeCustomer = data.customer_type?.customer ?? window.translate_text('customers.info.customer');
+      const dataTypeCustomerColor = data.customer_type?.color ?? '#3B82F6';
+      const textSource = data.source?.name ?? '';
+      const avatar_updated_at = data.avatar_updated_at || "1";
 
-        container.innerHTML = `
-        <div class="info-customer-card">
+      //here we will see if this customer is a company or is a person with help of a icon
+      let iconCompany = `<i class="fi fi-rr-building"></i>`;
+      if (window.is_true(data.this_customer_is_a_company)) {
+        iconCompany = `<i class="fi fi-ss-building"></i>`;
+      }
+
+
+
+      const tableInfoSales = `
+        <div class='container-sales-info'>
+          <div class="row">
+              <div class="col p-3">
+                  <plus-search input_id="search-sales">
+                  </plus-search>
+                  <input type="hidden" id="customer_id_filter" value="${id_customer}">
+              </div>
+          </div>
+
+          <div id="container-table-sales"></div>
+        </div>
+      `;
+
+      container.innerHTML = `
+        <div class="cus-info-card">
             <div class="customer-header section">
                 <img src="${image}?v=${avatar_updated_at}" alt="Photo of ${data.name}" class="customer-avatar">
                 <div>
@@ -481,26 +839,29 @@
                     </div>
                 </div>
             </div>
+        </div>
 
+        <div class="info-customer-card">
             <div class="section">
                 <span class="detail-label">${window.translate_text('table-home-email')}</span>
                 <span class="detail-value">${textEmail}</span>
             </div>
 
             <div class="customer-details">
-                <a href="https://wa.me/${format_whatsApp_number(textCellphone)}" target="_blank" style="cursor: pointer; text-decoration: none; color: inherit;">
-                <div class="detail-box">
-                    <span class="detail-label">${window.translate_text('table-home-cellphone')}</span>
-                    <span class="detail-value fi-whatsapp">
-                        <i class="fi-whatsapp fi-brands-whatsapp"></i>   
-                        ${textCellphone}
-                    </span>
-                </div>
+                <a href="https://wa.me/${format_whatsApp_number(textCellphone)}" target="_blank"
+                    style="cursor: pointer; text-decoration: none; color: inherit;">
+                    <div class="detail-box">
+                        <span class="detail-label">${window.translate_text('table-home-cellphone')}</span>
+                        <span class="detail-value fi-whatsapp">
+                            <i class="fi-whatsapp fi-brands-whatsapp"></i>
+                            ${textCellphone}
+                        </span>
+                    </div>
                 </a>
                 <div class="detail-box">
                     <span class="detail-label">${window.translate_text('table-home-phone')}</span>
                     <span class="detail-value">
-                      ${textPhone}
+                        ${textPhone}
                     </span>
                 </div>
             </div>
@@ -520,12 +881,12 @@
             <show-more text='Domicilio' description='(${data.state} ${data.city}. ${data.country})'></show-more>
             <br>
             <div class="row">
-              ${buttonEdit}
+                ${buttonEdit}
             </div>
         </div>
-        `;
-    }else{
-        //if not can get the information of the customer, we will show a pop error and clear the div <info-customer>
+        `
+    } else {
+      //if not can get the information of the customer, we will show a pop error and clear the div <info-customer>
       document.getElementById('info-customer').innerHTML = `
         <div class="full-center">
           <img src="{% static 'img/customer_home.webp' %}" alt="Customer Home">
@@ -537,54 +898,72 @@
 
     window.toggle_switch_column('customers-switch'); //show the div that is hidden if the user is in cellphone
   }
-  
+
+  function switchCusTab(event, sectionId) {
+    // 1. Ocultar todas las secciones de contenido
+    const sections = document.querySelectorAll('.cus-info-content-section');
+    sections.forEach(section => {
+      section.classList.remove('cus-info-show');
+    });
+
+    // 2. Remover la clase activa de todos los botones
+    const buttons = document.querySelectorAll('.cus-info-tab-btn');
+    buttons.forEach(btn => {
+      btn.classList.remove('cus-info-active');
+    });
+
+    // 3. Mostrar la sección seleccionada y marcar el botón como activo
+    document.getElementById(sectionId).classList.add('cus-info-show');
+    event.currentTarget.classList.add('cus-info-active');
+  }
+
 
   //save the function in the global windows
-  window.open_pop_delete_customer=open_pop_delete_customer;
-  window.update_information_div_customer=update_information_div_customer;
-  window.open_pop_recover_customer=open_pop_recover_customer;
+  window.open_pop_delete_customer = open_pop_delete_customer;
+  window.update_information_div_customer = update_information_div_customer;
+  window.open_pop_recover_customer = open_pop_recover_customer;
   if (!customElements.get("plus-customers")) {
-  class PlusCustomers extends HTMLElement {
+    class PlusCustomers extends HTMLElement {
       constructor() {
-          super();
-          this.attachShadow({ mode: "open" });
+        super();
+        this.attachShadow({ mode: "open" });
       }
 
       connectedCallback() {
-          if (this._rendered) return;
-          this._rendered = true;
+        if (this._rendered) return;
+        this._rendered = true;
 
-          // atributos recibidos
-          const customerId = this.getAttribute("customer-id") || "";
-          const name = this.getAttribute("name") || window.translate_text('customers.info.without-name');
-          const email = this.getAttribute("email") || window.translate_text('customers.info.without-email');
-          const cellphone = this.getAttribute("cellphone") || window.translate_text('customers.info.without-cellphone');
-          const phone = this.getAttribute("phone") || window.translate_text('customers.info.without-phone');
+        // atributos recibidos
+        const customerId = this.getAttribute("customer-id") || "";
+        const name = this.getAttribute("name") || window.translate_text('customers.info.without-name');
+        const email = this.getAttribute("email") || window.translate_text('customers.info.without-email');
+        const cellphone = this.getAttribute("cellphone") || window.translate_text('customers.info.without-cellphone');
+        const phone = this.getAttribute("phone") || window.translate_text('customers.info.without-phone');
 
-          const tag = this.getAttribute("tag") || "";
-          const customer_type=this.getAttribute('customer_type');
-          const customerTypeName=this.getAttribute('customer_type').name || window.translate_text('customers.info.customer');
-          const colorTypeCustomer = customer_type.color || '#3B82F6';
-          const points = this.getAttribute("points") || "0";
-          const credit = this.getAttribute("credit") || "0";
-          const avatar_updated_at = this.getAttribute("avatar_updated_at") || "1";
+        const tag = this.getAttribute("tag") || "";
+        const customer_type = this.getAttribute('customer_type');
+        const customerTypeName = this.getAttribute('customer_type').name || window.translate_text('customers.info.customer');
+        const colorTypeCustomer = customer_type.color || '#3B82F6';
+        const points = this.getAttribute("points") || "0";
+        const credit = this.getAttribute("credit") || "0";
+        const avatar_updated_at = this.getAttribute("avatar_updated_at") || "1";
 
-          let image = this.getAttribute("image");
-          if(this.hasAttribute("image")){
-            image = this.getAttribute("image");
-            if(image=='None' || image==null || image=='null'){
-              image="{% static '/img/profile.webp' %}";
-            }    
+        let image = this.getAttribute("image");
+        if (this.hasAttribute("image")) {
+          image = this.getAttribute("image");
+          if (image == 'None' || image == null || image == 'null') {
+            image = "{% static '/img/profile.webp' %}";
           }
+        }
 
-         
 
-          const status = this.getAttribute("status") || "active"; // active | inactive
-          const priority = parseInt(this.getAttribute("priority")) || 0; // 0-3
-          
-          // estilos
-          const style = document.createElement("style");
-          style.textContent = `
+
+        const status = this.getAttribute("status") || "active"; // active | inactive
+        const priority = parseInt(this.getAttribute("priority")) || 0; // 0-3
+
+        // estilos
+        const style = document.createElement("style");
+        style.textContent = `
     .card-customer {
       background: #fff;
       border: 1px solid #e5e7eb;
@@ -678,22 +1057,22 @@
     }
   `;
 
-          // generar estrellas según prioridad
-          const renderStars = () => {
-              let starsHTML = "";
-              for (let i = 1; i <= 3; i++) {
-                  starsHTML += `<span class="star ${i <= priority ? "filled" : ""}">★</span>`;
-              }
-              return starsHTML;
-          };
+        // generar estrellas según prioridad
+        const renderStars = () => {
+          let starsHTML = "";
+          for (let i = 1; i <= 3; i++) {
+            starsHTML += `<span class="star ${i <= priority ? "filled" : ""}">★</span>`;
+          }
+          return starsHTML;
+        };
 
-          // estructura HTML
-          const wrapper = document.createElement("div");
-          wrapper.classList.add("card-customer");
-          if (status === "inactive") wrapper.classList.add("inactive");
+        // estructura HTML
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("card-customer");
+        if (status === "inactive") wrapper.classList.add("inactive");
 
 
-          wrapper.innerHTML = `
+        wrapper.innerHTML = `
     <div class="customer-header">
       <img class="customer-img" src="${image}?v=${avatar_updated_at}" alt="${name}">
       <div>
@@ -711,28 +1090,28 @@
     <input type="hidden" name="customer_id" value="${customerId}">
   `;
 
-          this.shadowRoot.append(style, wrapper);
+        this.shadowRoot.append(style, wrapper);
 
-          const onClickFunction = this.getAttribute("onclick") || null;
-          if (onClickFunction) {
-              wrapper.style.cursor = "pointer"; // opcional: mostrar que es clickable
-              wrapper.addEventListener("click", () => {
-                  if (typeof window[onClickFunction] === "function") {
-                      window[onClickFunction]();
-                  }
-              });
-          }
+        const onClickFunction = this.getAttribute("onclick") || null;
+        if (onClickFunction) {
+          wrapper.style.cursor = "pointer"; // opcional: mostrar que es clickable
+          wrapper.addEventListener("click", () => {
+            if (typeof window[onClickFunction] === "function") {
+              window[onClickFunction]();
+            }
+          });
+        }
       }
-  }
+    }
 
-  
+
     customElements.define("plus-customers", PlusCustomers);
   }
 
 </script>
 <script>
-(() => {
-  const divHtml = `
+  (() => {
+    const divHtml = `
   <plus-customers 
       id-customer="{ id }" 
       name="{ name }" 
@@ -760,16 +1139,16 @@
   </plus-customers>
   `;
 
-  update_container_with_seeker(
-    ['search-customer', 'filter-priority-customer', 'status-customer'],
-    'customer-list',
-    divHtml,
-    '/customers/customers_search',
-    'GET'
-  );
+    update_container_with_seeker(
+      ['search-customer', 'filter-priority-customer', 'status-customer'],
+      'customer-list',
+      divHtml,
+      '/customers/customers_search',
+      'GET'
+    );
 
 
-})();
+  })();
 </script>
 
 
@@ -787,7 +1166,3 @@
 <!---show the partials of type customers and the partials source-->
 {% include 'customers/partialsCustomers/typeCustomer.html' %}
 {% include 'customers/partialsCustomers/source.html' %}
-
-
-
-

@@ -1,3 +1,5 @@
+from email.policy import default
+
 from django.db import models
 from decimal import Decimal
 from core.models import Company, Branch, CustomUser
@@ -5,6 +7,9 @@ from apps.services.models import Pack
 
 #-------------------------------------------------------------------------------------SETTINGS OF THE SALES---------------------------------------------
 from apps.customers.models import Customer
+import uuid
+import secrets
+
 class Sale(models.Model):
     id = models.BigAutoField(primary_key=True)
     name_sale = models.CharField(max_length=400, blank=True, null=True) 
@@ -68,6 +73,8 @@ class Sale(models.Model):
         default='pending'
     )
 
+    first_buy_do=models.BooleanField(default=False)
+
     created_by = models.ForeignKey(
         CustomUser,
         on_delete=models.SET_NULL,
@@ -75,18 +82,18 @@ class Sale(models.Model):
         blank=True,
         related_name='sales_created'
     )
-
+    
     def save(self, *args, **kwargs):
         if not self.reference:
             last_sale = Sale.objects.order_by('-id').first()
             next_id = 1 if not last_sale else last_sale.id + 1
             self.reference = f"SAL-{next_id:05d}"
+
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Sale #{self.id} - {self.total}"
     
-
 class SaleItem(models.Model):
     sale = models.ForeignKey(Sale, related_name='items', on_delete=models.CASCADE)
     pack = models.ForeignKey(Pack, on_delete=models.SET_NULL, null=True)
@@ -104,7 +111,6 @@ class SaleItem(models.Model):
     def __str__(self):
         return self.name
     
-
 class SaleHistory(models.Model):
     sale = models.ForeignKey(
         Sale,
@@ -151,7 +157,7 @@ class SaleHistory(models.Model):
         related_name='sales_history_created'
     )
     def __str__(self):
-        return f"Payment {self.amount} for Sale {self.sale.id}"
+        return f"Payment for Sale {self.sale.id}"
     
 class SalePaymentMethod(models.Model):
     #key fot filter after 
@@ -179,12 +185,79 @@ class SalePaymentMethod(models.Model):
         ('cash', 'cash'),
         ('card', 'card'),
         ('transfer', 'transfer'),
+        ('terminal', 'terminal'),
         ('change', 'change'), #this is for know that the user outside money. When be use this method, the <amount> need be negative.
     ]
 
     method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
-
+    comment = models.TextField(null=True)
 
     date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
+from django.utils import timezone
+class DataReports(models.Model):
+    #key fot filter after 
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE) 
+
+    #here we will to save the total of 
+    total_inside_money=models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    total_outside_money=models.DecimalField(max_digits=12, decimal_places=2, default=0)
+
+    #this is the money of this year
+    year = models.PositiveSmallIntegerField(
+        default=timezone.now().year,
+        db_index=True
+    )
+
+    # Audit
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+    class Meta:
+        db_table = "reports_data_reports"
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["company", "branch", "year"],
+                name="unique_report_per_branch_year"
+            )
+        ]
+
+        indexes = [
+            models.Index(fields=["company", "year"]),
+            models.Index(fields=["branch", "year"]),
+        ]
+
+    @property
+    def balance(self):
+        return self.total_inside_money - self.total_outside_money
+
+    def __str__(self):
+        return f"{self.company} - {self.branch} ({self.year})"
+    
+        
+class LinkPayOnline(models.Model):
+    sale = models.ForeignKey(Sale, related_name='link_pay_online', on_delete=models.CASCADE, unique=True, null=False, blank=True)
+
+    #this is for create the link of the sale, 
+    # this is for know the sale in the moment of the buy, 
+    # because if we change the reference of the sale, this not need to change in the buy
+    key_link = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        null=False,
+        blank=True
+    )
+
+    #this is for know if the link is active or not, because if the link is not active, the customer not can buy with this link
+    activate=models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if not self.key_link:
+            self.key_link = secrets.token_urlsafe(32)
+
+        super().save(*args, **kwargs)

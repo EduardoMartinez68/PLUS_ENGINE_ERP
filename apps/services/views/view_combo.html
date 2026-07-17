@@ -1,0 +1,1036 @@
+<style>
+    /* Seleccionamos el panel (o el contenedor interno de plus-panel) */
+    #add-item-combo {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        /* Asegúrate de que el panel tenga altura */
+    }
+
+    #container-items {
+        /* Quitamos el height: 70vh y usamos flex-grow */
+        flex-grow: 1;
+        overflow-y: auto;
+        /* Para que si hay muchos ítems, salga scroll aquí y no en todo el panel */
+        margin-bottom: 15px;
+        /* Espacio opcional entre ítems y botón */
+    }
+
+    .img-item-combo-info {
+        width: 80%;
+        /* Ajusta el tamaño a tu gusto */
+        height: auto;
+        opacity: 0.6;
+        /* Un poco de transparencia para que se vea "desactivado/vacío" */
+        margin-bottom: 12px;
+        /* Espacio entre la imagen y el texto */
+    }
+
+    .label-vacio {
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        color: #94a3b8;
+        /* Gris azulado profesional */
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .container-scroll{
+        height: 75%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    #container-items-combo{
+        max-height: 450px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+</style>
+<style>
+    .tabla-minimalista {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        color: #333;
+        margin: 20px 0;
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+    }
+
+    .tabla-minimalista td {
+        padding: 12px 0;
+    }
+
+    .tabla-minimalista tr:last-child td {
+        border-bottom: none;
+    }
+
+    .col-label {
+        text-align: left;
+        font-weight: 400;
+        color: #666;
+    }
+
+    .col-valor {
+        text-align: right;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    /* Resalte especial para el Precio Sugerido */
+    .destacado {
+        color: #000;
+        font-size: 1.1em;
+    }
+
+    tr:hover {
+        background-color: transparent !important;
+        color: inherit !important;
+        cursor: default;
+    }
+</style>
+{% load static %}
+{% include 'services/partials/navbar.html' %}
+<form id="formSpeedProduct">
+    <div class="row">
+        <div class="col-9">
+            <div class="container-scroll">
+                <input type="hidden" name="id" id="id_product_speed" value="{{ id_pack }}">
+                <input type="hidden" id="pack_type" name="pack_type" value="1">
+                <div class="row section">
+                    <div class="col">
+                        <plus-title label="services.input.name-services" name="name"
+                            placeholder="services.placeholder.name-services" required>
+                        </plus-title>
+                    </div>
+                </div>
+                <div class="row section">
+                    <div class="col">
+                        <label t="services.input.sku"></label>
+                        <plus-tags id="tags_products_flash" name="skus" label="services.input.sku" t="services.input.sku"
+                            required></plus-tags>
+                    </div>
+                </div>
+                <div class="row section">
+                    <div class="col">
+                        <input-field label="services.input.price" name="base_price" required type="number"
+                            id="priceProduct"></input-field>
+                    </div>
+                    <div class="col">
+                        <plus-multiselect id="select_taxes_form_speed" name="taxes" label="services.select.taxes"
+                            link="/services/search_tax/" method="GET" add="open_pop_tax" edit_data="open_pop_tax">
+                        </plus-multiselect>
+                    </div>
+                </div>
+                <div class="row section">
+                    <div class="col">
+                        <plus-select label="services.select.departament" id="departament-form-speed" name="department"
+                            add="open_pop_departament" link="/services/search_departament/" method="GET"
+                            edit_data="open_pop_departament" delete_data="/services/delete_departament/"
+                            btn_delete_title="services.question.do-you-delete-departament"
+                            btn_delete_text="services.question.delete-departament">
+                        </plus-select>
+                    </div>
+                    <div class="col">
+                        <plus-select label="services.select.category" id="category-form-speed" name="category"
+                            add="open_pop_category" link="/services/search_category/" method="GET"
+                            edit_data="open_pop_category" delete_data="/services/delete_category/"
+                            btn_delete_title="services.question.do-you-delete-category"
+                            btn_delete_text="services.question.delete-category">
+                        </plus-select>
+                    </div>
+                </div>
+                <div class="row section">
+                    <div class="col">
+                        <plus-select label="services.select.type-unity" id="unity_type" name="unity_type" value="1">
+                            <option value="0" t="services.option.liter"></option>
+                            <option value="1" t="services.option.pza"></option>
+                            <option value="2" t="services.option.metro"></option>
+                            <option value="3" t="services.option.box"></option>
+                            <option value="4" t="services.option.kilogram"></option>
+                            <option value="5" t="services.option.services"></option>
+                        </plus-select>
+                    </div>
+                </div>
+                <div class="row section">
+                    <div class="col">
+                        <label t="services.input.description"></label>
+                        <textarea t-placeholder="services.placeholder.description" name="description"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <plus-switch text="services.switch.show-for-sale" name="show_fo_sale"
+                            id="show_fo_sale"></plus-switch>
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="buttons-form-speed-update">
+                <div class="col-8">
+                    <button type="button" class="btn btn-success btn-edit" t="btn.update"
+                        onclick="send_form_product_speed()"></button>
+                </div>
+                <div class="col-4">
+                    <button type="button" class="btn btn-success btn-delete-tr" t="btn.delete"
+                        onclick="window.delete_product_speed()"></button>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <br>
+            <plus-search input_id="search-services-combo">
+                <search-option>
+                    <button class="btn btn-add" onclick="open_panel_search_item()" type="button">+</button>
+                </search-option>
+            </plus-search>
+            <hr>
+            <div id="container-items-combo">
+                <center>
+                    <img src="{% static 'img/info/combo_supplies.webp' %}" alt="img item" class="img-item-combo-info">
+                    <br>
+                    <label t="services.info.add-supplies"></label>
+                </center>
+            </div>
+            <hr>
+            <table class="tabla-minimalista">
+                <tbody>
+                    <tr>
+                        <td class="col-label" t="services.td.amount-without-tax"></td>
+                        <td class="col-valor" id="totalWithoutTax">$ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label" t="services.td.amount-tax"></td>
+                        <td class="col-valor" id="totalTax">$ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td class="col-label" t="services.td.utility"></td>
+                        <td class="col-valor" style="color: #2ecc71;" id="totalUtility">+ $ 0.00</td>
+                    </tr>
+                    <tr class="destacado">
+                        <td class="col-label"><strong t="services.td.price-suggested"></strong></td>
+                        <td class="col-valor"><strong id="priceSuggested">$ 0.00</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</form>
+
+
+<input type="hidden" id="pageServices">
+<plus-panel id="add-item-combo" title="services.title.supplies" side="right" size="30%">
+    <div style="display: flex; flex-direction: column; height: 100%;">
+        <plus-search input_id="search-services"></plus-search>
+        <hr>
+        <div id="container-items">
+
+        </div>
+        <button class="btn btn-edit btn-success" t="btn.add" id="btn-add-supplies" type="button"
+            onclick="add_new_supplies_combo()"></button>
+    </div>
+</plus-panel>
+
+{% include 'services/partials/formPopDepartament.html' %}
+{% include 'services/partials/formPopCategory.html' %}
+{% include 'services/partials/formPopTax.html' %}
+
+
+
+<script>
+    class ItemSelected extends HTMLElement {
+        constructor() {
+            super();
+            this.attachShadow({ mode: 'open' });
+            this._selected = false;
+        }
+
+        get data() {
+            return {
+                img: this.getAttribute('img'),
+                supplies_id: this.getAttribute('supplies_id'),
+                nombre: this.getAttribute('nombre'),
+                codigo: this.getAttribute('codigo'),
+                precio: this.getAttribute('precio'),
+                base_price: this.getAttribute('base_price')
+            };
+        }
+
+        connectedCallback() {
+            const supplies_id = this.getAttribute('supplies_id') || null;
+            const img = this.getAttribute('img') || '';
+            const nombre = this.getAttribute('nombre') || 'Producto';
+            const codigo = this.getAttribute('codigo') || '00000000';
+            const precio = this.getAttribute('precio') || '0.00';
+            const unidad = this.getAttribute('unidad') || 'PZA';
+            const cantidad = this.getAttribute('cantidad') || '1';
+            this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          display: block;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          margin-bottom: 10px;
+        }
+        .card {
+          display: flex;
+          align-items: center;
+          background: #fff;
+          border-radius: 15px;
+          padding: 12px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+          border: 1px solid #f0f0f0;
+          max-width: 450px;
+        }
+        .card:hover{
+            cursor:pointer;
+        }
+        .card.selected {
+          border-color: #007bff;
+          background-color: #f0f7ff;
+        }
+        .drag-handle {
+          color: #ccc;
+          margin-right: 10px;
+          font-size: 20px;
+          cursor: grab;
+          user-select: none;
+        }
+        .image-container {
+          width: 60px;
+          height: 60px;
+          margin-right: 15px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .image-container img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+        }
+        .info {
+          flex-grow: 1;
+        }
+        .header-info {
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+          margin-bottom: 2px;
+        }
+        .qty-unit {
+          font-weight: 800;
+          font-size: 14px;
+          color: #333;
+        }
+        .barcode {
+          color: #999;
+          font-size: 13px;
+          letter-spacing: 0.5px;
+        }
+        .product-name {
+          font-weight: 600;
+          font-size: 16px;
+          color: #222;
+          margin: 0;
+          text-transform: uppercase;
+        }
+        .price-label {
+          color: #888;
+          font-size: 13px;
+          margin-top: 2px;
+        }
+        .price-value {
+          font-weight: 500;
+        }
+      </style>
+      
+      <div class="card" id="card-container">
+        <div class="drag-handle">≡</div>
+        
+        <div class="image-container">
+          <img src="${img}" alt="${nombre}">
+        </div>
+        
+        <div class="info">
+          <div class="header-info">
+            <span class="qty-unit">${cantidad} ${unidad}</span>
+            <span class="barcode">${codigo}</span>
+          </div>
+          <h3 class="product-name">${nombre}</h3>
+          <div class="price-label">
+            Costo <span class="price-value">$${precio}</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+            this.shadowRoot.querySelector('#card-container').addEventListener('click', () => {
+                this.toggleSelection();
+            });
+
+        }
+
+        toggleSelection() {
+            this._selected = !this._selected;
+            const card = this.shadowRoot.querySelector('#card-container');
+
+            if (this._selected) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+
+            // Emitir evento al exterior con la información del producto
+            this.dispatchEvent(new CustomEvent('itemSelected', {
+                detail: {
+                    selected: this._selected,
+                    info: this.data
+                },
+                bubbles: true,
+                composed: true
+            }));
+        }
+    }
+
+    class ItemCombo extends HTMLElement {
+        constructor() {
+            super();
+            this.attachShadow({ mode: 'open' });
+        }
+
+        get data() {
+            return {
+                supplies_id: this.getAttribute('supplies_id'),
+                cantidad: parseFloat(this.getAttribute('cantidad')) || 1
+            };
+        }
+
+        connectedCallback() {
+            const supplies_id = this.getAttribute('supplies_id');
+            const img = this.getAttribute('img') || '';
+            const nombre = this.getAttribute('nombre') || 'Producto';
+            const codigo = this.getAttribute('codigo') || '0000';
+            const precio = this.getAttribute('precio') || '0.00';
+            const unidad = this.getAttribute('unidad') || 'PZA';
+            const cantidad = this.getAttribute('cantidad') || '1';
+            const total = parseFloat(cantidad) * parseFloat(precio);
+            this.shadowRoot.innerHTML = `
+            <style>
+                :host {
+                    display: block;
+                    margin-bottom: 8px;
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                }
+
+                .card {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    background: #ffffff;
+                    border-radius: 12px;
+                    padding: 10px 16px;
+                    border: 1px solid #e2e8f0;
+                    transition: border-color 0.2s ease;
+                }
+
+                /* Feedback sutil sin movimiento */
+                .card:hover {
+                    border-color: #cbd5e1;
+                }
+
+                .img-container {
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    background: #f8fafc;
+                    border: 1px solid #f1f5f9;
+                    flex-shrink: 0;
+                }
+
+                .img-container img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    mix-blend-mode: multiply;
+                }
+
+                .info {
+                    flex: 1;
+                    min-width: 0; /* Evita desbordamiento de texto */
+                }
+
+                .nombre {
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: #1e293b;
+                    margin-bottom: 2px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .codigo {
+                    font-size: 11px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.025em;
+                    color: #94a3b8;
+                }
+
+                .precio {
+                    font-size: 13px;
+                    font-weight: 500;
+                    color: #64748b;
+                    margin-top: 2px;
+                }
+
+                .actions {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                }
+
+                .qty-wrapper {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .qty {
+                    width: 45px;
+                    height: 32px;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 6px;
+                    background: #f8fafc;
+                    text-align: center;
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: #334155;
+                    outline: none;
+                }
+
+                .qty:focus {
+                    border-color: #94a3b8;
+                    background: #fff;
+                }
+
+                .unidad {
+                    font-size: 10px;
+                    font-weight: 700;
+                    color: #cbd5e1;
+                    margin-top: 4px;
+                    text-transform: uppercase;
+                }
+
+                .btn-delete {
+                    width: 32px;
+                    height: 32px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: none;
+                    border-radius: 6px;
+                    background: transparent;
+                    color: #94a3b8;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                }
+
+                .btn-delete:hover {
+                    background: #fff1f2;
+                    color: #e11d48;
+                }
+
+                /* Quitar flechas de input number para minimalismo */
+                input::-webkit-outer-spin-button,
+                input::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+            </style>
+
+            <div class="card">
+                <div class="img-container">
+                    <img src="${img}" alt="${nombre}">
+                </div>
+
+                <div class="info">
+                    <div class="nombre">${nombre}</div>
+                    <div class="codigo">Ref: ${codigo}</div>
+                    <div class="precio">precio por unidad: $${precio}</div>
+                    <div class="precio total-price">total: $${total.toFixed(2)}</div>
+                </div>
+
+                <div class="actions">
+                    <div class="qty-wrapper">
+                        <input type="number" class="qty" min="1" value="${cantidad}">
+                        <span class="unidad">${unidad}</span>
+                    </div>
+
+                    <button class="btn-delete" title="Eliminar">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                    </button>
+                </div>
+            </div>
+            `;
+
+            this.setupEventListeners(supplies_id);
+        }
+
+        setupEventListeners(supplies_id) {
+            const qtyInput = this.shadowRoot.querySelector('.qty');
+            const deleteBtn = this.shadowRoot.querySelector('.btn-delete');
+
+            // elemento donde se muestra el total
+            const totalElement = this.shadowRoot.querySelector('.precio:last-of-type');
+
+            qtyInput.addEventListener('input', (e) => {
+
+                const nuevaCantidad = parseFloat(e.target.value) || 1;
+
+                // actualizar atributo
+                this.setAttribute('cantidad', nuevaCantidad);
+
+                // obtener precio actual
+                const precio = parseFloat(this.getAttribute('precio')) || 0;
+
+                // recalcular total visual
+                const nuevoTotal = nuevaCantidad * precio;
+
+                totalElement.textContent = `total: $${nuevoTotal.toFixed(2)}`;
+
+                // actualizar itemCombo
+                const itemIndex = itemCombo.findIndex(
+                    item => item.supplies_id == supplies_id
+                );
+
+                if (itemIndex !== -1) {
+                    itemCombo[itemIndex].cantidad = nuevaCantidad;
+                }
+
+                // recalcular totales generales
+                calculate_totals();
+
+                // evento personalizado
+                this.dispatchCustomEvent('updateCantidad', {
+                    supplies_id,
+                    cantidad: nuevaCantidad
+                });
+
+            });
+
+            deleteBtn.addEventListener('click', () => {
+
+                // eliminar de itemCombo
+                itemCombo = itemCombo.filter(
+                    item => item.supplies_id != supplies_id
+                );
+
+                // recalcular
+                calculate_totals();
+
+                this.dispatchCustomEvent('deleteItem', { supplies_id });
+
+            });
+        }
+
+        dispatchCustomEvent(name, detail) {
+            this.dispatchEvent(new CustomEvent(name, {
+                detail,
+                bubbles: true,
+                composed: true
+            }));
+        }
+    }
+
+
+    if (!customElements.get("item-selected")) {
+        customElements.define('item-selected', ItemSelected);
+    }
+    if (!customElements.get("item-combo")) {
+        customElements.define('item-combo', ItemCombo);
+    }
+</script>
+<script>
+
+
+    //here we will to create all the logic for search and add items to the combo
+    (() => {
+        const URL_IMGAE_COMBO_SUPPLIES = "{% static 'img/info/combo_supplies.webp' %}";
+        let itemCombo = [];
+        let seleccionados = [];
+
+        async function get_information_product(product_id) {
+            //this function is for get the information of the departament 
+            const backend = await window.send_message_to_the_server(`/services/get_information_product/${product_id}/`, {}, true, 'GET')
+            if (backend.success) {
+                //if get the information from the server now we will update the form 
+                const data = backend.answer;
+                window.update_inputs_of_the_form('formSpeedProduct', data);
+
+                document.getElementById('id_product_speed').value = product_id;
+
+                if (data.department) {
+                    set_value_plus_select('departament-form-speed', data.department.id, data.department.name)
+                }
+
+                if (data.category) {
+                    set_value_plus_select('category-form-speed', data.category.id, data.category.name)
+                }
+
+                if (data.taxes) {
+                    set_value_plus_select_multiple('select_taxes_form_speed', data.taxes)
+                }
+
+                if(data.unity_type){
+                    set_value_plus_select('unity_type', data.unity_type)
+                }
+
+                window.set_status_plus_switch('track_inventory', data.track_inventory)
+                window.set_status_plus_switch('show_fo_sale', data.show_fo_sale)
+                const type = data.pack_type
+                document.getElementById('pack_type').value = type;
+
+                window.show_pop('form-pop-services-speed');
+
+
+                //here now we will to update the information of the items 
+                data.items_list.forEach(item => {
+                    const newItem = {
+                        supplies_id: item.id,
+                        img: item.img || '',
+                        cantidad: item.quantity || 1,
+                        unidad: 'PZA',
+                        codigo: item.skus ? item.skus[0] : '',
+                        nombre: item.name,
+                        precio: item.price,
+                        base_price: item.base_price
+                    };
+
+                    itemCombo.push(newItem);
+                });
+
+                render_table_item_combo();
+                return;
+            }
+
+            window.show_alert('error', 'services.message.not-can-get-the-information-departament', backend.message || '', backend.error || '');
+        }
+
+        function open_panel_search_item() {
+            document.getElementById('add-item-combo').show();
+            window.update_container_from_the_server(
+                ['search-services', 'pageServices'],
+                'container-items',
+                get_div(),
+                '/services/search_pack/1/',
+                'GET',
+                true
+            );
+        }
+
+        function get_div() {
+            return `
+                <item-selected
+                    supplies_id="{id}" 
+                    img="{img}" 
+                    cantidad="1"
+                    unidad="{img}" 
+                    codigo="{skus}" 
+                    nombre="{name}" 
+                    base_price={base_price}
+                    precio="{price}">
+                </item-selected>
+            `
+        }
+
+        window.update_container_with_seeker(
+            ['search-services', 'pageServices'],
+            'container-items',
+            get_div(),
+            '/services/search_pack/1/',
+            'GET',
+            true
+        );
+
+
+        // Escuchamos el evento personalizado que definimos arriba
+        document.addEventListener('itemSelected', (e) => {
+            const { selected, info } = e.detail;
+
+            if (selected) {
+                // add to the list
+                seleccionados.push(info);
+            } else {
+                // delete the supplies with ID
+                const index = seleccionados.findIndex(item => item.supplies_id === info.supplies_id);
+                if (index > -1) seleccionados.splice(index, 1);
+            }
+
+            // update the UI of the button of add supplies
+            renderNumberList();
+        });
+
+        function renderNumberList() {
+            const btn = document.getElementById('btn-add-supplies');
+            if (!btn) {
+                return;
+            }
+
+            btn.textContent = `${window.translate_text('btn.add')} (${seleccionados.length})`;
+        }
+
+        function calculate_totals() {
+            //this variable are use for save the information of the total 
+            let totalWithoutTax = 0;
+            let totalTax = 0;
+            let totalUtility = 0;
+            let priceSuggested = 0;
+
+            itemCombo.forEach(item => {
+                //update the totals
+                const quantity = parseFloat(item.cantidad || 1)
+                totalWithoutTax += parseFloat(item.base_price) * quantity;
+                totalTax += parseFloat(item.precio) * quantity;
+            });
+
+            //here we will to update the information of the total 
+            document.getElementById('totalWithoutTax').textContent = window.format_currency(totalWithoutTax, 'MXN', true, false);
+            document.getElementById('totalTax').textContent = window.format_currency(totalTax, 'MXN', true, false);
+
+            //here we will to calculate the utility and the price suggeted
+            const priceProduct = parseFloat(document.getElementById('priceProduct').value) || 0;
+            const totalCost = totalTax;
+            totalUtility = priceProduct - totalCost;
+
+            // porcentaje de ganancia deseado (ejemplo 30%)
+            const utilityPercent = 30;
+
+            // precio sugerido
+            priceSuggested = totalCost + (totalCost * utilityPercent / 100);
+            document.getElementById('priceSuggested').textContent = window.format_currency(priceSuggested, 'MXN', true, false);
+
+            const utilityElement = document.getElementById('totalUtility');
+            utilityElement.textContent = window.format_currency(totalUtility, 'MXN', true, false);
+
+            //if the utility is positive we will to show of color green else it are red
+            if (totalUtility < 0) {
+                utilityElement.style.color = '#e74c3c'; // red
+            } else {
+                utilityElement.style.color = '#2ecc71'; // green
+            }
+        }
+
+        function render_table_item_combo() {
+
+            //render the table
+            const container = document.querySelector('#container-items-combo');
+            container.innerHTML = ''; //clear table
+
+            itemCombo.forEach(item => {
+
+                const nuevoItem = document.createElement('item-combo');
+
+                nuevoItem.setAttribute('supplies_id', item.supplies_id);
+                nuevoItem.setAttribute('img', item.img || '');
+                nuevoItem.setAttribute('cantidad', item.cantidad || 1);
+                nuevoItem.setAttribute('unidad', item.unidad || 'PZA');
+                nuevoItem.setAttribute('codigo', item.codigo);
+                nuevoItem.setAttribute('nombre', item.nombre);
+                nuevoItem.setAttribute('precio', item.precio);
+                nuevoItem.setAttribute('base_price', item.base_price);
+
+                // update item
+                nuevoItem.addEventListener('updateCantidad', (e) => {
+
+                    const { supplies_id, cantidad } = e.detail;
+
+                    const producto = itemCombo.find(
+                        x => x.supplies_id == supplies_id
+                    );
+
+                    if (producto) {
+                        producto.cantidad = cantidad;
+                    }
+
+                    console.log(itemCombo);
+
+                });
+
+                // delete ITEM
+                nuevoItem.addEventListener('deleteItem', async (e) => {
+                    if (await window.show_message_question('services.title.delete-supplies', 'services.description.delete-supplies')) {
+                        const { supplies_id } = e.detail;
+
+                        itemCombo = itemCombo.filter(
+                            x => x.supplies_id != supplies_id
+                        );
+
+                        render_table_item_combo();
+                    }
+                });
+
+                container.appendChild(nuevoItem);
+
+            });
+
+            //if not exist item in this combo we will to render the screen of infor 
+            if (itemCombo.length === 0) {
+                container.innerHTML = `
+                    <center>
+                        <img src="${URL_IMGAE_COMBO_SUPPLIES}" alt="img item" class="img-item-combo-info">
+                        <br>
+                        <label t="services.info.add-supplies">${window.translate_text('services.info.add-supplies')}</label>
+                    </center>
+                `;
+            }
+
+            calculate_totals();
+        }
+
+        function add_new_supplies_combo() {
+            const container = document.querySelector('#container-items-combo');
+
+            if (!container) {
+                console.warn("No se encontró el contenedor #container-items-combo");
+                return;
+            }
+
+            //2/ read all the new list of the supplies that the user selected
+            seleccionados.forEach(item => {
+                // 1. search if this item already exist in our list of <itemcombo>
+                const existente = itemCombo.find(buscado => buscado.supplies_id === item.supplies_id);
+
+                if (existente) {
+                    // 2. if exist, aument the quantity
+                    // We ensure that it is treated as a number using parseInt or Number
+                    let cantidadActual = parseInt(existente.cantidad || 1);
+                    let cantidadNueva = parseInt(item.cantidad || 1);
+                    existente.cantidad = cantidadActual + cantidadNueva;
+                } else {
+                    // 3. If it doesn't exist, we add it as a new object
+                    // We use the spread operator (...) to create a copy without affecting the original list.
+                    itemCombo.push({ ...item });
+                }
+            });
+
+            render_table_item_combo();
+
+            //clear all the panel and the hide 
+            seleccionados = [];
+            document.getElementById('add-item-combo').hide();
+            document.getElementById('search-services').value = '';
+
+            const btn = document.getElementById('btn-add-supplies');
+            btn.textContent = `${window.translate_text('btn.add')}`;
+        }
+
+        async function delete_product_speed() {
+            if (await show_message_question('services.question.delete-service', 'services.question.do-you-delete-service')) {
+                const id = document.getElementById('id_product_speed').value;
+                const backend = await window.send_form_to_the_server('formSpeedProduct', `/services/delete_services/${id}/`);
+                if (backend.success) {
+                    restart_form();
+
+                    //here we will see if the partial of <formSpeed> is in the home of services, for update his container
+                    if (typeof window.update_container_home_services === "function") {
+                        window.update_container_home_services();
+                    }
+
+                    window.show_notification('success', 'services.message.the-services-was-delete');
+                    window.nextWeb('/services/services/');
+                    return;
+                }
+            }
+        }
+
+        function get_data_item_pack() {
+            return itemCombo.map(item => ({
+                id: item.supplies_id,
+                quantity: item.cantidad ?? 1
+            }));
+        }
+
+        async function update_product(id) {
+            const backend = await window.send_form_to_the_server('formSpeedProduct', '/services/update_services/');
+            if (backend.success) {
+                //if can update the information basic of the form now we will to update the information of the pack 
+                const backend2 = await window.send_message_to_the_server(`/services/update_item_pack/${id}/`, { listItem: get_data_item_pack() }, true, 'POST')
+                if (!backend2.success) {
+                    window.show_alert('error', 'services.message.the-product-not-was-update', backend2.message || '', backend.error || '');
+                    return;
+                }
+
+                restart_form();
+
+                //here we will see if the partial of <formSpeed> is in the home of services, for update his container
+                if (typeof window.update_container_home_services === "function") {
+                    window.update_container_home_services();
+                }
+
+                window.show_notification('success', 'services.success.the-product-was-update');
+                return;
+            }
+
+            window.show_alert('alert', 'services.message.the-product-not-was-update', backend.message || '', backend.error || '');
+        }
+
+        async function add_procut() {
+            const backend = await window.send_form_to_the_server('formSpeedProduct', '/services/add_services/');
+            if (backend.success) {
+                restart_form();
+
+                //here we will see if the partial of <formSpeed> is in the home of services, for update his container
+                if (typeof window.update_container_home_services === "function") {
+                    window.update_container_home_services();
+                }
+
+                window.show_notification('success', 'services.success.the-product-was-add');
+                return;
+            }
+
+            window.show_alert('alert', 'services.message.the-product-not-was-created', backend.message || '', backend.error || '');
+        }
+
+        async function send_form_product_speed() {
+            //here we will see if exist or not exist the ID in the form
+            //if exist the ID is because the user would like update the departament
+            const id = document.getElementById('id_product_speed').value;
+            if (id && id.trim() !== "") {
+                await update_product(id);
+                return;
+            }
+
+
+            await add_procut();
+        }
+
+
+
+        window.open_panel_search_item = open_panel_search_item;
+        window.add_new_supplies_combo = add_new_supplies_combo;
+        window.send_form_product_speed = send_form_product_speed;
+        window.delete_product_speed = delete_product_speed;
+        window.calculate_totals=calculate_totals;
+        window.itemCombo=itemCombo;
+
+        //this is for create a event that when the user write in the input of the price product, 
+        // we can update all the information of the price
+        setTimeout(() => {
+            document.getElementById('priceProduct').addEventListener('input', function () {
+                calculate_totals();
+            });
+        }, 3000);
+    
+    
+    (async () => {
+        // 2. Extraemos el valor del script oculto
+        const packId = document.getElementById('id_product_speed').value;
+        
+        // 3. Lo usamos en tu función
+        await get_information_product(packId);
+    })();
+    })();
+</script>

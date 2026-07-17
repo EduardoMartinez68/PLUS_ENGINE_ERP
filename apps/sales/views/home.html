@@ -1,37 +1,4 @@
 <style>
-/* Table base */
-.plus-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #ffffff;
-    font-size: 14px;
-}
-
-/* Header */
-.plus-table thead {
-    background: #f6f7f9;
-}
-
-.plus-table th {
-    padding: 10px;
-    font-weight: 600;
-    color: #444;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-/* Rows */
-.plus-table td {
-    padding: 10px;
-    border-bottom: 1px solid #f0f0f0;
-    color: #333;
-}
-
-/* Hover effect like Odoo */
-.odoo-table tbody tr:hover {
-    background: #f9fafb;
-    cursor: pointer;
-}
-
 /* Alignment helpers */
 .text-right {
     text-align: right;
@@ -87,28 +54,96 @@
     color: #8a5700;
 }
 
-
-.table-container {
-    width: 100%;
-    overflow-x: auto;
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-#appointments-table {
-    width: 100%;
-    min-width: 600px; 
-    border-collapse: collapse;
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 600;
+  font-size: 13px;
+
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color: #1e40af;
 }
 
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-initials {
+  letter-spacing: 0.5px;
+}
+
+.col-name     { width: 18%; min-width: 140px; }
 </style>
+<message-pop title="title-filter" name="pop-filter-sales">
+    <div class="row section">
+        <div class="col">
+            <plus-select label="sales.filter.customer" link="customers/customers_search/" method="GET" id="customer_id_filter"></plus-select>
+        </div>
+        <div class="col">
+            <plus-select link="/departament_employee/search_employee/" label="sales.filter.user" id="employee_id_filter"></plus-select>
+        </div>
+    </div>
+    <div class="row section">
+        <div class="col">
+            <input-field label="sales.filter.date_start" type="date" id="date_start_filter"></input-field>
+        </div>
+        <div class="col">
+            <input-field label="sales.filter.date_finish" type="date" id="date_finish_filter"></input-field>
+        </div>
+    </div>
+    <div class="row section">
+        <div class="col">
+            <plus-select label="sales.filter.status" name="status" id="status_filter">
+                <option value="all" t="sales.general.all"></option>
+                <option value="pending" t="sales.status.pending"></option>
+                <option value="accepted" t="sales.status.accepted"></option>
+                <option value="paid" t="sales.status.paid"></option>
+                <option value="cancelled" t="sales.status.cancelled"></option>
+                <option value="expiration_date" t="sales.status.expired"></option>
+            </plus-select>
+        </div>
+    </div>
 
-<div class="container-section">
-    <h4>Tratamientos / Ventas</h4>
     <div class="row">
         <div class="col-8">
-            
+            <button t="message.success" class="btn btn-edit btn-success" onclick="window.hide_pop('pop-filter-sales')"></button>
         </div>
-        <div class="col-5 p-3">
+        <div class="col-4">
+            <button t="sale.btn.delete-filter" class="btn btn-secondary btn-success" onclick="restart_filters()"></button>
+        </div>
+    </div>
+</message-pop>
+
+
+<div class="container-section">
+        <plus-help-video 
+            videos='[
+            {"title":"¿Cómo Crear Ventas y Cotizaciones en tu clinica Denta?","url":"https://www.youtube.com/embed/iWU4xq-RXGE?si=1egZD3q31xRJHlGl"},
+            {"title":"¿Cómo Cancelar una Venta?","url":"https://www.youtube.com/embed/sprz2vvxXcQ?si=LyCfiLoTZI8hmpbo"}
+            ]'>
+        </plus-help-video><br>
+    <h4 t="sale.title.sale-and-services"></h4>
+    <div class="row">
+        <div class="col p-3">
             <plus-search input_id="search-sales">
+                <search-option>
+                    <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-sales')"><i class="fi fi-rr-settings-sliders"></i></button>
+                </search-option>
                 <search-option>
                     <button class="btn btn-add" onclick="window.nextWeb('/sales/add_sale/')">+</button>
                 </search-option>
@@ -119,17 +154,16 @@
         <table class="plus-table">
             <thead>
                 <tr>
-                    <th>Referencia</th>
-                    <th>Nombre</th>
-                    <th>Paciente</th>
-                    <th>Doctor</th>
-                    <th>Fecha</th>
-                    <th class="text-right">Total</th>
-                    <th class="text-right">Pagado</th>
-                    <th class="text-right">Saldo</th>
-                    <th class="text-center">Moneda</th>
-                    <th class="text-center">Estado</th>
-                    <th></th>
+                    <th t="sale.th.id"></th>
+                    <th t="sale.th.name"></th>
+                    <th t="sale.th.customer"></th>
+                    <th t="sale.th.doctor"></th>
+                    <th t="sale.th.date"></th>
+                    <th class="text-right" t="sale.th.total"></th>
+                    <th class="text-right" t="sale.th.buy"></th>
+                    <th class="text-right" t="sale.th.saldo"></th>
+                    <th class="text-center" t="sale.th.currency"></th>
+                    <th class="text-center" t="sale.th.status"></th>
                 </tr>
             </thead>
 
@@ -137,7 +171,6 @@
 
             </tbody>
         </table>
-
     </div>
 </div>
 
@@ -146,11 +179,18 @@
     (()=>{
         function get_div(){
             return `
-            <tr>
+            <tr onclick="window.nextWeb('/sales/view_sale/{id}/')">
                 <td class="ref" sales_id='{id}'>{reference}</td>
                 <td t='{name_sale}'></td>
                 <td t='{customer}'></td>
-                <td>{user}</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="avatar">
+                            <img src="{photo_user}" alt="{user}" class="avatar-img">
+                        </div>
+                        <span class="font-semibold">{user}</span>
+                    </div>
+                </td>
                 <td>{creationDate}</td>
                 <td class="text-right">$ {total}</td>
                 <td class="text-right">$ {amount_paid}</td>
@@ -159,14 +199,39 @@
                 <td class="text-center">
                     <span class="status status-{status}" t='sales.status.{status}'></span>
                 </td>
-                <td class="text-center">
-                    <button class="btn btn-sm btn-primary" onclick="window.nextWeb('/sales/view_sale/{id}/')"><i class="fi fi-sr-pencil"></i></button>
-                </td>
             </tr>
             `
         }
 
 
-        window.update_container_with_seeker('search-sales', 'container-table-sales', get_div(), `/sales/get_the_sales/`, 'GET');
+        window.update_container_with_seeker(
+            ['search-sales', 'customer_id_filter', 'employee_id_filter', 'date_start_filter', 'date_finish_filter', 'status_filter'],
+            'container-table-sales', get_div(), `/sales/get_the_sales/`, 'GET', true);
+
+
+        function reload_sales(){
+            window.update_container_from_the_server(
+                ['search-sales', 'customer_id_filter', 'employee_id_filter', 'date_start_filter', 'date_finish_filter', 'status_filter'],
+                'container-table-sales', get_div(), `/sales/get_the_sales/`, 'GET', true);
+        }
+
+        function restart_filters(){
+            document.getElementById('customer_id_filter').reset();
+            document.getElementById('employee_id_filter').reset();
+            document.getElementById('date_start_filter').value = '';
+            document.getElementById('date_finish_filter').value = '';
+            document.getElementById('status_filter').reset();
+
+            reload_sales();
+        }
+
+        window.reload_sales=reload_sales;
+        window.restart_filters=restart_filters;
     })();
 </script>
+
+
+
+
+
+

@@ -1,0 +1,14 @@
+
+name: "inventory"
+version: "1.0.0"
+
+appName: "inventory"
+icon: "fi fi-rs-inventory-alt"
+iconF: "fi fi-rs-rocket-lunch"
+
+path: "/inventory"
+dbInit: true
+public: true
+permissionsFile: 'permissions.json'
+dependencies:
+  - "services"

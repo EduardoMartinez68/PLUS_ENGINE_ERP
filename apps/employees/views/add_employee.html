@@ -59,38 +59,9 @@
 
     <div class="row section">
         <div class="col">
-            <input-field name="email" type="email" label="employees.label.email" placeholder="employees.placeholder.email" required value="{{ employee.employee.email }}"></input-field>
+            <input-field name="email" type="email" label="employees.label.email-employee" placeholder="employees.placeholder.email" value="{{ employee.employee.email }}"></input-field>
         </div>
     </div>
-
-
-    <!--here we will see if the user is editing a employee, if the use is edititng a employee, not can show the inputs of password--->
-    {% if employee %}
-
-    {% else %}
-    <div class="row section">
-      <div class="col">
-        <input-field
-          id="password"
-          name="password"
-          type="password"
-          label="employees.label.password"
-          placeholder="employees.placeholder.password"
-          required>
-        </input-field>
-      </div>
-      <div class="col">
-        <input-field
-          id="confirm-password"
-          name="confirm-password"
-          type="password"
-          label="employees.label.confirm-password"
-          placeholder="employees.placeholder.confirm-password"
-          required>
-        </input-field>     
-      </div>
-    </div>
-    {% endif %}
 
     <show-more text="employees.showmore.more-information" onclick="window.show_pop('pop-more-information')" description='({{employee.employee.phone}} {{employee.employee.cellphone}}.{{employee.employee.language}})'></show-more>
 
@@ -295,53 +266,11 @@
       return false;
     }
 
-
-    //second we will see if the user have a email valid
-    const email=document.getElementById('email');
-    if (!email?.value.trim()) {
-      window.show_alert('alert', 'employees.message.error-in-the-form', 'employees.message.the-email-is-need');
-      return false;
-    }
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email.value.trim())) {
-      window.show_alert('alert', 'employees.message.error-in-the-form', 'employees.message.the-email-is-not-valid');
-      return false;
-    }
-
     //now by last we will see if the password is success and return the value
-    return valid_password();
-  }
-
-  function valid_password(){
-    const password=document.getElementById('password');
-    const confirm_password=document.getElementById('confirm-password');
-
-    //we will see if exist the both inputs of the password, if not exist is because the user is editing the employee
-    if(!password && !confirm_password){
-      return true;
-    }
-
-
-    //now if exist the inputs of the passwod is because the user would like add a new employee and need see if the password is valid
-    if (password.value === '' && confirm_password.value === '') {
-      password.style.borderColor = '';
-      confirm_password.style.borderColor = '';
-      window.show_alert('alert', 'employees.message.error-in-the-form', 'employees.message.the-password-is-need')
-      return false;
-    }
-
-    if (password.value === confirm_password.value) {
-      password.style.borderColor = 'green';
-      confirm_password.style.borderColor = 'green';
-    } else {
-      password.style.borderColor = 'red';
-      confirm_password.style.borderColor = 'red';
-      window.show_alert('alert', 'employees.message.error-in-the-form', 'employees.message.the-password-is-need')
-      return false;
-    }
-
     return true;
   }
+
+
   (()=>{
     //here we will get the information of the inputs of the password for
     //comparer if both password and if both password are equals we will to marker the inputs of a color green

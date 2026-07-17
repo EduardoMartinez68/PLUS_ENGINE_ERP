@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 from core.readApps import APPS_CACHE #get the list of our apps in the ERP
 from core.models import Company, Branch, UserRole, Role, UserDepartment, Permit, CustomUser, SubscriptionPlan, UserSubscription, UserSession
@@ -8,9 +9,12 @@ from datetime import timedelta
 #when tis we will read our file .env
 from dotenv import load_dotenv 
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from apps.setting.plus_wrapper import Plus
 
 load_dotenv()
 KEY_TINYMCE = os.getenv('KEY_TINYMCE')
+nameERP = os.getenv('NAME_COMPANY', 'PLUS')
 
 @login_required(login_url='login')
 def home(request):
@@ -18,8 +22,88 @@ def home(request):
     user = request.user
     company = user.company  # Company instance
     branch = user.branch  # Branch instance
+    branches = Branch.objects.filter(
+        company=company,
+        activated=True
+    )
+    nameSystem=nameERP
+    return render(request, 'core/home.html',{'apps': apps,'KEY_TINYMCE':KEY_TINYMCE,'user': user,'company': company,'branch': branch,'branches': branches, "nameSystem":nameSystem})
 
-    return render(request, 'core/home.html',{'apps': apps,'KEY_TINYMCE':KEY_TINYMCE,'user': user,'company': company,'branch': branch})
+@login_required(login_url='login')
+def create_branch(request):
+    if not Plus.this_user_have_this_permission(request.user, 'add_branch'):
+        return JsonResponse(
+            {"success": False, "message": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+            status=200
+        )
+    
+    #now we will see if the user can create more branches with his subscription
+    if not Plus.valid_subscription(request.user, 'branches'):
+        return JsonResponse(
+            {"success": False, "message": 'subscription.not-can-add-more-branches', "error": 'this user not have this permission'},
+            status=200
+        )
+    
+    name_branch = request.POST.get('name_branch')
+
+    if not name_branch:
+        return JsonResponse({
+            'success': False,
+            'message': 'Branch name is required'
+        })
+
+    company = request.user.company
+
+    # Crear sucursal
+    branch = Branch.objects.create(
+        company=company,
+        name_branch=name_branch,
+        country=company.country,
+        activated=True
+    )
+
+    # Cambiar automáticamente a la nueva sucursal
+    request.user.branch = branch
+    request.user.save()
+
+    return JsonResponse({
+        'success': True,
+        'branch': {
+            'id': branch.id,
+            'name': branch.name_branch
+        }
+    })
+
+@login_required
+@require_POST
+def change_branch(request):
+    if not Plus.this_user_have_this_permission(request.user, 'change_branch'):
+        return JsonResponse(
+            {"success": False, "message": 'message.this-user-not-have-this-permission', "error": 'this user not have this permission'},
+            status=200
+        )
+    branch_id = request.POST.get('branch_id')
+
+    try:
+
+        branch = Branch.objects.get(
+            id=branch_id,
+            company=request.user.company
+        )
+
+        request.user.branch = branch
+        request.user.save()
+
+        return JsonResponse({
+            'success': True
+        })
+
+    except Branch.DoesNotExist:
+
+        return JsonResponse({
+            'success': False,
+            'message': 'Branch not found'
+        })
 
 from django.shortcuts import render, redirect
 
@@ -280,6 +364,7 @@ def register(request):
 
 from django.contrib.auth import authenticate, login
 from core.forms import LoginForm
+from axes.exceptions import AxesBackendPermissionDenied
 
 def login_view(request):
     form = LoginForm()
@@ -294,9 +379,15 @@ def login_view(request):
 
         try:
             # Authenticate usando USERNAME_FIELD='email'
-            user = CustomUser.objects.get(email=email)
+            #user = CustomUser.objects.get(email=email)
+            user = authenticate(
+                request=request,
+                username=email,
+                password=password,
+            )
+
             if user is not None:
-                if user.check_password(password):
+                if True:#user.check_password(password):
                     try:
                         #here we will get the information of the subscription of the user
                         subscription = user.subscription
@@ -347,9 +438,16 @@ def login_view(request):
             else:
                 # if the user not exist or the password is denied
                 error_message = 'No existe este usuario'#'home.error.no-can-login'
+
+        except AxesBackendPermissionDenied:
+            error_message = "Has realizado demasiados intentos de inicio de sesión. Por seguridad, tu acceso ha sido bloqueado temporalmente. Inténtalo nuevamente en unos minutos."
+            
         except Exception as e:
-            print(e)
-            error_message = 'No se pudo iniciar sesión. Inténtalo otra vez.' #'home.error.no-can-login'
+            if str(e)=='You have multiple authentication backends configured and therefore must provide the `backend` argument or set the `backend` attribute on the user.':
+                error_message = "Has realizado demasiados intentos de inicio de sesión. Por seguridad, tu acceso ha sido bloqueado temporalmente. Inténtalo nuevamente en unos minutos."
+            else:
+                print(e)
+                error_message = 'No se pudo iniciar sesión. Inténtalo otra vez.' #'home.error.no-can-login'
 
 
     data = request.POST  # QueryDict

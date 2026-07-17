@@ -13,6 +13,18 @@ class Plus:
     )
 
     @staticmethod
+    def get_client_ip(request):
+        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+
+        if x_forwarded_for:
+            # if exist more of a data, we will get the first IP
+            ip = x_forwarded_for.split(",")[0].strip()
+        else:
+            ip = request.META.get("REMOTE_ADDR")
+
+        return ip
+    
+    @staticmethod
     def _load_module(module_name):
         module_file = os.path.join(Plus.functions_path, f"{module_name}.py")
         spec = importlib.util.spec_from_file_location(module_name, module_file)
@@ -76,6 +88,22 @@ class Plus:
     def to_bool(value):
         return str(value).lower() in ("True","true", "on", "1")
     
+    def to_float(value, default=0):
+        try:
+            if value in [None, "", " "]:
+                return default
+            return Decimal(str(value))
+        except:
+            return default
+        
+    def to_int(value, default=0):
+        try:
+            if value in [None, "", " "]:
+                return default
+            return int(str(value))
+        except:
+            return int(default)
+    
     @staticmethod
     def valid_subscription(
         user, 
@@ -92,61 +120,8 @@ class Plus:
             - True and empty string if permission is granted
             - False and an error message if the user not have the pack of the subscription that need
         """
-
-        
-        # 1️⃣ Check the subscription of the user and see if exist 
-        from core.models import UserSubscription
-        sub=UserSubscription.objects.filter(user=user).first()
-
-        if not sub:
-            return {
-                "status": False,
-                "message": "subscription.not-exist-this-suscription",
-            }
-
-        #if the subscription is expired
-        if sub.is_expired():
-            return {
-                "status": False,
-                "message": "subscription.your-subscription-is-expired",
-            }
-        
-        #now we will see that would like do to the user 
-        if service=='customers':
-            return {
-                "status": sub.can_create_client(),
-                "message": "subscription.not-can-add-more-customers",
-            }
-        
-        if service=='appointments':
-            return {
-                "status": sub.can_create_appointment(),
-                "message": "subscription.not-can-add-more-appointsments",
-            }
-        
-
-        if service=='employees':
-            return {
-                "status": sub.can_create_employee(),
-                "message": "subscription.not-can-add-more-employees",
-            }
-
-        if service=='messages_whatsapp':
-            return {
-                "status": sub.can_send_message(),
-                "message": "subscription.not-can-add-send-more-messages",
-            }
-        
-        if service=='upload':
-            return {
-                "status": sub.can_upload_more_storage(),
-                "message": "subscription.not-can-add-upload-more-files",
-            }
-        
-
-        #for default we will return false and a message of that not exist this service
         return {
-            "status": False,
+            "status": True,
             "message": "subscription.this-service-does-not-exist",
         }
 
@@ -217,9 +192,13 @@ class Plus:
             - True and empty string if permission is granted
             - False and an error message if permission is denied
         """
+        # 1️⃣ First we will to check if the user is the superuser, 
+        # if is superuser we will return true
+        if user.superuser:
+            return True #, ""
 
         from core.models import Role
-        # 1️⃣ Check permission of the main user
+        # 2️⃣ Check permission of the main user
         # related to the intermediate user-role table
 
         if Role.objects.filter(
@@ -229,7 +208,7 @@ class Plus:
         ).exists():
             return True
 
-        # 2️⃣ if the user not have this permission, now we will to check admin override if credentials are provided
+        # 3️⃣ if the user not have this permission, now we will to check admin override if credentials are provided
         if user_admin and password_admin:
             admin_user = authenticate(username=user_admin, password=password_admin)
             if admin_user is not None and admin_user.is_active:
@@ -238,7 +217,7 @@ class Plus:
                     return True #, ""
             return False #, "permission.invalid-credentials"
 
-        # 3️⃣ Neither user nor admin have permission
+        # 4 Neither user nor admin have permission
         return False #, "permission.not-have-this-permission"
     
 

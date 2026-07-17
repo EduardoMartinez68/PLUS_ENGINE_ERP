@@ -1,0 +1,471 @@
+<style>
+    /* Forzar que el Custom Element se comporte como un bloque al 100% */
+    card-history-inventory {
+        display: block;
+        width: 100%;
+    }
+
+    /* Estructura base de la Card */
+    .history-card {
+        background-color: #ffffff;
+        padding: 12px 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        width: 100%;
+        /* Ocupa el 100% del contenedor padre */
+        box-sizing: border-box;
+    }
+
+    /* Bordes fijos según la lógica interna sin animaciones de hover */
+    .history-card.movement-increase {
+        border-left: 4px solid #0284c7;
+        /* Azul Entrada */
+    }
+
+    .history-card.movement-decrease {
+        border-left: 4px solid #ef4444;
+        /* Rojo Salida/Egreso */
+    }
+
+    .history-card.movement-no-change {
+        border-left: 4px solid #64748b;
+        /* Gris Sin Cambios */
+    }
+
+    /* Columnas internas */
+    .card-column {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    /* Tipografías */
+    .pack-name {
+        font-weight: 600;
+        font-size: 14px;
+        color: #1e293b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .stock-label {
+        font-size: 10px;
+        color: #94a3b8;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    .stock-value {
+        font-weight: 600;
+        font-size: 14px;
+        color: #334155;
+    }
+
+    /* Badges de Diferencia */
+    .difference-badge {
+        font-weight: 700;
+        padding: 5px 12px;
+        font-size: 13px;
+        display: inline-block;
+        border-radius: 8px;
+    }
+
+    .movement-increase .difference-badge {
+        background-color: #e0f2fe;
+        color: #0284c7;
+    }
+
+    .movement-decrease .difference-badge {
+        background-color: #fee2e2;
+        color: #ef4444;
+    }
+
+    .movement-no-change .difference-badge {
+        background-color: #f1f5f9;
+        color: #64748b;
+    }
+
+    /* Adaptación para pantallas pequeñas */
+    @media (max-width: 768px) {
+        .history-card {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .card-column {
+            width: 100%;
+            text-align: left !important;
+            align-items: flex-start !important;
+        }
+
+        .card-column[style*="text-align: right"] {
+            border-top: 1px dashed #e2e8f0;
+            padding-top: 8px;
+        }
+    }
+
+    .hidden-accessible {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    /* Contenedor del disparador */
+    .filter-container {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 0;
+    }
+
+    /* Botón principal de Filtro */
+    .btn-filter-trigger {
+        background-color: #ffffff;
+        border: 1px solid #cbd5e1;
+        padding: 8px 16px;
+        color: #334155;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* El Popover nativo */
+    #popover-filters {
+        padding: 20px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        width: 900px;
+        box-sizing: border-box;
+        margin: 0;
+        overflow: visible;
+        position: fixed !important;
+        z-index: 100;
+    }
+
+    /* Estructura interna */
+    #popover-filters .row.section {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    #popover-filters .col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    /* Fila de botones inferiores */
+    .popover-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        margin-top: 20px;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 15px;
+    }
+
+    /* Botón Limpiar */
+    .btn-action-clean {
+        background: transparent;
+        border: 1px solid #e2e8f0;
+        color: #94a3b8;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+    .btn-action-clean:hover {
+        background-color: #f8fafc;
+        color: #64748b;
+    }
+
+    /* Botón Buscar (Estilo Azul de tu imagen) */
+    .btn-action-search {
+        background-color: var(--primary);
+        border: none;
+        color: #ffffff;
+        padding: 8px 24px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .btn-action-search:hover {
+        background-color: var(--primary-dark);
+    }
+
+.custom-popover {
+    display: none;
+}
+
+.custom-popover.active {
+    display: block;
+}
+</style>
+<input type="text" id="filter-tab-history" class="hidden-accessible">
+
+
+<div class="filter-container">
+    <button class="btn-filter-trigger">
+        <i class="fi fi-rr-filter"></i> <span t="inventory.btn.filters">Filtrar Historial</span>
+    </button>
+
+    <div id="popover-filters" class="custom-popover">
+        <div class="row section">
+            <div class="col">
+                <label t="inventory.label.start-date"></label>
+                <input type="date" label="inventory.label.start-date" id="input_date_start">
+            </div>
+            <div class="col">
+                <label t="inventory.label.finish-date"></label>
+                <input type="date" label="inventory.label.finish-date" id="input_date_finish">
+            </div>
+        </div>
+
+        <div class="row section">
+            <div class="col">
+                <plus-select label="inventory.label.select-pack" link="/services/search_pack/1/" method="GET"
+                    id="select_pack"></plus-select>
+            </div>
+            <div class="col">
+                <plus-select label="inventory.label.select-user" link="/departament_employee/search_employee/"
+                    method="GET" id="select_user"></plus-select>
+            </div>
+        </div>
+
+        <div class="row popover-actions">
+            <button class="btn-action-clean" t="inventory.btn.restart-select"
+                onclick="restart_filter_history_inventory()">
+                Limpiar (0)
+            </button>
+            <button class="btn-action-search" popovertarget="popover-filters" popovertargetaction="hide"
+                onclick="update_container_history()">
+                Buscar
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="container-table-history" style="width: 100%; display: flex; flex-direction: column; gap: 10px;">
+
+</div>
+<script>
+    // -------------------------------------------------------------------------
+    // Define el Web Component Personalizado: <card-history-inventory>
+    // -------------------------------------------------------------------------
+    class CardHistoryInventory extends HTMLElement {
+        constructor() {
+            super();
+        }
+
+        connectedCallback() {
+            // 1. Obtener los atributos que le pasa el motor de renderizado
+            const packName = this.getAttribute('pack_name') || '';
+            const unityType = this.getAttribute('unity_type') || '';
+            const oldStock = parseFloat(this.getAttribute('old_stock') || 0).toFixed(2);
+            const newStock = parseFloat(this.getAttribute('new_stock') || 0).toFixed(2);
+            const updatedBy = this.getAttribute('updated_by') || 'Sistema';
+            const updateDate = this.getAttribute('update_date') || '';
+
+            // 2. Lógica interna: Calcular diferencia y tipo de movimiento
+            const difference = parseFloat(newStock - oldStock).toFixed(2);
+            let movementType = 'no-change';
+            let diffSign = difference;
+
+            if (difference > 0) {
+                movementType = 'increase';
+                diffSign = `+${difference}`;
+            } else if (difference < 0) {
+                movementType = 'decrease';
+                // difference ya trae el signo menos (-) por defecto
+            }
+
+            // 3. Renderizar el HTML interno de la etiqueta
+            this.innerHTML = `
+                <div class="history-card movement-${movementType}">
+                    
+                    <!-- 1. Producto / Pack -->
+                    <div class="card-column" style="flex: 2;">
+                        <span class="pack-name">${packName}</span>
+                        <small class="text-muted" style="font-size: 11px; color: #6c757d;">
+                            <label t="inventory.unity_type.${unityType}"></label>
+                        </small>
+                    </div>
+
+                    <!-- 2. Stock Anterior -->
+                    <div class="card-column text-center">
+                        <span class="stock-label">Anterior</span>
+                        <span class="stock-value">${oldStock}</span>
+                    </div>
+
+                    <!-- 3. Stock Nuevo -->
+                    <div class="card-column text-center">
+                        <span class="stock-label">Nuevo</span>
+                        <span class="stock-value">${newStock}</span>
+                    </div>
+
+                    <!-- 4. Diferencia (Badge Dinámico Calculado Internamente) -->
+                    <div class="card-column text-center" style="align-items: center; justify-content: center;">
+                        <span class="difference-badge">${diffSign}</span>
+                    </div>
+
+                    <!-- 5. Metadatos (Usuario y Fecha) -->
+                    <div class="card-column" style="flex: 1.5; text-align: right; gap: 2px;">
+                        <span class="meta-text" style="font-size: 13px; color: #334155;">
+                            <span class="meta-label" style="color: #94a3b8; font-size: 11px;">Por:</span> ${updatedBy}
+                        </span>
+                        <span class="meta-text" style="font-size: 11px; color: #64748b;">
+                            ${updateDate}
+                        </span>
+                    </div>
+
+                </div>
+            `;
+        }
+    }
+
+    // Registrar la etiqueta personalizada en el navegador
+    if (!customElements.get('card-history-inventory')) {
+        customElements.define('card-history-inventory', CardHistoryInventory);
+    }
+
+
+    function get_div_history() {
+        return `
+        <card-history-inventory 
+            pack_name="{pack_name}" 
+            unity_type="{unity_type}" 
+            old_stock="{old_stock}" 
+            new_stock="{new_stock}" 
+            updated_by="{updated_by}" 
+            update_date="{update_date}">
+        </card-history-inventory>
+        `;
+    }
+
+
+    function update_container_history() {
+        window.update_container_from_the_server(
+            ['filter-tab-history', 'input_date_start', 'input_date_finish', 'select_pack', 'select_user'],
+            'container-table-history', get_div_history(), `/inventory/get_history_inventory/`, 'GET', true);
+    }
+
+    function restart_filter_history_inventory() {
+        document.getElementById('input_date_start').value = '';
+        document.getElementById('input_date_finish').value = '';
+        document.getElementById('select_pack').reset();
+        document.getElementById('select_user').reset();
+
+
+        update_container_history();
+    }
+
+    (() => {
+        window.update_container_with_seeker(
+            ['filter-tab-history', 'input_date_start', 'input_date_finish', 'select_pack', 'select_user'],
+            'container-table-history', get_div_history(), `/inventory/get_history_inventory/`, 'GET', true);
+
+    })();
+    (() => {
+        // 1. Seleccionar el contenedor del historial
+        const container = document.getElementById('container-table-history');
+
+        if (container) {
+            // 2. Configurar el observador
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    // isIntersecting es true cuando el contenedor se vuelve visible en pantalla
+                    if (entry.isIntersecting) {
+
+                        // 3. Validar de forma segura si la función existe antes de ejecutarla
+                        if (typeof update_container_history === "function") {
+                            update_container_history();
+                        } else if (typeof window.update_container_history === "function") {
+                            window.update_container_history();
+                        }
+
+                        // NOTA: Si solo quieres que se ejecute la PRIMERA VEZ que aparece, 
+                        // puedes dejar de observar el contenedor activando la siguiente línea:
+                        // observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                root: null,      // Usa el viewport del navegador como referencia
+                threshold: 0.1   // Se activa en cuanto el 10% del contenedor es visible
+            });
+
+            // 4. Activar la observación sobre tu contenedor
+            observer.observe(container);
+        }
+    })();
+(() => {
+
+    const trigger = document.querySelector('.btn-filter-trigger');
+    const popover = document.getElementById('popover-filters');
+
+    if (!trigger || !popover) return;
+
+    trigger.addEventListener('click', (e) => {
+
+        e.stopPropagation();
+
+        const isOpen = popover.classList.contains('active');
+
+        // cerrar todos
+        document.querySelectorAll('.custom-popover.active')
+            .forEach(el => el.classList.remove('active'));
+
+        if (!isOpen) {
+
+            popover.classList.add('active');
+
+            const rect = trigger.getBoundingClientRect();
+
+            popover.style.top = `${rect.bottom + 8}px`;
+            popover.style.left = `${rect.right - popover.offsetWidth}px`;
+        }
+
+    });
+
+    // cerrar al hacer click afuera
+    document.addEventListener('click', (e) => {
+
+        if (
+            !popover.contains(e.target) &&
+            !trigger.contains(e.target)
+        ) {
+            popover.classList.remove('active');
+        }
+
+    });
+
+})();
+</script>

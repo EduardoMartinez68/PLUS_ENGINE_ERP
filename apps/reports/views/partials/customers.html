@@ -1,0 +1,468 @@
+<report-customers></report-customers>
+<script>
+class ReportCustomers extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    this.render();
+  }
+
+  static get observedAttributes() {
+    return ['total-pacientes', 'nuevos-pacientes', 'origen-datos', 'top-fidelidad', 'demografia-genero'];
+  }
+
+  attributeChangedCallback() {
+    if (this.shadowRoot.innerHTML !== '') {
+      this.render();
+    }
+  }
+
+  // Getters para parsear los atributos dinámicos
+  get totalPacientes() {
+    return this.getAttribute('total-pacientes') || '0';
+  }
+
+  get nuevosPacientes() {
+    return this.getAttribute('nuevos-pacientes') || '0';
+  }
+
+  get origenDatos() {
+    return JSON.parse(this.getAttribute('origen-datos') || '[]');
+  }
+
+  get topFidelidad() {
+    return JSON.parse(this.getAttribute('top-fidelidad') || '[]');
+  }
+
+  get demografiaGenero() {
+    return JSON.parse(this.getAttribute('demografia-genero') || '{"hombres":0,"mujeres":0,"otros":0}');
+  }
+
+  render() {
+    const total = this.totalPacientes;
+    const nuevos = this.nuevosPacientes;
+    const origenes = this.origenDatos;
+    const destacados = this.topFidelidad;
+    const genero = this.demografiaGenero;
+
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          display: block;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          color: #333333;
+          background-color: #f8fafc;
+          padding: 24px;
+        }
+
+        /* --- Grid de KPIs Superiores --- */
+        .kpi-container {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 20px;
+          margin-bottom: 32px;
+        }
+
+        .kpi-card {
+          background: #ffffff;
+          border-radius: 12px;
+          padding: 24px;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .kpi-info h3 {
+          font-size: 0.85rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: #64748b;
+          margin: 0 0 6px 0;
+          font-weight: 600;
+        }
+
+        .kpi-info p {
+          font-size: 0.75rem;
+          color: #94a3b8;
+          margin: 0;
+        }
+
+        .kpi-value {
+          font-size: 2.2rem;
+          font-weight: 700;
+          color: #0f172a;
+          margin: 0;
+        }
+
+        .kpi-card.accent {
+          border-left: 4px solid #2563eb;
+        }
+        
+        .kpi-card.success {
+          border-left: 4px solid #10b981;
+        }
+
+        /* --- Layout de Secciones --- */
+        .charts-section {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 24px;
+          margin-bottom: 32px;
+        }
+
+        @media (min-width: 900px) {
+          .charts-section {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+
+        .panel {
+          background: #ffffff;
+          border-radius: 12px;
+          padding: 24px;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .panel-title {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: #0f172a;
+          margin: 0 0 4px 0;
+        }
+
+        .panel-subtitle {
+          font-size: 0.8rem;
+          color: #64748b;
+          margin: 0 0 24px 0;
+        }
+
+        /* --- Gráfica de Pastel (Captación) --- */
+        .pie-layout {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 24px;
+        }
+
+        @media (min-width: 450px) {
+          .pie-layout {
+            flex-direction: row;
+            justify-content: space-around;
+          }
+        }
+
+        canvas {
+          max-width: 180px;
+          max-height: 180px;
+        }
+
+        .legend-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          font-size: 0.85rem;
+          width: 100%;
+          max-width: 200px;
+        }
+
+        .legend-item {
+          display: flex;
+          align-items: center;
+          justify-between: space-between;
+          width: 100%;
+        }
+
+        .legend-label {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: #475569;
+        }
+
+        .legend-bullet {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .legend-count {
+          font-weight: 600;
+          color: #0f172a;
+          margin-left: auto;
+        }
+
+        /* --- Barra Demográfica de Género --- */
+        .gender-container {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          margin-top: 8px;
+        }
+
+        .gender-bar-wrapper {
+          display: flex;
+          height: 24px;
+          border-radius: 6px;
+          overflow: hidden;
+          background-color: #f1f5f9;
+        }
+
+        .gender-segment {
+          height: 100%;
+          transition: width 0.3s ease;
+        }
+
+        .gender-stats {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+          text-align: center;
+        }
+
+        .gender-box {
+          padding: 10px;
+          border-radius: 8px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+        }
+
+        .gender-name {
+          font-size: 0.8rem;
+          color: #64748b;
+          margin: 0 0 4px 0;
+        }
+
+        .gender-val {
+          font-size: 1.1rem;
+          font-weight: 600;
+          margin: 0;
+        }
+
+        /* --- Tabla Dinámica --- */
+        .table-wrapper {
+          overflow-x: auto;
+          margin-top: 8px;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: left;
+          font-size: 0.85rem;
+        }
+
+        th {
+          background-color: #f8fafc;
+          color: #64748b;
+          padding: 10px 14px;
+          font-weight: 600;
+          border-bottom: 2px solid #e2e8f0;
+          text-transform: uppercase;
+          font-size: 0.75rem;
+          letter-spacing: 0.05em;
+        }
+
+        td {
+          padding: 12px 14px;
+          border-bottom: 1px solid #e2e8f0;
+          color: #334155;
+        }
+
+        tr:hover td {
+          background-color: #f8fafc;
+        }
+
+        .badge-points {
+          background-color: #eff6ff;
+          color: #1e40af;
+          padding: 4px 8px;
+          border-radius: 6px;
+          font-weight: 600;
+        }
+      </style>
+
+      <div class="kpi-container">
+        <div class="kpi-card accent">
+          <div class="kpi-info">
+            <h3>Total de Pacientes</h3>
+            <p>Histórico global en la plataforma</p>
+          </div>
+          <div class="kpi-value">${total}</div>
+        </div>
+        <div class="kpi-card success">
+          <div class="kpi-info">
+            <h3>Nuevos Pacientes</h3>
+            <p>Registrados en el rango de fechas</p>
+          </div>
+          <div class="kpi-value">${nuevos}</div>
+        </div>
+      </div>
+
+      <div class="charts-section">
+        
+        <div class="panel">
+          <h2 class="panel-title">Canales de Origen y Captación</h2>
+          <p class="panel-subtitle">¿Cómo conocen los nuevos pacientes nuestra clínica?</p>
+          <div class="pie-layout">
+            <canvas id="sourceChart" width="180" height="180"></canvas>
+            <div class="legend-list">
+              ${origenes.map(o => `
+                <div class="legend-item">
+                  <div class="legend-label">
+                    <span class="legend-bullet" style="background-color: ${o.color || '#cbd5e1'}"></span>
+                    <span>${o.nombre}</span>
+                  </div>
+                  <span class="legend-count">${o.cantidad}</span>
+                </div>
+              `).join('')}
+              ${origenes.length === 0 ? '<p style="color:#94a3b8; text-align:center;">Sin datos de origen</p>' : ''}
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2 class="panel-title">Distribución por Género</h2>
+          <p class="panel-subtitle">Segmentación del volumen total de pacientes registrados</p>
+          
+          <div class="gender-container">
+            <div class="gender-bar-wrapper">
+              <div class="gender-segment" id="barFem" style="background-color: #ec4899;"></div>
+              <div class="gender-segment" id="barMasc" style="background-color: #3b82f6;"></div>
+              <div class="gender-segment" id="barOtros" style="background-color: #64748b;"></div>
+            </div>
+
+            <div class="gender-stats">
+              <div class="gender-box" style="border-top: 3px solid #ec4899;">
+                <p class="gender-name">Mujeres (F)</p>
+                <p class="gender-val" style="color: #ec4899;">${genero.mujeres}</p>
+              </div>
+              <div class="gender-box" style="border-top: 3px solid #3b82f6;">
+                <p class="gender-name">Hombres (M)</p>
+                <p class="gender-val" style="color: #3b82f6;">${genero.hombres}</p>
+              </div>
+              <div class="gender-box" style="border-top: 3px solid #64748b;">
+                <p class="gender-name">Otros (O)</p>
+                <p class="gender-val" style="color: #64748b;">${genero.otros}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="panel" style="margin-bottom: 8px;">
+        <h2 class="panel-title">Pacientes Destacados (Fidelidad y Carteras)</h2>
+        <p class="panel-subtitle">Análisis basado en saldos crediticios y puntos acumulados en la compañía</p>
+        
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Paciente</th>
+                <th>Identificador / SKU</th>
+                <th>Estado Perfil</th>
+                <th>Fecha Alta</th>
+                <th>Crédito Disp.</th>
+                <th>Puntos Acumulados</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${destacados.length === 0 ? `<tr><td colspan="6" style="text-align:center; color:#94a3b8; padding: 20px;">No hay registros de pacientes destacados en este bloque</td></tr>` : ''}
+              ${destacados.map(paciente => `
+                <tr>
+                  <td style="font-weight: 500; color: #0f172a;">${paciente.nombre}</td>
+                  <td style="color: #64748b; font-family: monospace;">${paciente.sku || 'N/A'}</td>
+                  <td>
+                    <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color: ${paciente.activated ? '#10b981' : '#ef4444'}; margin-right:4px;"></span>
+                    ${paciente.activated ? 'Activo' : 'Inactivo'}
+                  </td>
+                  <td>${new Date(paciente.creation_date).toLocaleDateString('es-MX')}</td>
+                  <td style="font-weight: 600; color: ${parseFloat(paciente.credit) > 0 ? '#b91c1c' : '#334155'}">
+                    $${parseFloat(paciente.credit || 0).toFixed(2)}
+                  </td>
+                  <td>
+                    <span class="badge-points">${paciente.points || 0} pts</span>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    // Renderizado de elementos visuales complejos
+    this.drawSourceChart(origenes);
+    this.calculateGenderBars(genero);
+  }
+
+  // Motor Canvas Nativo para la Gráfica de Orígenes (Pastel)
+  drawSourceChart(data) {
+    const canvas = this.shadowRoot.getElementById('sourceChart');
+    if (!canvas || data.length === 0) return;
+
+    const ctx = canvas.getContext('2d');
+    const total = data.reduce((sum, item) => sum + item.cantidad, 0);
+    
+    let startAngle = 0;
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = Math.min(centerX, centerY) - 8;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    data.forEach(item => {
+      if (item.cantidad === 0) return;
+      const sliceAngle = (item.cantidad / total) * 2 * Math.PI;
+
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+      ctx.lineTo(centerX, centerY);
+      ctx.fillStyle = item.color || '#cbd5e1';
+      ctx.fill();
+
+      // Línea divisoria elegante
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#ffffff';
+      ctx.stroke();
+
+      startAngle += sliceAngle;
+    });
+  }
+
+  // Cálculo proporcional exacto para la barra demográfica de género
+  calculateGenderBars(genero) {
+    const total = (parseInt(genero.mujeres) || 0) + (parseInt(genero.hombres) || 0) + (parseInt(genero.otros) || 0);
+    
+    const fBar = this.shadowRoot.getElementById('barFem');
+    const mBar = this.shadowRoot.getElementById('barMasc');
+    const oBar = this.shadowRoot.getElementById('barOtros');
+
+    if (total === 0) {
+      if (fBar && mBar && oBar) {
+        fBar.style.width = '33.33%';
+        mBar.style.width = '33.33%';
+        oBar.style.width = '33.34%';
+      }
+      return;
+    }
+
+    const pctFem = ((genero.mujeres || 0) / total) * 100;
+    const pctMasc = ((genero.hombres || 0) / total) * 100;
+    const pctOtros = ((genero.otros || 0) / total) * 100;
+
+    if (fBar) fBar.style.width = `${pctFem}%`;
+    if (mBar) mBar.style.width = `${pctMasc}%`;
+    if (oBar) oBar.style.width = `${pctOtros}%`;
+  }
+}
+
+customElements.define('report-customers', ReportCustomers);
+</script>

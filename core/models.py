@@ -12,6 +12,7 @@ from django.db import models
 from PIL import Image
 from cryptography.fernet import Fernet
 from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField
+from django.db.models import Sum
 
 key = os.getenv("DATA_ENCRYPTION_KEY")
 cipher = Fernet(key.encode())
@@ -46,9 +47,8 @@ def logo_path(instance, filename):
     return f"users/company_{instance.company.id}/branch_{instance.branch.id}/{uuid.uuid4().hex}_logo.{ext}"
 
 def logo_company(instance, filename):
-    # instance.company.id, instance.branch.id
     ext = filename.split('.')[-1]
-    return f"users/company_{instance.company.id}/{uuid.uuid4().hex}_logo.{ext}"
+    return f"users/company_{instance.id}/{uuid.uuid4().hex}_logo.{ext}"
 
 #-----------------------------------------------------THIS IS FOR CREATE THE SKELETON OF THE ERP-------------------------------------------------------
 class CustomUserManager(BaseUserManager):
@@ -398,6 +398,8 @@ class WhatsAppAccount(models.Model):
     phone_number_id = EncryptedCharField(max_length=50)
     display_phone_number = models.CharField(max_length=30)
 
+    template=models.TextField(null=True)
+
     # Status
     status = models.CharField(
         max_length=20,
@@ -434,8 +436,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     # Required fields
     avatar = models.ImageField(upload_to=user_avatar_path, blank=True, null=True)
     name = EncryptedCharField(db_column="name", blank=True, null=True, max_length=600)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, blank=True, null=True)
     username = models.CharField(max_length=600)
+    doctor_id=models.CharField(max_length=200, blank=True, null=True)
 
     # Relationship with company and branch
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='id_company')
@@ -476,7 +479,17 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     terms_accepted_at = models.DateTimeField(null=True, blank=True)
     terms_accepted_ip = models.GenericIPAddressField(null=True, blank=True)
     terms_user_agent = models.TextField(null=True, blank=True)
+    superuser = models.BooleanField(default=False)
+    user_account = models.BooleanField(default=False)
 
+    USERNAME_FIELD = 'username'
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['company', 'username'],
+                name='unique_username_per_company'
+            )
+        ]
 
     def get_full_name(self):
         return self.username
@@ -530,7 +543,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.email #or self.email_hash
+        return self.email or self.username or f"User {self.pk}"
     
 
 
@@ -551,15 +564,16 @@ class SubscriptionPlan(models.Model):
         (2, 'Pro'),
     )
 
-    code = models.PositiveSmallIntegerField(choices=SUB_CHOICES, unique=True)
+    code = models.PositiveSmallIntegerField(choices=SUB_CHOICES)
     name = models.CharField(max_length=50)
 
     max_messages = models.PositiveIntegerField(default=0)
     storage_gb = models.FloatField(default=0) # Storage in GB
     max_drives = models.PositiveIntegerField(default=1) #this be all the drives that the user can use cellphone, pc, laptop, etc 
     max_clients = models.PositiveIntegerField(default=60)
+    max_users = models.PositiveIntegerField(default=1)
     max_appoints = models.PositiveIntegerField(default=50)
-
+    max_branches = models.PositiveIntegerField(default=1) #this is for know how many branches the user can create in his ERP
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     def __str__(self):
@@ -626,8 +640,9 @@ class UserSubscription(models.Model):
         return current_clients_count < self.plan.max_clients
     
     def can_create_employee(self):
-        return True  # For now, there is no limit on employees 
-
+        """Here we will to check if the user can create new customers/clients in his CRM app"""        
+        current_employees_count = CustomUser.objects.filter(company=self.user.company, user_account=True).count()
+        return current_employees_count < self.plan.max_users
 
     def can_create_appointment(self):
         """Here we will to check if the user can create new appointments in his CRM app this month"""
@@ -658,8 +673,18 @@ class UserSubscription(models.Model):
         return whatsappCount.messages_sent_this_month < self.plan.max_messages
             
     def can_upload_more_storage(self, additional_gb):
-        """Here we will to check if the user can upload more files to his storage"""
-        return (self.used_storage_gb + additional_gb) <= self.plan.storage_gb
+        """
+        Check if the company can upload more storage
+        considering all users that belong to the same company.
+        """
+
+        total_used_storage = UserSubscription.objects.filter(
+            user__company=self.user.company
+        ).aggregate(
+            total=Sum('used_storage_gb')
+        )['total'] or 0
+
+        return (total_used_storage + additional_gb) <= self.plan.storage_gb
     
     def get_plan_storage(self):
         """Here we return the storage size of the plan in GB"""
@@ -675,3 +700,8 @@ class UserSubscription(models.Model):
         if self.current_period_end and self.current_period_end < timezone.now():
             return True
         return False
+
+    def can_create_branch(self):
+        """Here we will to check if the user can create more branches in his ERP"""        
+        current_branches_count = Branch.objects.filter(company=self.user.company).count()
+        return current_branches_count < self.plan.max_branches

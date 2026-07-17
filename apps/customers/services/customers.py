@@ -22,30 +22,37 @@ f = Fernet(FIELD_ENCRYPTION_KEY)
 
 
 def save_customer(user, form_data):
-    form = CustomerForm(form_data)
+    try:
+        form = CustomerForm(form_data)
 
-    if not form.is_valid():
+        if not form.is_valid():
+            return {
+                "success": False,
+                "errors": form.errors
+            }
+
+        customer = form.save(commit=False)
+        customer.company = user.company
+        customer.branch = user.branch
+        customer.number_of_price_of_sale = customer.number_of_price_of_sale or 1
+
+        avatar_data = form_data.get("avatar")
+        if avatar_data:
+            process_and_encrypt_avatar_form(customer, avatar_data)
+
+        customer.save()
+
+        return {
+            "success": True,
+            "customer_id": customer.id
+        }
+    except Exception as e:
+        print(e)
         return {
             "success": False,
-            "errors": form.errors
+            "error": str(e)
         }
-
-    customer = form.save(commit=False)
-    customer.company = user.company
-    customer.branch = user.branch
-    customer.number_of_price_of_sale = customer.number_of_price_of_sale or 1
-
-    avatar_data = form_data.get("avatar")
-    if avatar_data:
-        process_and_encrypt_avatar_form(customer, avatar_data)
-
-    customer.save()
-
-    return {
-        "success": True,
-        "customer_id": customer.id
-    }
-
+    
 def process_and_encrypt_avatar_form(customer, avatar_data):
     """
     avatar_data: base64 string
@@ -116,9 +123,10 @@ def update_customer(user, customer_id, data):
                 "success": False,
                 "errors": form.errors
             }
-
+        
         customer = form.save(commit=False)
         customer.save()
+        print(customer.date_of_birth)
 
         # ---------- Avatar ----------
         avatar_data = data.get("avatar")
@@ -183,7 +191,7 @@ def toggle_customer_activation(customer_id, activate=True):
         traceback.print_exc()
         return {"success": False, "error": str(e)}
 
-def search_customer_for_filter(user, search, customer_type, source, priority, activated, page=1):
+def search_customer_for_filter(user, search, customer_type, source, priority, activated=True, page=1):
 
     try:
         # --- 1. limit first to the user's company ---
@@ -199,6 +207,7 @@ def search_customer_for_filter(user, search, customer_type, source, priority, ac
             qs = qs.filter(source_id=source)
 
         # Filter by priority
+
         if priority not in [None, ""]:
             qs = qs.filter(priority=priority)
 
@@ -337,7 +346,7 @@ def get_information_of_a_customer_for_id(user, customer_id):
             "points": float(customer.points) if customer.points else 0,
             "credit": float(customer.credit) if customer.credit else 0,
             "tags": customer.tags if customer.tags else [],
-            "note": customer.note,
+            "note": customer.note if customer.note else '',
             "priority": customer.priority,
             "customer_type": {
                 "id": customer.customer_type.id if customer.customer_type else None,
@@ -354,16 +363,17 @@ def get_information_of_a_customer_for_id(user, customer_id):
             "avatar": f"/customers/get_customer_avatar/{customer.id}/" if customer.avatar else None,
             "creation_date": customer.creation_date.isoformat() if customer.creation_date else None,
             "activated": customer.activated,
-            "number_of_price_of_sale":customer.number_of_price_of_sale or 1
+            "number_of_price_of_sale":customer.number_of_price_of_sale or 1,
+            "date_of_birth":customer.date_of_birth.strftime("%Y-%m-%d") if customer.date_of_birth else "",
+            "gender":customer.gender
         }
-
 
         return {"success": True, "answer": data, "error": "The customer was found with success", 'message':'The customer was found'}
 
     except Exception as e:
         return {"success": False, "message": 'customer.message.error.exist-a-error-in-the-server', "error": f"Error: {str(e)}", "answer":""}
-    
-  
+     
+
 def change_status_of_the_customer(user, customer_id, status=False):
     try:
         if not customer_id:
