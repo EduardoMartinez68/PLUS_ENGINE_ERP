@@ -33,6 +33,4 @@ python manage.py runserver
 celery -A core worker -l info --pool=solo
 celery -A core beat -l info
 
-cel> 887685567763313
-
 DESKTOP || CLOUD
