@@ -59,7 +59,7 @@ Espero que **PLUS ERP** inspire a otros desarrolladores mexicanos y latinoameric
 
 ---
 ### Link para el manual del programador
-https://eduardomartinez68.github.io/EduardoMartinez68/
+https://github.com/EduardoMartinez68/MANUAL_ERP_PLUS
 
 ---
 ## 👤 Sobre el autor
