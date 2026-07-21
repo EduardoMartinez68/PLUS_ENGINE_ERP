@@ -6,6 +6,39 @@ node_modules/
 
 apps/agenda/config/credentials.json
 
+# Ignore all files and subfolders within customer migrations
+apps/contract/migrations/*
+apps/customers/migrations/*
+apps/departament_employee/migrations/*
+apps/employees/migrations/*
+apps/files/migrations/*
+apps/inventory/migrations/*
+apps/move_box/migrations/*
+apps/pos/migrations/*
+apps/reports/migrations/*
+apps/rolesAndPermissions/migrations/*
+apps/sales/migrations/*
+apps/sales/services/*
+apps/sales/setting/*
+
+
+# EXCEPT the file __init__.py
+!apps/customers/migrations/__init__.py
+!apps/contract/migrations/__init__.py
+!apps/customers/migrations/__init__.py
+!apps/departament_employee/migrations/__init__.py
+!apps/employees/migrations/__init__.py
+!apps/files/migrations/__init__.py
+!apps/inventory/migrations/__init__.py
+!apps/move_box/migrations/__init__.py
+!apps/pos/migrations/__init__.py
+!apps/reports/migrations/__init__.py
+!apps/rolesAndPermissions/migrations/__init__.py
+!apps/sales/migrations/__init__.py
+!apps/sales/services/__init__.py
+!apps/sales/setting/__init__.py
+
+
 # Python
 __pycache__/
 *.pyc
