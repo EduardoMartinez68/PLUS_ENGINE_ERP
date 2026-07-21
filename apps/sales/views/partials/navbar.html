@@ -109,21 +109,3 @@
         <i class="fi fi-rr-trash"></i>
     </button>
 </nav>
-
-
-<script>
-(()=>{
-    //this variable is for can render all the container
-    //this variable are remplace when the server run and load all the container
-    const namespace = "{plus}";
-    
-    //here your create a function encapsulated
-    function render_canva() {
-        console.log("¡Ejecutando render_canva desde la clave {plus}!");
-    }
-
-    // save the function in the variable globale <AppFunctions> for after use in other scripts 
-    window.Plus.Functions.define(namespace, "render", render_canva);
-    window.Plus.Functions.get(namespace).render_canva(); //here we run a function in specific
-})();
-</script>
