@@ -55,7 +55,7 @@ class Pack(models.Model):
     image3 = models.ImageField(upload_to="products/", blank=True, null=True)
     image4 = models.ImageField(upload_to="products/", blank=True, null=True)
 
-    skus = models.JSONField(blank=True, null=False, default=list) #this is for search the product for multi keys
+    skus = models.CharField(max_length=100, db_index=True) #this is for search the product for multi keys
     name = models.CharField(max_length=255,  null=False)
     description = models.TextField(blank=True, null=True)
 

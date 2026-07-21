@@ -282,7 +282,7 @@ class Sales:
 
                     if sku: #if exist a sku in the product/service we will to see the information and save 
                         pack = Pack.objects.filter(
-                            skus__contains=[sku],
+                            skus=sku,
                             company=user.company
                         ).first()
                         # if the product not exist, this is a product flash

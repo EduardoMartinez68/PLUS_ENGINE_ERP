@@ -130,12 +130,20 @@ if TYPE_VERSION=='CLOUD':
 #---------------------HERE WE WILL GET THE KEYS OF FACEBOOKS IF EXIST IN THE ENV-----------------------
 FB_APP_ID=os.getenv('FB_APP_ID', '')
 FB_APP_SECRET=os.getenv('FB_APP_SECRET', '')
-
+TYPE_DATABASE=os.getenv('TYPE_DATABASE', 'sqlite').lower()
 
 
 
 #Here we will to connect with the database of the system
-if(TYPE_VERSION=='CLOUD'):
+if(TYPE_DATABASE=='sqlite'):
+    #when the software is intall in a desktop, we will use sqlite 
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'plus.sqlite3',  # file SQLite local
+        }
+    }
+else:
     #This allows you to connect to your cloud database, such as PostgreSQL, MySQL, etc.
     DATABASES = {
         'default': {
@@ -147,26 +155,8 @@ if(TYPE_VERSION=='CLOUD'):
             'PORT': os.getenv('DB_PORT', '5432')
         }
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DB_NAME', 'default_db_name'),
-            'USER': os.getenv('DB_USER', 'default_user'),
-            'PASSWORD': os.getenv('DB_PASS', 'default_password'),
-            'HOST': os.getenv('DB_HOST', 'localhost'),
-            'PORT': os.getenv('DB_PORT', '5432')
-        }
-    }
-    #when the software is intall in a desktop, we will use sqlite 
-    '''
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'plus.sqlite3',  # file SQLite local
-        }
-    }
-    '''
+    
+
 
 # Password validators
 AUTH_PASSWORD_VALIDATORS = [
