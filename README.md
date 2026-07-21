@@ -1,7 +1,7 @@
 # PLUS ERP
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/EduardoMartinez68/MANUAL_ERP_PLUS/main/assets/logo.png" alt="PLUS ERP" width="180">
+  <img src="https://github.com/EduardoMartinez68/PLUS_ENGINE_ERP/blob/main/static/img/logo.png" alt="PLUS ERP" width="180">
 </p>
 
 <p align="center">

@@ -20,9 +20,10 @@ apps/rolesAndPermissions/migrations/*
 apps/sales/migrations/*
 apps/sales/services/*
 apps/sales/setting/*
-
+core/migrations/*
 
 # EXCEPT the file __init__.py
+!core/migrations/__init__.py
 !apps/customers/migrations/__init__.py
 !apps/contract/migrations/__init__.py
 !apps/customers/migrations/__init__.py
