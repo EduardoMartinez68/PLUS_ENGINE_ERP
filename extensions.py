@@ -4,6 +4,7 @@ import json
 import shutil
 from pathlib import Path
 import json
+import re
 
 # 1. get the path of the file cache_files.json
 cacheFiles = Path(__file__).resolve().parent / 'cache_files.json'
@@ -15,6 +16,27 @@ if not cacheFiles.exists():
 else:
     with open(cacheFiles, 'r', encoding='utf-8') as file:
         container_files_cache = json.load(file) #read the file of the cache
+
+def replace_keyword(texto, valor):
+    clave="plus"
+    # 1. Limpiamos el valor de la ruta:
+    # - Eliminamos la extensión .html del final
+    valor_limpio = re.sub(r'\.[^/.]+$', '', valor)
+
+    # - Reemplazamos cualquier barra diagonal (normal o invertida) por '_'
+    valor_limpio = re.sub(r'[\\/]+', '_', valor_limpio)
+
+    """
+    Busca una clave en formato de llaves (ej. {clave}) dentro del texto
+    y la reemplaza por el valor proporcionado.
+    """
+    # Construimos la estructura exacta que queremos buscar, por ejemplo: "{plus}"
+    objetivo = f"{{{clave}}}"
+    
+    # Reemplazamos todas las ocurrencias en el texto
+    texto_modificado = texto.replace(objetivo, valor_limpio)
+    
+    return texto_modificado
 
 def this_file_have_change(file_path):
     modified_timestamp = os.path.getmtime(file_path) #get the new time of the file for save in the cache
@@ -164,6 +186,7 @@ def build_app_views(app_path):
         # Read the primary content from the core view
         with open(file_path, 'r', encoding='utf-8') as f:
             final_html_content = f.read()
+            final_html_content=replace_keyword(final_html_content, file_path)
 
         # 4. Search for extensions within each plugin for the current view
         for plugin_path in available_plugins:
@@ -177,7 +200,8 @@ def build_app_views(app_path):
                 for ext_file_path in glob.glob(ext_pattern):
                     with open(ext_file_path, 'r', encoding='utf-8') as fe:
                         # Append the plugin HTML content to the base content
-                        final_html_content += "\n" + fe.read()
+                        new_html= fe.read()
+                        final_html_content+="\n" +replace_keyword(new_html, extension_dir)
 
         # 5. Save the merged result into the 'views' folder
         output_folder = os.path.join("templates")
@@ -205,7 +229,7 @@ def build_app_views(app_path):
     #Now we will to create the locale files merging the core with the plugins locale files
     create_the_file_locale(app_path, core_folder, plugins_base_folder)
 
-def migrate_partials_to_templates(app):
+def migrate_partials_to_templates2(app):
     app_name = os.path.basename(os.path.normpath(app))
     folder_views = os.path.join(app, "views")
     target_folder = os.path.join("templates", app_name)
@@ -228,6 +252,67 @@ def migrate_partials_to_templates(app):
                 shutil.rmtree(destination_path) #if exist a change we will to delete all the folder of the partials
             shutil.copytree(source_path, destination_path)
 
+
+def migrate_partials_to_templates(app):
+    app_name = os.path.basename(os.path.normpath(app))
+
+    folder_views = os.path.join(app, "views")
+    target_folder = os.path.join("templates", app_name)
+
+    # Folder does not exist
+    if not os.path.exists(folder_views):
+        return
+
+    os.makedirs(target_folder, exist_ok=True)
+
+    for item in os.listdir(folder_views):
+
+        source_root = os.path.join(folder_views, item)
+
+        if not os.path.isdir(source_root):
+            continue
+
+        destination_root = os.path.join(target_folder, item)
+
+        # Remove previous version
+        if os.path.exists(destination_root):
+            shutil.rmtree(destination_root)
+
+        # Walk through all folders/files
+        for root, dirs, files in os.walk(source_root):
+
+            # Relative path from the source folder
+            rel_path = os.path.relpath(root, source_root)
+
+            current_destination = os.path.join(destination_root, rel_path)
+            os.makedirs(current_destination, exist_ok=True)
+
+            for file in files:
+
+                source_file = os.path.join(root, file)
+                destination_file = os.path.join(current_destination, file)
+
+                # HTML files
+                if file.endswith(".html"):
+
+                    with open(source_file, "r", encoding="utf-8") as f:
+                        content = f.read()
+
+                    # Generate namespace from the file path
+                    namespace = os.path.relpath(source_file, app)
+                    namespace = os.path.splitext(namespace)[0]
+                    namespace = namespace.replace(os.sep, "_")
+
+                    namespace = f"apps_{app_name}_{namespace}"
+
+                    content = replace_keyword(content, namespace)
+
+                    with open(destination_file, "w", encoding="utf-8") as f:
+                        f.write(content)
+
+                else:
+                    shutil.copy2(source_file, destination_file)
+
 def load_plugins_and_extensions():
     #1. Create the folder templates if not exist and when exist delete all the subfolder of the apps in the views folder
     output_folder = os.path.join("templates")
@@ -247,6 +332,7 @@ def load_plugins_and_extensions():
 
     #update all the cache of the date of the files
     with open(cacheFiles, 'w', encoding='utf-8') as file:
+        #final_html_content+="\n" +replace_keyword(new_html, extension_dir)
         json.dump(container_files_cache, file, indent=4)
 
     print('All the plugins was upload with success')
