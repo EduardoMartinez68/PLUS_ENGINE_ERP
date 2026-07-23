@@ -1,6 +1,6 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from apps.sales.models import Sale
 from decimal import Decimal
 import threading

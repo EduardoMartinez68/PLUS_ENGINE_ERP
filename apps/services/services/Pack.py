@@ -5,7 +5,7 @@ from apps.services.models import Pack, ProductDepartment, ProductCategory, Tax, 
 from core.models import Branch
 from django.db.models import Q, Prefetch
 from django.core.paginator import Paginator
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 import json
 
 

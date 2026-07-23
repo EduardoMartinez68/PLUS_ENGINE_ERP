@@ -6,7 +6,7 @@ from django.db import transaction
 from django.utils import timezone
 from datetime import timedelta
 from core.models import Branch
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from apps.services.models import Pack, Inventory, HistoryInventory
 from django.core.paginator import Paginator
 from django.db.models import Q, F, DecimalField

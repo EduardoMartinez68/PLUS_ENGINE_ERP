@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from apps.inventory.services.inventory import InventoryService
 from django.http import JsonResponse
 import json
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from httpcore import request
 from django.shortcuts import render
 @login_required(login_url='login')

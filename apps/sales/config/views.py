@@ -6,7 +6,7 @@ from apps.sales.services.excel import upload_excel
 from apps.sales.services.sales import Sales
 from django.http import JsonResponse
 import json
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from httpcore import request
 from django.shortcuts import render
 @login_required(login_url='login')

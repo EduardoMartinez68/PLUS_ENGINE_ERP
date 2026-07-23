@@ -15,10 +15,9 @@ import threading
 from apps.contract.models import Contract
 from apps.sales.models import LinkPayOnline
 from django.conf import settings 
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from apps.sales.services.sales import Sales
-#entradas dinero 85,837.00
-#salidas de dinero 25,227.03
+
 class Move:
     @classmethod
     def do_a_move(cls, user, data):

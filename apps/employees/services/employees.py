@@ -1,4 +1,4 @@
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from core.models import CustomUser, Company, Branch, UserDepartment, UserRole
 from django.core.paginator import Paginator
 from django.db.models import Q

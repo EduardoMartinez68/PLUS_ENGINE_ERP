@@ -15,7 +15,7 @@ from django.conf import settings
 from django.utils.crypto import get_random_string
 import os
 from django.db import transaction
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from dotenv import load_dotenv
 load_dotenv()
 

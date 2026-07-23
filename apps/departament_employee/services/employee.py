@@ -1,5 +1,5 @@
 from django.db.models import Q
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from core.models import CustomUser
 def search_users_in_company(user, search_name=None, limit=20):
     try:

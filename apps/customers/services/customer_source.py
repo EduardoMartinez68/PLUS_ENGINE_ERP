@@ -1,6 +1,6 @@
 from ..models import CustomerSource
 from django.http import JsonResponse
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 
 def get_customer_source(user, query: str = "", quantity: int = 20) -> list:
     """

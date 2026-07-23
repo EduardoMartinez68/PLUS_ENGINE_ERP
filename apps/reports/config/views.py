@@ -9,7 +9,7 @@ from apps.reports.services.sales import ReportsSales
 from apps.reports.services.payments import ReportsPayments
 from django.http import JsonResponse
 import json
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from django.shortcuts import render
 @login_required(login_url='login')
 def reports_home(request):

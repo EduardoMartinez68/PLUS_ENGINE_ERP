@@ -1,5 +1,5 @@
 from django.db.models import Q
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from core.models import UserDepartment
 from django.core.exceptions import ValidationError
 from core.models import CustomUser

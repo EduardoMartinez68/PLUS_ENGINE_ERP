@@ -8,7 +8,7 @@ from apps.services.services.tax import TaxService
 from apps.services.services.Pack import PackService
 from django.http import JsonResponse
 import json
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from django.shortcuts import render
 @login_required(login_url='login')
 def services_home(request):

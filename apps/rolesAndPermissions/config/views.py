@@ -4,7 +4,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from apps.rolesAndPermissions.services.role import save_a_new_role, get_role_by_id, update_rol_by_id, change_status_of_a_role, duplicate_role
 from django.shortcuts import redirect
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from apps.rolesAndPermissions.services.role import get_role_of_the_company
 from apps.rolesAndPermissions.services.permits import get_all_the_permissions
 import json

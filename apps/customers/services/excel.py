@@ -8,7 +8,8 @@ import json
 from django.core.exceptions import ValidationError
 from apps.customers.models import Customer, CustomerType, CustomerSource
 from openpyxl.styles import PatternFill, Font
-from ..plus_wrapper import Plus
+from core.Plus import Plus
+
 
 
 def create_excel(user):

@@ -12,7 +12,7 @@ from ..services.schedule import get_branch_schedule_all
 import os 
 import json
 from django.http import JsonResponse
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from core.settings import BASE_DIR
 from django.shortcuts import render
 @login_required(login_url='login')

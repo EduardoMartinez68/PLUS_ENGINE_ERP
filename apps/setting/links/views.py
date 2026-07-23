@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 from core.settings import BASE_DIR
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from django.http import JsonResponse
 import json
 import os 

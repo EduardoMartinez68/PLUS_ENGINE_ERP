@@ -1,5 +1,5 @@
 
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from apps.sales.models import Sale, SaleItem, Pack, SaleHistory, SalePaymentMethod

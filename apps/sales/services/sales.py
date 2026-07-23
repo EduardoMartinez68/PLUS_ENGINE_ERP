@@ -2,7 +2,7 @@ from io import BytesIO
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
-from apps.customers.plus_wrapper import Plus
+from core.Plus import Plus
 from apps.sales.models import Sale, SaleItem, Pack, SaleHistory, SalePaymentMethod, DataReports
 from apps.services.models import HistoryInventory
 from apps.services.models import Inventory

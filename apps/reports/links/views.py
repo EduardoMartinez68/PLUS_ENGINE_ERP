@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 import json
 from django.http import JsonResponse
 

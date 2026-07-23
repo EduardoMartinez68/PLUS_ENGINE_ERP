@@ -2,7 +2,8 @@ from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 from apps.services.models import ProductDepartment
 from django.core.paginator import Paginator
-from ..plus_wrapper import Plus
+from core.Plus import Plus
+
 
 class Departaments:
     @classmethod

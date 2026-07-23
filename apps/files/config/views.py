@@ -8,7 +8,7 @@ from ..services.files import upload_file, get_folder_files, get_folders, get_fol
 from ..services.files import get_limit_of_the_user, user_storage_used_gb, format_size
 from django.core.cache import cache
 from ..models import File
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from django.http import Http404, JsonResponse, HttpResponse
 import json
 from django.shortcuts import render

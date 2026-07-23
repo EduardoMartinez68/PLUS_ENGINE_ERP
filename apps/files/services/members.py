@@ -1,5 +1,5 @@
 from ..models import Folder, FolderPermission, File
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from core.models import CustomUser 

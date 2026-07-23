@@ -7,7 +7,7 @@ import uuid
 
 from apps.customers.services.forms import CustomerForm, CustomerUpdateForm
 from ..models import Customer, CustomerType, CustomerSource
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 import os 

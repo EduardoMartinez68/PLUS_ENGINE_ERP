@@ -1,6 +1,7 @@
 #-----------------------permissions-----------------------
 from ..models import Folder, FolderPermission, File
-from ..plus_wrapper import Plus
+from core.Plus import Plus
+
 
 def has_folder_permission(user, folder, action: str) -> bool:
     """

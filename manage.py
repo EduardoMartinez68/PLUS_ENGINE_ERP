@@ -41,24 +41,14 @@ def file_hash(path):
             h.update(chunk)
     return h.hexdigest()
 
-# Main file we want to copy
-source_file = os.path.join(os.path.dirname(__file__), 'plus_wrapper.py')
 
 # Directory that contains all apps
 apps_dir = os.path.join(os.path.dirname(__file__), 'apps')
 
-# Check if the source file exists
-if not os.path.isfile(source_file):
-    print(f"Source file not found: {source_file}")
-    exit(1)
-
-
-source_hash = file_hash(source_file)
 
 # 1. get the path of the file cache_files.json
 from pathlib import Path
 cacheFiles = Path(__file__).resolve().parent / 'cache_files.json'
-PlusExtension = source_file
 
 # if not exist the file of the cache we will to create, if exist load his information
 container_files_cache={}
@@ -86,16 +76,14 @@ def update_cache_file(file_path, newValue=None):
 
 
 # read all the folders 'apps'
+'''
 if this_file_have_change(PlusExtension):
     for app_name in os.listdir(apps_dir):
         app_path = os.path.join(apps_dir, app_name)
         if os.path.isdir(app_path):
-            dest_file = os.path.join(app_path, 'plus_wrapper.py')
-            shutil.copy2(source_file, dest_file)  # Copy and overwrite
-
-
+            pass 
             #here also we will read the file of permissions if exist for after add the new permissions to the model <Roles_And_Permissions>
-            '''
+            
             
             permissions_file = os.path.join(app_path, 'permissions.json')
             if os.path.isfile(permissions_file):
@@ -110,12 +98,13 @@ if this_file_have_change(PlusExtension):
                 except (OperationalError, ProgrammingError):
                     # Esto evita error si la tabla aún no está creada (ej. antes de migraciones)
                     pass
-            '''
+            
 
     update_cache_file(PlusExtension)
     #update all the cache of the date of the files
     with open(cacheFiles, 'w', encoding='utf-8') as file:
         json.dump(container_files_cache, file, indent=4)
+'''
 
 #---------------------------------------------------------------LOAD ALL THE PLUGINS IN THE ERP FOR CREATE THE NEW VIEWS-----------------------------------
 from extensions import load_plugins_and_extensions

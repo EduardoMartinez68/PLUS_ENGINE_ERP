@@ -5,8 +5,7 @@ from django.http import Http404, HttpResponse, JsonResponse
 import json
 
 from core.plugins.registry import plugins
-from ..plus_wrapper import Plus
-
+from core.Plus import Plus
 
 from cryptography.fernet import Fernet #this is for encrypt the file
 import os 

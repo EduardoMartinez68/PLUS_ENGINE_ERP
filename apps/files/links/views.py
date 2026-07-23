@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import json
 from django.http import Http404, JsonResponse, HttpResponse
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from ..models import File
 from django.core.cache import cache
 from ..services.files import get_limit_of_the_user, user_storage_used_gb, format_size

@@ -85,7 +85,7 @@ def update_user(user, data) -> dict:
 
 from django.utils.text import slugify
 from django.db import IntegrityError, transaction
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 def update_slug_user(user, data) -> dict:
     """
     Actualiza public_slug y is_public del usuario.

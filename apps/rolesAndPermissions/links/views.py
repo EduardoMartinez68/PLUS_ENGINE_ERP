@@ -3,7 +3,7 @@ from django.shortcuts import render
 import json
 from apps.rolesAndPermissions.services.permits import get_all_the_permissions
 from apps.rolesAndPermissions.services.role import get_role_of_the_company
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from django.shortcuts import redirect
 
 def rolesAndPermissions_home(request):

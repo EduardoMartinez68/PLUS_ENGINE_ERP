@@ -2,7 +2,7 @@ from decimal import Decimal
 from apps.services.models import Tax
 from django.http import JsonResponse
 from decimal import Decimal
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from django.core.paginator import Paginator
 
 class TaxService:

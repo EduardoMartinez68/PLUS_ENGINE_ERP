@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 import json
-from ..plus_wrapper import Plus
+from core.Plus import Plus
+
 
 def employees_home(request):
     return render(request, 'employees/home_employees.html')

@@ -8,7 +8,7 @@ from ..services.excel import create_excel, upload_customers_with_excel
 from ..services.customers import desencrypt_avatar, save_customer, search_customer_for_filter, get_information_of_a_customer_for_id, change_status_of_the_customer, update_customer
 import os 
 from cryptography.fernet import Fernet #this is for encrypt the file
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 from core.plugins.registry import plugins
 import json
 from django.http import Http404, HttpResponse, JsonResponse

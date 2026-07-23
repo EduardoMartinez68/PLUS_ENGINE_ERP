@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from apps.employees.services.branch import get_information_of_the_branch
 from apps.employees.services.employees import get_employees_for_search
 from ..services.employees import save_employee, get_information_of_employee_by_id, update_employee, change_employee_status, save_users
-from ..plus_wrapper import Plus
+from core.Plus import Plus
 import json
 from django.http import JsonResponse
 from django.shortcuts import render
