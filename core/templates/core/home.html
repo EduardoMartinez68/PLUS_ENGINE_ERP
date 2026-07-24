@@ -69,7 +69,8 @@
     <main id="main-content">
         {% block content %}{% endblock %}
     </main>
-
+    <input type="hidden" value={{branch.default_currency}} id="default_currency">
+    
     <!---js for the UI-->
     <script>
         //this variable be use for default in the UI
@@ -83,6 +84,10 @@
 
         const VERSION_LANGUAGES_PLUS = '1.0.14'; //here is the version of the software PLUS
         window.VERSION_LANGUAGES_PLUS=VERSION_LANGUAGES_PLUS;
+
+        //information global of the currency
+        const default_currency=document.getElementById('default_currency').value;
+        window.default_currency=default_currency;
     </script>
 
     <!---library-->
@@ -96,7 +101,7 @@
     <script src="{% static 'js/sendDataToTheServer.js' %}?v=2.25" defer></script>
     <script src="{% static 'js/navbar.js' %}?v=2.34" defer></script>
     <script src="{% static 'js/shortcuts.js' %}?v=2.1" defer></script>
-    <script src="{% static 'js/styles.js' %}?v=2.859" defer></script>
+    <script src="{% static 'js/styles.js' %}?v=2.9" defer></script>
     <script src="{% static 'js/selectStatus.js' %}?v=2.0" defer></script>
     <script src="{% static 'js/search.js' %}?v=2.192" defer></script>
     <script src="{% static 'js/currency.js' %}?v=2.1" defer></script>

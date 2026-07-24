@@ -500,9 +500,8 @@
                     id="payment_term_days"></input-field>
             </div>
             <div class="col">
-                <plus-select label="sales.label.currency" name="currency" value="MXN" id="currency">
-                    <option value="MXN">MXN</option>
-                    <option value="USD">USD</option>
+                <plus-select label="sales.label.currency" name="currency" value="{{request.user.branch.default_currency}}" id="currency">
+                    {% include 'core/option_currency.html' %}
                 </plus-select>
             </div>
         </div>
@@ -581,7 +580,7 @@
 <script>
     (() => {
         window.reference_sales = null;
-        window.current = 'MXN';
+        window.current = window.get_currency_system();
         window.status = 'draft'
         window.idSales = 0;
         window.totalSale = 0;

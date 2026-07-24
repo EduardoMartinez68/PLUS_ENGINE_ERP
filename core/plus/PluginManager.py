@@ -1,6 +1,6 @@
 from HookRegistry import HookRegistry
 from ServiceRegistry import ServiceRegistry
-from Context import Context
+from core.plus.Context import Context
 
 
 class PluginManager:

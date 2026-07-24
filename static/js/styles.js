@@ -1124,7 +1124,7 @@ class PlusQuantity extends HTMLElement {
   }
 
   render() {
-    const label = this.getAttribute('label') || 'Cantidad';
+    const label = window.translate_text(this.getAttribute('label') || 'Cant.');
     const min = this.getAttribute('min') || 0;
     const max = this.getAttribute('max') || 100;
     const step = this.getAttribute('step') || 1;
@@ -2453,9 +2453,15 @@ class PlusMultiSelect extends HTMLElement {
 
       // Asegúrate de que el DOM ya tiene el botón antes de agregar el evento
       const addButton = searchWrapper.querySelector('.search-add-btn');
-      if (addButton && typeof window[functionName] === 'function') {
-        addButton.addEventListener('click', window[functionName]);
-      }
+      addButton.addEventListener('click', (e) => {
+        this.dispatchEvent(new CustomEvent('plus-select:add', {
+          bubbles: true,
+          detail: {
+            component: this,
+            functionName
+          }
+        }));
+      });
     } else {
       //if not exist the attribute 'add' we only show the input
       searchWrapper.innerHTML = `

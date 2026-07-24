@@ -42,5 +42,5 @@ function format_currency(amount, currencyCode = 'MXN', withCode = false, withSym
 }
 
 function get_currency_system(){
-  return 'MXN'
+  return window.default_currency || 'MXN';
 }
