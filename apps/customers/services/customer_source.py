@@ -144,12 +144,6 @@ def add_a_new_source(user, name: str, description: str = "", user_admin:str=None
         - data (Dict[str, Any] | None): Information about the created CustomerSource if success is True.
     """
 
-    #first we will see if the user have the permission that need 
-    has_perm, message = Plus.this_user_have_this_permission(user, 'add_customer_source', user_admin, password_admin)
-
-    if not has_perm:
-        return {"success": False, "message": message}
-    
     try:
         source = CustomerSource.objects.create(
             name=name.strip(),
