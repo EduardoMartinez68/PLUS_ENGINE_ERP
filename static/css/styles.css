@@ -3515,3 +3515,45 @@ summary:hover {
     transform: translateY(0);
   }
 }
+
+
+/*===========================================*/
+/* Contenedor principal que se coloca inmediatamente dentro de <plus-panel> */
+/* Contenedor principal: ahora le damos padding general para que los elementos no toquen los bordes */
+.container-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;             
+  box-sizing: border-box;
+  gap: 1rem;                /* Separación limpia entre el cuerpo y el footer */
+}
+
+/* Zona de contenido con scroll automático */
+.panel-body {
+  flex: 1;                  
+  overflow-y: auto;         
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;                
+}
+
+/* Zona del botón inferior */
+.panel-footer {
+  margin-top: auto;         /* Sigue empujando el botón hacia abajo, pero respetando el padding del contenedor */
+  padding-top: 1rem;        
+  background-color: transparent; /* Al tener padding general, puedes quitarle el fondo blanco sólido si gustas */
+  display: flex;
+  justify-content: flex-end; 
+  gap: 0.75rem;
+  flex-shrink: 0;           
+}
+
+/* Opcional: Responsive para celulares */
+@media (max-width: 768px) {
+  .container-panel {
+    padding: 1rem; /* Un poco menos de espacio en pantallas chicas para aprovechar el área */
+  }
+  .panel-footer button {
+    width: 100%;
+  }
+}
