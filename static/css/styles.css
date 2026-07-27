@@ -3557,3 +3557,78 @@ summary:hover {
     width: 100%;
   }
 }
+
+
+
+/* Layout Principal del Panel */
+plus-search-panel {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+    gap: 1.5rem;
+    /* Espacio configurable entre ambos paneles */
+    padding: 1.5rem;
+}
+
+/* Panel Izquierdo */
+plus-search-panel>.panel-left {
+    flex: 0 0 var(--plus-left-width, 30%);
+    max-width: var(--plus-left-width, 30%);
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow: visible;
+}
+
+/* Panel Derecho (ocupa automáticamente todo el resto del espacio) */
+plus-search-panel>.panel-right {
+    flex: 1 1 0%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-y: auto;
+
+    /* --- ALINEACIÓN AL CENTRO --- */
+    display: flex;
+    flex-direction: column; /* Mantiene la dirección de arriba a abajo */
+    justify-content: center; /* Centra verticalmente */
+    align-items: center;     /* Centra horizontalmente */
+}
+
+plus-search-panel>.panel-left {
+    flex: 0 0 var(--plus-left-width, 30%);
+    max-width: var(--plus-left-width, 30%);
+    box-sizing: border-box;
+    overflow-y: auto;
+
+    /* --- LÍNEA DIVISORIA Y ESPACIADO --- */
+    border-right: 1px solid #e2e8f0;
+    padding-right: 1.5rem;
+}
+
+/* Adaptación para pantallas móviles / tablets pequeñas */
+@media (max-width: 768px) {
+    plus-search-panel {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    plus-search-panel>.panel-left,
+    plus-search-panel>.panel-right {
+        flex: 1 1 100%;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    plus-search-panel>.panel-left {
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+        padding-right: 0;
+        padding-bottom: 1rem;
+    }
+}
+
+.img-search-panel{
+  width: 50%;
+  height: auto;
+}

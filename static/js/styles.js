@@ -6385,77 +6385,77 @@ class ListButton extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
-          position: relative;
           display: inline-block;
-          font-family: system-ui, sans-serif;
+          font-family: system-ui, -apple-system, sans-serif;
         }
 
         .main-btn {
           background-color: #2d8659;
-          display: inline-block;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           padding: 10px 18px;
           font-size: 0.95rem;
           border: none;
-          border-radius: var(--radius);
+          border-radius: var(--radius, 8px);
           cursor: pointer;
-          transition: background 0.3s;
+          transition: background 0.2s ease;
           color: white;
-          margin-right: 0.5rem;
         }
 
         .main-btn:hover {
           background-color: #24704a;
         }
 
+        /* Menu desplegable usando el Top Layer del navegador */
         .menu {
-          position: absolute;
-          top: 58px;
-          left: 0;
-          display: none;
-          flex-direction: column;
+          margin: 0;
+          padding: 6px;
           background: #ffffff;
           border-radius: 10px;
-          box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-          padding: 6px;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+          border: 1px solid #e2e8f0;
           min-width: 180px;
-          max-width: 200px;
-          animation: fadeIn 0.2s ease;
-          z-index: 10;
+          max-width: 240px;
+          box-sizing: border-box;
+
+          /* Reseteo de estilos nativos de popover */
+          position: fixed;
+          inset: unset;
         }
 
-        :host([open]) .menu {
+        .menu:popover-open {
           display: flex;
-        }
-
-        :host([flip]) .menu {
-          left: auto;
-          right: 0;
+          flex-direction: column;
+          animation: fadeIn 0.15s ease-out;
         }
 
         ::slotted(button) {
           all: unset;
           display: block;
-          padding: 10px 12px;
+          padding: 8px 12px;
           font-size: 14px;
-          color: #333;
+          color: #334155;
           cursor: pointer;
           border-radius: 6px;
-          transition: background 0.2s ease, color 0.2s ease;
+          transition: background 0.15s ease, color 0.15s ease;
+          box-sizing: border-box;
+          width: 100%;
         }
 
         ::slotted(button:hover) {
-          background: #f2f2f2;
-          color: #111;
+          background: #f1f5f9;
+          color: #0f172a;
         }
 
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-5px); }
-          to { opacity: 1; transform: translateY(0); }
+          from { opacity: 0; transform: scale(0.96); }
+          to { opacity: 1; transform: scale(1); }
         }
       </style>
 
       <button class="main-btn" title="Más opciones">+</button>
-      <div class="menu">
+      <div class="menu" popover="auto">
         <slot></slot>
       </div>
     `;
@@ -6467,38 +6467,89 @@ class ListButton extends HTMLElement {
 
     mainBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-
-      // Abrimos el menú
-      this.toggleAttribute("open");
-
-      // Calculamos si debemos voltear el menú
-      const rect = menu.getBoundingClientRect();
-      const viewportWidth = window.innerWidth;
-
-      if (rect.right > viewportWidth) {
-        this.setAttribute("flip", "");
+      
+      if (menu.matches(":popover-open")) {
+        menu.hidePopover();
       } else {
-        this.removeAttribute("flip");
+        this._positionMenu();
+        menu.showPopover();
       }
     });
 
-    // Close when clicking outside
-    document.addEventListener("click", this._outsideHandler = (e) => {
-      const path = e.composedPath();
-      if (!path.includes(this)) this.removeAttribute("open");
-    });
-
-    // Close when choosing an option
+    // Cerrar al hacer clic en cualquier opción dentro del slot
     const slot = this.shadowRoot.querySelector("slot");
     slot.addEventListener("click", (e) => {
-      if (e.target.nodeName === "BUTTON") this.removeAttribute("open");
+      if (e.target.nodeName === "BUTTON") {
+        menu.hidePopover();
+      }
+    });
+
+    // Reposicionar si se hace scroll o se cambia el tamaño de pantalla
+    window.addEventListener("resize", this._repositionHandler = () => {
+      if (menu.matches(":popover-open")) this._positionMenu();
     });
   }
 
   disconnectedCallback() {
-    document.removeEventListener("click", this._outsideHandler);
+    window.removeEventListener("resize", this._repositionHandler);
+  }
+
+  _positionMenu() {
+    const mainBtn = this.shadowRoot.querySelector(".main-btn");
+    const menu = this.shadowRoot.querySelector(".menu");
+
+    const btnRect = mainBtn.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Dimensiones estimadas antes de abrir
+    const menuWidth = 200;
+    const menuHeight = 120;
+
+    let top = btnRect.bottom + 6;
+    let left = btnRect.left;
+
+    // Verificar si se sale por la derecha -> Ajustar hacia la izquierda
+    if (left + menuWidth > viewportWidth - 10) {
+      left = btnRect.right - menuWidth;
+    }
+
+    // Verificar si se sale por abajo -> Ajustar hacia arriba
+    if (top + menuHeight > viewportHeight - 10 && btnRect.top > menuHeight) {
+      top = btnRect.top - menuHeight - 6;
+    }
+
+    menu.style.top = `${top}px`;
+    menu.style.left = `${left}px`;
   }
 }
+
+class PlusSearchPanel extends HTMLElement {
+    constructor() {
+        super();
+    }
+
+    connectedCallback() {
+        this.updateWidth();
+    }
+
+    static get observedAttributes() {
+        return ['left-width'];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'left-width' && oldValue !== newValue) {
+            this.updateWidth();
+        }
+    }
+
+    updateWidth() {
+        // Si no se define un ancho, usará 30% por defecto
+        const leftWidth = this.getAttribute('left-width') || '30%';
+        this.style.setProperty('--plus-left-width', leftWidth);
+    }
+}
+
 
 // Registrar componente
 customElements.define("plus-switch-column", PlusSwitchColumn);
