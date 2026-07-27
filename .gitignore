@@ -5,6 +5,7 @@ views/*
 node_modules/
 
 apps/agenda/config/credentials.json
+logic.txt
 
 # Ignore all files and subfolders within customer migrations
 apps/payroll/migrations/*

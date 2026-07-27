@@ -1,5 +1,5 @@
 from HookRegistry import HookRegistry
-from ServiceRegistry import ServiceRegistry
+from core.plus.services import ServiceRegistry
 from core.plus.Context import Context
 
 

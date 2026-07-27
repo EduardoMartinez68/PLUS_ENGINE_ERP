@@ -1,5 +1,5 @@
 #==========================EXAMPLES SAVE SERVICES==========================
-from core.plus.ServiceRegistry import ServiceRegistry
+from core.plus.services import ServiceRegistry
 from apps.customers.services.Customers import Customers
 
 ServiceRegistry["customers.add_customer"] = Customers.add_new_customer
