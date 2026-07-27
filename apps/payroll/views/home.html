@@ -1,0 +1,369 @@
+{% load static %}
+
+<!-- Asignas el ancho deseado al lado izquierdo (ejemplo: 35%) -->
+<plus-search-panel left-width="35%">
+
+    <div class="panel-left">
+        <plus-search input_id="search-sales">
+            <search-option>
+                <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-sales')"><i
+                        class="fi fi-rr-settings-sliders"></i></button>
+            </search-option>
+            <search-option>
+                <list-button>
+                    <button onclick="window.nextWeb('employees/add_user/')" t="payroll.button.add-contract" icon="fi fi-rr-user-add"></button>
+                    <button onclick="window.nextWeb('employees/add_employee/')" t="payroll.button.add-payroll-period" icon="fi fi-rr-diploma"></button>
+                </list-button>
+            </search-option>
+        </plus-search>
+        <br>
+        <div id="container-search">
+            <card-payroll-period start-date="2026-07-01" end-date="2026-07-15" payment-date="2026-07-16" status="OPEN"
+                employees="12" pay-cash="15200.00" pay-card="4800.00" pay-transfer="32100.00" pay-paycheck="2500.00"
+                total="54600.00">
+            </card-payroll-period>
+
+            <card-payroll-period start-date="2026-06-16" end-date="2026-06-30" payment-date="2026-07-01" status="PAID"
+                employees="10" pay-cash="12000.00" pay-card="3500.00" pay-transfer="28000.00" pay-paycheck="0.00"
+                total="43500.00">
+            </card-payroll-period>
+        </div>
+    </div>
+
+    <div class="panel-right">
+        <img class="img-search-panel" src="{% static '/apps/payroll/img/payroll_home.webp' %}?v=1.1" alt="">
+        <label t="payroll.title.home"></label>
+    </div>
+
+</plus-search-panel>
+
+<script>
+    class CardPayrollPeriod extends HTMLElement {
+        constructor() {
+            super();
+            this.attachShadow({ mode: 'open' });
+        }
+
+        connectedCallback() {
+            this.render();
+        }
+
+        static get observedAttributes() {
+            return [
+                'start-date',
+                'end-date',
+                'payment-date',
+                'status',
+                'employees',
+                'pay-cash',
+                'pay-card',
+                'pay-transfer',
+                'pay-paycheck',
+                'total'
+            ];
+        }
+
+        attributeChangedCallback() {
+            this.render();
+        }
+
+        formatCurrency(val) {
+            const num = parseFloat(val) || 0;
+            return new Intl.NumberFormat('es-MX', {
+                style: 'currency',
+                currency: 'MXN',
+                minimumFractionDigits: 2
+            }).format(num);
+        }
+
+        formatDate(dateStr) {
+            if (!dateStr || dateStr === '—') return '—';
+            // Maneja formato YYYY-MM-DD sin desfasar zona horaria
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                const date = new Date(parts[0], parts[1] - 1, parts[2]);
+                return new Intl.DateTimeFormat('es-MX', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                }).format(date);
+            }
+            return dateStr;
+        }
+
+        render() {
+            const startDate = this.formatDate(this.getAttribute('start-date'));
+            const endDate = this.formatDate(this.getAttribute('end-date'));
+            const paymentDate = this.formatDate(this.getAttribute('payment-date'));
+            const status = (this.getAttribute('status') || 'OPEN').toUpperCase();
+            const employees = parseInt(this.getAttribute('employees') || '0', 10);
+
+            const cash = this.formatCurrency(this.getAttribute('pay-cash'));
+            const card = this.formatCurrency(this.getAttribute('pay-card'));
+            const transfer = this.formatCurrency(this.getAttribute('pay-transfer'));
+            const terminal = this.formatCurrency(this.getAttribute('pay-paycheck'));
+            const total = this.formatCurrency(this.getAttribute('total'));
+
+            const statusConfig = {
+                OPEN: { label: 'Abierto', class: 'open' },
+                CLOSED: { label: 'Cerrado', class: 'closed' },
+                PAID: { label: 'Pagado', class: 'paid' }
+            };
+
+            const currentStatus = statusConfig[status] || { label: status, class: 'open' };
+
+            this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          display: block;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          margin-bottom: 1.25rem;
+          color: #0f172a;
+        }
+
+        .card {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 16px;
+          padding: 1.5rem;
+          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .card:hover {
+          border-color: #cbd5e1;
+          cursor: pointer;
+        }
+
+        /* Indicador lateral sutil según el estado */
+        .card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          width: 4px;
+          border-radius: 16px 0 0 16px;
+        }
+        .card.status-open::before { background-color: #0284c7; }
+        .card.status-closed::before { background-color: #d97706; }
+        .card.status-paid::before { background-color: #16a34a; }
+
+        /* HEADER */
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 1.25rem;
+          gap: 1rem;
+        }
+
+        .period-title {
+          font-size: 1.125rem;
+          font-weight: 700;
+          letter-spacing: -0.02em;
+          color: #0f172a;
+          margin: 0 0 0.35rem 0;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .meta-info {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          font-size: 0.813rem;
+          color: #64748b;
+        }
+
+        .meta-item {
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
+        }
+
+        .meta-item strong {
+          color: #334155;
+          font-weight: 600;
+        }
+
+        .header-badges {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        /* BADGES */
+        .badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.35rem;
+          padding: 0.3rem 0.75rem;
+          border-radius: 9999px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          letter-spacing: 0.01em;
+          white-space: nowrap;
+        }
+
+        /* Estado */
+        .badge-status.open { background-color: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; }
+        .badge-status.closed { background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+        .badge-status.paid { background-color: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+
+        .dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+        }
+        .open .dot { background-color: #0284c7; }
+        .closed .dot { background-color: #d97706; }
+        .paid .dot { background-color: #16a34a; }
+
+        /* Empleados */
+        .badge-employees {
+          background-color: #f8fafc;
+          color: #475569;
+          border: 1px solid #e2e8f0;
+        }
+
+        .badge-employees svg {
+          width: 14px;
+          height: 14px;
+          fill: none;
+          stroke: currentColor;
+          stroke-width: 2;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+
+        /* BREAKDOWN GRID */
+        .breakdown {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 0.75rem;
+          margin-bottom: 1.25rem;
+        }
+
+        @media (max-width: 640px) {
+          .breakdown {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        .breakdown-card {
+          background-color: #f8fafc;
+          border: 1px solid #f1f5f9;
+          border-radius: 12px;
+          padding: 0.75rem 1rem;
+          transition: background-color 0.2s ease;
+        }
+
+        .breakdown-card:hover {
+          background-color: #f1f5f9;
+        }
+
+        .breakdown-label {
+          font-size: 0.75rem;
+          font-weight: 500;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          margin-bottom: 0.25rem;
+        }
+
+        .breakdown-value {
+          font-size: 0.938rem;
+          font-weight: 600;
+          color: #1e293b;
+        }
+
+        /* FOOTER TOTAL */
+        .footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-top: 1rem;
+          border-top: 1px solid #f1f5f9;
+        }
+
+        .total-title {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: #475569;
+        }
+
+        .total-amount {
+          font-size: 1.5rem;
+          font-weight: 800;
+          letter-spacing: -0.03em;
+          color: #0f172a;
+        }
+      </style>
+
+      <div class="card status-${currentStatus.class}">
+        <!-- HEADER -->
+        <div class="header">
+          <div>
+            <h3 class="period-title">${startDate} &ndash; ${endDate}</h3>
+            <div class="meta-info">
+              <div class="meta-item">
+                <span>Fecha de pago:</span>
+                <strong>${paymentDate}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="header-badges">
+            <span class="badge badge-employees" title="Colaboradores en este periodo">
+              <svg viewBox="0 0 24 24">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              ${employees} ${employees === 1 ? 'Empleado' : 'Empleados'}
+            </span>
+
+            <span class="badge badge-status ${currentStatus.class}">
+              <span class="dot"></span>
+              ${currentStatus.label}
+            </span>
+          </div>
+        </div>
+
+        <!-- DESGLOSE -->
+        <div class="breakdown">
+          <div class="breakdown-card">
+            <div class="breakdown-label">Efectivo</div>
+            <div class="breakdown-value">${cash}</div>
+          </div>
+          <div class="breakdown-card">
+            <div class="breakdown-label">Tarjeta</div>
+            <div class="breakdown-value">${card}</div>
+          </div>
+          <div class="breakdown-card">
+            <div class="breakdown-label">Transferencia</div>
+            <div class="breakdown-value">${transfer}</div>
+          </div>
+          <div class="breakdown-card">
+            <div class="breakdown-label">Cheque</div>
+            <div class="breakdown-value">${terminal}</div>
+          </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+          <span class="total-title">Total a dispersar</span>
+          <span class="total-amount">${total}</span>
+        </div>
+      </div>
+    `;
+        }
+    }
+
+    customElements.define('card-payroll-period', CardPayrollPeriod);
+</script>

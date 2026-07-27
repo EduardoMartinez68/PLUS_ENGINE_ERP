@@ -7878,6 +7878,10 @@ function transform_my_labels_erp() {
   if(!customElements.get("plus-help-video")){
     customElements.define("plus-help-video", PlusHelpVideo);
   }
+
+  if(!customElements.get("plus-search-panel")){
+    customElements.define("plus-search-panel", PlusSearchPanel);
+  }
 }
 
 /**---------------------------------TAB----------------------------- */

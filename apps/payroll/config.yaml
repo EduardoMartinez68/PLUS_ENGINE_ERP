@@ -1,0 +1,15 @@
+
+name: "payroll"
+version: "1.0.0"
+
+appName: "payroll"
+icon: "payroll/icon.webp"
+iconF: "fi fi-rs-rocket-lunch"
+
+path: "/payroll"
+dbInit: true
+public: true
+permissionsFile: 'permissions.json'
+dependencies:
+  - "employees"
+  - "sales"
