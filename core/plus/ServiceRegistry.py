@@ -3,8 +3,12 @@ class ServiceRegistry:
     _services = {}
 
     @classmethod
-    def register(cls, name, func):
-        cls._services[name] = func
+    def register(cls, name):
+        """Decorator for registering class functions or methods."""
+        def decorator(func):
+            cls._services[name] = func
+            return func
+        return decorator
 
     @classmethod
     def get(cls, name):
