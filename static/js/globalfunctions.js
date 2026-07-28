@@ -46,6 +46,107 @@ Plus.Functions = {
         return {};
     },
 
+    executeWithAfter(namespace, mainFnName, afterFnName = null, ...args) {
+        namespace = convert_path_global_functions(namespace);
+
+        if (this.modules[namespace] && typeof this.modules[namespace][mainFnName] === 'function') {
+            
+            // Ejecuta la función principal
+            const result = this.modules[namespace][mainFnName](...args);
+
+            // Helper interno para ejecutar la función secundaria si existe
+            const runAfter = () => {
+                if (afterFnName && typeof this.modules[namespace][afterFnName] === 'function') {
+                    this.modules[namespace][afterFnName]();
+                }
+            };
+
+            // Si devuelve una promesa (Fetch / AJAX)
+            if (result && typeof result.then === 'function') {
+                return result.then((res) => {
+                    runAfter();
+                    return res;
+                });
+            }
+
+            // Si es síncrona
+            runAfter();
+            return result;
+        }
+
+        console.warn(`Function '${mainFnName}' in module '${namespace}' not found.`);
+        return null;
+    },
+
+    /**
+     * Ejecuta una secuencia ordenada de funciones dentro de un mismo namespace.
+     * @param {string} namespace - El modulo donde residen las funciones.
+     * @param {Array<string>} fnNames - Lista ordenada de nombres de funciones a ejecutar.
+     * @param {...*} initialArgs - Argumentos iniciales para la primera función.
+     */
+    async pipe(namespace, fnNames, ...initialArgs) {
+        namespace = convert_path_global_functions(namespace);
+        
+        const module = this.modules[namespace];
+        if (!module) {
+            console.warn(`Module '${namespace}' not found.`);
+            return null;
+        }
+
+        let currentResult = initialArgs;
+
+        for (const name of fnNames) {
+            if (typeof module[name] !== 'function') {
+                console.warn(`Function '${name}' in module '${namespace}' not found. Stopping pipeline.`);
+                break;
+            }
+
+            // Normalizamos los argumentos: la 1ra recibe initialArgs, las siguientes el resultado previo
+            const argsToPass = Array.isArray(currentResult) && fnNames.indexOf(name) === 0 
+                ? currentResult 
+                : [currentResult];
+
+            // 'await' asegura que si la función devuelve una Promesa (fetch/AJAX), 
+            // la ejecución espere antes de pasar a la siguiente función
+            currentResult = await module[name](...argsToPass);
+        }
+
+        return currentResult;
+    },
+
+     /**
+     * Registra un callback que se ejecutará INMEDIATAMENTE DESPUÉS
+     * de que la función objetivo termine su ejecución.
+     */
+    after(namespace, targetFnName, callback) {
+        namespace = convert_path_global_functions(namespace);
+
+        // Si el módulo no existe aún, lo creamos
+        if (!this.modules[namespace]) {
+            this.modules[namespace] = {};
+        }
+
+        // Guardamos una referencia a la función original (si ya existe)
+        const originalFn = this.modules[namespace][targetFnName];
+
+        // Reemplazamos la función objetivo con un wrapper
+        this.modules[namespace][targetFnName] = async function (...args) {
+            let result;
+
+            // 1. Ejecutamos la función original (si existe)
+            if (typeof originalFn === 'function') {
+                result = await originalFn(...args);
+            }
+
+            // 2. Ejecutamos el callback pasando la respuesta/resultado de la original
+            if (typeof callback === 'function') {
+                await callback(result);
+            }
+
+            // 3. Retornamos el resultado original por si alguien más lo necesita
+            return result;
+        };
+    },
 
     /**
     * Deletes functions. If you pass a namespace, deletes only that module.
@@ -122,6 +223,7 @@ Plus.variables = {
 
 // ---  JS encapsulation ---
 (()=>{
+    /*
     //this variable is for can render all the container
     //this variable are remplace when the server run and load all the container
     const namespace = "{plus}";
@@ -134,4 +236,5 @@ Plus.variables = {
     // save the function in the variable globale <AppFunctions> for after use in other scripts 
     window.Plus.Functions.define(namespace, "render", render_canva);
     window.Plus.Functions.get(namespace).create(); //here we run a function in specific
+    */
 })();
