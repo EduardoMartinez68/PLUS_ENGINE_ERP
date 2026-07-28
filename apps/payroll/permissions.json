@@ -1,0 +1,20 @@
+{
+    "character": {
+        "icon": "fi fi-rr-diploma"
+    },
+    "permissions": [
+        "create_employee_contract",
+        "update_employee_contract",
+        "view_employee_contract"
+    ],
+    "translate": {
+        "es": {
+            "app_name": "Nomina",
+            "description": "Permite gestionar la nomina de los empleados y usuarios dentro de la empresa.",
+            
+            "create_employee_contract": "Permite crear nuevos contratos de empleados en la empresa.",
+            "view_employee_contract": "Permite ver la informacion de los contratos de los empleados en la empresa.",
+            "update_employee_contract": "Permite actualizar los contratos de los empleados en la empresa."
+        }
+    }
+}

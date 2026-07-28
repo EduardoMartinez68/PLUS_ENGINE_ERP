@@ -1,4 +1,5 @@
 {% load static %}
+{% include 'payroll/partials/navbar.html' %}
 
 <!-- Asignas el ancho deseado al lado izquierdo (ejemplo: 35%) -->
 <plus-search-panel left-width="35%">
@@ -11,8 +12,8 @@
             </search-option>
             <search-option>
                 <list-button>
-                    <button onclick="window.nextWeb('employees/add_user/')" t="payroll.button.add-contract" icon="fi fi-rr-user-add"></button>
-                    <button onclick="window.nextWeb('employees/add_employee/')" t="payroll.button.add-payroll-period" icon="fi fi-rr-diploma"></button>
+                    <button onclick="window.nextWeb('payroll/create_employee_contract/')" t="payroll.button.add-contract" icon="fi fi-rr-user-add"></button>
+                    <button onclick="window.nextWeb('payroll/create_employee_contract/')" t="payroll.button.add-payroll-period" icon="fi fi-rr-diploma"></button>
                 </list-button>
             </search-option>
         </plus-search>

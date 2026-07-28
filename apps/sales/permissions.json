@@ -17,7 +17,7 @@
     "translate": {
         "es": {
             "app_name": "Ventas",
-            "description": "Permite gestionar las ventas de productos y servicios dentro de la clínica.",
+            "description": "Permite gestionar las ventas de productos y servicios dentro de la empresa.",
             
             "view_sales": "Permite ver el listado y detalle de las ventas realizadas.",
             "view_sales_totals": "Permite ver los montos totales de las ventas (subtotal, impuestos y total).",

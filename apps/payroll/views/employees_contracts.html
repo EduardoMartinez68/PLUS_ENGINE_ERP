@@ -1,0 +1,87 @@
+{% include 'payroll/partials/navbar.html' %}
+
+<message-pop name="{plus}_pop_employee_contract" title="payroll.title.form.employee-contract">
+    {% include 'payroll/partials/form_employee_contract.html' %}
+</message-pop>
+
+<input type="hidden" name="" id="{plus}_value">
+<plus-search input_id="{plus}_search-contracts">
+    <search-option>
+        <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-sales')"><i
+                class="fi fi-rr-settings-sliders"></i></button>
+    </search-option>
+    <search-option>
+        <button onclick="window.nextWeb('payroll/create_employee_contract/')" t="payroll.button.add-contract" icon="fi fi-rr-user-add"></button>
+    </search-option>
+</plus-search>
+
+<table>
+    <thead>
+        <tr>
+            <th t="payroll.table.employee">Empleado</th>
+            <th t="payroll.table.company">Empresa</th>
+            <th class="text-right" t="payroll.table.salary">Salario</th>
+            <th class="text-center" t="payroll.table.salary-type">Tipo Salario</th>
+            <th class="text-center" t="payroll.table.start-date">Inicio</th>
+            <th class="text-center" t="payroll.table.end-date">Término</th>
+            <th class="text-center" t="payroll.table.status">Estado</th>
+        </tr>
+    </thead>
+    <tbody id="{plus}_contracts_table_body">
+    </tbody>
+</table>
+
+<script>
+    (()=>{
+    function get_div() {
+        return `
+        <tr onclick="window.nextWeb('/payroll/view_contract/{id}/')" style="cursor: pointer;">
+            <!-- Columna 1: Empleado (Avatar + Username / Name) -->
+            <td>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="avatar">
+                        <img src="{employee.avatar}" 
+                            onerror="this.onerror=null; this.src='/static/img/default-avatar.png';" 
+                            alt="{employee.username}" 
+                            class="avatar-img">
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span class="font-semibold">{employee.username}</span>
+                        <small class="text-muted">{employee.email}</small>
+                    </div>
+                </div>
+            </td>
+
+            <!-- Columna 2: Empresa -->
+            <td>{company.name}</td>
+
+            <!-- Columna 3: Salario -->
+            <td class="text-right font-semibold">$ {salary}</td>
+
+            <!-- Columna 4: Tipo de Salario -->
+            <td class="text-center">
+                <span class="badge badge-info" t="payroll.type.{salary_type}">{salary_type}</span>
+            </td>
+
+            <!-- Columna 5: Fecha de Inicio -->
+            <td class="text-center">{start_date}</td>
+
+            <!-- Columna 6: Fecha de Término -->
+            <td class="text-center">{end_date}</td>
+
+            <!-- Columna 7: Estado (Activo / Inactivo) -->
+            <td class="text-center">
+                <span class="status status-{active}" t="payroll.status.{active}"></span>
+            </td>
+        </tr>
+        `;
+    }
+
+
+        window.update_container_with_seeker(
+            ['{plus}_search-contracts', '{plus}_value'],
+            '{plus}_contracts_table_body', get_div(), `/payroll/view_search_employees_contracts/`, 'GET', true);
+
+
+    })();
+</script>

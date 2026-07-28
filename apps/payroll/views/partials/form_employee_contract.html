@@ -1,0 +1,296 @@
+
+<style>
+/* Regla para el formulario principal dentro del form */
+form[id*="_form_contract"] {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Contenedor principal dentro del <form> */
+.container-form {
+    display: flex;
+    flex-direction: column;
+    height: 100%; 
+    width: 100%;            
+    box-sizing: border-box;
+    padding: 1.25rem;         /* Padding general alrededor del contenido */
+    gap: 1rem;                /* Separación limpia entre el cuerpo y el footer */
+    overflow: hidden;         /* Protege para que solo el form-body haga scroll */
+}
+
+/* Zona de contenido con scroll automático */
+.form-body {
+    flex: 1;                  /* Crece para tomar todo el alto vertical disponible */
+    min-height: 0;            /* Vital en Flexbox para que respete el overflow-y */
+    overflow-y: auto;         /* Activa el scroll vertical SOLO si el contenido sobrepasa la pantalla */
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;                /* Separa las filas (.row) uniformemente */
+    padding-right: 0.25rem;   /* Espacio para que el scrollbar no encime los inputs */
+}
+
+/* Personalización elegante del Scrollbar (WebKit / Chrome / Safari / Edge) */
+.form-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.form-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.form-body::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1; /* Color discreto para el scrollbar */
+    border-radius: 4px;
+}
+
+.form-body::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8;
+}
+
+/* Zona de botones en la parte inferior */
+.form-footer {
+    margin-top: auto;         /* Empuja los botones al fondo siempre */
+    padding-top: 0.75rem;     /* Separador superior */
+    border-top: 1px solid #e5e7eb; /* Línea sutil para delimitar la sección de acciones */
+    background-color: transparent; 
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;           /* Congela el tamaño del footer para que nunca se aplaste */
+}
+
+/* Responsive para dispositivos móviles */
+@media (max-width: 768px) {
+    .container-form {
+        padding: 0.85rem;     /* Ajuste de espacio para pantallas reducidas */
+    }
+    .form-footer {
+        flex-direction: column;
+    }
+    .form-footer button {
+        width: 100%;          /* En celulares los botones se adaptan a ancho completo */
+    }
+}
+</style>
+
+<form id="{plus}_form_contract">
+    <div class="container-form">
+        <input type="hidden" id="{plus}_employee_contract_id" name="employee_contract_id">
+        <!-- Cuerpo con scroll automático -->
+        <div class="form-body">
+            
+            <!-- Fila 1: Empleado -->
+            <div class="row section">
+                <div class="col">
+                    <plus-select link="/departament_employee/search_employee/" label="sales.label.employee"
+                        name="employee"></plus-select>
+                </div>
+            </div>
+
+            <!-- Fila 2: Salario y Tipo de Salario -->
+            <div class="row section">
+                <div class="col">
+                    <input-field type="number" step="0.01" label="payroll.label.salary" name="salary" required>
+                    </input-field>
+                </div>
+                <div class="col">
+                    <plus-select label="payroll.select.type-salary" name="salary_type" required>
+                        <option value="MONTHLY" t="payroll.option.monthly"></option>
+                        <option value="WEEKLY" t="payroll.option.weekly"></option>
+                        <option value="BIWEEKLY" t="payroll.option.biweekly"></option>
+                        <option value="DAILY" t="payroll.option.daily"></option>
+                        <option value="HOURLY" t="payroll.option.hourly"></option>
+                    </plus-select>
+                </div>
+            </div>
+
+            <!-- Fila 3: Fecha de Inicio y Fecha de Término -->
+            <div class="row section">
+                <div class="col">
+                    <input-field type="date" label="payroll.label.start-date" name="start_date" required>
+                    </input-field>
+                </div>
+                <div class="col">
+                    <input-field type="date" label="payroll.label.end-date" name="end_date">
+                    </input-field>
+                </div>
+            </div>
+
+            <plus-switch text="payroll.label.contract-active" value="True"></plus-switch>
+
+        </div> <!-- Fin .form-body -->
+
+        <!-- Footer fijo al fondo -->
+        <div class="form-footer">
+            <button class="btn btn-success btn-add" t="payroll.button.save-contract"></button>
+        </div>
+
+    </div> <!-- Fin .container-form -->
+</form>
+
+<script>
+    (() => {
+        const namespace = "{plus}"; //this variable is for can render all the container 
+
+        /**
+         * Llena el formulario de contrato con los datos recibidos del servidor.
+         * 
+         * @param {string} formId - El ID del formulario (ej: 'plus_form_contract' o `${plus}_form_contract`).
+         * @param {Object} data - El objeto retornado por el servidor (debe contener la clave 'answer').
+         */
+        function populateContractForm(formId, data) {
+            const form = document.getElementById(formId);
+            if (!form) {
+                console.error(`Formulario con ID "${formId}" no encontrado.`);
+                return;
+            }
+
+            // Extraemos la información del contrato
+            const contract = data.answer || data;
+            if (!contract) return;
+
+            // 1. Campo oculto: ID del contrato
+            const hiddenIdInput = form.querySelector('input[name="employee_contract_id"]');
+            if (hiddenIdInput) {
+                hiddenIdInput.value = contract.id || '';
+            }
+
+            // 2. Custom Component: plus-select (Empleado)
+            const employeeSelect = form.querySelector('plus-select[name="employee"]');
+            if (employeeSelect && contract.employee) {
+                // Formateamos el texto del empleado según los datos devueltos
+                const fullName = [contract.employee.first_name, contract.employee.last_name]
+                    .filter(Boolean)
+                    .join(' ');
+                
+                const optionData = {
+                    id: contract.employee.id,
+                    text: fullName || contract.employee.email || `ID: ${contract.employee.id}`
+                };
+
+                // Asignación genérica para Custom Web Components de selección
+                if (typeof employeeSelect.setValue === 'function') {
+                    employeeSelect.setValue(optionData.id, optionData.text);
+                } else {
+                    employeeSelect.setAttribute('value', optionData.id);
+                    employeeSelect.value = optionData.id;
+                }
+            }
+
+            // 3. Custom Component: input-field (Salario)
+            const salaryInput = form.querySelector('input-field[name="salary"]');
+            if (salaryInput) {
+                salaryInput.value = contract.salary || '';
+                salaryInput.setAttribute('value', contract.salary || '');
+            }
+
+            // 4. Custom Component: plus-select (Tipo de Salario)
+            const salaryTypeSelect = form.querySelector('plus-select[name="salary_type"]');
+            if (salaryTypeSelect) {
+                if (typeof salaryTypeSelect.setValue === 'function') {
+                    salaryTypeSelect.setValue(contract.salary_type);
+                } else {
+                    salaryTypeSelect.setAttribute('value', contract.salary_type || '');
+                    salaryTypeSelect.value = contract.salary_type || '';
+                }
+            }
+
+            // 5. Custom Components: input-field (Fechas)
+            const startDateInput = form.querySelector('input-field[name="start_date"]');
+            if (startDateInput) {
+                startDateInput.value = contract.start_date || '';
+                startDateInput.setAttribute('value', contract.start_date || '');
+            }
+
+            const endDateInput = form.querySelector('input-field[name="end_date"]');
+            if (endDateInput) {
+                endDateInput.value = contract.end_date || '';
+                endDateInput.setAttribute('value', contract.end_date || '');
+            }
+
+            // 6. Custom Component: plus-switch (Estado activo)
+            const activeSwitch = form.querySelector('plus-switch');
+            if (activeSwitch) {
+                const isActive = Boolean(contract.active);
+                
+                if (typeof activeSwitch.setChecked === 'function') {
+                    activeSwitch.setChecked(isActive);
+                } else {
+                    activeSwitch.checked = isActive;
+                    activeSwitch.value = isActive ? 'True' : 'False';
+                    if (isActive) {
+                        activeSwitch.setAttribute('checked', '');
+                    } else {
+                        activeSwitch.removeAttribute('checked');
+                    }
+                }
+            }
+        }
+
+        async function save_new_employee_contract(){
+            const backend=await window.send_form_to_the_server(`{plus}_form_contract`, `/payroll/create_employee_contract/`);
+            if(!backend.success){
+                window.show_alert('alert', 'payroll.error.not-can-create-the-contract', backend.message || 'payroll.error.not-can-create-the-contract', backend.error || '');
+                return;
+            }
+
+            window.reset_form('{plus}_form_contract');
+            window.show_notification('success', 'payroll.success.the-contract-was-created');
+        }
+
+        async function update_employee_contract(id){
+            const backend=await window.send_form_to_the_server(`{plus}_form_contract`, `/payroll/update_employee_contract/${id}/`);
+            if(!backend.success){
+                window.show_alert('alert', 'payroll.error.not-can-create-the-contract', backend.message || 'payroll.error.not-can-create-the-contract', backend.error || '');
+                return;
+            }
+
+            window.reset_form('{plus}_form_contract');
+            window.show_notification('success', 'payroll.success.the-contract-was-created');
+        }
+
+        async function form_function() {
+            //here we will see if exist a id 
+            const id=document.getElementById('{plus}_employee_contract_id');
+            if(id && id.value.strip()!==''){
+                await update_employee_contract(id.value);
+                return;
+            }
+
+            //if not exist a ID is because the user would like create a new contract 
+            await save_new_employee_contract();
+        }
+
+        async function load_information_contract(){
+            //here we will see if exist a id 
+            const id=document.getElementById('{plus}_employee_contract_id');
+            if(!id || id.value.strip()==''){
+                return;
+            }
+
+            const backend=await send_message_to_the_server(`/payroll/get_employee_contract/${id}/`, {}, true, 'GET');
+            if(!backend){
+                window.show_alert('error', 'payroll.error.could-not-be-obtained-the-information-of-the-contract', backend.message || 'payroll.error.could-not-be-obtained-the-information-of-the-contract', backend.error || '');
+                return;
+            }
+
+            //if get the information of the contract now we will to render the information in the UI 
+            const answer=backend.answer;
+            populateContractForm('{plus}_employee_contract_id',answer);
+        }
+
+        load_information_contract(); //for default forever load this function for know if exist a ID from the server
+
+
+
+        // Registramos la función usando nuestra función tercera global
+        window.Plus.Functions.define(namespace, "form_function", form_function);
+        window.Plus.Functions.define(namespace, "load_information_contract", load_information_contract);
+    })();
+</script>
