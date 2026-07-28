@@ -9,7 +9,7 @@ from decimal import Decimal
 
 class Plus:
     functions_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), '../../functions')
+        os.path.join(os.path.dirname(__file__), '../functions')
     )
 
     @staticmethod
