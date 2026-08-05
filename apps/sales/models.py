@@ -74,7 +74,8 @@ class Sale(models.Model):
     )
 
     first_buy_do=models.BooleanField(default=False)
-
+    commission_made=models.BooleanField(default=False)
+    
     created_by = models.ForeignKey(
         CustomUser,
         on_delete=models.SET_NULL,

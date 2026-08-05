@@ -528,11 +528,11 @@
   }
 </style>
 <!---this is the pop for filter the customer that the user would like search---->
-<message-pop title="title-filter" name="pop-filter-customer">
+<message-pop title="title-filter" name="{plus}_pop-filter-customer">
   <div class="row">
     <div class="col">
       <label t="select-priority"></label>
-      <select label="select-priority" id="filter-priority-customer">
+      <select label="select-priority" id="{plus}_filter-priority-customer">
         <option value="" t="select-priority-0"></option>
         <option value="1" t="select-priority-1"></option>
         <option value="2" t="select-priority-2"></option>
@@ -549,21 +549,21 @@
     </div>
   </div>
 
-  <button t="message.success" class="btn btn-edit btn-success" onclick="hide_pop('pop-filter-customer')">Search</button>
+  <button t="message.success" class="btn btn-edit btn-success" onclick="hide_pop('{plus}_pop-filter-customer')">Search</button>
 </message-pop>
 <br>
 <plus-help-video videos='[
     {"title":"¿Cómo Gestionar mis Pacientes?","url":"https://www.youtube.com/embed/LF36wkQuWAI?si=2_u4Od4tuCOgIoN4"}
     ]'>
 </plus-help-video><br>
-<plus-switch-column id="customers-switch">
+<plus-switch-column id="{plus}_customers-switch">
   <div slot="col1">
-    <plus-search input_id="search-customer">
+    <plus-search input_id="{plus}_search-customer">
       <search-option>
         <button class="btn btn-add" onclick="nextWeb('customers/add_customer')">+</button>
       </search-option>
       <search-option>
-        <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-customer')"><i
+        <button class="btn btn-transparent" onclick="window.show_pop('{plus}_pop-filter-customer')"><i
             class="fi fi-rr-settings-sliders"></i></button>
       </search-option>
       <search-option>
@@ -597,7 +597,7 @@
   </div>
 
   <div slot="col2">
-    <button class="btn btn-edit btn-mobile" onclick="toggle_switch_column('customers-switch',false)">×</button>
+    <button class="btn btn-edit btn-mobile" onclick="toggle_switch_column('{plus}_customers-switch',false)">×</button>
     <div class="info-customer" id="info-customer">
       <div class="full-center">
         <img src="{% static 'img/customer_home.webp' %}" alt="Customer Home" loading="lazy">
@@ -654,7 +654,7 @@
     `;
 
     update_container_from_the_server(
-      ['search-customer', 'filter-priority-customer', 'status-customer'],
+      ['{plus}_search-customer', '{plus}_filter-priority-customer', 'status-customer'],
       'customer-list',
       divHtml,
       '/customers/customers_search',
@@ -896,7 +896,7 @@
     }
 
 
-    window.toggle_switch_column('customers-switch'); //show the div that is hidden if the user is in cellphone
+    window.toggle_switch_column('{plus}_customers-switch'); //show the div that is hidden if the user is in cellphone
   }
 
   function switchCusTab(event, sectionId) {
@@ -1140,7 +1140,7 @@
   `;
 
     update_container_with_seeker(
-      ['search-customer', 'filter-priority-customer', 'status-customer'],
+      ['{plus}_search-customer', '{plus}_filter-priority-customer', 'status-customer'],
       'customer-list',
       divHtml,
       '/customers/customers_search',
