@@ -5,7 +5,10 @@
     "permissions": [
         "create_employee_contract",
         "update_employee_contract",
-        "view_employee_contract"
+        "view_employee_contract",
+        "view_payroll_period",
+        "create_payroll_period",
+        "pay_payroll"
     ],
     "translate": {
         "es": {
@@ -14,7 +17,10 @@
             
             "create_employee_contract": "Permite crear nuevos contratos de empleados en la empresa.",
             "view_employee_contract": "Permite ver la informacion de los contratos de los empleados en la empresa.",
-            "update_employee_contract": "Permite actualizar los contratos de los empleados en la empresa."
+            "update_employee_contract": "Permite actualizar los contratos de los empleados en la empresa.",
+            "view_payroll_period":"Ver y buscar periodos de nominas dentro del sistema",
+            "create_payroll_period":"Permite crear nuevos periodos de nomina",
+            "pay_payroll":"Permite crear pagos de Nominas a los empleados"
         }
     }
 }

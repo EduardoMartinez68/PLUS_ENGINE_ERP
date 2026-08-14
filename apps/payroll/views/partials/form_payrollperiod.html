@@ -1,0 +1,52 @@
+<form id="{plus}_form_payrollperiod">
+    <div class="row section">
+        <div class="col">
+            <input-field type="date" label="payroll.label.start_date" name="start_date"></input-field>
+        </div>
+        <div class="col">
+            <input-field type="date" label="payroll.label.end_date" name="end_date"></input-field>
+        </div>
+        <button type="button" class="btn btn-add btn-success" t="btn.make" onclick="Plus.Functions.get('{plus}').save_new_payrollperiod()"></button>
+    </div>
+</form>
+
+
+<script>
+    (()=>{
+        const namespace = "{plus}";
+
+        async function save_new_payrollperiod(){
+            const backend=await window.send_form_to_the_server('{plus}_form_payrollperiod','/payroll/create_payrollperiod/');
+            if(!backend.success){
+                window.show_alert('error', 'payroll.error.payrollperiod', backend.message || 'payroll.error.payrollperiod',  backend.error || '')
+                return;
+            }
+
+            const id=backend.answer.id;
+
+            window.show_notification('success', 'payroll.success.payrollperiod');
+            window.nextWeb(`/payroll/view_payrollperiod/${id}/`);
+        }
+
+        function set_form_dates(timestart, timefinish){
+            console.log(timestart)
+            console.log(timefinish)
+            const form = document.getElementById(`{plus}_form_payrollperiod`);
+            if (!form) return;
+
+            const startDateInput = form.querySelector('input[name="start_date"]');
+            if (startDateInput) {
+                startDateInput.value = timestart;
+            }
+
+            const endDateInput = form.querySelector('input[name="end_date"]');
+            if (endDateInput) {
+                endDateInput.value = timefinish;
+            }
+        }
+
+
+        window.Plus.Functions.define(namespace, "set_form_dates", set_form_dates);
+        window.Plus.Functions.define(namespace, "save_new_payrollperiod", save_new_payrollperiod);
+    })();
+</script>

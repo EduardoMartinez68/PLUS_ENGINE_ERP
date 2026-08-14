@@ -1,0 +1,1252 @@
+{% load static %}
+{% include 'payroll/partials/navbar.html' %}
+<style>
+  /* ==========================================================================
+   Componente: <card-employee-payroll>
+   ========================================================================== */
+  card-employee-payroll {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .employee-payroll-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .employee-payroll-card:hover {
+    border-color: #cbd5e1;
+  }
+
+  /* Columna Izquierda: Avatar e Info */
+  .card-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .avatar-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .employee-details {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .employee-name {
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 0.95rem;
+  }
+
+  .employee-id-tag {
+    font-size: 0.775rem;
+    color: #64748b;
+  }
+
+  /* Columna Central: Salario y Tipo */
+  .card-center {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .salary-amount {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 1rem;
+  }
+
+  /* Badges para Tipo de Salario */
+  .badge-salary {
+    padding: 4px 10px;
+    font-size: 0.725rem;
+    font-weight: 600;
+    border-radius: 20px;
+    border: 1px solid transparent;
+  }
+
+  .badge-salary-MONTHLY {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    border-color: #bae6fd;
+  }
+
+  .badge-salary-WEEKLY {
+    background-color: #dcfce7;
+    color: #15803d;
+    border-color: #bbf7d0;
+  }
+
+  .badge-salary-BIWEEKLY {
+    background-color: #e0e7ff;
+    color: #4338ca;
+    border-color: #c7d2fe;
+  }
+
+  .badge-salary-DAILY {
+    background-color: #fef3c7;
+    color: #b45309;
+    border-color: #fde68a;
+  }
+
+  .badge-salary-HOURLY {
+    background-color: #fce7f3;
+    color: #be185d;
+    border-color: #fbcfe8;
+  }
+
+  /* Columna Derecha: Estado */
+  .status-pill {
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 20px;
+  }
+
+  .status-open {
+    background-color: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #ffedd5;
+  }
+
+  .status-paid {
+    background-color: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+  }
+
+  .status-closed {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+  }
+</style>
+<style>
+  :root {
+    --clean-bg: #f3f4f6;
+    /* Fondo gris claro de la interfaz */
+    --clean-card-bg: #ffffff;
+    /* Fondo blanco de los bloques */
+    --clean-text-primary: #0f172a;
+    /* Texto principal oscuro */
+    --clean-text-muted: #8e95a5;
+    /* Texto de labels pequeñas en mayúsculas */
+    --clean-border-radius: 14px;
+    /* Esquinas redondeadas como la imagen */
+    --clean-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+
+  .plus-payroll-card-clean {
+    background-color: var(--clean-bg);
+    padding: 24px;
+    border-radius: 20px;
+    width: 100%;
+    margin: 0 auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Filas y Columnas */
+  .plus-clean-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .plus-clean-field {
+    background-color: var(--clean-card-bg);
+    border-radius: var(--clean-border-radius);
+    padding: 12px 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: var(--clean-shadow);
+    border: 1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+
+  .plus-clean-field.empty {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .plus-clean-field.full-width {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Tipografía idéntica a la imagen */
+  .plus-clean-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--clean-text-muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .plus-clean-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--clean-text-primary);
+  }
+
+  .plus-clean-sub {
+    font-weight: 400;
+    color: var(--clean-text-muted);
+  }
+
+  /* Campos Inputs estilizados como la tarjeta */
+  .plus-clean-input-group {
+    display: flex;
+    align-items: center;
+  }
+
+  .plus-clean-input-group span {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--clean-text-primary);
+    margin-right: 4px;
+  }
+
+  .plus-clean-field input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--clean-text-primary);
+    outline: none;
+    font-family: inherit;
+  }
+
+  .plus-clean-field input[readonly] {
+    color: #64748b;
+  }
+
+  .plus-clean-field:focus-within {
+    border-color: #cbd5e1;
+  }
+
+  /* Campo especial de Deducciones */
+  .plus-clean-field.danger .plus-clean-label {
+    color: #ef4444;
+  }
+
+  /* Fila de Total destacado */
+  .plus-clean-field.action-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 18px;
+  }
+
+  .plus-clean-total-amount {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #059669;
+  }
+
+  /* Botón principal */
+  .plus-clean-actions {
+    margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .plus-clean-btn-primary {
+    background-color: var(--clean-text-primary);
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--clean-border-radius);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .plus-clean-btn-primary:hover {
+    opacity: 0.9;
+  }
+
+  .info-panel {
+    width: 100%;
+  }
+
+  .container-img-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 12px;
+  }
+
+  .plus-clean-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .plus-info-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #007bff;
+    /* Ajusta el color según tu diseño */
+    padding: 0;
+    font-size: 14px;
+  }
+
+  .plus-info-btn:hover {
+    opacity: 0.8;
+  }
+</style>
+<style>
+  .container-info-total {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    font-family: inherit;
+    color: #333;
+    margin-bottom: 16px;
+    background-color: white;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .info-item span {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .info-item strong {
+    font-size: 16px;
+    color: #212529;
+  }
+
+  .hidden-div {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
+<plus-search-panel left-width="35%">
+  <div class="panel-left">
+    <input type="hidden" id="{plus}_payroll_period_id" value="{{ payrollperiod_id }}">
+    <plus-search input_id="{plus}_search_input"></plus-search>
+    <br>
+    <div id="{plus}_container-search">
+
+    </div>
+  </div>
+
+  <div class="panel-right">
+    <div id="{plus}_container-information" class="info-panel">
+      <div class="container-img-center">
+        <img class="img-search-panel" src="{% static '/apps/payroll/img/payroll_home.webp' %}?v=1.1" alt="">
+        <label t="payroll.title.home"></label>
+      </div>
+    </div>
+  </div>
+</plus-search-panel>
+
+<message-pop title="choose-method-of-buy" name="{plus}_pop_form_method-of-buy">
+  <div class="row section">
+    <div class="col">
+      <plus-select label="payroll.label.choose-the-method-of-buy" name="status" id="{plus}_method_filter">
+        <option value="cash" t="payroll.status.cash"></option>
+        <option value="card" t="payroll.status.card"></option>
+        <option value="transfer" t="payroll.status.transfer"></option>
+      </plus-select>
+    </div>
+  </div>
+  <button class="btn btn-add" t="payroll.btn.buy" onclick="Plus.Functions.get('{plus}').buy_payroll()"></button>
+</message-pop>
+
+<message-pop title="choose-method-of-buy" name="{plus}_pop_commissions">
+    <div class="row section">
+      <div class="col">
+        <input-field label="payroll.label.commissions" placeholder="30%" id="{plus}_value_commissions"></input-field>
+      </div>
+      <div class="col">
+        <input-field label="payroll.label.total_commissions" placeholder="payroll.placeholder.total_commissions" id="{plus}_value_money_commissions"></input-field>
+      </div>
+    </div>
+  <div class="container-pop">
+    <div class="container-info-total" id="{plus}_info-total">
+
+    </div>
+    <div id="{plus}_container-search-commision" style="display: flex; flex-direction: column; gap: 12px;">
+
+    </div>
+    <div class="hidden-div">
+      <input type="hidden" id="{plus}-id-employee-search-comission">
+      <plus-search input_id="{plus}_search-sale-comission"></plus-search>
+    </div>
+  </div>
+  <button class="btn btn-edit btn-success" t="payroll.btn.save-and-calculate-commissions" onclick="Plus.Functions.get('{plus}').save_commssion()"></button>
+</message-pop>
+
+<script>
+  if (!customElements.get("card-employee-payroll")) {
+    class CardEmployeePayroll extends HTMLElement {
+      connectedCallback() {
+        // Extraer atributos
+        const employeeId = this.getAttribute('employee-id') || '';
+        const contractId = this.getAttribute('employee-contract-id') || '';
+        const username = this.getAttribute('username') || 'Empleado';
+        const salary = this.getAttribute('salary') || '0.00';
+        const salaryType = (this.getAttribute('salary-type') || 'MONTHLY').toUpperCase();
+        const statusAtribute = (this.getAttribute('status') || 'OPEN').toUpperCase();
+        const status = statusAtribute ? statusAtribute.toLowerCase() : '';
+
+        // Renderizado interno del componente
+        this.innerHTML = `
+          <div class="employee-payroll-card" onclick="window.nextWeb('/payroll/view_contract/${contractId}/')">
+              <div class="card-left">
+                  <div class="avatar-circle">
+                      <span>${username.charAt(0).toUpperCase()}</span>
+                  </div>
+                  <div class="employee-details">
+                      <span class="employee-name">${username}</span>
+                      <span class="employee-id-tag">SALARIO: $ ${salary}</span>
+                  </div>
+              </div>
+
+              <div class="card-center">
+                  <span class="badge badge-salary badge-salary-${salaryType}" t="payroll.type.${salaryType}"></span>
+              </div>
+
+              <div class="card-right">
+                  <span class="status-pill status-${status.toLowerCase()}">${window.translate_text(`payroll.status.${status}`)}</span>
+              </div>
+          </div>
+      `;
+      }
+    }
+
+    customElements.define('card-employee-payroll', CardEmployeePayroll);
+  }
+
+  if (!customElements.get("paids-servies")) {
+    class PaidsServices extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+      }
+
+      connectedCallback() {
+        const saleId = this.getAttribute('sale-id');
+        const reference = this.getAttribute('reference') || '';
+        const customer = window.translate_text(this.getAttribute('customer') || 'payroll.label.general-public');
+        const branch = this.getAttribute('branch') || '';
+        const startDate = this.getAttribute('start-date') || '';
+        const amountPaid = this.getAttribute('amount-paid') || '0.00';
+        const balance = this.getAttribute('balance') || '0.00';
+        const total = this.getAttribute('total') || '0.00';
+
+        this.shadowRoot.innerHTML = `
+            <style>
+                :host {
+                    display: block;
+                    border: 1px solid #e9ecef;
+                    border-radius: 8px;
+                    padding: 12px 16px;
+                    background: #fff;
+                    font-family: inherit;
+                    color: #333;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                    transition: all 0.2s ease;
+                }
+                :host(:hover) {
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+                    border-color: #cbd5e1;
+                }
+                .sale-card {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                }
+                .sale-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: #1e293b;
+                }
+                .sale-details {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+                    gap: 8px;
+                    font-size: 13px;
+                    color: #64748b;
+                }
+                .sale-detail-item span {
+                    display: block;
+                    font-size: 11px;
+                    color: #94a3b8;
+                    text-transform: uppercase;
+                }
+                .sale-amounts {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 16px;
+                    border-top: 1px solid #f1f5f9;
+                    padding-top: 8px;
+                    font-size: 13px;
+                }
+                .amount-item strong {
+                    color: #0f172a;
+                }
+            </style>
+            <div class="sale-card">
+                <div class="sale-header">
+                    <span>Ref: ${reference}</span>
+                    <span>$${Number(total).toFixed(2)}</span>
+                </div>
+                <div class="sale-details">
+                    <div class="sale-detail-item">
+                        <span>Cliente</span>
+                        <strong>${customer}</strong>
+                    </div>
+                    <div class="sale-detail-item">
+                        <span>Sucursal</span>
+                        <strong>${branch}</strong>
+                    </div>
+                    <div class="sale-detail-item">
+                        <span>Fecha</span>
+                        <strong>${new Date(startDate).toLocaleDateString()}</strong>
+                    </div>
+                </div>
+                <div class="sale-amounts">
+                    <div class="amount-item">Pagado: <strong>$${Number(amountPaid).toFixed(2)}</strong></div>
+                    <div class="amount-item">Pendiente: <strong>$${Number(balance).toFixed(2)}</strong></div>
+                </div>
+            </div>
+        `;
+      }
+    }
+
+    customElements.get('paids-servies') || customElements.define('paids-servies', PaidsServices);
+  }
+
+  (() => {
+    const namespace = "{plus}";
+    let id_payroll = null;
+    let id_employee = null;
+    let totalSales=0;
+
+    window.Plus.variables.define(namespace, "id_payroll", id_payroll); //save the ID globale of the variable 
+
+    function get_div() {
+      return `
+        <card-employee-payroll 
+            onclick="Plus.Functions.get('{plus}').get_information_payroll({id})"
+            employee-table-period-id="{employee_table_period_id}"
+            employee-contract-id="{employee_contract_id}"
+            employee-id="{employee_id}"
+            username="{username}"
+            salary="{salary}"
+            salary-type="{salary_type}"
+            status="{status}">
+        </card-employee-payroll>
+    `;
+    }
+
+    window.update_container_with_seeker(
+      ['{plus}_search_input', '{plus}_payroll_period_id'],
+      '{plus}_container-search', get_div(), `/payroll/search_payroll/`, 'GET', true);
+
+
+
+    //this function are use for get the information of the payroll and show in the screen
+    async function get_information_payroll(id) {
+      const backend = await window.send_message_to_the_server(
+        `/payroll/get_payroll_by_id/${id}/`,
+        {},
+        true,
+        'GET'
+      );
+
+      if (!backend.success) {
+        return;
+      }
+
+      id_payroll = id;
+
+
+      const p = backend.answer;
+      const container = document.getElementById('{plus}_container-information');
+      const status = p.status ? p.status.toLowerCase() : '';
+      const isPaid = status === 'paid';
+      id_employee = p.employee.id;
+
+      container.innerHTML = `
+      <form id='{plus}_form_payroll'>
+        <div class="plus-payroll-card-clean">
+
+            <!-- Header con Referencia y Estado -->
+            <div class="plus-clean-field full-width flex-row-between">
+                <div>
+                    <span class="plus-clean-label">REFERENCIA DE NÓMINA</span>
+                    <div class="plus-clean-value highlight">${p.reference}</div>
+                </div>
+                <!-- Badge de Estado visual -->
+                <div>
+                    <span class="status-badge status-${status}">${window.translate_text(`payroll.status.${status}`)} </span>
+                </div>
+            </div>
+
+            <!-- Fila 2: Empleado y Periodo -->
+            <div class="plus-clean-row">
+                <div class="plus-clean-field">
+                    <span class="plus-clean-label">EMPLEADO</span>
+                    <div class="plus-clean-value">${p.employee.name} <span class="plus-clean-sub">(${p.employee.username})</span></div>
+                </div>
+                <div class="plus-clean-field">
+                    <span class="plus-clean-label">PERIODO DE NÓMINA</span>
+                    <div class="plus-clean-value">${p.period.start_date} - ${p.period.end_date}</div>
+                </div>
+            </div>
+
+            <!-- Fila 3: Fecha de Pago -->
+            <div class="plus-clean-row">
+                <div class="plus-clean-field">
+                    <span class="plus-clean-label">FECHA DE PAGO</span>
+                    <span>${p.period.payment_date}</span>
+                </div>
+                <div class="plus-clean-field empty"></div>
+            </div>
+
+            <!-- Fila 4: Ingresos y Deducciones -->
+            <div class="plus-clean-row">
+                <div class="plus-clean-field">
+                    <span class="plus-clean-label">SALARIO BASE</span>
+                    <div class="plus-clean-input-group">
+                        <span>$</span>
+                        <input id="{plus}_base_salary" name="base_salary" type="number" step="0.01" value="${p.base_salary}" readonly>
+                    </div>
+                </div>
+                <div class="plus-clean-field">
+                    <span class="plus-clean-label">HORAS EXTRA</span>
+                    <div class="plus-clean-input-group">
+                        <span>$</span>
+                        <input id="{plus}_overtime" name="overtime" type="number" step="0.01" value="${p.overtime}" ${isPaid ? 'readonly' : ''}>
+                    </div>
+                </div>
+            </div>
+
+            <div class="plus-clean-row">
+                <div class="plus-clean-field">
+                    <div class="plus-clean-header">
+                      <button type="button" class="plus-info-btn" onclick="Plus.Functions.get('{plus}').open_pop_calculate_commissions(${p.commission_percentage})" title="Más información">
+                        <i class="fi fi-sr-exclamation"></i>
+                      </button>
+                      <span class="plus-clean-label">COMISIONES</span>
+                    </div>
+                    <div class="plus-clean-input-group">
+                        <span>$</span>
+                        <input id="{plus}_commissions" name="commissions" type="number" step="0.01" value="${p.commissions}" readonly>
+                    </div>
+                </div>
+                <div class="plus-clean-field">
+                    <span class="plus-clean-label">BONOS</span>
+                    <div class="plus-clean-input-group">
+                        <span>$</span>
+                        <input id="{plus}_bonuses" name="bonuses" type="number" step="0.01" value="${p.bonuses}" ${isPaid ? 'readonly' : ''}>
+                    </div>
+                </div>
+            </div>
+
+            <div class="plus-clean-row">
+                <div class="plus-clean-field danger">
+                    <span class="plus-clean-label">DEDUCCIONES</span>
+                    <div class="plus-clean-input-group">
+                        <span>-$</span>
+                        <input id="{plus}_deductions" name="deductions" type="number" step="0.01" value="${p.deductions}" ${isPaid ? 'readonly' : ''}>
+                    </div>
+                </div>
+                <div class="plus-clean-field empty"></div>
+            </div>
+
+            <!-- Total a Pagar -->
+            <div class="plus-clean-field full-width action-row">
+                <div>
+                    <span class="plus-clean-label">TOTAL A PAGAR</span>
+                    <div id="{plus}_total_display" name="total_display" class="plus-clean-total-amount">${window.format_currency(p.total, window.get_currency_system(), true, true)}</div>
+                </div>
+                <input type="hidden" id="{plus}_total" name="total" value="${p.total}">
+            </div>
+
+            <!-- Botón dinámico según el Estado -->
+            <div class="plus-clean-actions">
+              ${isPaid ? `
+                  <button type="button" class="btn btn-success btn-edit" onclick="Plus.Functions.get('{plus}').print_receipt('${p.reference}')">
+                      <i class="fas fa-print"></i> ${window.translate_text('payroll.btn.print_receipt') || 'Print'}
+                  </button>
+              ` : `
+                  <button type="button" class="btn btn-success btn-add" onclick="Plus.Functions.get('{plus}').open_pop_method()">
+                      ${window.translate_text('payroll.btn.buy')}
+                  </button>
+              `}
+            </div>
+
+        </div>
+      </form>
+      `;
+
+      initPayrollCalculator('{plus}');
+    }
+
+    function initPayrollCalculator(plusPrefix) {
+      // 1. Obtener las referencias de todos los elementos
+      const baseSalaryInput = document.getElementById(`${plusPrefix}_base_salary`);
+      const overtimeInput = document.getElementById(`${plusPrefix}_overtime`);
+      const commissionsInput = document.getElementById(`${plusPrefix}_commissions`);
+      const bonusesInput = document.getElementById(`${plusPrefix}_bonuses`);
+      const deductionsInput = document.getElementById(`${plusPrefix}_deductions`);
+
+      const totalHiddenInput = document.getElementById(`${plusPrefix}_total`);
+      const totalDisplayDiv = document.getElementById(`${plusPrefix}_total_display`);
+
+      // Helper para convertir el valor del input a número seguro (si está vacío usa 0)
+      const getValue = (input) => parseFloat(input?.value) || 0;
+
+      // 2. Función principal de recálculo
+      function calculate() {
+        const baseSalary = getValue(baseSalaryInput);
+        const overtime = getValue(overtimeInput);
+        const commissions = getValue(commissionsInput);
+        const bonuses = getValue(bonusesInput);
+        const deductions = getValue(deductionsInput);
+
+        // Fórmula: (Salario + Overtime + Comisiones + Bonos) - Deducciones
+        const total = (baseSalary + overtime + commissions + bonuses) - deductions;
+
+        // 3. Actualizar el valor oculto
+        if (totalHiddenInput) {
+          totalHiddenInput.value = total.toFixed(2);
+        }
+
+        // 4. Actualizar la vista formateada
+        if (totalDisplayDiv) {
+          const formattedValue = window.format_currency
+            ? window.format_currency(total, window.get_currency_system(), true, true)
+            : total.toFixed(2);
+
+          totalDisplayDiv.textContent = `${formattedValue}`;
+        }
+      }
+
+      // 3. Agregar los event listeners a los inputs interactivos
+      const inputsToWatch = [overtimeInput, bonusesInput, deductionsInput];
+
+      inputsToWatch.forEach(input => {
+        if (input) {
+          input.addEventListener('input', calculate);
+        }
+      });
+    }
+
+    async function buy_payroll() {
+      const id = id_payroll;
+      if (!id) {
+        return;
+      }
+
+      if (await window.show_message_question('payroll.question.do-you-buy-this-payroll', 'payroll.message.do-you-buy-this-payroll')) {
+        //if the user would like do this buy now we will to send this information to the server and get his answer for update all the information of the UI 
+        const data = window.formToJSON(document.getElementById('{plus}_form_payroll'));
+        data.method = window.get_value_plus_select('{plus}_method_filter');
+
+        if (!data.method) {
+          window.show_alert('alert', 'payroll.error.you-need-add-a-method-of-buy', 'payroll.error.you-need-add-a-method-of-buy')
+          return;
+        }
+        const backend = await window.send_message_to_the_server(`/payroll/buy_payroll/${id}/`, data, true, 'POST');
+
+        if (!backend) {
+          window.show_alert('payroll.error.dont-can-buy-this-payroll', backend.message || 'payroll.error.dont-can-buy-this-payroll', backend.error || '');
+          return;
+        }
+
+        //if we can buy this payroll now we need update the UI of the search 
+        //and after update the UI of the input for block all the inputs and hiden the button of buy
+        window.update_container_from_the_server(
+          ['{plus}_search_input', '{plus}_payroll_period_id'],
+          '{plus}_container-search', get_div(), `/payroll/search_payroll/`, 'GET', true);
+
+        get_information_payroll(id);
+
+        window.hide_pop('{plus}_pop_form_method-of-buy');
+        window.show_notification('success', 'payroll.success.payroll-buy-with-success');
+        return true;
+      }
+    }
+
+    function open_pop_method() {
+      window.show_pop('{plus}_pop_form_method-of-buy');
+      return true;
+    }
+
+    function print_receipt(reference) {
+      // 1. Obtener el formulario actual de la vista
+      const formElement = document.getElementById('{plus}_form_payroll');
+      if (!formElement) {
+        console.error("No se encontró el formulario para imprimir.");
+        return;
+      }
+
+      // 2. Extraer los datos directamente del DOM/Inputs
+      const getValue = (id) => formElement.querySelector(`#${id}`)?.value || '0.00';
+      const getText = (selector) => formElement.querySelector(selector)?.innerText || '';
+
+      // Extraemos los valores visuales o de los campos
+      const employeeInfo = getText('.plus-clean-field:nth-child(2) .plus-clean-value');
+      const periodInfo = getText('.plus-clean-field:nth-child(2) .plus-clean-field:nth-child(2) .plus-clean-value') || '';
+      const paymentDate = formElement.querySelector('input[type="date"]')?.value || '';
+
+      const baseSalary = getValue('{plus}_base_salary');
+      const overtime = getValue('{plus}_overtime');
+      const commissions = getValue('{plus}_commissions');
+      const bonuses = getValue('{plus}_bonuses');
+      const deductions = getValue('{plus}_deductions');
+      const totalPay = getText('#{plus}_total_display') || `$${getValue('{plus}_total')}`;
+
+      // 3. Crear una ventana auxiliar transparente para la impresión
+      const printWindow = window.open('', '_blank', 'width=800,height=900');
+
+      // 4. Inyectar la plantilla HTML + CSS estilizada para el recibo en PDF
+      printWindow.document.write(`
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <title>Recibo de Nómina - ${reference}</title>
+                <style>
+                    @page {
+                        size: A4;
+                        margin: 20mm;
+                    }
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                        color: #0f172a;
+                        background: #fff;
+                        margin: 0;
+                        padding: 20px;
+                    }
+                    .receipt-card {
+                        max-width: 680px;
+                        margin: 0 auto;
+                        border: 1px solid #e2e8f0;
+                        border-radius: 12px;
+                        padding: 32px;
+                    }
+                    .header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: flex-start;
+                        border-bottom: 2px solid #f1f5f9;
+                        padding-bottom: 20px;
+                        margin-bottom: 24px;
+                    }
+                    .company-brand h1 {
+                        margin: 0;
+                        font-size: 20px;
+                        font-weight: 800;
+                        letter-spacing: -0.5px;
+                        color: #1e293b;
+                    }
+                    .company-brand p {
+                        margin: 4px 0 0 0;
+                        font-size: 12px;
+                        color: #64748b;
+                    }
+                    .receipt-badge {
+                        text-align: right;
+                    }
+                    .status-tag {
+                        display: inline-block;
+                        background-color: #f0fdf4;
+                        color: #166534;
+                        border: 1px solid #bbf7d0;
+                        padding: 4px 12px;
+                        font-size: 11px;
+                        font-weight: 700;
+                        border-radius: 20px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+                    .ref-number {
+                        margin-top: 6px;
+                        font-size: 13px;
+                        font-weight: 600;
+                        color: #475569;
+                    }
+                    .meta-grid {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 16px;
+                        background: #f8fafc;
+                        padding: 16px;
+                        border-radius: 8px;
+                        margin-bottom: 28px;
+                    }
+                    .meta-item label {
+                        display: block;
+                        font-size: 10px;
+                        font-weight: 700;
+                        color: #94a3b8;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        margin-bottom: 2px;
+                    }
+                    .meta-item span {
+                        font-size: 13px;
+                        font-weight: 600;
+                        color: #1e293b;
+                    }
+                    .table-payroll {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-bottom: 24px;
+                    }
+                    .table-payroll th {
+                        text-align: left;
+                        font-size: 11px;
+                        text-transform: uppercase;
+                        color: #64748b;
+                        border-bottom: 1px solid #e2e8f0;
+                        padding: 8px 4px;
+                    }
+                    .table-payroll td {
+                        padding: 12px 4px;
+                        border-bottom: 1px solid #f1f5f9;
+                        font-size: 13px;
+                        font-weight: 500;
+                    }
+                    .table-payroll td.amount {
+                        text-align: right;
+                        font-weight: 600;
+                    }
+                    .text-danger {
+                        color: #dc2626;
+                    }
+                    .total-box {
+                        background: #0f172a;
+                        color: #fff;
+                        padding: 16px 20px;
+                        border-radius: 8px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+                    .total-box label {
+                        font-size: 12px;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        color: #94a3b8;
+                    }
+                    .total-box .amount {
+                        font-size: 22px;
+                        font-weight: 800;
+                        color: #38bdf8;
+                    }
+                    .footer-notes {
+                        margin-top: 32px;
+                        text-align: center;
+                        font-size: 11px;
+                        color: #94a3b8;
+                        border-top: 1px dashed #e2e8f0;
+                        padding-top: 16px;
+                    }
+                </style>
+            </head>
+            <body>
+
+                <div class="receipt-card">
+                    <!-- Encabezado del Recibo -->
+                    <div class="header">
+                        <div class="company-brand">
+                            <h1>COMPROBANTE DE PAGO</h1>
+                            <p>Recibo Oficial de Nómina</p>
+                        </div>
+                        <div class="receipt-badge">
+                            <span class="status-tag">PAGADO</span>
+                            <div class="ref-number">Ref: ${reference}</div>
+                        </div>
+                    </div>
+
+                    <!-- Información del Empleado y Fecha -->
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <label>Empleado</label>
+                            <span>${employeeInfo}</span>
+                        </div>
+                        <div class="meta-item">
+                            <label>Fecha de Pago</label>
+                            <span>${paymentDate}</span>
+                        </div>
+                    </div>
+
+                    <!-- Detalle de Conceptos -->
+                    <table class="table-payroll">
+                        <thead>
+                            <tr>
+                                <th>Concepto</th>
+                                <th style="text-align: right;">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Salario Base</td>
+                                <td class="amount">$${parseFloat(baseSalary).toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <td>Horas Extra</td>
+                                <td class="amount">$${parseFloat(overtime).toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <td>Comisiones</td>
+                                <td class="amount">$${parseFloat(commissions).toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <td>Bonos</td>
+                                <td class="amount">$${parseFloat(bonuses).toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-danger">Deducciones</td>
+                                <td class="amount text-danger">-$${parseFloat(deductions).toFixed(2)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Total Neto -->
+                    <div class="total-box">
+                        <label>Total Neto Recibido</label>
+                        <div class="amount">${totalPay}</div>
+                    </div>
+
+                    <div class="footer-notes">
+                        Este documento es un comprobante digital de pago de nómina expedido por la empresa.
+                    </div>
+                </div>
+
+                <script>
+                    // Disparar diálogo de impresión automáticamente al cargar
+                    window.onload = function() {
+                        window.print();
+                        // Opcional: cerrar la ventana después de imprimir/cancelar
+                        window.onafterprint = function() {
+                            window.close();
+                        };
+                    };
+                <\/script>
+            </body>
+            </html>
+        `);
+
+      printWindow.document.close();
+    }
+
+    //this is for update the container of search for that the user can know which are the sale that are the employee
+
+    async function open_pop_calculate_commissions(commission) {
+      document.getElementById('{plus}-id-employee-search-comission').value = id_employee;
+      document.getElementById('{plus}_value_commissions').value = commission;
+      window.show_pop('{plus}_pop_commissions');
+
+      //here is for update the container of the sales 
+      const payroll_period_id = document.getElementById('{plus}_payroll_period_id').value;
+      window.update_container_from_the_server(
+        ['{plus}_search-sale-comission', '{plus}-id-employee-search-comission'],
+        '{plus}_container-search-commision', get_div_comission(), `/payroll/search_sale/${payroll_period_id}/`, 'GET', true);
+
+
+      //here is for update the total of the sale in the UI 
+      const backend = await window.send_message_to_the_server(`/payroll/get_total_sale/${payroll_period_id}/`, { employee_id: id_employee }, true, 'POST');
+      if (!backend.success) {
+        return;
+      }
+
+
+      const answer = backend.answer;
+      totalSales=Number(answer.total_sales).toFixed(2);
+      calculate_money_commission(commission);
+
+      const container = document.getElementById('{plus}_info-total');
+      if (container) {
+        container.innerHTML = `
+              <div class="info-item">
+                  <span>Cantidad de Ventas:</span>
+                  <strong>${answer.sales_count}</strong>
+              </div>
+              <div class="info-item">
+                  <span>Total Ventas:</span>
+                  <strong>${window.format_currency(totalSales,window.get_currency_system(),true,true)}</strong>
+              </div>
+              <div class="info-item">
+                  <span>Total Pagado:</span>
+                  <strong>${window.format_currency(Number(answer.total_paid).toFixed(2),window.get_currency_system(),true,true)}</strong>
+              </div>
+              <div class="info-item">
+                  <span>Total Pendiente:</span>
+                  <strong>${window.format_currency(Number(answer.total_pending).toFixed(2),window.get_currency_system(),true,true)}</strong>
+              </div>
+          `;
+      }
+    
+      return true;
+    }
+
+    function get_div_comission(sale) {
+      return `
+          <paids-servies 
+              onclick="Plus.Functions.get('{plus}').get_information_payroll({id})"
+              sale-id="{id}"
+              reference="{reference}"
+              customer="{customer}"
+              branch="{branch}"
+              start-date="{start_date}"
+              amount-paid="{amount_paid}"
+              balance="{balance}"
+              total="{total}">
+          </paids-servies>
+        `;
+    }
+
+
+    const payroll_period_id = document.getElementById('{plus}_payroll_period_id').value;
+    window.update_container_with_seeker(
+      ['{plus}_search-sale-comission', '{plus}-id-employee-search-comission'],
+      '{plus}_container-search-commision', get_div_comission(), `/payroll/search_sale/${payroll_period_id}/`, 'GET', true);
+
+    
+    async function save_commssion(){
+      //here we will to get the quantity of the commission
+      const commission=document.getElementById('{plus}_value_commissions').value;
+      const backend=await window.send_message_to_the_server(`/payroll/update_commissions/${id_payroll}/`,{percentage: commission},true, 'POST');
+      if(!backend.success){
+        return;
+      }
+
+
+      window.hide_pop('{plus}_pop_commissions');
+      window.show_notification('success', 'payroll.success.commissions-was-save');
+      await get_information_payroll(id_payroll);
+
+
+      return true;
+    }
+
+    //------------------------
+    function calculate_money_commission(commission){
+      const inputPercentage = document.getElementById("{plus}_value_commissions");
+      const inputMoney = document.getElementById("{plus}_value_money_commissions");
+
+        const percentage = parseFloat(commission) || 0;
+        const base = totalSales;
+        const totalMoney = (base * (percentage / 100)).toFixed(2);
+        
+        inputMoney.value = totalMoney;
+    }
+
+    setTimeout(() => {
+      // 1. Obtener los elementos usando los IDs
+      const inputPercentage = document.getElementById("{plus}_value_commissions");
+      const inputMoney = document.getElementById("{plus}_value_money_commissions");
+
+      // Validación por si los elementos tardan en aparecer o no se encuentran
+      if (!inputPercentage || !inputMoney) {
+        console.warn("No se encontraron los inputs de comisiones.");
+        return;
+      }
+
+      // NOTA: Reemplaza esto con el valor base real de la nómina/empleado sobre el cual se calcula
+      const getBaseAmount = () => {
+        return typeof totalSales !== 'undefined' ? totalSales : 0;
+      };
+
+      let isUpdating = true; // Bandera para evitar loops infinitos de eventos
+
+      // 2. Evento para calcular el dinero basado en el porcentaje
+      inputPercentage.addEventListener("input", (e) => {
+        if (!isUpdating) return;
+        isUpdating = false;
+
+        const percentage = parseFloat(e.target.value) || 0;
+        const base = getBaseAmount();
+        
+        // Cálculo: Dinero = Base * (Porcentaje / 100)
+        const totalMoney = (base * (percentage / 100)).toFixed(2);
+        
+        inputMoney.value = totalMoney;
+        
+        isUpdating = true;
+      });
+
+      // 3. Evento para calcular el porcentaje basado en el dinero
+      inputMoney.addEventListener("input", (e) => {
+        if (!isUpdating) return;
+        isUpdating = false;
+
+        const money = parseFloat(e.target.value) || 0;
+        const base = getBaseAmount();
+        
+        // Cálculo: Porcentaje = (Dinero / Base) * 100
+        if (base > 0) {
+          const percentage = ((money / base) * 100).toFixed(2);
+          inputPercentage.value = percentage;
+        } else {
+          inputPercentage.value = 0;
+        }
+        
+        isUpdating = true;
+      });
+    }, 1000); // Espera 1000ms (2 segundo) antes de ejecutar el código
+
+    //-------------------------
+    window.Plus.Functions.define(namespace, "save_commssion", save_commssion);
+    window.Plus.Functions.define(namespace, "open_pop_calculate_commissions", open_pop_calculate_commissions);
+    window.Plus.Functions.define(namespace, "get_information_payroll", get_information_payroll);
+    window.Plus.Functions.define(namespace, "buy_payroll", buy_payroll);
+    window.Plus.Functions.define(namespace, "open_pop_method", open_pop_method);
+    window.Plus.Functions.define(namespace, "print_receipt", print_receipt);
+  })();
+</script>

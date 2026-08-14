@@ -2,6 +2,7 @@ from core.models import Company, Branch, CustomUser
 from django.db import models
 from decimal import Decimal
 from django.core.exceptions import ValidationError
+from django.db import transaction
 
 ''''
 1. first the user create a period of pay 
@@ -103,6 +104,9 @@ class EmployeeTablePayrollPeriod(models.Model):
         default="OPEN"
     )
 
+    class Meta:
+        unique_together = ("payrollPeriod", "Employee")
+
 
 class Payroll(models.Model):
     #this is for save the key of search 
@@ -115,6 +119,12 @@ class Payroll(models.Model):
         blank=True,
         db_index=True
     )
+    employee_period = models.OneToOneField(
+        EmployeeTablePayrollPeriod,
+        on_delete=models.PROTECT,
+        related_name="payroll"
+    )
+
 
     #this is for know the employee that get his payroll 
     company = models.ForeignKey(
@@ -132,6 +142,11 @@ class Payroll(models.Model):
         decimal_places=2
     )
     overtime = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=0
+    )
+    commission_percentage = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=0
@@ -157,10 +172,10 @@ class Payroll(models.Model):
     )
 
     #information of signature of the employee and the manager 
-    employee_signature_json = models.JSONField()
-    employee_signed_at = models.DateTimeField()
+    employee_signature_json = models.JSONField(null=True,blank=True)
+    employee_signed_at = models.DateTimeField(null=True,blank=True)
 
-    manager_signature_json = models.JSONField()
+    manager_signature_json = models.JSONField(null=True,blank=True)
     manager_signed_at = models.DateTimeField(null=True, blank=True) 
 
     #this is for save the user that create this payroll
@@ -171,6 +186,7 @@ class Payroll(models.Model):
         blank=True,
         related_name='payroll_paid'
     )
+    payment_date = models.DateTimeField(null=True)
 
 
     class Meta:
@@ -187,7 +203,7 @@ class Payroll(models.Model):
 
         if self.pk:
             # We obtain the version of the object that is already stored in the database
-            original = PayrollPeriod.objects.get(pk=self.pk)
+            original = Payroll.objects.get(pk=self.pk)
 
             # Block: ONLY if it ALREADY had a previous date AND they try to change it to a different one
             if original.manager_signed_at is not None and original.manager_signed_at != self.manager_signed_at:
@@ -245,6 +261,8 @@ class PayrollPayment(models.Model):
     ]
     method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
 
+
+#===========================
 class EmployeeCommission(models.Model):
     employee = models.ForeignKey(
         CustomUser,

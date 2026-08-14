@@ -1,11 +1,13 @@
 {
     "payroll.navbar.payroll":"Nominas",
+    "payroll.navbar.create-payroll":"Crear nueva Nomina",
     "payroll.navbar.employee_contract":"Contrato de Nominas",
     "payroll.title.home": "Ninguna nomina seleccionada",
     "payroll.button.add-contract":"Agregar contrato",
     "payroll.button.add-payroll-period":"Agregar nómina",
     "payroll.title.form.employee-contract":"Contrato Empleado",
 
+    "payroll.label.select-employee": "Selecciona al Empleado *",
     "payroll.label.employee": "Empleado *",
     "payroll.label.salary": "Salario *",
     "payroll.select.type-salary": "Tipo de Salario *",
@@ -25,6 +27,7 @@
 
     "payroll.table.employee": "Empleado",
     "payroll.table.company": "Empresa",
+    "payroll.table.branch":"Sucursal",
     "payroll.table.salary": "Salario",
     "payroll.table.salary-type": "Tipo Salario",
     "payroll.table.start-date": "Fecha Inicio",
@@ -40,5 +43,48 @@
     "payroll.status.true": "Activo",
     "payroll.status.false": "Inactivo",
     "payroll.status.active": "Activo",
-    "payroll.status.inactive": "Inactivo"
+    "payroll.status.inactive": "Inactivo",
+
+    "payroll.status.paid": "Pagado",
+    "payroll.status.open": "Abierto",
+    "payroll.status.close": "Cerrado",
+
+    "payroll.success.the-contract-was-update":"El contrato fue actualizado",
+    "payroll.error.update-contract":"Error al actualizar el contrato",
+    "payroll.success.payrollperiod":"Periodo de nomina creado",
+    "payroll.error.payrollperiod":"No se pudo crear el periodo de nomina",
+    "payroll.title.create-new-payrollperiod":"Crear nuevo periodo de nomina",
+    "payroll.label.start_date":"Fecha Inicial de la nomina",
+    "payroll.label.end_date":"Fecha Final de la nomina",
+    "payroll.btn.buy":"Pagar Nomina",
+
+    "payroll.question.do-you-buy-this-payroll":"Estas seguro de hacer este pago?",
+    "payroll.message.do-you-buy-this-payroll":"Una vez hecho este pago no se podra editar ni desacer.",
+    "payroll.error.dont-can-buy-this-payroll":"No se pudo cobrar esta nomina",
+
+    "choose-method-of-buy":"Escoge el metodo de pago de nomina",
+    "payroll.label.choose-the-method-of-buy":"Escoge el metodo de pago *",
+    "payroll.status.cash":"Efectivo",
+    "payroll.status.card":"Tarjeta",
+    "payroll.status.transfer":"Transferencia",
+    "payroll.error.you-need-add-a-method-of-buy":"Necesitas agregar un metodo de pago",
+    "payroll.success.payroll-buy-with-success":"Nomina pagada con exito",
+
+    "payroll.btn.print_receipt":"Imprimir",
+
+    "payroll.label.commissions":"Comision de las ventas en porcentaje (30%)*",
+    "payroll.btn.save-and-calculate-commissions":"Guardar y calcular comisiones",
+    "payroll.success.commissions-was-save":"Guardar y calcular comisiones",
+    "payroll.label.general-public":"Público en General",
+
+    "payroll.label.total_commissions":"Total de comision",
+    "payroll.placeholder.total_commissions":"Es el total que le daras a tu empleado por las comisiones hechas",
+
+    "payroll.label.this-week":"Esta semana",
+    "payroll.label.old-week":"Semana Aneterior",
+    "payroll.label.this-fortnight":"Esta Quincena",
+    "payroll.label.old-fortnight":"Quincena Anterior",
+    "payroll.label.this-month":"Este Mes",
+    "payroll.label.old-month":"Mes Anterior",
+    "payroll.label.personality":"Personalizado"
 }

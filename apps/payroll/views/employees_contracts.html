@@ -1,5 +1,181 @@
 {% include 'payroll/partials/navbar.html' %}
+<style>
+/* ==========================================================================
+   Estilos Principales para la Fila
+   ========================================================================== */
+.custom-table-row {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-bottom: 1px solid #f1f5f9;
+}
 
+.custom-table-row:hover {
+  background-color: #f8fafc !important;
+}
+
+.custom-table-row td {
+  padding: 14px 16px;
+  vertical-align: middle;
+  color: #334155;
+  font-size: 0.875rem;
+}
+
+/* ==========================================================================
+   Usuario y Avatar
+   ========================================================================== */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-wrapper {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.user-email {
+  font-size: 0.775rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.cell-salary {
+  color: #0f172a;
+  font-size: 0.925rem;
+  letter-spacing: -0.01em;
+}
+
+.cell-date {
+  color: #64748b;
+  font-size: 0.825rem;
+}
+
+/* ==========================================================================
+   Badges para Tipo de Salario (Colores Únicos)
+   ========================================================================== */
+.badge-salary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  font-size: 0.725rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+/* MONTHLY - Azul Esmeralda suave */
+.badge-salary-MONTHLY {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border-color: #bae6fd;
+}
+
+/* WEEKLY - Verde Menta */
+.badge-salary-WEEKLY {
+  background-color: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+/* BIWEEKLY - Púrpura / Índigo */
+.badge-salary-BIWEEKLY {
+  background-color: #e0e7ff;
+  color: #4338ca;
+  border-color: #c7d2fe;
+}
+
+/* DAILY - Ámbar / Naranja suave */
+.badge-salary-DAILY {
+  background-color: #fef3c7;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+/* HOURLY - Magenta / Rosa sutil */
+.badge-salary-HOURLY {
+  background-color: #fce7f3;
+  color: #be185d;
+  border-color: #fbcfe8;
+}
+
+
+/* ==========================================================================
+   Estilos de Estado (Activo / Inactivo)
+   ========================================================================== */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 20px;
+  border: 1px solid transparent;
+}
+
+/* Indicador LED circular */
+.status::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* Estado ACTIVO (Aplica a .status-true y .status-active) */
+.status-true,
+.status-active {
+  background-color: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.status-true::before,
+.status-active::before {
+  background-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+/* Estado INACTIVO (Aplica a .status-false y .status-inactive) */
+.status-false,
+.status-inactive {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.status-false::before,
+.status-inactive::before {
+  background-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+</style>
 <message-pop name="{plus}_pop_employee_contract" title="payroll.title.form.employee-contract">
     {% include 'payroll/partials/form_employee_contract.html' %}
 </message-pop>
@@ -7,19 +183,14 @@
 <input type="hidden" name="" id="{plus}_value">
 <plus-search input_id="{plus}_search-contracts">
     <search-option>
-        <button class="btn btn-transparent" onclick="window.show_pop('pop-filter-sales')"><i
-                class="fi fi-rr-settings-sliders"></i></button>
-    </search-option>
-    <search-option>
-        <button onclick="window.nextWeb('payroll/create_employee_contract/')" t="payroll.button.add-contract" icon="fi fi-rr-user-add"></button>
+        <button class="btn btn-add" onclick="Plus.Functions.get('{plus}').open_pop_employee_contract()">+</button>
     </search-option>
 </plus-search>
-
 <table>
     <thead>
         <tr>
             <th t="payroll.table.employee">Empleado</th>
-            <th t="payroll.table.company">Empresa</th>
+            <th t="payroll.table.branch">Empresa</th>
             <th class="text-right" t="payroll.table.salary">Salario</th>
             <th class="text-center" t="payroll.table.salary-type">Tipo Salario</th>
             <th class="text-center" t="payroll.table.start-date">Inicio</th>
@@ -33,41 +204,43 @@
 
 <script>
     (()=>{
+    const namespace = "{plus}";
+
     function get_div() {
         return `
-        <tr onclick="window.nextWeb('/payroll/view_contract/{id}/')" style="cursor: pointer;">
-            <!-- Columna 1: Empleado (Avatar + Username / Name) -->
-            <td>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div class="avatar">
-                        <img src="{employee.avatar}" 
+        <tr onclick="Plus.Functions.get('{plus}').open_pop_edit_employee_contract({id})" class="custom-table-row">
+            <!-- Columna 1: Usuario -->
+            <td class="cell-user">
+                <div class="user-info">
+                    <div class="avatar-wrapper">
+                        <img src="{avatar}" 
                             onerror="this.onerror=null; this.src='/static/img/default-avatar.png';" 
-                            alt="{employee.username}" 
+                            alt="{username}" 
                             class="avatar-img">
                     </div>
-                    <div style="display: flex; flex-direction: column;">
-                        <span class="font-semibold">{employee.username}</span>
-                        <small class="text-muted">{employee.email}</small>
+                    <div class="user-details">
+                        <span class="user-name">{name}</span>
+                        <span class="user-email">{email}</span>
                     </div>
                 </div>
             </td>
 
             <!-- Columna 2: Empresa -->
-            <td>{company.name}</td>
+            <td class="cell-company">{branch_name}</td>
 
             <!-- Columna 3: Salario -->
-            <td class="text-right font-semibold">$ {salary}</td>
+            <td class="text-right font-semibold cell-salary">$ {salary}</td>
 
-            <!-- Columna 4: Tipo de Salario -->
+            <!-- Columna 4: Tipo de Salario (Badges Personalizados) -->
             <td class="text-center">
-                <span class="badge badge-info" t="payroll.type.{salary_type}">{salary_type}</span>
+                <span class="badge badge-salary badge-salary-{salary_type}" t="payroll.type.{salary_type}">{salary_type}</span>
             </td>
 
             <!-- Columna 5: Fecha de Inicio -->
-            <td class="text-center">{start_date}</td>
+            <td class="text-center text-muted cell-date">{start_date}</td>
 
             <!-- Columna 6: Fecha de Término -->
-            <td class="text-center">{end_date}</td>
+            <td class="text-center text-muted cell-date">{end_date}</td>
 
             <!-- Columna 7: Estado (Activo / Inactivo) -->
             <td class="text-center">
@@ -78,10 +251,31 @@
     }
 
 
-        window.update_container_with_seeker(
-            ['{plus}_search-contracts', '{plus}_value'],
-            '{plus}_contracts_table_body', get_div(), `/payroll/view_search_employees_contracts/`, 'GET', true);
+    window.update_container_with_seeker(
+        ['{plus}_search-contracts', '{plus}_value'],
+        '{plus}_contracts_table_body', get_div(), `/payroll/view_search_employees_contracts/`, 'GET', true);
 
+    function open_pop_employee_contract(){
+        window.show_pop('{plus}_pop_employee_contract');
+    }
 
+    function open_pop_edit_employee_contract(id){
+        Plus.Functions.get('apps_payroll_views_partials_form_employee_contract').load_information_contract(id);
+        window.show_pop('{plus}_pop_employee_contract');
+    }
+
+    Plus.Functions.after('apps_payroll_views_partials_form_employee_contract', 'form_function', function(apiResponse) {
+        if (apiResponse) {
+            window.hide_pop('{plus}_pop_employee_contract');
+        
+            //update the table
+            window.update_container_from_the_server(
+                ['{plus}_search-contracts', '{plus}_value'],
+                '{plus}_contracts_table_body', get_div(), `/payroll/view_search_employees_contracts/`, 'GET', true);
+        }
+    });
+
+    window.Plus.Functions.define(namespace, "open_pop_employee_contract", open_pop_employee_contract);
+    window.Plus.Functions.define(namespace, "open_pop_edit_employee_contract", open_pop_edit_employee_contract);
     })();
 </script>

@@ -13,3 +13,4 @@ permissionsFile: 'permissions.json'
 dependencies:
   - "employees"
   - "sales"
+  - "move_box"

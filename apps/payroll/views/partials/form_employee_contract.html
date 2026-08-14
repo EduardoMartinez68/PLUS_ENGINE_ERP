@@ -88,7 +88,7 @@ form[id*="_form_contract"] {
             <!-- Fila 1: Empleado -->
             <div class="row section">
                 <div class="col">
-                    <plus-select link="/departament_employee/search_employee/" label="sales.label.employee"
+                    <plus-select link="/departament_employee/search_employee/" label="payroll.label.select-employee"
                         name="employee"></plus-select>
                 </div>
             </div>
@@ -122,13 +122,13 @@ form[id*="_form_contract"] {
                 </div>
             </div>
 
-            <plus-switch text="payroll.label.contract-active" value="True"></plus-switch>
+            <plus-switch text="payroll.label.contract-active" name="active" value="True"></plus-switch>
 
         </div> <!-- Fin .form-body -->
 
         <!-- Footer fijo al fondo -->
         <div class="form-footer">
-            <button class="btn btn-success btn-add" t="payroll.button.save-contract"></button>
+            <button type="button"  class="btn btn-success btn-add" t="payroll.button.save-contract" onclick="Plus.Functions.get('{plus}').form_function()"></button>
         </div>
 
     </div> <!-- Fin .container-form -->
@@ -150,9 +150,13 @@ form[id*="_form_contract"] {
                 console.error(`Formulario con ID "${formId}" no encontrado.`);
                 return;
             }
+            // Obtenemos todos los inputs dentro del formulario
+            const inputs = form.querySelectorAll('input-field');
+
+            console.log(inputs); // console.table lo muestra en una tabla impecable
 
             // Extraemos la información del contrato
-            const contract = data.answer || data;
+            const contract = data;
             if (!contract) return;
 
             // 1. Campo oculto: ID del contrato
@@ -184,7 +188,7 @@ form[id*="_form_contract"] {
             }
 
             // 3. Custom Component: input-field (Salario)
-            const salaryInput = form.querySelector('input-field[name="salary"]');
+            const salaryInput = form.querySelector('input[name="salary"]');
             if (salaryInput) {
                 salaryInput.value = contract.salary || '';
                 salaryInput.setAttribute('value', contract.salary || '');
@@ -202,13 +206,13 @@ form[id*="_form_contract"] {
             }
 
             // 5. Custom Components: input-field (Fechas)
-            const startDateInput = form.querySelector('input-field[name="start_date"]');
+            const startDateInput = form.querySelector('input[name="start_date"]');
             if (startDateInput) {
                 startDateInput.value = contract.start_date || '';
                 startDateInput.setAttribute('value', contract.start_date || '');
             }
 
-            const endDateInput = form.querySelector('input-field[name="end_date"]');
+            const endDateInput = form.querySelector('input[name="end_date"]');
             if (endDateInput) {
                 endDateInput.value = contract.end_date || '';
                 endDateInput.setAttribute('value', contract.end_date || '');
@@ -242,39 +246,65 @@ form[id*="_form_contract"] {
 
             window.reset_form('{plus}_form_contract');
             window.show_notification('success', 'payroll.success.the-contract-was-created');
+            return true;
         }
 
         async function update_employee_contract(id){
             const backend=await window.send_form_to_the_server(`{plus}_form_contract`, `/payroll/update_employee_contract/${id}/`);
             if(!backend.success){
-                window.show_alert('alert', 'payroll.error.not-can-create-the-contract', backend.message || 'payroll.error.not-can-create-the-contract', backend.error || '');
+                window.show_alert('alert', 'payroll.error.update-contract', backend.message || 'payroll.error.update-contract', backend.error || '');
                 return;
             }
 
             window.reset_form('{plus}_form_contract');
-            window.show_notification('success', 'payroll.success.the-contract-was-created');
+            window.show_notification('success', 'payroll.success.the-contract-was-update');
+            return true;
         }
 
         async function form_function() {
             //here we will see if exist a id 
             const id=document.getElementById('{plus}_employee_contract_id');
-            if(id && id.value.strip()!==''){
-                await update_employee_contract(id.value);
-                return;
+            if(id && id.value.trim()!==''){
+                return await update_employee_contract(id.value);
             }
 
             //if not exist a ID is because the user would like create a new contract 
-            await save_new_employee_contract();
+            return await save_new_employee_contract();
         }
-
-        async function load_information_contract(){
-            //here we will see if exist a id 
-            const id=document.getElementById('{plus}_employee_contract_id');
-            if(!id || id.value.strip()==''){
-                return;
+        
+        function isValidId(value) {
+            if (value === null || value === undefined) return false;
+            
+            const cleanValue = String(value).trim();
+            if (cleanValue === '' || cleanValue === '0' || cleanValue === 'null' || cleanValue === 'undefined') {
+                return false;
             }
 
-            const backend=await send_message_to_the_server(`/payroll/get_employee_contract/${id}/`, {}, true, 'GET');
+            // Opcional: Si tus IDs son estrictamente numéricos enteros positivos (ej. 1, 2, 105)
+            return !isNaN(cleanValue) && Number(cleanValue) > 0;
+        }
+
+        async function load_information_contract(id=null){
+            //here we will see if exist a id 
+            let contractId = id;
+
+            // 1. Si no se pasó un ID válido por argumento, intentamos obtenerlo del DOM
+            if (!isValidId(contractId)) {
+                const input_id = document.getElementById('{plus}_employee_contract_id');
+                
+                // Verificamos que el input exista en el DOM
+                if (input_id) {
+                    contractId = input_id.value;
+                }
+            }
+
+            // 2. Validación final antes de continuar
+            if (!isValidId(contractId)) {
+                console.warn("ID de contrato no válido o no encontrado.");
+                return; // Detenemos la ejecución si no hay un ID válido
+            }
+
+            const backend=await send_message_to_the_server(`/payroll/get_employee_contract/${contractId}/`, {}, true, 'GET');
             if(!backend){
                 window.show_alert('error', 'payroll.error.could-not-be-obtained-the-information-of-the-contract', backend.message || 'payroll.error.could-not-be-obtained-the-information-of-the-contract', backend.error || '');
                 return;
@@ -282,8 +312,9 @@ form[id*="_form_contract"] {
 
             //if get the information of the contract now we will to render the information in the UI 
             const answer=backend.answer;
-            populateContractForm('{plus}_employee_contract_id',answer);
+            populateContractForm('{plus}_form_contract',answer);
         }
+
 
         load_information_contract(); //for default forever load this function for know if exist a ID from the server
 

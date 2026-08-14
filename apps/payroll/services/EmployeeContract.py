@@ -15,13 +15,12 @@ class EmployeeContractService:
     @ServiceRegistry.register(
         "payroll.EmployeeContractService.create_employee_contract"
     )
-    def create_employee_contract(cls, user, data):
+    def create_employee_contract(user, data):
         # ----------------------------
         # Required fields
         # ----------------------------
         required_fields = [
             "employee",
-            "company",
             "salary",
             "salary_type",
             "start_date",
@@ -51,15 +50,7 @@ class EmployeeContractService:
         # ----------------------------
         # Company
         # ----------------------------
-        try:
-            company = Company.objects.get(
-                id=data["company"]
-            )
-        except Company.DoesNotExist:
-            return {
-                "success": False,
-                "message": "Company not found."
-            }
+        company = employee.company
 
         # ----------------------------
         # Salary
@@ -74,13 +65,21 @@ class EmployeeContractService:
         # Dates
         # ----------------------------
         start_date = data["start_date"]
-        end_date = data.get("end_date")
+        end_date = data.get("end_date") or None
 
         if end_date and end_date < start_date:
             return {
                 "success": False,
                 "message": "End date cannot be before start date."
             }
+
+        #now we will to conver this to UTC
+        #only convert to utc if exist the date
+        if start_date:
+            start_date = Plus.convert_from_utc(start_date, user.timezone)
+            
+        if end_date:
+            end_date = Plus.convert_from_utc(end_date, user.timezone)
 
         # ----------------------------
         # Existing active contract
@@ -99,15 +98,23 @@ class EmployeeContractService:
         # ----------------------------
         # Create
         # ----------------------------
-        contract = EmployeeContract.objects.create(
-            employee=employee,
-            company=company,
-            salary=data["salary"],
-            salary_type=data["salary_type"],
-            start_date=start_date,
-            end_date=end_date,
-            active=data.get("active", True)
-        )
+        try:
+            contract = EmployeeContract.objects.create(
+                employee=employee,
+                company=company,
+                salary=data["salary"],
+                salary_type=data["salary_type"],
+                start_date=start_date,
+                end_date=end_date,
+                active=Plus.to_bool(data.get("active", True))
+            )
+        except Exception as e:
+            return {
+                "success": False,
+                "message": "Failed to create employee contract.",
+                "error": str(e)
+            }
+
 
         return {
             "success": True,
@@ -122,7 +129,7 @@ class EmployeeContractService:
     @ServiceRegistry.register(
         "payroll.EmployeeContractService.update_employee_contract"
     )
-    def update_employee_contract(cls, user, contract_id, data):
+    def update_employee_contract(user, contract_id, data):
         # ----------------------------
         # Contract Existence
         # ----------------------------
@@ -150,19 +157,6 @@ class EmployeeContractService:
             employee = contract.employee
 
         # ----------------------------
-        # Company (optional update)
-        # ----------------------------
-        if "company" in data:
-            try:
-                company = Company.objects.get(id=data["company"])
-                contract.company = company
-            except Company.DoesNotExist:
-                return {
-                    "success": False,
-                    "message": "Company not found."
-                }
-
-        # ----------------------------
         # Salary Validation
         # ----------------------------
         if "salary" in data:
@@ -176,24 +170,33 @@ class EmployeeContractService:
         # ----------------------------
         # Dates Validation
         # ----------------------------
-        start_date = data.get("start_date", contract.start_date)
-        end_date = data.get("end_date", contract.end_date)
+        # ----------------------------
+        # Dates
+        # ----------------------------
+        start_date = data["start_date"]
+        end_date = data.get("end_date") or None
 
-        if end_date and start_date and end_date < start_date:
+        if end_date and end_date < start_date:
             return {
                 "success": False,
                 "message": "End date cannot be before start date."
             }
 
-        if "start_date" in data:
-            contract.start_date = data["start_date"]
-        if "end_date" in data:
-            contract.end_date = data["end_date"]
+        #now we will to conver this to UTC
+        #only convert to utc if exist the date
+        if start_date:
+            start_date = Plus.convert_from_utc(start_date, user.timezone)
+            
+        if end_date:
+            end_date = Plus.convert_from_utc(end_date, user.timezone)
+
+        contract.start_date = start_date
+        contract.end_date = end_date
 
         # ----------------------------
         # Active status / Active Contract Conflict
         # ----------------------------
-        new_active_status = data.get("active", contract.active)
+        new_active_status = Plus.to_bool(data.get("active", False))
 
         # Si el contrato pasa a estar activo (o sigue activo) y cambia de empleado o estado,
         # validamos que no exista OTRO contrato activo para el mismo empleado.
@@ -236,7 +239,7 @@ class EmployeeContractService:
     @ServiceRegistry.register(
         "payroll.EmployeeContractService.get_employee_contract_by_id"
     )
-    def get_employee_contract_by_id(cls, user, contract_id):
+    def get_employee_contract_by_id(user, contract_id):
         # ----------------------------
         # Contract Fetch
         # ----------------------------
@@ -269,7 +272,7 @@ class EmployeeContractService:
                     "id": contract.company.id,
                     "name": getattr(contract.company, "name", None),
                 },
-                "salary": str(contract.salary),
+                "salary": contract.salary,
                 "salary_type": contract.salary_type,
                 "start_date": contract.start_date.strftime("%Y-%m-%d") if contract.start_date else None,
                 "end_date": contract.end_date.strftime("%Y-%m-%d") if contract.end_date else None,
@@ -326,21 +329,15 @@ class EmployeeContractService:
         for contract in page_obj.object_list:
             contracts_list.append({
                 "id": contract.id,
-                "employee": {
-                    "id": contract.employee.id,
-                    "username": contract.employee.username,
-                    "name": getattr(contract.employee, "name", None),
-                    "email": contract.employee.email,
-                    "avatar": contract.employee.avatar.url if contract.employee.avatar else None,
-                },
-                "company": {
-                    "id": contract.company.id,
-                    "name": getattr(contract.company, "name", None),
-                },
+                "email": contract.employee.email,
+                "avatar": contract.employee.avatar.url if contract.employee.avatar else '/static/img/profile-employees.webp',
+                "username":contract.employee.username,
+                "name":contract.employee.name,
+                "branch_name":contract.employee.branch.name_branch,
                 "salary": str(contract.salary),
                 "salary_type": contract.salary_type,
-                "start_date": contract.start_date.strftime("%Y-%m-%d") if contract.start_date else None,
-                "end_date": contract.end_date.strftime("%Y-%m-%d") if contract.end_date else None,
+                "start_date": contract.start_date.strftime("%Y-%m-%d") if contract.start_date else '---',
+                "end_date": contract.end_date.strftime("%Y-%m-%d") if contract.end_date else '---',
                 "active": contract.active,
             })
 
