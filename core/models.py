@@ -438,7 +438,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     name = EncryptedCharField(db_column="name", blank=True, null=True, max_length=600)
     email = models.EmailField(unique=True, blank=True, null=True)
     username = models.CharField(max_length=600)
-    doctor_id=models.CharField(max_length=200, blank=True, null=True)
+    key_id=models.CharField(max_length=200, blank=True, null=True) #this is like the reference when is a doctor 
 
     # Relationship with company and branch
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, db_column='id_company')
@@ -545,7 +545,29 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email or self.username or f"User {self.pk}"
     
+class UserDepartmentAssignment(models.Model):
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="department_assignments"
+    )
+    department = models.ForeignKey(
+        UserDepartment,
+        on_delete=models.CASCADE,
+        related_name="user_assignments"
+    )
+    is_main = models.BooleanField(
+        default=False, 
+        help_text="Indicate whether it is the user's primary department."
+    )
+    date_joined = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        db_table = "companies_user_department_assignment"
+        unique_together = ("user", "department")  #Avoid duplicating the same user in the same department.
+
+    def __str__(self):
+        return f"{self.user} - {self.department.name}"
 
 from django.contrib.sessions.models import Session
 class UserSession(models.Model):
@@ -554,8 +576,60 @@ class UserSession(models.Model):
     device_name = models.CharField(max_length=255, blank=True, null=True) #the name of the drive for that the user know what device is use
     device_info = models.CharField(max_length=255, blank=True) # For know that type of drive is PC, Celular, etc.
     created_at = models.DateTimeField(auto_now_add=True)
-    
 
+    
+class UserLoginLog(models.Model):
+    class DeviceType(models.TextChoices):
+        DESKTOP = "desktop", "Desktop"
+        LAPTOP = "laptop", "Laptop"
+        MOBILE = "mobile", "Mobile"
+        TABLET = "tablet", "Tablet"
+        OTHER = "other", "Other"
+
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="session_logs"
+    )
+
+    device_name = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
+    )
+
+    device_type = models.CharField(
+        max_length=20,
+        choices=DeviceType.choices,
+        default=DeviceType.OTHER
+    )
+
+    user_agent = models.TextField(
+        blank=True
+    )
+
+    ip_address = models.GenericIPAddressField(
+        blank=True,
+        null=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+
+        indexes = [
+            models.Index(fields=["user", "-created_at"]),
+            models.Index(fields=["ip_address"]),
+        ]
+
+    def __str__(self):
+        return f"{self.user} - {self.device_name or self.device_type}"
+
+
+    
 #----------------------------------------------------THIS IS FOR CREATE THE TABLE SUBSCRIPTION OF THE ERP--------------------------------------------------------
 class SubscriptionPlan(models.Model):
     SUB_CHOICES = (
