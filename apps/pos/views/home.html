@@ -231,6 +231,10 @@
         transition: all 0.2s;
     }
 
+    .btn-action:hover{
+        background: #dedfe0;
+    }
+
     .btn-delete:active {
         background: #ffebee;
         border-color: #ef5350;
@@ -273,6 +277,103 @@
             border-left: none;
         }
     }
+
+
+/* Estilo elegante para la imagen del producto */
+#image_information_pop_edit {
+    width: 100%;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+/* Nombre del producto */
+#name_edit_item {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+}
+
+/* Precio principal */
+#price_edit_item {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0d9488; /* Tono esmeralda elegante, ajustable a tu paleta */
+    margin: 0 0 4px 0;
+}
+
+/* Cantidad / Stock o información secundaria */
+#amount_edit_item {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #64748b;
+    margin: 0;
+}
+/* El bloque principal se expande al 100% */
+.amount-editor-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 16px;
+    margin-bottom: 10px;
+}
+
+/* Botones grandes y cómodos (fáciles de tocar en pantallas táctiles) */
+.btn-amount-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    min-width: 80px; /* Evita que se encojan */
+    background-color: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+}
+
+/* Íconos más grandes dentro de los botones */
+.btn-amount-control svg {
+    width: 36px;
+    height: 36px;
+}
+
+.btn-amount-control:hover {
+    background-color: #e2e8f0;
+    border-color: #94a3b8;
+    color: #0f172a;
+    transform: translateY(-2px);
+}
+
+.btn-amount-control:active {
+    transform: translateY(1px);
+    background-color: #cbd5e1;
+}
+
+/* El input central ocupa todo el espacio flexible restante */
+.amount-input-wrapper {
+    flex: 1;
+    width: 100%;
+}
+
+/* Input grande, prominente y con texto centrado */
+.amount-input-wrapper input-field,
+.amount-input-wrapper input {
+    width: 100%;
+    height: 80px;
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 700;
+}
 </style>
 <input type="hidden" id="pagnumber">
 <div class="body-pos">
@@ -306,32 +407,58 @@
     </aside>
 </div>
 <message-pop name="pop_edit_item" title="pos.title.edit-product-in-the-car">
-    <div class="row">
-        <div class="col-4">
-            <img src="" id="image_information_pop_edit">
+    <div class="container-pop">
+        <div class="row">
+            <div class="col-3">
+                <img src="" id="image_information_pop_edit">
+            </div>
+            <div class="col-7">
+                <h3 id="name_edit_item"></h3>
+                <h5 id="price_edit_item"></h5>
+                <h5 id="amount_edit_item"></h5>
+            </div>
         </div>
-        <div class="col-6">
-            <h3 id="name_edit_item"></h3>
-            <h5 id="price_edit_item"></h5>
-            <h5 id="amount_edit_item"></h5>
+        <label t="pos.label.discount"></label>
+        <div class="row section">
+            <div class="col">
+                <input-field label="pos.label.percentage" placeholder="0%" type="number" id="input_edit_discount"></input-field>
+            </div>
+            <div class="col">
+                <input-field label="pos.label.discount-in-money" placeholder="0.00" type="number" id="input_edit_discount_number"></input-field>
+            </div>
+        </div>
+        <div class="row section">
+            <div class="col">
+                <input-field label="pos.label.price-finality" placeholder="0.00" type="number" id="input_edit_price"></input-field>
+            </div>
         </div>
     </div>
-    <label t="pos.label.discount"></label>
-    <div class="row section">
-        <div class="col">
-            <input-field label="pos.label.percentage" placeholder="0%" type="number" id="input_edit_discount"></input-field>
-        </div>
-        <div class="col">
-            <input-field label="pos.label.discount-in-money" placeholder="0.00" type="number" id="input_edit_discount_number"></input-field>
-        </div>
-    </div>
-    <div class="row section">
-        <div class="col">
-            <input-field label="pos.label.price-finality" placeholder="0.00" type="number" id="input_edit_price"></input-field>
-        </div>
-    </div>
-    <button class="btn btn-success btn-edit" t="btn.save"></button>
+    <button class="btn btn-success btn-edit" t="btn.save" onclick="update_item_car()"></button>
 </message-pop>
+
+
+<message-pop name="pop_edit_amount_item" title="pos.title.edit-amount-product-in-the-car">
+    <div class="container-pop">
+        <div class="amount-editor-container">
+            <!-- Botón Disminuir -->
+            <button type="button" class="btn-amount-control" onclick="decrement_amount()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+
+            <!-- Input Central -->
+            <div class="amount-input-wrapper">
+                <input-field type="number" id="input_edit_amount_value" placeholder="1"></input-field>
+            </div>
+
+            <!-- Botón Aumentar -->
+            <button type="button" class="btn-amount-control" onclick="increment_amount()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+        </div>
+    </div>
+    <button class="btn btn-success btn-edit" t="btn.save" onclick="update_amount_item_car()"></button>
+</message-pop>
+
 <script>
     // ================= ITEM PRODUCTO =================
     if (!customElements.get("item-pos")) {
@@ -432,11 +559,11 @@
                 <div class="tem-right-side">
                     <div class="tem-price">$${totalFormatted}</div>
                     <div class="tem-actions">
-                        <button class="btn-action btn-edit" title="Descuento" onclick="add_discount(this.closest('tem-car'))">
-                            🏷️
+                        <button class="btn-action" title="Descuento" onclick="add_discount(this.closest('tem-car'))">
+                            <i class="fi fi-rr-discount"></i>
                         </button>
-                        <button class="btn-action btn-delete" title="Eliminar" onclick="remove_item(this.closest('tem-car'))">
-                            🗑️
+                        <button class="btn-action" title="Eliminar" onclick="remove_item(this.closest('tem-car'))">
+                            <i class="fi fi-rr-trash"></i>
                         </button>
                     </div>
                 </div>
@@ -468,7 +595,11 @@
         //for show in the pop
         const image=el.getAttribute('image');
         const name=el.getAttribute('name') || 'item';
-        const discount=el.getAttribute('discount'); 
+        const discount = parseFloat(el.getAttribute("discount") || 0);
+        const discountPercent = parseFloat(
+            el.getAttribute("discount_percent") || 0
+        );
+
         const amount=el.getAttribute('amount') || '1'; 
         const priceItem=parseFloat(el.getAttribute('price') || '0');
         const price=priceItem*amount;
@@ -477,7 +608,7 @@
         document.getElementById('image_information_pop_edit').src=image;
         document.getElementById('name_edit_item').textContent=name;
         document.getElementById('price_edit_item').textContent=window.format_currency((priceItem), window.currencyUser, true);
-        document.getElementById('input_edit_discount').value=discount;
+        document.getElementById('input_edit_discount').value=discountPercent;
 
         const unity = el.getAttribute('unity') || '1';
         let unityText = unity == "2" ? "gr" : "pza";
@@ -485,15 +616,103 @@
 
         //here we will see quantity is the discount of the product
         const priceDiscount=((discount*price)/100).toFixed(2);
-        document.getElementById('input_edit_discount_number').value=priceDiscount;
-        document.getElementById('input_edit_price').value=(price-priceDiscount).toFixed(2);
+        document.getElementById('input_edit_discount_number').value=discount.toFixed(2);
+        document.getElementById('input_edit_price').value=(price - discount).toFixed(2);
         window.show_pop('pop_edit_item');
         console.log("Agregar descuento a:", el);
     }
 
+    function update_item_car(){
+        if (!window.item_edit) return;
+
+        // Obtener el id del producto que se está editando
+        const id = window.item_edit.getAttribute("item_id");
+
+        // Buscar el producto en el carrito
+        const product = window.cart.find(item => item.id == id);
+
+        if (!product) return;
+
+        // Leer los valores del popup
+        const discountPercent = parseFloat(document.getElementById("input_edit_discount").value) || 0;
+        const finalPrice = parseFloat(document.getElementById("input_edit_price").value) || 0;
+
+        // Precio original * cantidad
+        const subtotal = product.price * product.amount;
+
+        // Descuento en dinero
+        const discountMoney = subtotal - finalPrice;
+
+        // Guardar la información
+        product.discount = discountMoney;
+        product.discount_percent = discountPercent;
+
+        // Volver a pintar el carrito
+        renderCart();
+
+        // Cerrar popup
+        window.hide_pop("pop_edit_item");
+
+        window.show_notification(
+            "success",
+            "pos.message.product-update-success"
+        );
+    }
+
     function edit_quantity(el) {
-        console.log("Editar cantidad de:", el);
-        // Tu lógica para abrir el teclado numérico o modal
+        window.item_edit = el;
+
+        const name = el.getAttribute("name");
+        const image = el.getAttribute("image");
+        const amount = parseFloat(el.getAttribute("amount") || 1);
+
+        document.getElementById("input_edit_amount_value").value = amount;
+        window.show_pop("pop_edit_amount_item");
+    }
+
+    function increment_amount(){
+        const input = document.getElementById("input_edit_amount_value");
+        input.value = (parseFloat(input.value) || 0) + 1;
+    }
+
+    function decrement_amount(){
+        const input = document.getElementById("input_edit_amount_value");
+        let value = (parseFloat(input.value) || 1) - 1;
+        if(value < 1)
+            value = 1;
+        input.value = value;
+    }
+
+    function update_amount_item_car(){
+        if(!window.item_edit)
+            return;
+
+        const id = window.item_edit.getAttribute("item_id");
+        const item = window.cart.find(x => x.id == id);
+
+        if(!item)
+            return;
+
+        const amount = parseFloat(
+            document.getElementById("input_edit_amount_value").value
+        );
+
+        if(isNaN(amount) || amount <= 0){
+            window.show_notification(
+                "warning",
+                "La cantidad debe ser mayor que cero."
+            );
+            return;
+        }
+
+        item.amount = amount;
+        renderCart();
+
+        window.hide_pop("pop_edit_amount_item");
+        window.show_notification(
+            "success",
+            "Cantidad actualizada."
+        );
     }
 
     //here we will add the functions for update the discount dinamyc
@@ -630,19 +849,24 @@
 
         //read all the product of the car
         cart.forEach(item => {
+            const subtotal = item.price * item.amount;
+            const discountMoney =
+                subtotal * ((item.discount_percent || 0) / 100);
 
-            //we add the calculate to the total global and to the total of the product
-            total += item.price * item.amount;
+            const totalItem = subtotal - discountMoney;
+            total += totalItem;
             totalItems += item.amount;
-
-            //here we will to create the ellement of the car and his attributes
-            const element = document.createElement('tem-car');
-            element.setAttribute('item_id', item.id);
-            element.setAttribute('name', item.name);
-            element.setAttribute('price', item.price);
-            element.setAttribute('amount', item.amount);
-            element.setAttribute('image', item.image);
-            element.setAttribute('discount', item.discount || 0)
+            const element = document.createElement("tem-car");
+            element.setAttribute("item_id", item.id);
+            element.setAttribute("name", item.name);
+            element.setAttribute("price", item.price);
+            element.setAttribute("amount", item.amount);
+            element.setAttribute("image", item.image);
+            element.setAttribute("discount", discountMoney);
+            element.setAttribute(
+                "discount_percent",
+                item.discount_percent || 0
+            );
 
             container.appendChild(element);
         });

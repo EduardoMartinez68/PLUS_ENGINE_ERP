@@ -58,13 +58,8 @@ async function nextWeb(url) {
 
   //first we will see if the app in the that was the user is the app of calendary 
   //if it the app of calendary we will to refresh the UI 
-  // 👇 get last web
+  // 👇 Obtener última página
   const lastPage = sessionHistory.length > 0 ? sessionHistory[sessionHistory.length - 1] : '/';
-
-  //reset the functions and variable globals for can load the news functions
-  Plus.Functions.reset();
-  Plus.variables.reset();
-
 
   try {
     const pathTranslate = get_path_of_the_file_translate_of_the_app(url);
@@ -207,6 +202,8 @@ const lastPage = sessionHistory.length > 0 ? sessionHistory[sessionHistory.lengt
 //if the user not is in tha last web, we will load the container
 if (location.pathname !== lastPage) {
   nextWeb(lastPage);
+}else{
+  nextWeb('course/course/');
 }
 
 

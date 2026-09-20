@@ -247,22 +247,29 @@ function update_container_with_seeker(inputsId, fieldId, divHtml, searchUrl, met
 
         //after that we send the information to the server, we will see if the user send more inputs for filter
         const allFilters = [query]; //we will save the first input that is the search input
+        const filtersByName = {};
         let data;
+        
+        const mainInput = document.getElementById(inputsId[0]);
+        const mainKey = mainInput ? (mainInput.name || mainInput.id) : 'query';
+        filtersByName[mainKey] = query;
 
         if (Array.isArray(inputsId) && inputsId.length > 1) {
             for (let i = 1; i < inputsId.length; i++) {
-                const additionalInput = document.getElementById(inputsId[i]); //get the additional filters if exist
-
-                //we will see if the additional filters exist
+                const additionalInput = document.getElementById(inputsId[i]);
                 if (additionalInput) {
-                    //get the value of the additional filters
-                    const val = get_the_value_of_the_input(additionalInput)
+                    const val = get_the_value_of_the_input(additionalInput);
+                    const key = additionalInput.name || additionalInput.id;
+
                     allFilters.push(val);
+                    if (key) {
+                        filtersByName[key] = val;
+                    }
                 }
             }
 
             //send a message to the server for get the answer
-            data = await window.send_message_to_the_server(searchUrl, { allFilters, page  }, false, method);
+            data = await window.send_message_to_the_server(searchUrl, { allFilters, filters: filtersByName, page  }, false, method);
         } else {
             //send a message to the server for get the answer
             data = await window.send_message_to_the_server(searchUrl, { query, page  }, false, method);
@@ -434,16 +441,34 @@ function update_container_from_the_server(inputsId, fieldId, divHtml, searchUrl,
 
         const query = input.value.trim();
         const allFilters = [query];
+        const filtersByName = {};
 
+        // 1. save the query in a object
+        const mainInput = document.getElementById(inputsId[0]);
+        const mainKey = mainInput ? (mainInput.name || mainInput.id) : 'query';
+        filtersByName[mainKey] = query;
+
+        // 2. read all the inputs
         if (Array.isArray(inputsId) && inputsId.length > 1) {
             for (let i = 1; i < inputsId.length; i++) {
                 const additionalInput = document.getElementById(inputsId[i]);
-                if (additionalInput) allFilters.push(get_the_value_of_the_input(additionalInput));
+                if (additionalInput) {
+                    const val = get_the_value_of_the_input(additionalInput);
+                    const key = additionalInput.name || additionalInput.id;
+
+                    // save in the array for index
+                    allFilters.push(val);
+
+                    // save in the object for name/id
+                    if (key) {
+                        filtersByName[key] = val;
+                    }
+                }
             }
         }
 
         const data = Array.isArray(inputsId) && inputsId.length > 1 
-            ? await window.send_message_to_the_server(searchUrl, { allFilters , page}, false, method)
+            ? await window.send_message_to_the_server(searchUrl, { allFilters , filters: filtersByName, page}, false, method)
             : await window.send_message_to_the_server(searchUrl, { query, page }, false, method);
 
         //when the server send a answer, we will to hidden the load in the div 

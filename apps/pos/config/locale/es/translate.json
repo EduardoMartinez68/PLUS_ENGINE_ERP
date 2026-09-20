@@ -12,5 +12,7 @@
     "pos.label.discount": "Descuento",
     "pos.label.percentage": "% Porcentaje *",
     "pos.label.discount-in-money": "$ Descuento *",
-    "pos.label.price-finality": "Precio final *"
+    "pos.label.price-finality": "Precio final *",
+    "pos.message.product-update-success": "El producto fue actualizado correctamente",
+    "pos.title.edit-amount-product-in-the-car": "Editar Cantidad"
 }

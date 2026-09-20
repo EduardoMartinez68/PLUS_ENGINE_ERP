@@ -365,6 +365,8 @@ def register(request):
 from django.contrib.auth import authenticate, login
 from core.forms import LoginForm
 from axes.exceptions import AxesBackendPermissionDenied
+TYPE_VERSION = os.getenv('TYPE_VERSION', 'DESKTOP')
+debug=(TYPE_VERSION == 'DESKTOP')
 
 def login_view(request):
     form = LoginForm()
@@ -395,25 +397,27 @@ def login_view(request):
                         #if the user not have a subscription activate also we will to create one for save in his session
                         plan_free, _ = SubscriptionPlan.objects.get_or_create(code=0, defaults={'name': 'Free'})
                         UserSubscription.objects.create(user=user, plan=plan_free, status='free') 
-                    
-                    #here we will get the information of the subscription of the user
-                    subscription = user.subscription
-                    if not subscription.can_add_new_device(): #see if the user can add new device
 
-                        #get we will to get all the drives of the user 
-                        current_sessions = UserSession.objects.filter(user=user).order_by('session__expire_date')
-                        oldest_session = current_sessions.first() #get the more old and close his session
-                        if oldest_session.session:
-                                oldest_session.session.delete()
+                    #if not is in the desktop version, now we will to see if the user can add new device or not
+                    if not debug:
+                        #here we will get the information of the subscription of the user
+                        subscription = user.subscription
+                        if not subscription.can_add_new_device(): #see if the user can add new device
 
-                        oldest_session.delete() #delete the login of the model
-                        #error_message = "Has alcanzado el número máximo de dispositivos vinculados" #"home.error.not-can-add-other-drive"
-                        #return render(request, 'login.html', {'form': form, 'error_message': error_message, 'languages': languages})
-                    
-                    if subscription.is_expired():
-                        error_message = "Tu suscripción ha finalizado. Por favor, renuévala para seguir disfrutando del servicio." #"home.error.not-can-add-other-drive"
-                        return render(request, 'login.html', {'form': form, 'error_message': error_message, 'languages': languages})
-                    
+                            #get we will to get all the drives of the user 
+                            current_sessions = UserSession.objects.filter(user=user).order_by('session__expire_date')
+                            oldest_session = current_sessions.first() #get the more old and close his session
+                            if oldest_session.session:
+                                    oldest_session.session.delete()
+
+                            oldest_session.delete() #delete the login of the model
+                            #error_message = "Has alcanzado el número máximo de dispositivos vinculados" #"home.error.not-can-add-other-drive"
+                            #return render(request, 'login.html', {'form': form, 'error_message': error_message, 'languages': languages})
+                        
+                        if subscription.is_expired():
+                            error_message = "Tu suscripción ha finalizado. Por favor, renuévala para seguir disfrutando del servicio." #"home.error.not-can-add-other-drive"
+                            return render(request, 'login.html', {'form': form, 'error_message': error_message, 'languages': languages})
+                        
                     # 1. SAVE THE SESSION
                     login(request, user)
 

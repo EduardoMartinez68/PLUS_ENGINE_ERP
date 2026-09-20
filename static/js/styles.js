@@ -3,14 +3,14 @@ const colors = {
   color_company: '#2b6cb0',
   color_company_hover: '#064985',
   color_second: '#1d7dd1ff',
-  color_container_white:"#ffffffff",
+  color_container_white: "#ffffffff",
 
 
-  color_company_black:'#1D1D1F',
+  color_company_black: '#1D1D1F',
   color_second_black: '#303033ff',
-  color_icon_black:'#76B5D6',
-  color_container_black:"#32323E",
-  color_text_black:'#E5E4EA'
+  color_icon_black: '#76B5D6',
+  color_container_black: "#32323E",
+  color_text_black: '#E5E4EA'
 }
 
 /*
@@ -91,7 +91,7 @@ class InfoLabel extends HTMLElement {
     //get the information that the programmer add to the label
     const keyLabelText = this.getAttribute("label") || "";
     const keyMessage = this.getAttribute("message") || "";
-    const help=this.getAttribute('help') || '';
+    const help = this.getAttribute('help') || '';
 
     //her we will translate the text that the programmer add the label
     const labelText = translate_text(keyLabelText);
@@ -211,7 +211,7 @@ class PlusPanel extends HTMLElement {
     const titleText = window.translate_text(this.getAttribute('title') || 'Panel');
 
     let blurBackground = false;
-    if(this.hasAttribute('blur-background')){
+    if (this.hasAttribute('blur-background')) {
       blurBackground = this.getAttribute('blur-background') === 'true';
     }
 
@@ -369,6 +369,10 @@ class PlusPanel extends HTMLElement {
   }
 
   show() {
+    if (this.style.display === 'none') {
+      this.style.display = '';
+    }
+
     currentPopZIndex += 1;
     this.style.zIndex = currentPopZIndex;
     this.classList.add('visible');
@@ -453,19 +457,19 @@ class PlusPanel extends HTMLElement {
 }
 
 class PlusNavbar extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-    }
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
 
-    connectedCallback() {
-        this.render();
-    }
+  connectedCallback() {
+    this.render();
+  }
 
-    render() {
-        const options = Array.from(this.querySelectorAll(':scope > option'));
+  render() {
+    const options = Array.from(this.querySelectorAll(':scope > option'));
 
-        this.shadowRoot.innerHTML = `
+    this.shadowRoot.innerHTML = `
         <style>
             :host {
                 display: block;
@@ -558,23 +562,23 @@ class PlusNavbar extends HTMLElement {
         </nav>
         `;
 
-        this.setupEvents();
-    }
+    this.setupEvents();
+  }
 
-    createNavItem(option) {
-        //here we will to construct the text with a icon if the option have a attribute icon for show in the screen
-        const text = window.translate_text(option.getAttribute('t') || '');
-        const icon = option.getAttribute('icon') ? `<i class="${option.getAttribute('icon')}"></i>` : '';
+  createNavItem(option) {
+    //here we will to construct the text with a icon if the option have a attribute icon for show in the screen
+    const text = window.translate_text(option.getAttribute('t') || '');
+    const icon = option.getAttribute('icon') ? `<i class="${option.getAttribute('icon')}"></i>` : '';
 
-        const children = Array.from(
-            option.querySelectorAll(':scope > option, :scope > sub-option')
-        );
-        const hasSubmenu = children.length > 0;
-        const link = option.getAttribute('link');
-        const id = Math.random().toString(36).substr(2, 9);
-        option.setAttribute('data-nav-id', id);
+    const children = Array.from(
+      option.querySelectorAll(':scope > option, :scope > sub-option')
+    );
+    const hasSubmenu = children.length > 0;
+    const link = option.getAttribute('link');
+    const id = Math.random().toString(36).substr(2, 9);
+    option.setAttribute('data-nav-id', id);
 
-        return `
+    return `
             <li class="nav-item">
                 <a class="nav-link" 
                 data-id="${id}" 
@@ -589,26 +593,26 @@ class PlusNavbar extends HTMLElement {
                 ` : ''}
             </li>
         `;
-    }
+  }
 
-    setupEvents() {
-        this.shadowRoot.querySelectorAll('.nav-link').forEach(anchor => {
-            anchor.addEventListener('click', (e) => {
-                const id = anchor.getAttribute('data-id');
-                const originalOption = this.querySelector(`[data-nav-id="${id}"]`);
-                
-                if (originalOption) {
-                    //if have a event onclick in the original option, we will execute this event for that the user can do click in the button and show the event that the programmer add in the option
-                    const clickHandler = originalOption.getAttribute('onclick');
-                    if (clickHandler) {
-                        e.preventDefault();
-                        // run the function that the programmer add in the option
-                        new Function(clickHandler).call(window);
-                    }
-                }
-            });
-        });
-    }
+  setupEvents() {
+    this.shadowRoot.querySelectorAll('.nav-link').forEach(anchor => {
+      anchor.addEventListener('click', (e) => {
+        const id = anchor.getAttribute('data-id');
+        const originalOption = this.querySelector(`[data-nav-id="${id}"]`);
+
+        if (originalOption) {
+          //if have a event onclick in the original option, we will execute this event for that the user can do click in the button and show the event that the programmer add in the option
+          const clickHandler = originalOption.getAttribute('onclick');
+          if (clickHandler) {
+            e.preventDefault();
+            // run the function that the programmer add in the option
+            new Function(clickHandler).call(window);
+          }
+        }
+      });
+    });
+  }
 }
 
 
@@ -1072,7 +1076,7 @@ class PlusTitle extends HTMLElement {
   }
 }
 
-       
+
 class PlusQuantity extends HTMLElement {
   static formAssociated = true;
 
@@ -1098,7 +1102,7 @@ class PlusQuantity extends HTMLElement {
 
     // We ensure that the value is within limits and is a number
     let newValue = Math.max(min, Math.min(max, parseFloat(val) || min));
-    
+
     this.setAttribute('value', newValue);
     if (this.input) this.input.value = newValue;
     this.internals.setFormValue(newValue);
@@ -1114,7 +1118,7 @@ class PlusQuantity extends HTMLElement {
 
   // Disable buttons if the limit is reached
   updateButtonState() {
-    if(!this.btnMinus || !this.btnPlus) return;
+    if (!this.btnMinus || !this.btnPlus) return;
     const min = parseFloat(this.getAttribute('min')) || -Infinity;
     const max = parseFloat(this.getAttribute('max')) || Infinity;
     const currentVal = parseFloat(this.value);
@@ -1476,10 +1480,10 @@ class ConfirmDialog {
   }
 }
 
-function get_text_and_keys(struct){
+function get_text_and_keys(struct) {
   let text = ''; //is the text to translate exaple: app.label.text 
   let keys = null; //here be the key that we will to remplace in the text. example: { name: 'Edward', count: 3 } or ['Edward', 3]
-  
+
 
   if (typeof struct === 'string') {
     text = struct;
@@ -1514,8 +1518,8 @@ async function show_message_question(title, message) {
 
   //Here we will to see if the programmer have a struct in the text
   //-> show_message_question(['Hello ${name}, you have ${count} messages', { name: 'Edward', count: 3 }], ['Hello ${}, you have ${} messages', ['Edward', 3 ]])
-  let titleStruct=get_text_and_keys(title);
-  let messageStruct=get_text_and_keys(message);
+  let titleStruct = get_text_and_keys(title);
+  let messageStruct = get_text_and_keys(message);
 
   const result = await ConfirmDialog.show(window.translate_text(titleStruct.text, titleStruct.keys), window.translate_text(messageStruct.text, messageStruct.keys));
   return result;
@@ -1609,7 +1613,7 @@ class KeyBind extends HTMLElement {
   }
 }
 
-class PlusModules extends HTMLElement { 
+class PlusModules extends HTMLElement {
   connectedCallback() {
     const col = parseInt(this.getAttribute('col')) || 4;
     const colSidebar = Math.max(1, Math.min(col, 11));
@@ -1706,17 +1710,17 @@ class PlusModules extends HTMLElement {
     content.appendChild(panelContainer);
 
     const panels = modules.map((m, i) => {
-        const panel = document.createElement('div');
-        panel.className = 'plus-modules-module-panel';
-        
-        //We move the children of the original to the panel directly.
-        while (m.firstChild) {
-            panel.appendChild(m.firstChild);
-        }
+      const panel = document.createElement('div');
+      panel.className = 'plus-modules-module-panel';
 
-        panel.style.display = i === 0 ? 'block' : 'none';
-        panelContainer.appendChild(panel);
-        return panel;
+      //We move the children of the original to the panel directly.
+      while (m.firstChild) {
+        panel.appendChild(m.firstChild);
+      }
+
+      panel.style.display = i === 0 ? 'block' : 'none';
+      panelContainer.appendChild(panel);
+      return panel;
     });
 
     // X button for mobile
@@ -1746,16 +1750,16 @@ class PlusModules extends HTMLElement {
 
     // --- FUNCTION EXECUTION LOGIC ---
     const triggerVisibleFunction = (index) => {
-        const scriptStr = onVisibles[index];
-        if (scriptStr) {
-            try {
-                //This executes the string as code (in: "initial schedules(2)")
-                const execute = new Function(scriptStr);
-                execute();
-            } catch (e) {
-                console.error("Error al ejecutar on-visible:", scriptStr, e);
-            }
+      const scriptStr = onVisibles[index];
+      if (scriptStr) {
+        try {
+          //This executes the string as code (in: "initial schedules(2)")
+          const execute = new Function(scriptStr);
+          execute();
+        } catch (e) {
+          console.error("Error al ejecutar on-visible:", scriptStr, e);
         }
+      }
     };
 
     //Run for the first default module
@@ -1839,7 +1843,7 @@ class PlusSelect extends HTMLElement {
     this._selectElement = null;
     this._thisSlectSendDataToTheServer = false;
     this._textSelected = null;
-    this._textLabelTranslate=null;
+    this._textLabelTranslate = null;
     this._method = 'GET';
   }
 
@@ -1854,7 +1858,7 @@ class PlusSelect extends HTMLElement {
     //get the information that the programmer added to the select
     const textLabel = this.getAttribute('t') || this.getAttribute('label') || '';
     const textLabelTranslate = window.translate_text(textLabel); //translate the text of the label
-    
+
 
     const name = this.getAttribute('name') || '';
     const isRequired = this.hasAttribute('requerid');
@@ -1866,8 +1870,8 @@ class PlusSelect extends HTMLElement {
     //get the value for if the programmer would like show other message that not be the default
     const tilteBtn = this.getAttribute('btn_delete_title') || '';
     const textBtn = this.getAttribute('btn_delete_text') || '';
-    this._textLabelTranslate=textLabelTranslate;
-    
+    this._textLabelTranslate = textLabelTranslate;
+
     //her we will know if the programmer need show a message to the user
     if (thisLabelHaveAMessage) {
       //if the programmer need show a messga, we will to create the special label when the information that need
@@ -2058,18 +2062,18 @@ class PlusSelect extends HTMLElement {
 
       // Check if the popup goes off the screen (right side)
       if (left + popupRect.width > window.innerWidth) {
-          // If it goes outside, move it to the left of the select
-          //here we will to calculate the excess of the border
-          const overflowRight = left + popupRect.width - window.innerWidth;
+        // If it goes outside, move it to the left of the select
+        //here we will to calculate the excess of the border
+        const overflowRight = left + popupRect.width - window.innerWidth;
 
-          // Adjust left by subtracting the excess
-          left = left - overflowRight-16;
+        // Adjust left by subtracting the excess
+        left = left - overflowRight - 16;
       }
 
 
       //here we will see if the user be in the cellphone 
       if (window.innerWidth <= 768) {
-        popupElement.style.width = `${window.innerWidth-64}px`;
+        popupElement.style.width = `${window.innerWidth - 64}px`;
         left = rect.left + window.scrollX;
         top = rect.bottom + window.scrollY + 8;
       }
@@ -2147,7 +2151,7 @@ class PlusSelect extends HTMLElement {
             redSquare.style.verticalAlign = 'middle';
           }
 
-          const photo=data.photo || data.avatar; 
+          const photo = data.photo || data.avatar;
           if (photo) {
             const imgThumb = document.createElement('img');
             imgThumb.src = photo;
@@ -2161,7 +2165,7 @@ class PlusSelect extends HTMLElement {
             imgThumb.style.verticalAlign = 'middle';
 
             //if the image not exit, show a image for default
-            imgThumb.onerror = function() {
+            imgThumb.onerror = function () {
               this.onerror = null;
               this.src = window.STATIC_URLS.imageDefault; //path for default
             };
@@ -2230,9 +2234,18 @@ class PlusSelect extends HTMLElement {
             // get function name from attribute
             const functionName = self.getAttribute('onselectoption');
 
-            // run function if exists
             if (functionName && typeof window[functionName] === 'function') {
-                window[functionName](data);
+              window[functionName](data);
+            }else{
+              const onSelectAttr = self.getAttribute('onselectoption');
+              if(functionName){
+                try {
+                  const executeOnSelect = new Function('data', onSelectAttr);
+                  executeOnSelect.call(self, data);
+                } catch (err) {
+                    console.error(`Error al ejecutar onselectoption en ${self.tagName}:`, err);
+                }
+              }
             }
 
             // dispatch native event
@@ -2292,21 +2305,21 @@ class PlusSelect extends HTMLElement {
       text = text ?? value.name ?? "";
       value = value.id ?? "";
     }
-    
+
     if (this._textSelected) {
       this._selectText.setAttribute('t', this._textSelected);
       this._selectText.textContent = this._textSelected;
       this._hiddenInput.value = value;
       return; //if the user selected a text, we not will update the select
     }
-    
+
     //her we will see if exist the information of the select
     const option = Array.from(this._selectElement.querySelectorAll('option'))
       .find(opt => opt.getAttribute('value') === value + '');
 
 
-      
-      
+
+
     //her we will verifiy if exist this option in the select
     if (option) {
       //if the option exist in the select, we will get his information and set it in the hidden input and the select text
@@ -2320,15 +2333,15 @@ class PlusSelect extends HTMLElement {
         this._selectText.textContent = window.translate_text(text);
       }
     } else {
-      
+
       //if not exist in the select of the options is because is a data of a tabla of search 
       if (this._thisSlectSendDataToTheServer) {
         this._hiddenInput.value = value;
 
         var info;
-        if(option!=null){
+        if (option != null) {
           info = text || value || option.getAttribute('data-text');
-        }else{
+        } else {
           info = text || value || window.translate_text(this._textLabelTranslate);
         }
 
@@ -2343,10 +2356,10 @@ class PlusSelect extends HTMLElement {
     return this._hiddenInput ? this._hiddenInput.value : null;
   }
 
-  getText(){
+  getText() {
     return this._selectText ? this._selectText.textContent : null;
   }
-  
+
   //this is for restart the form when a form be send
   reset() {
     if (this._hiddenInput) {
@@ -2367,7 +2380,7 @@ class PlusMultiSelect extends HTMLElement {
     this._selectElement = null;
     this._thisSlectSendDataToTheServer = false;
     this._textSelected = null;
-    this._textLabelTranslate=null;
+    this._textLabelTranslate = null;
     this._method = 'GET'
     this._selectedValues = new Map(); // id -> text
   }
@@ -2381,7 +2394,7 @@ class PlusMultiSelect extends HTMLElement {
     //get the information that the programmer added to the select
     const textLabel = this.getAttribute('t') || this.getAttribute('label') || '';
     const textLabelTranslate = window.translate_text(textLabel); //translate the text of the label
-    
+
 
     const name = this.getAttribute('name') || '';
     const isRequired = this.hasAttribute('requerid');
@@ -2393,8 +2406,8 @@ class PlusMultiSelect extends HTMLElement {
     //get the value for if the programmer would like show other message that not be the default
     const tilteBtn = this.getAttribute('btn_delete_title') || '';
     const textBtn = this.getAttribute('btn_delete_text') || '';
-    this._textLabelTranslate=textLabelTranslate;
-    
+    this._textLabelTranslate = textLabelTranslate;
+
     //her we will know if the programmer need show a message to the user
     if (thisLabelHaveAMessage) {
       //if the programmer need show a messga, we will to create the special label when the information that need
@@ -2598,18 +2611,18 @@ class PlusMultiSelect extends HTMLElement {
 
       // Check if the popup goes off the screen (right side)
       if (left + popupRect.width > window.innerWidth) {
-          // If it goes outside, move it to the left of the select
-          //here we will to calculate the excess of the border
-          const overflowRight = left + popupRect.width - window.innerWidth;
+        // If it goes outside, move it to the left of the select
+        //here we will to calculate the excess of the border
+        const overflowRight = left + popupRect.width - window.innerWidth;
 
-          // Adjust left by subtracting the excess
-          left = left - overflowRight-16;
+        // Adjust left by subtracting the excess
+        left = left - overflowRight - 16;
       }
 
 
       //here we will see if the user be in the cellphone 
       if (window.innerWidth <= 768) {
-        popupElement.style.width = `${window.innerWidth-64}px`;
+        popupElement.style.width = `${window.innerWidth - 64}px`;
         left = rect.left + window.scrollX;
         top = rect.bottom + window.scrollY + 8;
       }
@@ -2671,7 +2684,7 @@ class PlusMultiSelect extends HTMLElement {
           div.classList.add('plus-select-option');
           div.dataset.value = data.id;
 
-          
+
           const value = String(data.id);
           if (self._selectedValues.has(value)) {
             div.classList.add('selected');
@@ -2693,7 +2706,7 @@ class PlusMultiSelect extends HTMLElement {
             redSquare.style.verticalAlign = 'middle';
           }
 
-          const photo=data.photo || data.avatar; 
+          const photo = data.photo || data.avatar;
           if (photo) {
             const imgThumb = document.createElement('img');
             imgThumb.src = photo;
@@ -2707,7 +2720,7 @@ class PlusMultiSelect extends HTMLElement {
             imgThumb.style.verticalAlign = 'middle';
 
             //if the image not exit, show a image for default
-            imgThumb.onerror = function() {
+            imgThumb.onerror = function () {
               this.onerror = null;
               this.src = window.STATIC_URLS.imageDefault; //path for default
             };
@@ -2769,7 +2782,7 @@ class PlusMultiSelect extends HTMLElement {
             //-------------------------
             const value = div.dataset.value;
             const text = div.textContent;
- 
+
             // Toggle selección _selectedValues
             if (self._selectedValues.has(value)) {
               self._selectedValues.delete(value);
@@ -3029,7 +3042,7 @@ function get_value_plus_select(id) {
   return null;
 }
 
-async function plus_delete_with_help_button(id, link, title = '', message = '' ,title_success='', message_success='') {
+async function plus_delete_with_help_button(id, link, title = '', message = '', title_success = '', message_success = '') {
   //her we will see if the proggramer would like show other message that not be the default
   const titleToTranslate = title || 'info.confirm_delete';
   const messageToTranslate = message || 'info.description_delete';
@@ -3041,8 +3054,8 @@ async function plus_delete_with_help_button(id, link, title = '', message = '' ,
   if (await show_message_question(titleDelete, messageDelete)) {
     const answer = await send_message_to_the_server(link, { id }, true);
     if (answer.success) {
-      const title=title_success || 'success.deleted'
-      const message=message_success || 'success.deleted'
+      const title = title_success || 'success.deleted'
+      const message = message_success || 'success.deleted'
       show_alert('success', title, message)
       return true;
     } else {
@@ -3064,7 +3077,7 @@ class PlusSwitch extends HTMLElement {
 
   connectedCallback() {
     // if already rendered, do nothing
-    if (this._rendered) return; 
+    if (this._rendered) return;
 
     //first we will get the text that the user would like show in the switch 
     const text = this.getAttribute('text') || ''; //first we will get the text that the user have save in the label
@@ -3356,8 +3369,8 @@ class PlusHelpVideo extends HTMLElement {
   }
   render() {
     const videos = JSON.parse(this.getAttribute("videos") || "[]");
-    const textHelp=window.translate_text('message.do-you-need-tutorial')
-    const textClose=window.translate_text('message.close-help')
+    const textHelp = window.translate_text('message.do-you-need-tutorial')
+    const textClose = window.translate_text('message.close-help')
     this.shadowRoot.innerHTML = `
       <style>
         :host {
@@ -4398,19 +4411,19 @@ class PlusSearch extends HTMLElement {
     input.id = idInput;
     input.addEventListener('input', (e) => {
 
-        this.dispatchEvent(
-            new CustomEvent('search', {
-                detail: {
-                    value: e.target.value
-                },
-                bubbles: true,
-                composed: true
-            })
-        );
+      this.dispatchEvent(
+        new CustomEvent('search', {
+          detail: {
+            value: e.target.value
+          },
+          bubbles: true,
+          composed: true
+        })
+      );
 
     });
 
-    
+
     inputWrapper.appendChild(icon);
     inputWrapper.appendChild(input);
 
@@ -4932,13 +4945,13 @@ class PlusDate extends HTMLElement {
 
   update_input_form() {
     if (this.selectedDate) {
-        //We extract the parts of the LOCAL date
-        const year = this.selectedDate.getFullYear();
-        const month = String(this.selectedDate.getMonth() + 1).padStart(2, '0');
-        const day = String(this.selectedDate.getDate()).padStart(2, '0');
-        
-        //YYYY-MM-DD format based on user view, not UTC
-        this.hiddenInput.value = `${year}-${month}-${day}`;
+      //We extract the parts of the LOCAL date
+      const year = this.selectedDate.getFullYear();
+      const month = String(this.selectedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(this.selectedDate.getDate()).padStart(2, '0');
+
+      //YYYY-MM-DD format based on user view, not UTC
+      this.hiddenInput.value = `${year}-${month}-${day}`;
     }
   }
 }
@@ -5103,11 +5116,11 @@ class PlusTime extends HTMLElement {
     this.input = this.shadowRoot.querySelector("input[type='time']");
 
     this.display.addEventListener("click", () => {
-      const isOpening = 
+      const isOpening =
         this.dropdown.style.display === "none" || !this.dropdown.style.display;
-      
+
       this.dropdown.style.display = isOpening ? "flex" : "none";
-      
+
       if (isOpening) {
         // call to the option for center the hours and the minutes when the user open the input
         this.centerSelectedOption();
@@ -5139,104 +5152,104 @@ class PlusTime extends HTMLElement {
   }
 
   initInteraction(type) {
-      const scroll = this.shadowRoot.getElementById(`${type}-scroll`);
-      const options = scroll.querySelectorAll(".time-option");
+    const scroll = this.shadowRoot.getElementById(`${type}-scroll`);
+    const options = scroll.querySelectorAll(".time-option");
 
-      let isDragging = false;
-      let startY;
-      let startScroll;
-      
-      // Almacenamos el elemento sobre el que se hizo el último 'touchstart'
-      let touchTarget = null; 
+    let isDragging = false;
+    let startY;
+    let startScroll;
 
-      // --- Funciones de Arrastre (Desplazamiento) ---
+    // Almacenamos el elemento sobre el que se hizo el último 'touchstart'
+    let touchTarget = null;
 
-      const startDrag = (e) => {
-          isDragging = true;
-          // e.touches[0].clientY para táctil, e.clientY para ratón
-          startY = e.touches ? e.touches[0].clientY : e.clientY; 
-          startScroll = scroll.scrollTop;
-          
-          // Almacena el elemento tocado para la selección posterior
-          if (e.touches) touchTarget = e.target;
-          
-          if (e.type === 'touchstart') {
-              e.preventDefault(); 
-          }
-          scroll.style.cursor = 'grabbing';
-      };
+    // --- Funciones de Arrastre (Desplazamiento) ---
 
-      const drag = (e) => {
-          if (!isDragging) return;
-          const currentY = e.touches ? e.touches[0].clientY : e.clientY;
-          const delta = startY - currentY;
-          scroll.scrollTop = startScroll + delta;
+    const startDrag = (e) => {
+      isDragging = true;
+      // e.touches[0].clientY para táctil, e.clientY para ratón
+      startY = e.touches ? e.touches[0].clientY : e.clientY;
+      startScroll = scroll.scrollTop;
 
-          // Si hay un desplazamiento significativo, cancelamos el target
-          if (Math.abs(delta) > 10) { 
-              touchTarget = null;
-          }
+      // Almacena el elemento tocado para la selección posterior
+      if (e.touches) touchTarget = e.target;
 
-          if (e.type === 'touchmove') {
-              e.preventDefault(); 
-          }
-      };
+      if (e.type === 'touchstart') {
+        e.preventDefault();
+      }
+      scroll.style.cursor = 'grabbing';
+    };
 
-      const endDrag = () => {
-          isDragging = false;
-          scroll.style.cursor = 'grab';
-      };
-      
-      // --- Lógica de Selección Unificada ---
-      const handleSelection = (opt) => {
-          // Lógica de selección:
-          options.forEach((o) => o.classList.remove("selected"));
-          opt.classList.add("selected");
-          const val = parseInt(opt.getAttribute("data-val"));
-          if (type === "hour") this.selectedHour = val;
-          else this.selectedMinute = val;
-          
-          // Usar la función de actualización centralizada
-          this.update_input_form(); 
-      };
+    const drag = (e) => {
+      if (!isDragging) return;
+      const currentY = e.touches ? e.touches[0].clientY : e.clientY;
+      const delta = startY - currentY;
+      scroll.scrollTop = startScroll + delta;
 
-      // --- Listeners de Ratón (Desktop) ---
-      scroll.addEventListener("mousedown", startDrag);
-      document.addEventListener("mousemove", drag); 
-      document.addEventListener("mouseup", endDrag);
+      // Si hay un desplazamiento significativo, cancelamos el target
+      if (Math.abs(delta) > 10) {
+        touchTarget = null;
+      }
 
-      // --- Listeners Táctiles (Móvil) ---
-      scroll.addEventListener("touchstart", startDrag, { passive: false });
-      document.addEventListener("touchmove", drag, { passive: false });
-      document.addEventListener("touchend", endDrag); // Finaliza el arrastre
-      document.addEventListener("touchcancel", endDrag);
+      if (e.type === 'touchmove') {
+        e.preventDefault();
+      }
+    };
 
-      // --- Listener de Rueda (Scroll) ---
-      scroll.addEventListener("wheel", (e) => {
-          e.preventDefault();
-          scroll.scrollTop += e.deltaY;
-      }, { passive: false });
+    const endDrag = () => {
+      isDragging = false;
+      scroll.style.cursor = 'grab';
+    };
 
-      // --- Listener de Clic/Tap en Opciones (Selección) ---
-      options.forEach((opt) => {
-        
-        // 1. Ratón: Sigue usando 'click'. Solo se dispara si NO hubo arrastre.
-        opt.addEventListener("click", (e) => {
-          // Evita el click si el elemento fue parte de un arrastre táctil reciente
-          if (e.detail === 0 && e.pointerType === "touch") return; 
-          handleSelection(opt);
-        });
-        
-        // 2. Táctil: Usamos 'touchend'. Esto se dispara después de un toque (tap).
-        opt.addEventListener("touchend", (e) => {
-            e.preventDefault();
-            //Only select the element if the touch start and finish in is moment (touchTarget)
-            if (opt === touchTarget) { 
-                handleSelection(opt);
-            }
-            touchTarget = null; // We reset the target after the selection/attempt
-        });
+    // --- Lógica de Selección Unificada ---
+    const handleSelection = (opt) => {
+      // Lógica de selección:
+      options.forEach((o) => o.classList.remove("selected"));
+      opt.classList.add("selected");
+      const val = parseInt(opt.getAttribute("data-val"));
+      if (type === "hour") this.selectedHour = val;
+      else this.selectedMinute = val;
+
+      // Usar la función de actualización centralizada
+      this.update_input_form();
+    };
+
+    // --- Listeners de Ratón (Desktop) ---
+    scroll.addEventListener("mousedown", startDrag);
+    document.addEventListener("mousemove", drag);
+    document.addEventListener("mouseup", endDrag);
+
+    // --- Listeners Táctiles (Móvil) ---
+    scroll.addEventListener("touchstart", startDrag, { passive: false });
+    document.addEventListener("touchmove", drag, { passive: false });
+    document.addEventListener("touchend", endDrag); // Finaliza el arrastre
+    document.addEventListener("touchcancel", endDrag);
+
+    // --- Listener de Rueda (Scroll) ---
+    scroll.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      scroll.scrollTop += e.deltaY;
+    }, { passive: false });
+
+    // --- Listener de Clic/Tap en Opciones (Selección) ---
+    options.forEach((opt) => {
+
+      // 1. Ratón: Sigue usando 'click'. Solo se dispara si NO hubo arrastre.
+      opt.addEventListener("click", (e) => {
+        // Evita el click si el elemento fue parte de un arrastre táctil reciente
+        if (e.detail === 0 && e.pointerType === "touch") return;
+        handleSelection(opt);
       });
+
+      // 2. Táctil: Usamos 'touchend'. Esto se dispara después de un toque (tap).
+      opt.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        //Only select the element if the touch start and finish in is moment (touchTarget)
+        if (opt === touchTarget) {
+          handleSelection(opt);
+        }
+        touchTarget = null; // We reset the target after the selection/attempt
+      });
+    });
   }
 
   centerSelectedOption() {
@@ -5249,11 +5262,11 @@ class PlusTime extends HTMLElement {
       if (selectedOption) {
         // calculate for center:
         // Top position of element + (Element height / 2) - (Scroll container height / 2)
-        const centerPosition = 
-          selectedOption.offsetTop + 
-          (selectedOption.offsetHeight / 2) - 
+        const centerPosition =
+          selectedOption.offsetTop +
+          (selectedOption.offsetHeight / 2) -
           (scrollElement.clientHeight / 2);
-        
+
         // aplicate scroll 
         scrollElement.scrollTop = centerPosition;
       }
@@ -5264,13 +5277,13 @@ class PlusTime extends HTMLElement {
   }
 
   scrollCenter(scrollElement, options) {
-      const selectedOption = scrollElement.querySelector('.selected');
-      if (selectedOption) {
-          // Height of an option element (approximately)
-          const optionHeight = selectedOption.offsetHeight; 
-          // Calculate the position to center: (element position) - (half the scroll height) + (half the element height)
-          scrollElement.scrollTop = selectedOption.offsetTop - (scrollElement.clientHeight / 2) + (optionHeight / 2);
-      }
+    const selectedOption = scrollElement.querySelector('.selected');
+    if (selectedOption) {
+      // Height of an option element (approximately)
+      const optionHeight = selectedOption.offsetHeight;
+      // Calculate the position to center: (element position) - (half the scroll height) + (half the element height)
+      scrollElement.scrollTop = selectedOption.offsetTop - (scrollElement.clientHeight / 2) + (optionHeight / 2);
+    }
   }
 
   update_input_form() {
@@ -5291,17 +5304,17 @@ class PlusTime extends HTMLElement {
   }
 
   disable() {
-      if (this.display) {
-        this.display.style.pointerEvents = "none";
-        this.display.style.opacity = "0.5"; 
-      }
-      if (this.dropdown) {
-        this.dropdown.style.display = "none";
-      }
+    if (this.display) {
+      this.display.style.pointerEvents = "none";
+      this.display.style.opacity = "0.5";
+    }
+    if (this.dropdown) {
+      this.dropdown.style.display = "none";
+    }
 
-      this.selectedHour = 0;
-      this.selectedMinute = 0;
-      this.update_input_form();
+    this.selectedHour = 0;
+    this.selectedMinute = 0;
+    this.update_input_form();
   }
 
   enable(defaultTime = "07:00") {
@@ -5716,7 +5729,7 @@ class PlusTag extends HTMLElement {
     this.appendChild(this.hiddenInput);
 
     // list of all the tags
-    this.tags  = [];
+    this.tags = [];
   }
 
   connectedCallback() {
@@ -6467,7 +6480,7 @@ class ListButton extends HTMLElement {
 
     mainBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      
+
       if (menu.matches(":popover-open")) {
         menu.hidePopover();
       } else {
@@ -6525,29 +6538,29 @@ class ListButton extends HTMLElement {
 }
 
 class PlusSearchPanel extends HTMLElement {
-    constructor() {
-        super();
-    }
+  constructor() {
+    super();
+  }
 
-    connectedCallback() {
-        this.updateWidth();
-    }
+  connectedCallback() {
+    this.updateWidth();
+  }
 
-    static get observedAttributes() {
-        return ['left-width'];
-    }
+  static get observedAttributes() {
+    return ['left-width'];
+  }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (name === 'left-width' && oldValue !== newValue) {
-            this.updateWidth();
-        }
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'left-width' && oldValue !== newValue) {
+      this.updateWidth();
     }
+  }
 
-    updateWidth() {
-        // Si no se define un ancho, usará 30% por defecto
-        const leftWidth = this.getAttribute('left-width') || '30%';
-        this.style.setProperty('--plus-left-width', leftWidth);
-    }
+  updateWidth() {
+    // Si no se define un ancho, usará 30% por defecto
+    const leftWidth = this.getAttribute('left-width') || '30%';
+    this.style.setProperty('--plus-left-width', leftWidth);
+  }
 }
 
 
@@ -6570,24 +6583,24 @@ function toggle_switch_column(id, open = true) {
 }
 
 class PlusAccordion extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-        this._isOpen = this.hasAttribute('open');
-    }
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    this._isOpen = this.hasAttribute('open');
+  }
 
-    connectedCallback() {
-        const baseStatic = window.STATIC_URLS ? window.STATIC_URLS.pathStatic : '/static/';
-        const iconsPath = `${baseStatic}css/icons/uicons-regular-rounded.css`;
-        this.render(iconsPath);
-    }
+  connectedCallback() {
+    const baseStatic = window.STATIC_URLS ? window.STATIC_URLS.pathStatic : '/static/';
+    const iconsPath = `${baseStatic}css/icons/uicons-regular-rounded.css`;
+    this.render(iconsPath);
+  }
 
-    render(iconsPath) {
-        const title = this.getAttribute('label') || 'Opciones';
-        const t = this.getAttribute('t') || title;
-        const translatedTitle = window.translate_text(t);
+  render(iconsPath) {
+    const title = this.getAttribute('label') || 'Opciones';
+    const t = this.getAttribute('t') || title;
+    const translatedTitle = window.translate_text(t);
 
-        this.shadowRoot.innerHTML = `
+    this.shadowRoot.innerHTML = `
         <style>
             @import url('${iconsPath}');
 
@@ -6655,492 +6668,492 @@ class PlusAccordion extends HTMLElement {
         </div>
         `;
 
-        this.shadowRoot.getElementById('header').addEventListener('click', () => this.toggle());
-    }
+    this.shadowRoot.getElementById('header').addEventListener('click', () => this.toggle());
+  }
 
-    toggle() {
-        this._isOpen = !this._isOpen;
-        const wrapper = this.shadowRoot.querySelector('.accordion-wrapper');
-        const icon = this.shadowRoot.querySelector('.icon');
-        
-        wrapper.classList.toggle('is-open', this._isOpen);
-        icon.style.transform = this._isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
-    }
+  toggle() {
+    this._isOpen = !this._isOpen;
+    const wrapper = this.shadowRoot.querySelector('.accordion-wrapper');
+    const icon = this.shadowRoot.querySelector('.icon');
+
+    wrapper.classList.toggle('is-open', this._isOpen);
+    icon.style.transform = this._isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+  }
 }
 /**----------------------------------LABELS OF EXTENSIONS AND PLUGINS----------------------**/
 class PlusExtension extends HTMLElement {
-    connectedCallback() {
-        /**
-         * CONDITIONAL RENDERING
-         * ---------------------
-         * Checks whether the extension should be rendered or not.
-         * The condition is received as a string expression via the `if-condition` attribute.
-         * 
-         * Example:
-         * <plus-extension if-condition="user.isAdmin">
-         * 
-         * ⚠️ WARNING:
-         * Using eval() can be dangerous if the input is not controlled.
-         * This assumes the condition comes from trusted code.
-         */
-        const condition = this.getAttribute('if-condition');
-        if (condition && !eval(condition)) { 
-            this.remove(); 
-            return; 
-        }
-
-        /**
-         * TARGET RESOLUTION
-         * -----------------
-         * Determines the DOM element where the extension will be injected.
-         * Priority:
-         * 1. CSS selector via `target` attribute
-         * 2. Element ID via `extension_id`
-         */
-        const target = document.querySelector(
-            this.getAttribute('target') || `#${this.getAttribute('extension_id')}`
-        );
-
-        /**
-         * INSERTION STRATEGY
-         * ------------------
-         * Defines how the extension content will be inserted relative to the target.
-         * Defaults to 'inside' (appendChild).
-         */
-        const position = this.getAttribute('position') || 'inside';
-        
-        /**
-         * FUNCTION INTERCEPTION (PLUGIN HOOK)
-         * -----------------------------------
-         * Allows this extension to intercept a global function call.
-         * 
-         * - wrap_function: name of the global function to override
-         * - before: name of a validation function executed before the original function
-         * 
-         * This is useful for:
-         * - Permission checks
-         * - Business rules
-         * - Blocking actions dynamically
-         */
-        const functionToWrap = this.getAttribute('wrap_function');
-        const validationFnName = this.getAttribute('before');
-
-        if (functionToWrap && validationFnName) {
-            this.wrapGlobalFunction(functionToWrap, validationFnName);
-        }
-
-        /**
-         * If the target element exists, apply the extension content.
-         */
-        if (target) {
-            this.applyExtension(target, position);
-        }
+  connectedCallback() {
+    /**
+     * CONDITIONAL RENDERING
+     * ---------------------
+     * Checks whether the extension should be rendered or not.
+     * The condition is received as a string expression via the `if-condition` attribute.
+     * 
+     * Example:
+     * <plus-extension if-condition="user.isAdmin">
+     * 
+     * ⚠️ WARNING:
+     * Using eval() can be dangerous if the input is not controlled.
+     * This assumes the condition comes from trusted code.
+     */
+    const condition = this.getAttribute('if-condition');
+    if (condition && !eval(condition)) {
+      this.remove();
+      return;
     }
 
-    wrapGlobalFunction(originalName, validationName) {
-        /**
-         * FUNCTION WRAPPING LOGIC
-         * ----------------------
-         * Stores a reference to the original global function
-         * and replaces it with a guarded version.
-         * 
-         * Example:
-         * - originalName: "submitForm"
-         * - validationName: "canSubmitForm"
-         */
-        const originalFn = window[originalName];
-        
-        if (typeof originalFn === 'function') {
-            /**
-             * Replace the original function with a proxy function
-             * that runs validation before execution.
-             */
-            window[originalName] = (...args) => {
-                const validationFn = window[validationName];
-                
-                /**
-                 * If validation function exists:
-                 * - Execute it
-                 * - Only call the original function if it returns true
-                 */
-                if (typeof validationFn === 'function') {
-                    if (validationFn()) {
-                        return originalFn(...args);
-                    } else {
-                        console.warn(
-                            `Validation "${validationName}" failed. Blocking "${originalName}".`
-                        );
-                    }
-                } else {
-                    /**
-                     * Fail-safe behavior:
-                     * If the validation function does not exist,
-                     * execute the original function to avoid breaking the app.
-                     */
-                    return originalFn(...args);
-                }
-            };
-        }
+    /**
+     * TARGET RESOLUTION
+     * -----------------
+     * Determines the DOM element where the extension will be injected.
+     * Priority:
+     * 1. CSS selector via `target` attribute
+     * 2. Element ID via `extension_id`
+     */
+    const target = document.querySelector(
+      this.getAttribute('target') || `#${this.getAttribute('extension_id')}`
+    );
+
+    /**
+     * INSERTION STRATEGY
+     * ------------------
+     * Defines how the extension content will be inserted relative to the target.
+     * Defaults to 'inside' (appendChild).
+     */
+    const position = this.getAttribute('position') || 'inside';
+
+    /**
+     * FUNCTION INTERCEPTION (PLUGIN HOOK)
+     * -----------------------------------
+     * Allows this extension to intercept a global function call.
+     * 
+     * - wrap_function: name of the global function to override
+     * - before: name of a validation function executed before the original function
+     * 
+     * This is useful for:
+     * - Permission checks
+     * - Business rules
+     * - Blocking actions dynamically
+     */
+    const functionToWrap = this.getAttribute('wrap_function');
+    const validationFnName = this.getAttribute('before');
+
+    if (functionToWrap && validationFnName) {
+      this.wrapGlobalFunction(functionToWrap, validationFnName);
     }
 
-    applyExtension(target, position) {
-        /**
-         * CONTENT EXTRACTION
-         * ------------------
-         * Moves all child nodes of this custom element
-         * into a DocumentFragment for efficient DOM insertion.
-         */
-        const fragment = document.createDocumentFragment();
-        while (this.firstChild) {
-            fragment.appendChild(this.firstChild);
-        }
-
-        /**
-         * INSERTION STRATEGIES
-         * --------------------
-         * Defines how the fragment will be inserted relative to the target element.
-         */
-        const strategy = {
-            'replace': () => target.replaceWith(fragment),
-            'before': () => target.parentNode.insertBefore(fragment, target),
-            'after': () => target.parentNode.insertBefore(fragment, target.nextSibling),
-            'prepend': () => target.insertBefore(fragment, target.firstChild),
-            'inside': () => target.appendChild(fragment)
-        };
-
-        /**
-         * Execute the selected insertion strategy.
-         * Defaults to 'inside' if the position is invalid or missing.
-         */
-        (strategy[position] || strategy['inside'])();
-
-        /**
-         * POST-APPLICATION STATE
-         * ----------------------
-         * The extension element itself remains in the DOM
-         * but is hidden to avoid visual duplication.
-         * 
-         * Metadata attributes are added for debugging or auditing.
-         */
-        this.style.display = 'none'; 
-        this.setAttribute('status', 'applied');
-        this.setAttribute('applied-at', new Date().toISOString());    
+    /**
+     * If the target element exists, apply the extension content.
+     */
+    if (target) {
+      this.applyExtension(target, position);
     }
+  }
+
+  wrapGlobalFunction(originalName, validationName) {
+    /**
+     * FUNCTION WRAPPING LOGIC
+     * ----------------------
+     * Stores a reference to the original global function
+     * and replaces it with a guarded version.
+     * 
+     * Example:
+     * - originalName: "submitForm"
+     * - validationName: "canSubmitForm"
+     */
+    const originalFn = window[originalName];
+
+    if (typeof originalFn === 'function') {
+      /**
+       * Replace the original function with a proxy function
+       * that runs validation before execution.
+       */
+      window[originalName] = (...args) => {
+        const validationFn = window[validationName];
+
+        /**
+         * If validation function exists:
+         * - Execute it
+         * - Only call the original function if it returns true
+         */
+        if (typeof validationFn === 'function') {
+          if (validationFn()) {
+            return originalFn(...args);
+          } else {
+            console.warn(
+              `Validation "${validationName}" failed. Blocking "${originalName}".`
+            );
+          }
+        } else {
+          /**
+           * Fail-safe behavior:
+           * If the validation function does not exist,
+           * execute the original function to avoid breaking the app.
+           */
+          return originalFn(...args);
+        }
+      };
+    }
+  }
+
+  applyExtension(target, position) {
+    /**
+     * CONTENT EXTRACTION
+     * ------------------
+     * Moves all child nodes of this custom element
+     * into a DocumentFragment for efficient DOM insertion.
+     */
+    const fragment = document.createDocumentFragment();
+    while (this.firstChild) {
+      fragment.appendChild(this.firstChild);
+    }
+
+    /**
+     * INSERTION STRATEGIES
+     * --------------------
+     * Defines how the fragment will be inserted relative to the target element.
+     */
+    const strategy = {
+      'replace': () => target.replaceWith(fragment),
+      'before': () => target.parentNode.insertBefore(fragment, target),
+      'after': () => target.parentNode.insertBefore(fragment, target.nextSibling),
+      'prepend': () => target.insertBefore(fragment, target.firstChild),
+      'inside': () => target.appendChild(fragment)
+    };
+
+    /**
+     * Execute the selected insertion strategy.
+     * Defaults to 'inside' if the position is invalid or missing.
+     */
+    (strategy[position] || strategy['inside'])();
+
+    /**
+     * POST-APPLICATION STATE
+     * ----------------------
+     * The extension element itself remains in the DOM
+     * but is hidden to avoid visual duplication.
+     * 
+     * Metadata attributes are added for debugging or auditing.
+     */
+    this.style.display = 'none';
+    this.setAttribute('status', 'applied');
+    this.setAttribute('applied-at', new Date().toISOString());
+  }
 }
 
 class PlusMove extends HTMLElement {
-    connectedCallback() {
-        /**
-         * SOURCE ELEMENT
-         * --------------
-         * CSS selector that identifies the element to be moved.
-         * Example:
-         * <plus-move source="#saveButton" target="#toolbar" />
-         */
-        const sourceSelector = this.getAttribute('source');
+  connectedCallback() {
+    /**
+     * SOURCE ELEMENT
+     * --------------
+     * CSS selector that identifies the element to be moved.
+     * Example:
+     * <plus-move source="#saveButton" target="#toolbar" />
+     */
+    const sourceSelector = this.getAttribute('source');
 
-        /**
-         * TARGET ELEMENT
-         * --------------
-         * CSS selector that identifies the destination element.
-         * The source element will be moved relative to this element.
-         */
-        const targetSelector = this.getAttribute('target');
+    /**
+     * TARGET ELEMENT
+     * --------------
+     * CSS selector that identifies the destination element.
+     * The source element will be moved relative to this element.
+     */
+    const targetSelector = this.getAttribute('target');
 
-        /**
-         * INSERTION POSITION
-         * ------------------
-         * Defines how the source element will be inserted relative to the target.
-         * Possible values:
-         * - before   → before the target element
-         * - after    → after the target element
-         * - prepend  → as the first child of the target
-         * - inside   → as the last child of the target (default)
-         */
-        const position = this.getAttribute('position') || 'inside';
+    /**
+     * INSERTION POSITION
+     * ------------------
+     * Defines how the source element will be inserted relative to the target.
+     * Possible values:
+     * - before   → before the target element
+     * - after    → after the target element
+     * - prepend  → as the first child of the target
+     * - inside   → as the last child of the target (default)
+     */
+    const position = this.getAttribute('position') || 'inside';
 
-        const sourceEl = document.querySelector(sourceSelector);
-        const targetEl = document.querySelector(targetSelector);
+    const sourceEl = document.querySelector(sourceSelector);
+    const targetEl = document.querySelector(targetSelector);
 
-        /**
-         * VALIDATION
-         * ----------
-         * Ensures both source and target elements exist before attempting the move.
-         */
-        if (sourceEl && targetEl) {
-            this.moveElement(sourceEl, targetEl, position);
-        } else {
-            console.warn(
-                `PlusMove: Source (${sourceSelector}) or target (${targetSelector}) element not found.`
-            );
-        }
-
-        /**
-         * OPTIONAL MUTATIONS
-         * ------------------
-         * Allows the extension to modify the moved element
-         * after relocation.
-         */
-
-        // Replace the element's entire class list
-        if (this.getAttribute('set_class')) {
-            sourceEl.className = this.getAttribute('set_class');
-        }
-
-        // Replace the element's text content
-        if (this.getAttribute('set_text')) {
-            sourceEl.innerText = this.getAttribute('set_text');
-        }
-
-        /**
-         * SELF-DESTRUCTION
-         * ----------------
-         * The <plus-move> element removes itself after execution
-         * to keep the DOM clean and avoid unnecessary nodes.
-         */
-        this.remove();
+    /**
+     * VALIDATION
+     * ----------
+     * Ensures both source and target elements exist before attempting the move.
+     */
+    if (sourceEl && targetEl) {
+      this.moveElement(sourceEl, targetEl, position);
+    } else {
+      console.warn(
+        `PlusMove: Source (${sourceSelector}) or target (${targetSelector}) element not found.`
+      );
     }
 
-    moveElement(source, target, position) {
-        /**
-         * MOVE STRATEGIES
-         * ---------------
-         * Handles different DOM insertion behaviors based on position.
-         */
-        switch (position) {
-            case 'before':
-                target.parentNode.insertBefore(source, target);
-                break;
+    /**
+     * OPTIONAL MUTATIONS
+     * ------------------
+     * Allows the extension to modify the moved element
+     * after relocation.
+     */
 
-            case 'after':
-                target.parentNode.insertBefore(source, target.nextSibling);
-                break;
-
-            case 'prepend':
-                target.insertBefore(source, target.firstChild);
-                break;
-
-            case 'inside':
-            default:
-                target.appendChild(source);
-                break;
-        }
+    // Replace the element's entire class list
+    if (this.getAttribute('set_class')) {
+      sourceEl.className = this.getAttribute('set_class');
     }
+
+    // Replace the element's text content
+    if (this.getAttribute('set_text')) {
+      sourceEl.innerText = this.getAttribute('set_text');
+    }
+
+    /**
+     * SELF-DESTRUCTION
+     * ----------------
+     * The <plus-move> element removes itself after execution
+     * to keep the DOM clean and avoid unnecessary nodes.
+     */
+    this.remove();
+  }
+
+  moveElement(source, target, position) {
+    /**
+     * MOVE STRATEGIES
+     * ---------------
+     * Handles different DOM insertion behaviors based on position.
+     */
+    switch (position) {
+      case 'before':
+        target.parentNode.insertBefore(source, target);
+        break;
+
+      case 'after':
+        target.parentNode.insertBefore(source, target.nextSibling);
+        break;
+
+      case 'prepend':
+        target.insertBefore(source, target.firstChild);
+        break;
+
+      case 'inside':
+      default:
+        target.appendChild(source);
+        break;
+    }
+  }
 }
 
 class PlusPatch extends HTMLElement {
-    connectedCallback() {
-        /**
-         * TARGET & PATCH DEFINITION
-         * -------------------------
-         * - target: CSS selector of the element to be patched
-         * - set-attribute: list of attribute mutations to apply
-         *
-         * Example:
-         * <plus-patch
-         *   target="#email"
-         *   set-attribute="required:true; placeholder:Enter your email; class:is-required"
-         * />
-         */
-        const selector = this.getAttribute('target');
-        const attrString = this.getAttribute('set-attribute');
+  connectedCallback() {
+    /**
+     * TARGET & PATCH DEFINITION
+     * -------------------------
+     * - target: CSS selector of the element to be patched
+     * - set-attribute: list of attribute mutations to apply
+     *
+     * Example:
+     * <plus-patch
+     *   target="#email"
+     *   set-attribute="required:true; placeholder:Enter your email; class:is-required"
+     * />
+     */
+    const selector = this.getAttribute('target');
+    const attrString = this.getAttribute('set-attribute');
 
-        /**
-         * If no target or patch definition is provided,
-         * there is nothing to apply.
-         */
-        if (!selector || !attrString) return;
+    /**
+     * If no target or patch definition is provided,
+     * there is nothing to apply.
+     */
+    if (!selector || !attrString) return;
 
-        const targetEl = document.querySelector(selector);
+    const targetEl = document.querySelector(selector);
 
-        if (targetEl) {
-            this.applyPatch(targetEl, attrString);
-        } else {
-            /**
-             * RENDER DELAY RETRY
-             * ------------------
-             * Some elements may not yet exist in the DOM
-             * (e.g. dynamically rendered views or async components).
-             *
-             * A short retry window is used to apply the patch
-             * once the element becomes available.
-             */
-            setTimeout(() => {
-                const retryTarget = document.querySelector(selector);
-                if (retryTarget) {
-                    this.applyPatch(retryTarget, attrString);
-                }
-            }, 50);
+    if (targetEl) {
+      this.applyPatch(targetEl, attrString);
+    } else {
+      /**
+       * RENDER DELAY RETRY
+       * ------------------
+       * Some elements may not yet exist in the DOM
+       * (e.g. dynamically rendered views or async components).
+       *
+       * A short retry window is used to apply the patch
+       * once the element becomes available.
+       */
+      setTimeout(() => {
+        const retryTarget = document.querySelector(selector);
+        if (retryTarget) {
+          this.applyPatch(retryTarget, attrString);
         }
-
-        /**
-         * SELF-CLEANUP
-         * ------------
-         * The <plus-patch> element removes itself after execution
-         * to avoid polluting the DOM with control-only nodes.
-         */
-        this.remove();
+      }, 50);
     }
 
-    applyPatch(element, attrString) {
-        /**
-         * ATTRIBUTE PATCH PARSING
-         * -----------------------
-         * The attribute string is split into attribute:value pairs.
-         *
-         * Format:
-         * "required:true; class:btn primary; placeholder:Your name"
-         */
-        const pairs = attrString.split(';');
+    /**
+     * SELF-CLEANUP
+     * ------------
+     * The <plus-patch> element removes itself after execution
+     * to avoid polluting the DOM with control-only nodes.
+     */
+    this.remove();
+  }
 
-        pairs.forEach(pair => {
-            if (!pair.trim()) return;
+  applyPatch(element, attrString) {
+    /**
+     * ATTRIBUTE PATCH PARSING
+     * -----------------------
+     * The attribute string is split into attribute:value pairs.
+     *
+     * Format:
+     * "required:true; class:btn primary; placeholder:Your name"
+     */
+    const pairs = attrString.split(';');
 
-            /**
-             * Split only on the first ":" to allow values
-             * that may contain colons themselves.
-             */
-            const [attrName, ...valueParts] = pair.split(':');
-            const name = attrName.trim();
-            const value = valueParts.join(':').trim();
+    pairs.forEach(pair => {
+      if (!pair.trim()) return;
 
-            /**
-             * CLASS HANDLING
-             * --------------
-             * Classes are additive and do not override
-             * existing class names.
-             */
-            if (name === 'class') {
-                element.classList.add(...value.split(' '));
-            }
-            /**
-             * BOOLEAN ATTRIBUTES
-             * ------------------
-             * Handles attributes like:
-             * - required
-             * - disabled
-             * - checked
-             */
-            else if (value === 'true' || value === '') {
-                element.setAttribute(name, '');
-            }
-            /**
-             * BOOLEAN REMOVAL
-             * ----------------
-             * Explicitly removes the attribute when set to false.
-             */
-            else if (value === 'false') {
-                element.removeAttribute(name);
-            }
-            /**
-             * STANDARD ATTRIBUTES
-             * -------------------
-             * Applies normal attributes such as:
-             * - placeholder
-             * - name
-             * - value
-             * - aria-*
-             */
-            else {
-                element.setAttribute(name, value);
-            }
-        });
-    }
+      /**
+       * Split only on the first ":" to allow values
+       * that may contain colons themselves.
+       */
+      const [attrName, ...valueParts] = pair.split(':');
+      const name = attrName.trim();
+      const value = valueParts.join(':').trim();
+
+      /**
+       * CLASS HANDLING
+       * --------------
+       * Classes are additive and do not override
+       * existing class names.
+       */
+      if (name === 'class') {
+        element.classList.add(...value.split(' '));
+      }
+      /**
+       * BOOLEAN ATTRIBUTES
+       * ------------------
+       * Handles attributes like:
+       * - required
+       * - disabled
+       * - checked
+       */
+      else if (value === 'true' || value === '') {
+        element.setAttribute(name, '');
+      }
+      /**
+       * BOOLEAN REMOVAL
+       * ----------------
+       * Explicitly removes the attribute when set to false.
+       */
+      else if (value === 'false') {
+        element.removeAttribute(name);
+      }
+      /**
+       * STANDARD ATTRIBUTES
+       * -------------------
+       * Applies normal attributes such as:
+       * - placeholder
+       * - name
+       * - value
+       * - aria-*
+       */
+      else {
+        element.setAttribute(name, value);
+      }
+    });
+  }
 }
 
 const ExtensionEngine = {
-    init() {
-        /**
-         * MUTATION OBSERVER
-         * -----------------
-         * Watches the DOM for newly added nodes in order to detect
-         * extensions that are injected dynamically.
-         *
-         * This is essential for:
-         * - AJAX-loaded content
-         * - Modals
-         * - Lazy-rendered views
-         * - SPA-like navigation
-         */
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach(mutation => {
-                mutation.addedNodes.forEach(node => {
-                    /**
-                     * Only process element nodes whose tag name
-                     * starts with "PLUS-" (custom extension elements).
-                     */
-                    if (node.nodeType === 1 && node.tagName.startsWith('PLUS-')) {
-                        this.processExtension(node);
-                    }
-                });
-            });
+  init() {
+    /**
+     * MUTATION OBSERVER
+     * -----------------
+     * Watches the DOM for newly added nodes in order to detect
+     * extensions that are injected dynamically.
+     *
+     * This is essential for:
+     * - AJAX-loaded content
+     * - Modals
+     * - Lazy-rendered views
+     * - SPA-like navigation
+     */
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+          /**
+           * Only process element nodes whose tag name
+           * starts with "PLUS-" (custom extension elements).
+           */
+          if (node.nodeType === 1 && node.tagName.startsWith('PLUS-')) {
+            this.processExtension(node);
+          }
         });
+      });
+    });
 
-        /**
-         * Start observing the entire document body
-         * for child additions at any depth.
-         */
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-        
-        /**
-         * INITIAL PASS
-         * ------------
-         * Process extensions that already exist in the DOM
-         * at initialization time.
-         */
-        this.processAll();
-    },
+    /**
+     * Start observing the entire document body
+     * for child additions at any depth.
+     */
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
 
-    processAll() {
-        /**
-         * EXTENSION COLLECTION
-         * --------------------
-         * Collects all known extension types supported
-         * by the engine.
-         */
-        const extensions = Array.from(
-            document.querySelectorAll('plus-extension, plus-move, plus-patch')
-        );
+    /**
+     * INITIAL PASS
+     * ------------
+     * Process extensions that already exist in the DOM
+     * at initialization time.
+     */
+    this.processAll();
+  },
 
-        /**
-         * PRIORITY SORTING
-         * ----------------
-         * Extensions can define an optional `priority` attribute.
-         * Lower values are executed first.
-         *
-         * This allows deterministic execution order
-         * when multiple extensions affect the same area.
-         */
-        extensions.sort(
-            (a, b) =>
-                (a.getAttribute('priority') || 0) -
-                (b.getAttribute('priority') || 0)
-        );
+  processAll() {
+    /**
+     * EXTENSION COLLECTION
+     * --------------------
+     * Collects all known extension types supported
+     * by the engine.
+     */
+    const extensions = Array.from(
+      document.querySelectorAll('plus-extension, plus-move, plus-patch')
+    );
 
-        /**
-         * Execute each extension in order.
-         */
-        extensions.forEach(ext => this.processExtension(ext));
-    },
+    /**
+     * PRIORITY SORTING
+     * ----------------
+     * Extensions can define an optional `priority` attribute.
+     * Lower values are executed first.
+     *
+     * This allows deterministic execution order
+     * when multiple extensions affect the same area.
+     */
+    extensions.sort(
+      (a, b) =>
+        (a.getAttribute('priority') || 0) -
+        (b.getAttribute('priority') || 0)
+    );
 
-    processExtension(ext) {
-        /**
-         * EXTENSION EXECUTION
-         * -------------------
-         * Manually triggers the extension logic.
-         *
-         * This design allows:
-         * - Explicit lifecycle control
-         * - Compatibility with dynamically injected elements
-         * - Decoupling from native Custom Element lifecycle
-         */
-        if (typeof ext.execute === 'function') {
-            ext.execute();
-        }
+    /**
+     * Execute each extension in order.
+     */
+    extensions.forEach(ext => this.processExtension(ext));
+  },
+
+  processExtension(ext) {
+    /**
+     * EXTENSION EXECUTION
+     * -------------------
+     * Manually triggers the extension logic.
+     *
+     * This design allows:
+     * - Explicit lifecycle control
+     * - Compatibility with dynamically injected elements
+     * - Decoupling from native Custom Element lifecycle
+     */
+    if (typeof ext.execute === 'function') {
+      ext.execute();
     }
+  }
 };
 /**----------------------------------TABS----------------------**/
 function open_tab(evt, tabName) {
@@ -7223,8 +7236,8 @@ function show_alert(type, title, description, readmoreText = '') {
   //now we will see if the title is a text or have a structur of translate
   //if have a struct now we will to get his information and his text
   //-> show_alert('success', ['Hello ${name}, you have ${count} messages', { name: 'Edward', count: 3 }], ['Hello ${}, you have ${} messages', ['Edward', 3 ]])
-  let titleStruct=get_text_and_keys(title);
-  let descriptionStruct=get_text_and_keys(description)
+  let titleStruct = get_text_and_keys(title);
+  let descriptionStruct = get_text_and_keys(description)
 
   //update the text that show the alert pop
   titleEl.textContent = window.translate_text(titleStruct.text, titleStruct.keys);
@@ -7291,7 +7304,7 @@ function show_notification(type = 'info', message = '', duration = 4000) {
 
   //now we will see if the title is a text or have a structur of translate
   //if have a struct now we will to get his information and his text
-  let messageStruct=get_text_and_keys(message);
+  let messageStruct = get_text_and_keys(message);
 
   const alert = document.createElement('div');
   alert.style.zIndex = currentPopZIndex + 1;
@@ -7329,29 +7342,29 @@ function toggleReadMore() {
 
 function on_visible(elementId, callback, runOnce = true) {
   //get the element that the user would like see if exist in the screen
-    const element = document.getElementById(elementId);
-    if (!element) {
-      console.warn(`Element with id "${elementId}" not exist in the screen.`);
-      return;
-    }
+  const element = document.getElementById(elementId);
+  if (!element) {
+    console.warn(`Element with id "${elementId}" not exist in the screen.`);
+    return;
+  }
 
 
-    //here we will to prepare the observer for that we know when the element show in the screen
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                //run the function
-                callback();
+  //here we will to prepare the observer for that we know when the element show in the screen
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        //run the function
+        callback();
 
-                // only if need run one time
-                if (runOnce) {
-                    observer.disconnect();
-                }
-            }
-        });
+        // only if need run one time
+        if (runOnce) {
+          observer.disconnect();
+        }
+      }
     });
+  });
 
-    observer.observe(element);
+  observer.observe(element);
 }
 
 
@@ -7685,8 +7698,8 @@ function attach_click(triggerSelector, callback) {
 function load_script(src, isModule = false) {
   return new Promise((resolve, reject) => {
     const selector = isModule
-        ? `script[type="module"][src="${src}"]`
-        : `script[src="${src}"]`;
+      ? `script[type="module"][src="${src}"]`
+      : `script[src="${src}"]`;
 
     //we will check if the script already exist in the document
     if (document.querySelector(selector)) {
@@ -7699,7 +7712,7 @@ function load_script(src, isModule = false) {
     const script = document.createElement('script');
     script.src = src;
     if (isModule) {
-        script.type = "module";
+      script.type = "module";
     }
     script.async = false;
     script.onload = () => resolve();
@@ -7717,7 +7730,7 @@ function transform_my_labels_erp() {
   if (!customElements.get("info-label")) {
     customElements.define("info-label", InfoLabel);
   }
-  
+
   if (!customElements.get("message-pop")) {
     customElements.define("message-pop", MessagePop);
   }
@@ -7842,45 +7855,46 @@ function transform_my_labels_erp() {
     customElements.define('plus-multiselect', PlusMultiSelect);
   }
 
-  if(!customElements.get("list-button")){
+  if (!customElements.get("list-button")) {
     customElements.define('list-button', ListButton);
   }
 
-  if(!customElements.get("plus-panel")){
+  if (!customElements.get("plus-panel")) {
     customElements.define('plus-panel', PlusPanel);
   }
 
-  if(!customElements.get("plus-quantity")){
+  if (!customElements.get("plus-quantity")) {
     customElements.define('plus-quantity', PlusQuantity);
   }
 
   /*EXTENSIONS AND PLUGINS*/
-  if(!customElements.get("plus-extension")){
+  if (!customElements.get("plus-extension")) {
     customElements.define('plus-extension', PlusExtension);
   }
 
-  if(!customElements.get("plus-move")){
+  if (!customElements.get("plus-move")) {
     customElements.define('plus-move', PlusMove);
   }
 
-  if(!customElements.get("plus-patch")){
+  if (!customElements.get("plus-patch")) {
     customElements.define('plus-patch', PlusPatch);
   }
 
-  if(!customElements.get("plus-accordion")){
+  if (!customElements.get("plus-accordion")) {
     customElements.define('plus-accordion', PlusAccordion);
   }
 
-  if(!customElements.get("plus-navbar")){
+  if (!customElements.get("plus-navbar")) {
     customElements.define('plus-navbar', PlusNavbar);
   }
-  
-  if(!customElements.get("plus-help-video")){
+
+  if (!customElements.get("plus-help-video")) {
     customElements.define("plus-help-video", PlusHelpVideo);
   }
 
-  if(!customElements.get("plus-search-panel")){
-    customElements.define("plus-search-panel", PlusSearchPanel);
+
+  if (!customElements.get("plus-search-panel")) {
+    customElements.define('plus-search-panel', PlusSearchPanel);
   }
 }
 

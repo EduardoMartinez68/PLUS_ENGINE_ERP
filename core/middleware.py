@@ -1,9 +1,16 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.contrib.sessions.models import Session
 from core.models import UserSession
+
+TYPE_VERSION = os.getenv('TYPE_VERSION', 'DESKTOP')
+debug=(TYPE_VERSION == 'DESKTOP')
 
 class SubscriptionCheckMiddleware:
     def __init__(self, get_response):
@@ -19,6 +26,12 @@ class SubscriptionCheckMiddleware:
             ]
 
             if request.path not in exempt_urls:
+                #here we will see if the ERP is in desktop mode 
+                if debug:
+                    response = self.get_response(request)
+                    return response
+
+
                 # 3. Obtenemos la suscripción usando el related_name que definiste
                 subscription = getattr(request.user, 'subscription', None)
 

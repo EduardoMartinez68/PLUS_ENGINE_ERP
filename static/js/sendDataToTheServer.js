@@ -215,6 +215,165 @@ function reset_form(formId) {
   restart_form(formId);
 }
 
+/**
+ * Llena cualquier formulario utilizando los nombres de los campos.
+ *
+ * Requisitos:
+ * - Los campos deben tener atributo name.
+ * - Soporta:
+ *      input
+ *      textarea
+ *      select
+ *      plus-select
+ *      plus-switch
+ *
+ * Además soporta objetos anidados usando:
+ * name="employee.id"
+ * name="customer.address.city"
+ */
+function load_data_in_form(formId, data) {
+
+  const form = document.getElementById(formId);
+
+  if (!form) {
+    console.error(`Formulario "${formId}" no encontrado.`);
+    return;
+  }
+
+  // Todos los elementos que tengan atributo name
+  const fields = form.querySelectorAll("[name]");
+
+  fields.forEach(field => {
+
+    const path = field.getAttribute("name");
+
+    const value = getNestedValue(data, path);
+
+    // Si el valor no existe no hacemos nada
+    if (value === undefined) return;
+
+    const tag = field.tagName.toLowerCase();
+
+    switch (tag) {
+
+      //------------------------------------
+      // INPUT
+      //------------------------------------
+      case "input":
+
+        if (field.type === "checkbox") {
+
+          field.checked = Boolean(value);
+
+        } else {
+
+          field.value = value ?? "";
+          field.setAttribute("value", value ?? "");
+
+        }
+
+        break;
+
+      //------------------------------------
+      // TEXTAREA
+      //------------------------------------
+      case "textarea":
+
+        field.value = value ?? "";
+
+        break;
+
+      //------------------------------------
+      // SELECT HTML
+      //------------------------------------
+      case "select":
+
+        field.value = value ?? "";
+
+        break;
+
+      //------------------------------------
+      // PLUS-SELECT
+      //------------------------------------
+      case "plus-select":
+
+        if (typeof field.setValue === "function") {
+
+          // Si el valor es un objeto
+          if (
+            value &&
+            typeof value === "object" &&
+            value.id !== undefined
+          ) {
+
+            field.setValue(
+              value.id,
+              value.text ||
+              value.name ||
+              value.label ||
+              value.email ||
+              value.id
+            );
+
+          } else {
+
+            field.setValue(value);
+
+          }
+
+        } else {
+
+          field.value = value;
+          field.setAttribute("value", value);
+
+        }
+
+        break;
+
+      //------------------------------------
+      // PLUS-SWITCH
+      //------------------------------------
+      case "plus-switch":
+
+        const checked = Boolean(value);
+
+        if (typeof field.setChecked === "function") {
+
+          field.setChecked(checked);
+
+        } else {
+
+          field.checked = checked;
+
+          if (checked)
+            field.setAttribute("checked", "");
+          else
+            field.removeAttribute("checked");
+
+        }
+
+        break;
+
+    }
+
+  });
+
+}
+
+
+/**
+ * Obtiene propiedades anidadas.
+ *
+ * getNestedValue(data,"employee.id")
+ */
+function getNestedValue(obj, path) {
+
+  return path
+    .split(".")
+    .reduce((acc, key) => acc?.[key], obj);
+
+}
+
 function valid_all_the_inputs_of_the_form(form) {
   const inputs = form.querySelectorAll('input'); //get all the inputs of the form
   let isValid = true;
