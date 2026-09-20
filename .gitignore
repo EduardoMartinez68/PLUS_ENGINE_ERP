@@ -19,6 +19,8 @@ apps/move_box/migrations/*
 apps/pos/migrations/*
 apps/reports/migrations/*
 apps/rolesAndPermissions/migrations/*
+apps/services/migrations/*
+apps/setting/migrations/*
 apps/sales/migrations/*
 apps/sales/services/*
 apps/sales/setting/*

@@ -22,6 +22,9 @@ from apps.setting.models import NotificationSetting
 from core.models import Company, Branch
 from django.db.models import Sum
 
+from core.plus.decorators import require_permission
+from core.plus.services import ServiceRegistry
+
 class Sales:
     @classmethod
     def calculate_all_the_move_money(cls):
@@ -282,7 +285,7 @@ class Sales:
 
                     if sku: #if exist a sku in the product/service we will to see the information and save 
                         pack = Pack.objects.filter(
-                            skus=sku,
+                            skus__contains=[sku],
                             company=user.company
                         ).first()
                         # if the product not exist, this is a product flash
@@ -1274,53 +1277,126 @@ class Sales:
     @classmethod
     def get_information_of_link_of_pay(cls, key_link):
         try:
-            # Utilizamos select_related para llaves foráneas y prefetch_related para los items (reversa)
             link = LinkPayOnline.objects.select_related(
-                'sale', 
-                'sale__customer', 
+                'sale',
+                'sale__customer',
                 'sale__branch',
                 'sale__company'
             ).prefetch_related(
-                'sale__items'
-            ).get(key_link=key_link, activate=True)
-            
+                'sale__items',
+                'sale__payments'
+            ).get(
+                key_link=key_link,
+                activate=True
+            )
+
             sale = link.sale
+            branch=sale.branch
 
             if not sale:
-                return {"success": False, "error": "Sale not found", "answer": {}}
-            
-            #get the information of buy 
-            data_bank={
-                "bank_account":sale.company.bank_account if sale.company.bank_account else '',
-                "bank_name":sale.company.bank_name if sale.company.bank_name else ''
-            }
-  
+                return {
+                    "success": False,
+                    "error": "Sale not found",
+                    "answer": {}
+                }
 
-            # Estructuramos una respuesta rica en datos
+            # ---------------------------------
+            # Bank information
+            # ---------------------------------
+            data_bank = {
+                "bank_account": sale.company.bank_account
+                    if sale.company.bank_account else '',
+                "bank_name": sale.company.bank_name
+                    if sale.company.bank_name else ''
+            }
+
+            # ---------------------------------
+            # Payment history
+            # ---------------------------------
+            payment_history = [
+                {
+                    "id": payment.id,
+                    "date": Plus.format_date_to_text(Plus.convert_from_utc(payment.date, branch.timezone), branch.default_language, 1),
+                    "cash_received": float(payment.cash_received),
+                    "change_given": float(payment.change_given),
+
+                    "old_amount_paid": float(payment.old_amount_paid),
+                    "old_balance": float(payment.old_balance),
+
+                    "new_amount_paid": float(payment.new_amount_paid),
+                    "new_balance": float(payment.new_balance),
+
+                    "fiscal_uuid": payment.fiscal_uuid,
+                    "fiscal_status": payment.fiscal_status,
+                }
+                for payment in sale.payments.all()
+            ]
+
+            # ---------------------------------
+            # Sale information
+            # ---------------------------------
             sale_data = {
                 "id": sale.id,
                 "reference": sale.reference,
+
                 "total": float(sale.total),
                 "subtotal": float(sale.subtotal),
                 "tax_total": float(sale.tax_total),
                 "discount_total": float(sale.discount_total),
+
                 "amount_paid": float(sale.amount_paid),
-                "balance": float(sale.balance), # Lo que falta por pagar
+                "balance": float(sale.balance),
+
                 "currency": sale.currency,
                 "status": sale.status,
-                "logo_url": sale.company.logo.url if sale.company and sale.company.logo else None,
-                "customer_name": sale.customer.name if sale.customer else "Cliente General",
-                "branch_name": sale.branch.name_branch if sale.branch else "",
-                "data_bank":data_bank,
-                # Mapeamos los items de la venta
+
+                "logo_url": (
+                    sale.company.logo.url
+                    if sale.company and sale.company.logo
+                    else None
+                ),
+
+                "customer_name": (
+                    sale.customer.name
+                    if sale.customer
+                    else "Cliente General"
+                ),
+
+                "branch_name": (
+                    sale.branch.name_branch
+                    if sale.branch
+                    else ""
+                ),
+                "branch_cellphone": (
+                    sale.branch.cellphone
+                    if sale.branch
+                    else ""
+                ),
+                "branch_phone": (
+                    sale.branch.phone
+                    if sale.branch
+                    else ""
+                ),
+
+                "data_bank": data_bank,
+
+                # ---------------------------------
+                # Sale items
+                # ---------------------------------
                 "items": [
                     {
                         "name": item.name,
                         "quantity": float(item.quantity),
                         "unit_price": float(item.unit_price),
                         "total": float(item.total)
-                    } for item in sale.items.all()
-                ]
+                    }
+                    for item in sale.items.all()
+                ],
+
+                # ---------------------------------
+                # Payment history
+                # ---------------------------------
+                "payment_history": payment_history
             }
 
             return {
@@ -1329,6 +1405,99 @@ class Sales:
             }
 
         except LinkPayOnline.DoesNotExist:
-            return {"success": False, "error": "Link no encontrado o inactivo", "answer": {}}
+            return {
+                "success": False,
+                "error": "Link no encontrado o inactivo",
+                "answer": {}
+            }
+
         except Exception as e:
-            return {"success": False, "error": str(e), "answer": {}}
+            return {
+                "success": False,
+                "error": str(e),
+                "answer": {}
+            }
+
+
+    @staticmethod
+    @require_permission("view_sales")
+    @ServiceRegistry.register(
+        "sales.SalesService.get_information_for_send_for_whatsapp"
+    )
+    def get_information_for_send_for_whatsapp(user, sale_id):
+
+        try:
+            # ---------------------------------
+            # Get sale
+            # ---------------------------------
+            sale = Sale.objects.select_related(
+                "customer"
+            ).get(id=sale_id)
+
+        except Sale.DoesNotExist:
+            return {
+                "success": False,
+                "answer": "Sale not found"
+            }
+
+        # ---------------------------------
+        # Check customer
+        # ---------------------------------
+        if not sale.customer:
+            return {
+                "success": True,
+                "answer": {
+                    "sale_id": sale.id,
+                    "reference": sale.reference,
+                    "customer": None,
+                    "link": None,
+                }
+            }
+
+        # ---------------------------------
+        # Check phone
+        # ---------------------------------
+        customer = sale.customer
+        cellphone = customer.cellphone
+
+        # ---------------------------------
+        # Get payment link
+        # ---------------------------------
+        payment_link, created = LinkPayOnline.objects.get_or_create(
+            sale=sale
+        )
+
+
+
+        # ---------------------------------
+        # Check payment link
+        # ---------------------------------
+        if payment_link.activate:
+            payment_link = (
+                f"https://app.denty.cloud/sales/pay_sale/"
+                f"{payment_link.key_link}/"
+            )
+        else:
+            payment_link = None
+    
+        # ---------------------------------
+        # Response
+        # ---------------------------------
+        sale_data = {
+            "sale_id": sale.id,
+            "reference": sale.reference,
+
+            "customer": {
+                "id": customer.id,
+                "name": customer.name,
+                "cellphone": cellphone,
+            },
+            "payment_link": payment_link,
+        }
+
+        return {
+            "success": True,
+            "answer": sale_data
+        }
+
+        

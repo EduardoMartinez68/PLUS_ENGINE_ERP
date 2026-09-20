@@ -8,7 +8,7 @@ iconF: "fi fi-rs-rocket-lunch"
 
 path: "/pos"
 dbInit: true
-public: false
+public: true
 permissionsFile: 'permissions.json'
 dependencies:
   - "services"
