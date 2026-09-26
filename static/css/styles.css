@@ -21,7 +21,7 @@
   --btn-cancel-text: #ffffff;
 
   /* Card / container structure */
-  --container-max-width: 1200px;
+  --container-max-width: 1800px;
   --gap: 16px;
   --radius: 10px;
   --card-bg: #ffffff;
@@ -367,6 +367,37 @@ label {
   display: block;
 }
 
+button {
+  /* Fondo azul muy claro/débil */
+  background-color: #f0f4f8; 
+  border: none;
+  border-radius: 8px;
+
+  /* Texto gris oscuro */
+  color: #4a5568; 
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+
+  /* Tamaño ajustado al contenido del texto */
+  width: fit-content;
+  padding: 8px 16px;
+
+  /* Alineación e interacción */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+/* Efecto suave al pasar el ratón */
+button:hover {
+  background-color: #e2e8f0;
+  cursor: pointer;
+}
+
 
 .icon-active {
   color: var(--primary);
@@ -382,18 +413,34 @@ label {
 }
 
 .tab-buttons button {
+  /* Anulamos el fondo y sombra del botón global */
+  background: transparent;
+  box-shadow: none;
+
+  /* Restablecemos padding y bordes para las pestañas */
   padding: 12px 20px;
-  background: none;
   border: none;
   border-bottom: 3px solid transparent;
+  border-radius: 0; /* Por si el global te aplicó esquinas redondeadas */
+  
   cursor: pointer;
   font-weight: 600;
   color: #344054;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Evitamos que el hover global les ponga fondo azul/gris */
+.tab-buttons button:hover {
+  background: transparent;
+  box-shadow: none;
+  color: #2a395b;
 }
 
 .tab-buttons button.active {
   border-color: #2a395b;
   color: #2a395b;
+  background: transparent;
+  box-shadow: none;
 }
 
 .tab-content {
@@ -1202,6 +1249,22 @@ hr {
 }
 
 .btn-delete-tr:hover {
+  background-color: var(--btn-cancel-bg);
+  color: white;
+}
+
+.btn-delete-secondary {
+  background-color: transparent;
+  border: 2px solid var(--btn-cancel-bg);
+  color: var(--btn-cancel-bg);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-secondary:hover {
   background-color: var(--btn-cancel-bg);
   color: white;
 }
@@ -3557,7 +3620,6 @@ summary:hover {
     width: 100%;
   }
 }
-
 
 
 /* Layout Principal del Panel */
