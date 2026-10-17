@@ -22,8 +22,6 @@ apps/rolesAndPermissions/migrations/*
 apps/services/migrations/*
 apps/setting/migrations/*
 apps/sales/migrations/*
-apps/sales/services/*
-apps/sales/setting/*
 core/migrations/*
 
 # EXCEPT the file __init__.py
@@ -40,8 +38,7 @@ core/migrations/*
 !apps/reports/migrations/__init__.py
 !apps/rolesAndPermissions/migrations/__init__.py
 !apps/sales/migrations/__init__.py
-!apps/sales/services/__init__.py
-!apps/sales/setting/__init__.py
+!apps/services/migrations/__init__.py
 
 
 # Python
