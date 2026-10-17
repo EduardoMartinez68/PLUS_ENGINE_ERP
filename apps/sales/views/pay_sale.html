@@ -1,422 +1,1496 @@
 <!DOCTYPE html>
 <html lang="es">
 {% load static %}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resumen de Cuenta | {{ sale.reference }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Fuentes e Iconos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="{% static 'img/favicon.ico' %}?v=1.1" type="image/x-icon">
+
     <style>
         :root {
-            /* Palette: Tu Identidad Corporativa */
-            --primary-light: #4388C6;
             --primary: #2b6cb0;
-            --secondary: #1C74C2;
-            --primary-dark: #064985;
-            
-            --accent: #10b981;
-            --bg-body: #f4f7fa;
+            /* Azul clínico profundo */
+            --primary-light: #3b82f6;
+            /* Azul dinámico */
+            --teal-accent: #0d9488;
+            /* Verde médico refrescante */
+            --teal-soft: #f0fdf4;
+
+            --bg-body: #f8fafc;
             --card-bg: #ffffff;
-            --text-main: #1e293b;
+            --text-main: #0f172a;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
-            --radius-lg: 20px;
+
+            --radius-xl: 24px;
+            --radius-lg: 16px;
             --radius-md: 12px;
             --radius-sm: 8px;
-            --shadow-subtle: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-            --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+            --shadow-subtle: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+            --shadow-premium: 0 20px 30px -10px rgba(30, 58, 138, 0.08);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
-            margin: 0;
-            line-height: 1.6;
+            line-height: 1.5;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Branding Header */
-        .header-branding {
-            background: white;
-            padding: 24px 0;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 40px;
+        /* Top Brand Bar */
+        /* --- Top Navbar Root --- */
+        .top-navbar {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            /* Efecto cristalino moderno */
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0.5rem 1.25rem;
+            /* Altura reducida y limpia */
         }
 
-        .header-content {
+        .navbar-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 25px;
             display: flex;
+            align-items: center;
             justify-content: space-between;
+        }
+
+        /* --- Branding --- */
+        .logo-wrapper {
+            display: flex;
             align-items: center;
         }
 
-        .logo-container img {
-            max-height: 64px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+        .brand-logo-img {
+            height: auto;
+            width: 50%;
+            object-fit: contain;
         }
 
-        /* Main Layout */
-        .checkout-wrapper {
+        .brand-text-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 1rem;
+            letter-spacing: 0.08em;
+            color: var(--text-main, #1e293b);
+        }
+
+        .brand-icon {
+            color: var(--teal-accent, #0d9488);
+            font-size: 1.1rem;
+        }
+
+        .brand-name {
+            font-weight: 700;
+        }
+
+        .brand-light {
+            font-weight: 300;
+            opacity: 0.85;
+        }
+
+        /* --- Branch Pill Badge --- */
+        .branch-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.85rem;
+            background-color: var(--bg-surface-subtle, #f8fafc);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 9999px;
+            /* Formato cápsula */
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .branch-pill:hover {
+            background-color: #f1f5f9;
+        }
+
+        .branch-pill .branch-icon {
+            color: var(--teal-accent, #0d9488);
+            font-size: 0.8rem;
+        }
+
+        .branch-title {
+            font-weight: 600;
+            color: var(--text-main, #334155);
+        }
+
+        .branch-divider {
+            color: #cbd5e1;
+            font-size: 0.7rem;
+            margin: 0 0.1rem;
+        }
+
+        .branch-subtitle {
+            color: var(--text-muted, #64748b);
+            font-weight: 400;
+        }
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 640px) {
+
+            .branch-subtitle,
+            .branch-divider {
+                display: none;
+                /* Oculta subtítulo en móviles para mantenerlo compacto */
+            }
+        }
+
+
+
+
+
+
+        /* Layout Structure */
+        .page-container {
             max-width: 1200px;
-            margin: 0 auto 80px;
+            margin: 40px auto 80px;
+            padding: 0 24px;
             display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 40px;
-            padding: 0 25px;
+            grid-template-columns: 1fr 410px;
+            gap: 32px;
         }
 
-        @media (max-width: 992px) {
-            .checkout-wrapper { grid-template-columns: 1fr; }
-            .summary-card { position: relative !important; top: 0 !important; }
-        }
-
-        /* Card Elegance */
-        .card {
+        /* Card System */
+        .panel-card {
             background: var(--card-bg);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-color);
             box-shadow: var(--shadow-subtle);
-            border: 1px solid rgba(226, 232, 240, 0.8);
             overflow: hidden;
+            margin-bottom: 24px;
         }
 
-        .card-header {
-            padding: 35px;
+        .panel-header {
+            padding: 28px 32px;
             border-bottom: 1px solid var(--border-color);
-            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
         }
 
-        .card-body { padding: 35px; }
+        .panel-body {
+            padding: 32px;
+        }
 
-        /* Badges Refined */
-        .badge-status {
+        /* Status Pills */
+        .status-pill {
             padding: 6px 14px;
             border-radius: 50px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
-        .status-pending { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
-        .status-accepted { background: #eff6ff; color: var(--primary); border: 1px solid #dbeafe; }
-        .status-paid { background: #ecfdf5; color: #065f46; border: 1px solid #d1fae5; }
-        .status-cancelled { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        .status-pending {
+            background: #fff7ed;
+            color: #c2410c;
+            border: 1px solid #ffedd5;
+        }
 
-        /* Modern Table */
+        .status-paid {
+            background: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
+        .status-accepted {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
+
+        /* Patient Info Banner */
+        .patient-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+            border: 1px solid #dbeafe;
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .patient-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        /* Dental Items Table */
         .dental-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
         }
 
         .dental-table th {
             text-align: left;
-            padding: 15px 10px;
+            padding: 12px 16px;
             font-size: 0.75rem;
+            font-weight: 700;
             text-transform: uppercase;
             color: var(--text-muted);
-            border-bottom: 2px solid var(--bg-body);
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--border-color);
         }
 
         .dental-table td {
-            padding: 20px 10px;
+            padding: 20px 16px;
             border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
         }
 
-        .item-name { font-weight: 600; color: var(--text-main); font-size: 1rem; }
-        .item-sub { font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 2px; }
-
-        /* Sidebar Summary */
-        .summary-card {
-            position: sticky;
-            top: 40px;
-            border: none;
-            box-shadow: var(--shadow-premium);
+        .dental-table tr:last-child td {
+            border-bottom: none;
         }
 
-        .summary-header {
-            background: var(--primary-dark);
-            color: white;
-            padding: 35px 25px;
-            text-align: center;
-            position: relative;
-        }
-
-        .summary-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 4px;
-            background: rgba(0,0,0,0.1);
-        }
-
-        .summary-body { padding: 30px; }
-
-        .price-line {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
+        .item-title {
+            font-weight: 600;
+            color: var(--text-main);
             font-size: 0.95rem;
         }
 
-        .price-line.total {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-            font-weight: 800;
-            font-size: 1.4rem;
-            color: var(--primary-dark);
+        .item-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 2px;
         }
 
-        /* NEW: Bank Info Box */
-        .bank-info-box {
+        /* Payment History Timeline */
+        .history-timeline {
+            position: relative;
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+
+        .history-timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 5px;
+            bottom: 5px;
+            width: 2px;
+            background: var(--border-color);
+        }
+
+        .history-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .history-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .history-item::before {
+            content: '';
+            position: absolute;
+            left: -25px;
+            top: 6px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--teal-accent);
+            border: 3px solid white;
+            box-shadow: 0 0 0 1px var(--teal-accent);
+        }
+
+        /* Sidebar Summary */
+        .sidebar-sticky {
+            position: sticky;
+            top: 100px;
+        }
+
+        .checkout-card {
+            background: #ffffff;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-premium);
+            overflow: hidden;
+        }
+
+        .checkout-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e1b4b 100%);
+            color: white;
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .amount-display {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-top: 4px;
+        }
+
+        .summary-details {
+            padding: 24px;
+        }
+
+        .line-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .line-item.highlight {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .line-item.total {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        /* Bank Account Box */
+        .bank-card {
             background: #f8fafc;
             border: 1px dashed var(--primary-light);
-            padding: 18px;
             border-radius: var(--radius-md);
-            margin-top: 25px;
-            font-size: 0.85rem;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .bank-card-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--primary);
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .clabe-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            margin-top: 6px;
+        }
+
+        .clabe-code {
+            font-family: monospace;
+            font-weight: 700;
+            font-size: 1rem;
             color: var(--text-main);
         }
 
-        .bank-info-box strong {
-            display: block;
-            color: var(--primary);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.02em;
+        .btn-copy {
+            background: none;
+            border: none;
+            color: var(--primary-light);
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            transition: var(--transition);
         }
 
-        /* Action Button */
-        .btn-checkout {
+        .btn-copy:hover {
+            background: #eff6ff;
+        }
+
+        /* Pay Button */
+        .btn-pay {
             width: 100%;
-            background: var(--primary);
+            background: var(--teal-accent);
             color: white;
             border: none;
-            padding: 20px;
+            padding: 18px;
             border-radius: var(--radius-md);
             font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
             transition: var(--transition);
-            margin-top: 25px;
+            margin-top: 24px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 12px rgba(43, 108, 176, 0.2);
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 14px rgba(13, 83, 148, 0.3);
         }
 
-        .btn-checkout:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(43, 108, 176, 0.3);
+        .btn-pay:hover {
+            background: #0f3f76;
+            cursor: pointer;
         }
 
-        .btn-checkout:active { transform: translateY(0); }
+        /* Responsive Breakpoints */
+        @media (max-width: 992px) {
+            .page-container {
+                grid-template-columns: 1fr;
+            }
 
-        /* Trust Signals */
-        .trust-footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--text-muted);
+            .sidebar-sticky {
+                position: static;
+            }
         }
 
-        .payment-icons {
-            margin-top: 15px;
+
+        /* --- Invoice Header Component --- */
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 1.5rem 1.75rem;
+            border-bottom: 1px solid #f1f5f9;
+            gap: 1.5rem;
+        }
+
+        /* Branding/Logo styling */
+        .brand-container {
+            display: flex;
+            align-items: center;
+            max-width: 220px;
+        }
+
+        .clinic-logo {
+            max-height: 100px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.05));
+        }
+
+        .brand-text-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.15rem;
+            letter-spacing: 0.05em;
+            color: var(--text-main, #0f172a);
+        }
+
+        .brand-icon {
+            color: var(--teal-accent, #2b6cb0);
+            font-size: 1.25rem;
+        }
+
+        .brand-name {
+            font-weight: 800;
+        }
+
+        .brand-light {
+            font-weight: 300;
+            opacity: 0.8;
+        }
+
+
+        /* --- Floating Footer Root --- */
+        .powered-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
             display: flex;
             justify-content: center;
-            gap: 15px;
-            font-size: 1.5rem;
-            opacity: 0.4;
+            padding: 0.5rem 1rem;
+            pointer-events: none;
+            /* Evita bloquear clicks en el fondo salvo sobre el contenido */
         }
 
-        /* Footer */
-        .footer-branding {
-            text-align: center;
-            margin-top: 80px;
-            padding: 40px 0;
-            background: white;
-            border-top: 1px solid var(--border-color);
-            font-size: 0.85rem;
-            color: var(--text-muted);
+        /* --- Inner Content Box --- */
+        .powered-content {
+            pointer-events: auto;
+            display: flex;
+            /* Cambiado de inline-flex a flex */
+            justify-content: center;
+            /* Centra el contenido horizontalmente en Flexbox */
+            align-items: center;
+            /* Centra el contenido verticalmente */
+            gap: 0.35rem;
+            padding: 0.35rem 0.85rem;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 9999px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            font-size: 0.75rem;
+            color: var(--text-muted, #64748b);
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            width: 100%;
         }
 
-        .footer-branding a {
-            color: var(--primary);
+        /* --- Brand Link Styling --- */
+        .brand-link {
             text-decoration: none;
-            font-weight: 600;
+            color: #2b6cb0;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .brand-tld {
+            font-weight: 400;
+            opacity: 0.85;
+        }
+
+        .brand-link:hover {
+            color: #205185;
+        }
+
+        /* Espaciador para evitar que el footer tape contenido al final del scroll */
+        body {
+            padding-bottom: 2.5rem;
+        }
+
+
+        /*PRINTS*/
+        .btn-download-pdf {
+            width: 100%;
+            background: #ffffff;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-download-pdf:hover {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+
+        /* Ocultar la plantilla del PDF en la vista normal de pantalla */
+        /* Ocultar la plantilla en la interfaz del usuario */
+        .pdf-only,
+        #pdf-template {
+            display: none;
+        }
+
+        /* Reglas de maquetación de la plantilla */
+        #pdf-template,
+        #pdf-template-clone {
+            width: 794px !important;
+            min-width: 794px !important;
+            max-width: 794px !important;
+            padding: 35px !important;
+            box-sizing: border-box !important;
+            background: #ffffff !important;
+            color: #1e293b;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.4;
+        }
+
+        #pdf-template .pdf-header,
+        #pdf-template-clone .pdf-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        #pdf-template .pdf-title,
+        #pdf-template-clone .pdf-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0 0 5px 0;
+        }
+
+        #pdf-template .pdf-subtitle,
+        #pdf-template-clone .pdf-subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin: 3px 0;
+        }
+
+        #pdf-template .pdf-logo,
+        #pdf-template-clone .pdf-logo {
+            max-width: 150px !important;
+            max-height: 48px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+
+        #pdf-template .pdf-grid-2,
+        #pdf-template-clone .pdf-grid-2 {
+            width: 100%;
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        #pdf-template .pdf-grid-2>div,
+        #pdf-template-clone .pdf-grid-2>div {
+            flex: 1;
+        }
+
+        #pdf-template .pdf-box,
+        #pdf-template-clone .pdf-box {
+            width: 100%;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        #pdf-template .pdf-box h3,
+        #pdf-template-clone .pdf-box h3 {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #475569;
+            margin: 0 0 12px 0;
+        }
+
+        #pdf-template .pdf-box p,
+        #pdf-template-clone .pdf-box p {
+            font-size: 12px;
+            margin: 4px 0;
+            color: #334155;
+        }
+
+        #pdf-template .pdf-box.highlight,
+        #pdf-template-clone .pdf-box.highlight {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        #pdf-template .pdf-total,
+        #pdf-template-clone .pdf-total {
+            font-size: 15px !important;
+            font-weight: 700;
+            color: #1e40af !important;
+            margin-top: 10px !important;
+        }
+
+        #pdf-template .pdf-total span,
+        #pdf-template-clone .pdf-total span {
+            float: right;
+        }
+
+        #pdf-template .pdf-bank-info,
+        #pdf-template-clone .pdf-bank-info {
+            border-left: 4px solid #2563eb;
+            margin-bottom: 20px;
+        }
+
+        #pdf-template .pdf-table,
+        #pdf-template-clone .pdf-table {
+            width: 100% !important;
+            max-width: 100% !important;
+            table-layout: fixed;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+
+        #pdf-template .pdf-table th,
+        #pdf-template-clone .pdf-table th {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 8px 10px;
+            border-bottom: 2px solid #cbd5e1;
+            text-align: left;
+        }
+
+        #pdf-template .pdf-table td,
+        #pdf-template-clone .pdf-table td {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 12px;
+            vertical-align: top;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        #pdf-template .pdf-table th:nth-child(1),
+        #pdf-template-clone .pdf-table th:nth-child(1),
+        #pdf-template .pdf-table td:nth-child(1),
+        #pdf-template-clone .pdf-table td:nth-child(1) {
+            width: 50%;
+        }
+
+        #pdf-template .pdf-table th:nth-child(2),
+        #pdf-template-clone .pdf-table th:nth-child(2),
+        #pdf-template .pdf-table td:nth-child(2),
+        #pdf-template-clone .pdf-table td:nth-child(2) {
+            width: 12%;
+        }
+
+        #pdf-template .pdf-table th:nth-child(3),
+        #pdf-template-clone .pdf-table th:nth-child(3),
+        #pdf-template .pdf-table td:nth-child(3),
+        #pdf-template-clone .pdf-table td:nth-child(3) {
+            width: 19%;
+        }
+
+        #pdf-template .pdf-table th:nth-child(4),
+        #pdf-template-clone .pdf-table th:nth-child(4),
+        #pdf-template .pdf-table td:nth-child(4),
+        #pdf-template-clone .pdf-table td:nth-child(4) {
+            width: 19%;
+        }
+
+        #pdf-template .text-center,
+        #pdf-template-clone .text-center {
+            text-align: center;
+        }
+
+        #pdf-template .text-right,
+        #pdf-template-clone .text-right {
+            text-align: right;
+        }
+
+        #pdf-template .pdf-footer,
+        #pdf-template-clone .pdf-footer {
+            width: 100%;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 16px;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 20px;
+        }
+
+        #pdf-template img,
+        #pdf-template-clone img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        #pdf-template table,
+        #pdf-template-clone table {
+            border-spacing: 0;
+        }
+
+        #pdf-template *,
+        #pdf-template-clone *,
+        #pdf-template *::before,
+        #pdf-template-clone *::before,
+        #pdf-template *::after,
+        #pdf-template-clone *::after {
+            box-sizing: border-box;
         }
     </style>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/4.0.0/uicons-thin-rounded/css/uicons-thin-rounded.css'>
 </head>
+
 <body>
 
-    <header class="header-branding">
-        <div class="header-content">
-            <div class="logo-container">
-                {% if sale.logo_url %}
-                    <img src="{{ sale.logo_url }}" alt="Logo Clínica">
-                {% else %}
-                    <div style="font-weight: 800; color: var(--primary); font-size: 1.6rem; letter-spacing: -0.5px;">
-                        <i class="fas fa-tooth" style="color: var(--primary-light);"></i> DENTY<span style="color: var(--text-main); font-weight: 300;">CLOUD</span>
-                    </div>
-                {% endif %}
+    <!-- Header / Branding -->
+    <header class="top-navbar">
+        <div class="navbar-container">
+            <div class="civ">
+
             </div>
-            <div style="text-align: right; border-left: 3px solid var(--primary-light); padding-left: 15px;">
-                <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">{{ sale.branch_name }}</div>
-                <div style="font-size: 0.8rem; color: var(--text-muted);">Centro Odontológico</div>
+            <div class="branch-pill">
+                <i class="fas fa-hospital-user branch-icon"></i>
+                <span class="branch-title">{{ sale.branch_name }}</span>
+                <span class="branch-divider">|</span>
+                <span class="branch-subtitle"><i class="fi fi-rr-smartphone"></i> {{sale.branch_cellphone}} | <i class="fi fi-tr-phone-flip"></i> {{sale.branch_phone}}</span>
             </div>
         </div>
     </header>
 
-    <main class="checkout-wrapper">
-        
+    <!-- Main Workspace -->
+    <main class="page-container">
+
         <!-- Left Column: Details -->
-        <div class="card">
-            <div class="card-header">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
-                    <div>
-                        <span class="badge-status status-{{ sale.status }}">
-                            <i class="fas fa-circle" style="font-size: 0.5rem;"></i> {{ sale.status }}
-                        </span>
-                        <h1 style="margin: 15px 0 5px 0; font-size: 1.8rem; font-weight: 800; color: var(--primary-dark);">Resumen de Tratamiento</h1>
-                        <p style="margin: 0; color: var(--text-muted); font-size: 0.95rem;">Referencia de seguimiento: <span style="color: var(--text-main); font-weight: 600;">#{{ sale.reference }}</span></p>
+        <div class="main-content">
+
+            <!-- Principal Card -->
+            <div class="panel-card">
+                <div class="invoice-header">
+                    <div class="brand-container">
+                        {% if sale.logo_url %}
+                        <img src="{{ sale.logo_url }}" alt="Logo Clínica" class="clinic-logo">
+                        {% else %}
+                        <div class="brand-text-logo">
+                            <i class="fas fa-tooth brand-icon"></i>
+                            <span class="brand-name">DENTY<span class="brand-light">CLOUD</span></span>
+                        </div>
+                        {% endif %}
                     </div>
-                    <div style="text-align: right; background: var(--bg-body); padding: 15px 20px; border-radius: var(--radius-md);">
-                        <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Paciente</p>
-                        <p style="margin: 0; font-weight: 700; color: var(--primary-dark); font-size: 1.1rem;">{{ sale.customer_name }}</p>
+
+                    <div class="document-meta">
+                        <span class="status-pill status-{{ sale.status }}">
+                            <i class="fas fa-circle status-dot"></i> {{ sale.status|upper }}
+                        </span>
+                        <h1 class="document-title">Estado de Cuenta</h1>
+                        <p class="document-ref">Ref: <strong>#{{ sale.reference }}</strong></p>
+                    </div>
+                </div>
+
+                <div class="panel-body">
+
+                    <!-- Dental Services Table -->
+                    <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px;">Detalle del Tratamiento</h3>
+                    <table class="dental-table">
+                        <thead>
+                            <tr>
+                                <th>Tratamiento / Concepto</th>
+                                <th style="text-align: center;">Cant.</th>
+                                <th style="text-align: right;">Precio Unit.</th>
+                                <th style="text-align: right;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in sale.items %}
+                            <tr>
+                                <td>
+                                    <div class="item-title">{{ item.name }}</div>
+                                    <div class="item-subtitle">Procedimiento Odontológico</div>
+                                </td>
+
+                                <td style="text-align: center; font-weight: 600;">
+                                    {{ item.quantity|floatformat:0 }}
+                                </td>
+
+                                <td style="text-align: right; color: var(--text-muted);">
+                                    ${{ item.unit_price|floatformat:2 }}
+                                </td>
+
+                                <td style="text-align: right; font-weight: 700;">
+                                    ${{ item.total|floatformat:2 }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Payment History Card (Si existen abonos previos) -->
+            {% if sale.payment_history %}
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h3 style="font-size: 1.1rem; font-weight: 700;">
+                        <i class="fas fa-history" style="color: var(--teal-accent); margin-right: 8px;"></i> Historial
+                        de Abonos
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="history-timeline">
+                        {% for payment in sale.payment_history %}
+                        <div class="history-item">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div>
+                                    <div style="font-weight: 700; font-size: 0.95rem;">
+                                        Abono Registrado
+                                    </div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">
+                                        {{ payment.date|default:"Fecha no registrada" }}
+                                    </div>
+                                    {% if payment.fiscal_uuid %}
+                                    <div style="font-size: 0.75rem; color: var(--teal-accent); margin-top: 2px;">
+                                        <i class="fas fa-file-invoice"></i> Folio Fiscal: {{ payment.fiscal_uuid }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 800; color: var(--teal-accent); font-size: 1rem;">
+                                        +${{ payment.cash_received|floatformat:2 }}
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">
+                                        Saldo post-pago: ${{ payment.new_balance|floatformat:2 }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
-            
-            <div class="card-body">
-                <table class="dental-table">
-                    <thead>
-                        <tr>
-                            <th>Descripción del Servicio</th>
-                            <th style="text-align: center;">Cant.</th>
-                            <th style="text-align: right;">Precio Unit.</th>
-                            <th style="text-align: right;">Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in sale.items %}
-                        <tr>
-                            <td>
-                                <span class="item-name">{{ item.name }}</span>
-                                <span class="item-sub">Servicio Odontológico Especializado</span>
-                            </td>
-                            <td style="text-align: center; font-weight: 500;">{{ item.quantity|floatformat:0 }}</td>
-                            <td style="text-align: right; color: var(--text-muted);">${{ item.unit_price|floatformat:2 }}</td>
-                            <td style="text-align: right; font-weight: 700; color: var(--text-main);">${{ item.total|floatformat:2 }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            {% endif %}
+
         </div>
 
-        <!-- Right Column: Payment Summary -->
-        <aside>
-            <div class="card summary-card">
-                <div class="summary-header">
-                    <p style="margin: 0; font-size: 0.85rem; text-transform: uppercase; font-weight: 600; opacity: 0.9; letter-spacing: 1px;">Monto Total</p>
-                    <h2 style="margin: 5px 0 0 0; font-size: 2.5rem; font-weight: 800;">${{ sale.total|floatformat:2 }} <span style="font-size: 1rem; font-weight: 400;">{{ sale.currency }}</span></h2>
+        <!-- Right Column: Sidebar Checkout -->
+        <aside class="sidebar-sticky">
+            <div class="checkout-card">
+                <div class="checkout-header">
+                    <span
+                        style="font-size: 0.8rem; text-transform: uppercase; font-weight: 600; opacity: 0.8; letter-spacing: 1px;">Saldo
+                        Pendiente</span>
+                    <div class="amount-display">${{ sale.balance|floatformat:2 }}</div>
+                    <span style="font-size: 0.85rem; opacity: 0.8;">{{ sale.currency }}</span>
                 </div>
-                
-                <div class="summary-body">
-                    <div class="price-line">
-                        <span style="color: var(--text-muted);">Subtotal bruto</span>
-                        <span style="font-weight: 500;">${{ sale.subtotal|floatformat:2 }}</span>
+
+                <div class="summary-details">
+                    <div class="line-item">
+                        <span>Subtotal Servicios</span>
+                        <span>${{ sale.subtotal|floatformat:2 }}</span>
                     </div>
-                    <div class="price-line">
-                        <span style="color: var(--text-muted);">IVA / Impuestos</span>
-                        <span style="font-weight: 500;">${{ sale.tax_total|floatformat:2 }}</span>
+
+                    <div class="line-item">
+                        <span>Impuestos / IVA</span>
+                        <span>${{ sale.tax_total|floatformat:2 }}</span>
                     </div>
-                    
+
                     {% if sale.discount_total > 0 %}
-                    <div class="price-line" style="color: var(--accent); font-weight: 600;">
-                        <span>Descuento aplicado</span>
+                    <div class="line-item" style="color: var(--teal-accent);">
+                        <span>Descuento Especial</span>
                         <span>-${{ sale.discount_total|floatformat:2 }}</span>
                     </div>
                     {% endif %}
 
-                    <div class="price-line total">
-                        <span>Total Neto</span>
+                    <div class="line-item highlight"
+                        style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border-color);">
+                        <span>Monto Total Tratamiento</span>
                         <span>${{ sale.total|floatformat:2 }}</span>
                     </div>
 
                     {% if sale.amount_paid > 0 %}
-                    <div style="margin-top: 20px; padding: 15px; background: #f0fdf4; border-radius: var(--radius-sm); border: 1px solid #dcfce7;">
-                        <div class="price-line" style="margin-bottom: 5px; font-size: 0.85rem;">
-                            <span style="color: #166534;">Total Abonado</span>
-                            <span style="font-weight: 700; color: #166534;">${{ sale.amount_paid|floatformat:2 }}</span>
-                        </div>
-                        <div class="price-line" style="margin-bottom: 0; font-weight: 700; color: #1e293b;">
-                            <span>Saldo Restante</span>
-                            <span style="color: #b91c1c;">${{ sale.balance|floatformat:2 }}</span>
-                        </div>
+                    <div class="line-item" style="color: var(--teal-accent); font-weight: 600;">
+                        <span>Total Abonado</span>
+                        <span>-${{ sale.amount_paid|floatformat:2 }}</span>
                     </div>
                     {% endif %}
 
-                    <!-- INFO DE PAGO SECCIÓN -->
-                    <div class="bank-info-box">
-                        <strong><i class="fas fa-university"></i> Información de pago</strong>
+                    <div class="line-item total">
+                        <span>Por Pagar</span>
+                        <span>${{ sale.balance|floatformat:2 }}</span>
+                    </div>
+
+                    <!-- Bank Details Section -->
+                    <div class="bank-card">
+                        <div class="bank-card-title">
+                            <i class="fas fa-university"></i> Transferencia Bancaria
+                        </div>
                         {% if sale.data_bank.bank_account %}
-                            <div style="margin-bottom: 4px;">{{ sale.data_bank.bank_name }}</div>
-                            <div style="font-family: monospace; font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; color: var(--primary-dark);">{{ sale.data_bank.bank_account }}</div>
+                        <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);">
+                            {{ sale.data_bank.bank_name }}
+                        </div>
+                        <div class="clabe-container">
+                            <span class="clabe-code" id="bankAccount">{{ sale.data_bank.bank_account }}</span>
+                            <button class="btn-copy" onclick="copyAccount()" title="Copiar número de cuenta">
+                                <i class="far fa-copy" id="copyIcon"></i>
+                            </button>
+                        </div>
                         {% else %}
-                            <span style="color: var(--text-muted); font-style: italic;">No hay información bancaria disponible.</span>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">
+                            Contacte a recepción para obtener los datos de transferencia.
+                        </div>
                         {% endif %}
                     </div>
-                    <!---
-                    <button class="btn-checkout" onclick="processPayment()">
-                        <i class="fas fa-lock"></i> PAGAR AHORA
-                    </button>
-                    --->
 
-                    <div class="trust-footer">
-                        <p><i class="fas fa-shield-alt" style="color: var(--accent);"></i> Transacción segura y protegida</p>
-                        <div class="payment-icons">
-                            <i class="fab fa-cc-visa"></i>
-                            <i class="fab fa-cc-mastercard"></i>
-                            <i class="fab fa-cc-amex"></i>
-                            <i class="fab fa-apple-pay"></i>
-                        </div>
+                    <!-- Trust Indicators -->
+                    <div style="text-align: center; margin-top: 24px; font-size: 0.75rem; color: var(--text-muted);">
+                        <p><i class="fas fa-shield-alt" style="color: var(--teal-accent);"></i> Pago encriptado de grado
+                            clínico</p>
                     </div>
+
+                    <button type="button" class="btn-download-pdf" id="btnDownloadPDF" onclick="downloadPDF()">
+                        <i class="fas fa-file-pdf"></i> Descargar Resumen (PDF)
+                    </button>
                 </div>
             </div>
         </aside>
 
     </main>
 
-    <footer class="footer-branding">
-        <div style="max-width: 1200px; margin: 0 auto; padding: 0 25px;">
-            <p style="margin-bottom: 10px;">&copy; 2026 <strong>{{ sale.branch_name }}</strong>. Todos los derechos reservados.</p>
-            <p style="opacity: 0.7;">Este es un documento oficial de cobro. Ante cualquier duda, contacte a su clínica.</p>
-            <p style="margin-top: 20px; font-size: 0.75rem;">Powered by <a href="https://denty.cloud" target="_blank" style="text-decoration: underline;">denty.cloud</a> Software Dental</p>
+    <footer class="powered-footer">
+        <div class="powered-content">
+            <span>Powered by</span>
+            <a href="https://denty.cloud" target="_blank" rel="noopener noreferrer" class="brand-link">
+                www.denty.cloud
+            </a>
         </div>
     </footer>
 
+
+
+    <div id="pdf-template" class="pdf-only">
+
+        <!-- ========================================= -->
+        <!-- HEADER -->
+        <!-- ========================================= -->
+
+        <div class="pdf-header">
+
+            <div>
+                <h1 class="pdf-title">
+                    Comprobante de Pago / Estado de Cuenta
+                </h1>
+
+                <p class="pdf-subtitle">
+                    Referencia:
+                    <strong>#{{ sale.reference }}</strong>
+                </p>
+
+                <p class="pdf-subtitle">
+                    Sucursal:
+                    <strong>{{ sale.branch_name }}</strong>
+                </p>
+            </div>
+
+            {% if sale.logo_url %}
+            <img src="{{ sale.logo_url }}" alt="Logo" class="pdf-logo">
+            {% endif %}
+
+        </div>
+
+
+        <!-- ========================================= -->
+        <!-- INFORMACIÓN DEL CLIENTE Y ESTADO -->
+        <!-- ========================================= -->
+        <div class="pdf-grid-2">
+
+            <!-- Estado de la venta -->
+            <div class="pdf-box highlight">
+
+                <h3>Estado de la Cuenta</h3>
+
+                <p>
+                    <strong>Estado:</strong>
+                    {{ sale.status|upper }}
+                </p>
+
+                <p>
+                    <strong>Moneda:</strong>
+                    {{ sale.currency }}
+                </p>
+
+                <p class="pdf-total">
+                    Total del Tratamiento:
+                    <span>
+                        ${{ sale.total|floatformat:2 }}
+                    </span>
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ========================================= -->
+        <!-- RESUMEN FINANCIERO -->
+        <!-- ========================================= -->
+
+        <div class="pdf-box">
+
+            <h3>Resumen Financiero</h3>
+
+            <p>
+                <strong>Subtotal:</strong>
+                ${{ sale.subtotal|floatformat:2 }}
+            </p>
+
+            <p>
+                <strong>IVA / Impuestos:</strong>
+                ${{ sale.tax_total|floatformat:2 }}
+            </p>
+
+            {% if sale.discount_total > 0 %}
+            <p>
+                <strong>Descuento:</strong>
+                -${{ sale.discount_total|floatformat:2 }}
+            </p>
+            {% endif %}
+
+            <p>
+                <strong>Total:</strong>
+                ${{ sale.total|floatformat:2 }}
+            </p>
+
+            {% if sale.amount_paid > 0 %}
+            <p>
+                <strong>Total Abonado:</strong>
+                ${{ sale.amount_paid|floatformat:2 }}
+            </p>
+            {% endif %}
+
+            <p class="pdf-total">
+                Saldo Pendiente:
+                <span>
+                    ${{ sale.balance|floatformat:2 }}
+                </span>
+            </p>
+
+        </div>
+
+
+        <!-- ========================================= -->
+        <!-- DATOS BANCARIOS -->
+        <!-- ========================================= -->
+
+        {% if sale.data_bank.bank_account %}
+
+        <div class="pdf-box pdf-bank-info">
+
+            <h3>Datos para Transferencia Bancaria</h3>
+
+            <div class="pdf-grid-2">
+
+                <div>
+
+                    <p>
+                        <strong>Banco:</strong>
+                        {{ sale.data_bank.bank_name }}
+                    </p>
+
+                </div>
+
+                <div>
+
+                    <p>
+                        <strong>Número de Cuenta:</strong>
+                        {{ sale.data_bank.bank_account }}
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- ========================================= -->
+        <!-- DETALLE DE LOS TRATAMIENTOS -->
+        <!-- ========================================= -->
+
+        {% if sale.items %}
+
+        <table class="pdf-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Descripción
+                    </th>
+
+                    <th class="text-center">
+                        Cant.
+                    </th>
+
+                    <th class="text-right">
+                        P. Unitario
+                    </th>
+
+                    <th class="text-right">
+                        Total
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for item in sale.items %}
+
+                <tr>
+
+                    <td>
+                        {{ item.name }}
+
+                        <div style="
+                        font-size: 10px;
+                        color: #94a3b8;
+                        margin-top: 2px;
+                    ">
+                            Procedimiento Odontológico
+                        </div>
+                    </td>
+
+                    <td class="text-center">
+                        {{ item.quantity|floatformat:0 }}
+                    </td>
+
+                    <td class="text-right">
+                        ${{ item.unit_price|floatformat:2 }}
+                    </td>
+
+                    <td class="text-right">
+                        ${{ item.total|floatformat:2 }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% endif %}
+
+
+        <!-- ========================================= -->
+        <!-- HISTORIAL DE PAGOS -->
+        <!-- ========================================= -->
+
+        {% if sale.payment_history %}
+
+        <div class="pdf-box">
+
+            <h3>Historial de Abonos</h3>
+
+            {% for payment in sale.payment_history %}
+
+            <div style="
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        ">
+
+                <p>
+                    <strong>Fecha:</strong>
+                    {{ payment.date }}
+                </p>
+
+                <p>
+                    <strong>Abono:</strong>
+                    ${{ payment.cash_received|floatformat:2 }}
+                </p>
+
+                <p>
+                    <strong>Saldo después del pago:</strong>
+                    ${{ payment.new_balance|floatformat:2 }}
+                </p>
+
+                {% if payment.fiscal_uuid %}
+
+                <p style="
+                font-size: 11px;
+                color: #0d9488;
+            ">
+                    <strong>Folio Fiscal:</strong>
+                    {{ payment.fiscal_uuid }}
+                </p>
+
+                {% endif %}
+
+                {% if payment.fiscal_status %}
+
+                <p style="
+                font-size: 11px;
+                color: #64748b;
+            ">
+                    <strong>Estado Fiscal:</strong>
+                    {{ payment.fiscal_status }}
+                </p>
+
+                {% endif %}
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- ========================================= -->
+        <!-- FOOTER -->
+        <!-- ========================================= -->
+
+        <div class="pdf-footer">
+
+            <p>
+                Gracias por tu preferencia.
+            </p>
+
+            <p>
+                Este documento corresponde al estado de cuenta
+                de la referencia
+                <strong>#{{ sale.reference }}</strong>.
+            </p>
+
+            <p>
+                Generado mediante Denty.Cloud.
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- CDN de html2pdf.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <script>
-        function processPayment() {
-            const btn = document.querySelector('.btn-checkout');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESANDO...';
-            btn.style.opacity = '0.7';
-            btn.style.pointerEvents = 'none';
-            
-            console.log("Iniciando pasarela para Venta ID: {{ sale.id }}");
-            // Aquí iría tu lógica de Stripe / MercadoPago / etc.
+        function copyAccount() {
+            const accountNum = document.getElementById('bankAccount').innerText;
+            navigator.clipboard.writeText(accountNum).then(() => {
+                const icon = document.getElementById('copyIcon');
+                icon.className = 'fas fa-check';
+                icon.style.color = 'var(--teal-accent)';
+                setTimeout(() => {
+                    icon.className = 'far fa-copy';
+                    icon.style.color = '';
+                }, 2000);
+            });
+        }
+
+        async function downloadPDF() {
+            const btn = document.getElementById('btnDownloadPDF');
+            const originalTemplate = document.getElementById('pdf-template');
+
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando PDF...';
+            btn.disabled = true;
+
+            // 1. Crear contenedor wrapper fijado en la esquina superior izquierda
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'fixed';
+            wrapper.style.top = '0';
+            wrapper.style.left = '0';
+            wrapper.style.width = '794px';
+            wrapper.style.height = 'auto';
+            wrapper.style.zIndex = '-99999';
+            wrapper.style.overflow = 'hidden';
+            wrapper.style.backgroundColor = '#ffffff';
+
+            // 2. Clonar el template
+            const clone = originalTemplate.cloneNode(true);
+            clone.id = 'pdf-template-clone';
+
+            // Resetear completamente posiciones que causen desplazamiento
+            clone.style.display = 'block';
+            clone.style.visibility = 'visible';
+            clone.style.position = 'static';
+            clone.style.left = '0';
+            clone.style.top = '0';
+            clone.style.margin = '0';
+            clone.style.width = '794px';
+            clone.style.minWidth = '794px';
+            clone.style.maxWidth = '794px';
+            clone.classList.remove('pdf-only');
+
+            wrapper.appendChild(clone);
+            document.body.appendChild(wrapper);
+
+            // 3. Esperar a que carguen imágenes
+            const images = wrapper.getElementsByTagName('img');
+            const imagePromises = Array.from(images).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                });
+            });
+            await Promise.all(imagePromises);
+
+            try {
+                // Obtener la posición exacta en pantalla del clon para forzar a html2canvas
+                const rect = clone.getBoundingClientRect();
+
+                const opt = {
+                    margin: 0, // Sin márgenes extras de jsPDF
+                    filename: 'Comprobante_{{ sale.reference }}.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: {
+                        scale: 2,
+                        useCORS: true,
+                        allowTaint: true,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        // Forzar a html2canvas a recortar exactamente las coordenadas del clon
+                        x: rect.left,
+                        y: rect.top,
+                        width: 794,
+                        height: clone.scrollHeight,
+                        scrollX: 0,
+                        scrollY: 0,
+                        windowWidth: 794
+                    },
+                    jsPDF: {
+                        unit: 'px', // Usamos px para coincidir 1:1 con el canvas de 794px
+                        format: [794, clone.scrollHeight], // Formato dinámico exacto al contenido
+                        orientation: 'portrait',
+                        compress: true
+                    }
+                };
+
+                await html2pdf().set(opt).from(clone).save();
+
+            } catch (error) {
+                console.error('Error generando PDF:', error);
+            } finally {
+                if (document.body.contains(wrapper)) {
+                    document.body.removeChild(wrapper);
+                }
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
     </script>
 </body>
+
 </html>

@@ -17,4 +17,6 @@ urlpatterns = [
     path('download_excel_template/', views.download_excel_template, name='download_excel_template'),
     path('upload_excel_sales/', views.upload_excel_sales, name='upload_excel_sales'),
     path('pay_sale/<slug:slug>/', views.pay_sale, name='pay_sale'),
+    path('get_information_for_send_for_whatsapp/<int:sale_id>/', views.get_information_for_send_for_whatsapp, name='get_information_for_send_for_whatsapp'),
+    path('get_pdf_sales/<int:sale_id>/', views.get_pdf_sales, name='get_pdf_sales'),
 ]

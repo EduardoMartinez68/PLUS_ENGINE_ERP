@@ -265,6 +265,10 @@
     .change-primary {
         color: #fa3a3a;
     }
+
+    .icon-whatsapp-navbar{
+        font-size: 1.3rem;
+    }
 </style>
 <plus-panel id="buyPanel" title="sales.btn.accept-buy" side="left" size="100%">
     <div class="div-pay">
@@ -534,6 +538,10 @@
                     <polyline points="22,6 12,13 2,6"></polyline>
                 </svg>
             </button>
+
+            <button class="btn-action-icon" title="Enviar por WhatsApp" onclick="send_buy_for_whatsapp()">
+                <i class="icon-whatsapp-navbar fi fi-brands-whatsapp"></i>
+            </button>
             <!--
             <button class="btn-action-icon" title="Compartir">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -585,16 +593,17 @@
         let totalBuy = 0;
         window.totalBuy = totalBuy;
         window.activeInput = activeInput;
+        window.idSalesData=null;
     })();
 
     function send_buy_for_email() {
-        if (!window.idSales) {
+        if (!window.idSalesData) {
             window.show_notification('error', 'sales.error.cant-send-email');
             return;
         }
 
 
-        document.getElementById('name_sale_email').textContent = `Folio #${window.idSales}.pdf`;
+        document.getElementById('name_sale_email').textContent = `Folio #${window.idSalesData}.pdf`;
         window.show_pop('pop-send-email');
     }
 
@@ -606,12 +615,12 @@
             return;
         }
 
-        if (!window.idSales) {
+        if (!window.idSalesData) {
             window.show_notification('error', 'sales.error.cant-send-email');
             return;
         }
 
-        window.send_message_to_the_server(`/sales/send_buy_email/${window.idSales}/`, { email: email }, true, 'POST');
+        window.send_message_to_the_server(`/sales/send_buy_email/${window.idSalesData}/`, { email: email }, true, 'POST');
         window.show_notification('success', 'sales.message.email-sent');
         window.hide_pop('pop-send-email');
     }
@@ -644,7 +653,8 @@
 
         //now we will see if exist the input
         const payment_term_days = document.getElementById('payment_term_days');
-        if (payment_term_days && payment_term_days.value && parseInt(payment_term_days.value) > 0) {
+        const payment_term_days2=document.getElementById('sale-to-place-navbar');
+        if ((payment_term_days && payment_term_days.value && parseInt(payment_term_days.value) > 0) || (payment_term_days2 && payment_term_days2.getChecked())) {
             //if exist the input of payment term days and the value is greater than 0, 
             // this mean that the sale is on credit, for that reason we not need to see the change because the customer will pay later
             //for that reason we set the change to 0 for avoid problems in the backend
@@ -655,7 +665,7 @@
         // this mean that the customer did not pay enough money for complete the sale, 
         // for that reason we will show an alert for the user and we will not complete the sale
         if (change < 0 && existChange) {
-            const text = window.translate_text('sales.error.sale-not-completed-amount', { money: window.format_currency(Math.abs(change), 'MXN') });
+            const text = window.translate_text('sales.error.sale-not-completed-amount', { money: window.format_currency(Math.abs(change), window.get_currency_system()) });
             window.show_alert('alert', 'sales.error.insufficient-payment', text);
             return;
         }
@@ -674,6 +684,8 @@
 
         //now here we will see if exist a ID of the sale. If not exist maybe is because the user is in the POS
         if (!window.idSales) {
+            window.idSalesData=window.idSales;
+
             //if the user maybe is in the POS we need create first the sale for after do the buy
             //for know if the user is in the POS ww will see if exist the function of create_payload of the pos
             if (typeof create_the_payload_of_the_sale_from_the_pos !== "function") {
@@ -695,9 +707,11 @@
             //now we will update the 'reference' in the screen with the reference that generate the backend for the sale
             const answer = backend.answer;
             window.idSales = answer.id;
+            window.idSalesData=answer.id;
         }
 
         //when exist a <idSales> is because the user already do a sale previously and now can create a buy
+        window.idSalesData=window.idSales;
         const backend = await window.send_message_to_the_server(`/sales/do_a_sale/${window.idSales}/`, body, true, 'POST');
         if (!backend.success) {
             window.show_alert('error', 'sales.error.insufficient-payment-server', backend.message || 'sales.error.sale-not-completed');
@@ -709,7 +723,7 @@
         document.getElementById('buyPanel').hide();
 
         const changeBackend = backend.answer.change_given || 0;
-        const textChange = window.format_currency(changeBackend, 'MXN', true);
+        const textChange = window.format_currency(changeBackend, window.get_currency_system(), true);
         document.getElementById('txtChangeToBuyBox').textContent = window.translate_text('sales.label.change') + ': ' + textChange;
         document.getElementById('buttonChangeText').textContent = window.translate_text('sales.label.change') + ': ' + textChange;
 
@@ -729,6 +743,13 @@
         if (typeof clear_car === "function") {
             window.clear_car();
         }
+
+
+        //if the sale was did in the navbar 
+        if(typeof resert_form_pop_navbar_flash_sale=="function"){
+            resert_form_pop_navbar_flash_sale();
+            document.getElementById('pop-flash-navbar-add-sales').hide();
+        }
     }
 
     function calculate_change() {
@@ -747,7 +768,7 @@
         const change = totalPaid - totalBuy;
 
         const changeElement = document.getElementById('txtChangeToBuy');
-        changeElement.textContent = window.format_currency(change, 'MXN', true);
+        changeElement.textContent = window.format_currency(change, window.get_currency_system(), true);
 
         // styles
         changeElement.classList.toggle('change-success', change >= 0);
@@ -771,7 +792,7 @@
         document.getElementById('payTransfer').value = '';
 
         //update the information of the panel 
-        document.getElementById('txtMoneyToBuy').textContent = window.format_currency(totalBuy, 'MXN', true);
+        document.getElementById('txtMoneyToBuy').textContent = window.format_currency(totalBuy, window.get_currency_system(), true);
         calculate_change();
 
         document.getElementById('buyPanel').show();
@@ -806,4 +827,42 @@
         input.addEventListener('input', calculate_change);
     });
 
+
+    async function send_buy_for_whatsapp() {
+        if (!window.idSalesData) {
+            window.show_notification('error', 'sales.message.not-exist-id-sale');
+            return;
+        }
+
+
+        //here we will to get the information of the sale and the information of the customer for send it for whatsapp
+        const backend = await window.send_message_to_the_server(`/sales/get_information_for_send_for_whatsapp/${window.idSalesData}/`, {}, true, 'POST');
+        if(!backend.success){
+            window.show_alert('error', 'sales.error.cant-send-whatsapp', backend.message || 'sales.error.cant-send-whatsapp', backend.error || '');
+            return;
+        }
+
+
+        //now we will see if the sale have information of the customer and the customer have phone number 
+        const customer = backend.answer.customer;
+        if(!customer || !customer.cellphone){
+            window.show_notification('error', 'sales.message.not-exist-information-customer-or-whatsapp');
+            return;
+        }
+
+        //now we will to create the url of whatsapp web 
+        const phone = customer.cellphone.replace(/\D/g, ''); // Remove non-digit characters
+
+        const message = `Hola ${customer.name}, gracias por tu compra. Tu folio es #${backend.answer.reference}.
+
+        Puedes descargar la información de tu pago en el siguiente enlace:
+        ${backend.answer.payment_link}`;
+        
+
+        const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+
+        window.show_notification('success', 'sales.message.whatsapp-sent');
+    }
+    
 </script>

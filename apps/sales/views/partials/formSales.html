@@ -434,6 +434,7 @@
     .btn-add-line:hover {
         color: #005f5d;
         text-decoration: underline;
+        background: transparent;
     }
 
     .plus-icon {
@@ -532,6 +533,9 @@
                     </div>
                 </div>
             </plus-tab>
+            <plus-tab text="sale.label.contract">
+                <plus-word name="contractSale" id="{plus}_contractSale"></plus-word>
+            </plus-tab>
         </plus-tabs>
         <div class="total-section">
             <div class="total-row">
@@ -550,7 +554,7 @@
         <div class="row" id="container-print">
             <div class="col-8" id="col-signature">
                 <button class="btn btn-success btn-edit" t="sales.btn.signature" type="button"
-                    onclick="window.show_pop('pop_signature')"></button>
+                    onclick="window.open_pop_signature()"></button>
             </div>
             <div class="col">
                 <button class="btn btn-success btn-add" t="sales.btn.accept-quote" type="button" id="txtButton2Info"
@@ -565,16 +569,14 @@
 </div>
 
 {% include 'sales/partials/contract.html' %}
-{% include 'sales/partials/formBuy.html' %}
 {% include 'sales/partials/printBuy.html' %}
-
+{% include 'sales/partials/formBuy.html' %}
 
 <message-pop name="note_cancelled_sales" title="sales.title.cancel-sale">
     <label t="sales.title.cancel-sale"></label>
     <textarea t-placeholder="sales.placeholder.cancel-sale" id="note_cancelled" rows="4"></textarea>
     <button class="btn btn-success btn-edit" t="btn.save" onclick="cancel_sale_backend()"></button>
 </message-pop>
-
 
 
 <script>
@@ -585,6 +587,15 @@
         window.idSales = 0;
         window.totalSale = 0;
         window.subTotalGlobal = 0;
+        window.idSalesData= null;
+
+        window.set_value_plus_select('currency', window.current);
+
+        //delete the style hide of the pop
+        const miDiv = document.getElementById('divHidenNavbarSale');
+        if(miDiv){
+            miDiv.style.display = 'block';
+        }
 
         function set_form_read_only(formId, readOnly = true) {
             const form = document.getElementById(formId);
@@ -656,6 +667,7 @@
             const expiration_date = document.getElementById('expiration_date').value; 
             const payment_term_days = document.getElementById('payment_term_days').value; 
             const name_sale = document.getElementById('name_title_sale').value; 
+            const contractSale = document.getElementById('{plus}_contractSale').toJSON();
 
             data.forEach(line => {
                 // 1. subtotal 
@@ -694,11 +706,11 @@
                 total: grandTotal, 
                 expiration_date, 
                 payment_term_days, 
-                items: data 
+                items: data,
+                contractSale
             }; 
             return payload;
         }
-
 
         function change_status_button(status) {
             const btn = document.getElementById('statusButton');
@@ -821,6 +833,7 @@
             //now we will update the 'reference' in the screen with the reference that generate the backend for the sale
             change_status_button(answer.status);
             window.idSales = answer.id;
+            window.idSalesData= answer.id;
             window.reference_sales = answer.reference;
             window.status = answer.status;
             document.getElementById('reference').textContent = window.reference_sales;
@@ -875,6 +888,7 @@
 
             //now we will update the 'reference' in the screen with the reference that generate the backend for the sale
             window.idSales = answer.id;
+            window.idSalesData= answer.id;
             window.reference_sales = answer.reference;
             document.getElementById('reference').textContent = window.reference_sales;
 
@@ -942,13 +956,16 @@
                 });
             });
 
+            const contractSaleElement = document.getElementById('apps_sales_views_partials_formSales_contractSale');
+
             print_sale({
                 reference: window.reference_sales,
                 date: new Date().toLocaleDateString(),
                 user: document.getElementById('employee').getText(),
                 customer: document.getElementById('customer').getText(),
                 total: window.totalSale,
-                lines: items
+                lines: items,
+                contractSaleElement:contractSaleElement.toJSON()
             });
         }
 

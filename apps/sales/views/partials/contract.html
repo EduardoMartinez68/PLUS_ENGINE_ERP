@@ -12,6 +12,14 @@
         cursor: crosshair;
         width: 100%;
         height: 200px;
+
+
+        /* IMPORTANTE para celulares/iPad */
+        touch-action: none;
+
+        /* Evita comportamientos táctiles del navegador */
+        -webkit-user-select: none;
+        user-select: none;
     }
 
     .signature-name {
@@ -71,115 +79,369 @@
 
         });
 
-        function initSignature() {
-            const canvas = document.getElementById("signatureCanvas");
-            if (!canvas) return;
+    function initSignature() {
+        const canvas = document.getElementById("signatureCanvas");
 
-            const ctx = canvas.getContext("2d");
+        if (!canvas) return;
 
-            let drawing = false;
-            let strokes = [];
-            let current_trace = [];
+        const ctx = canvas.getContext("2d");
 
-            function get_positions(e) {
-                const rect = canvas.getBoundingClientRect();
+        let drawing = false;
+        let strokes = [];
+        let current_trace = [];
 
-                return {
-                    x: (e.clientX - rect.left) * (canvas.width / rect.width),
-                    y: (e.clientY - rect.top) * (canvas.height / rect.height)
+        // ----------------------------------------
+        // Configuración del canvas
+        // ----------------------------------------
+
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+
+            // Guardamos la firma existente
+            const previousImage = canvas.width > 0 && canvas.height > 0
+                ? canvas.toDataURL()
+                : null;
+
+            // Usamos alta resolución para pantallas Retina
+            const dpr = window.devicePixelRatio || 1;
+
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+            ctx.strokeStyle = "#000";
+
+            // Si había una imagen, la restauramos
+            if (previousImage) {
+                const image = new Image();
+
+                image.onload = function () {
+                    ctx.drawImage(
+                        image,
+                        0,
+                        0,
+                        rect.width,
+                        rect.height
+                    );
                 };
+
+                image.src = previousImage;
             }
-
-
-            canvas.addEventListener("mousedown", (e) => {
-                drawing = true;
-                current_trace = [];
-
-                const pos = get_positions(e);
-                current_trace.push(pos);
-
-                ctx.beginPath();
-                ctx.moveTo(pos.x, pos.y);
-            });
-
-            canvas.addEventListener("mousemove", (e) => {
-                if (!drawing) return;
-
-                const pos = get_positions(e);
-                current_trace.push(pos);
-
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
-            });
-
-            canvas.addEventListener("mouseup", () => {
-                drawing = false;
-                strokes.push(current_trace);
-            });
-
-            canvas.addEventListener("mouseleave", () => {
-                drawing = false;
-            });
-
-            function clear_signature() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                strokes = [];
-            }
-
-            function create_json_signature() { 
-                const responsibleName=document.getElementById('responsibleName').value;
-                const signature = { 
-                    date: new Date(), 
-                    patiente_signature_json: strokes ,
-                    patient_name:responsibleName
-                }; 
-
-                return signature;//JSON.stringify(signature, null, 2); 
-            }
-
-            async function save_signature_json() {
-                //see if can send the data of the form
-                if(!window.idSales){
-                    window.show_alert('error', 'sales.error.not-id-of-sale', 'sales.error.not-id-of-sale', 'you sale not have a ID');
-                }
-
-                //now see if exist the name of the customer of the signature and his signature
-                const dataSignature=create_json_signature();
-                if(!dataSignature.patient_name || dataSignature.patient_name.trim() === ''){
-                    window.show_alert('error', 'sales.error.need-the-name-of-the-responsible');
-                    return;
-                }
-
-                //second we need see that exist information of the signature in json
-                if(!dataSignature.patiente_signature_json){
-                    window.show_alert('error', 'sales.error.need-the-signature', 'sales.error.need-the-signature');
-                    return;
-                }
-
-                //when all the information exist in the contract, now we will to send the information to the backend 
-                const backend=await window.send_message_to_the_server(`/sales/save_signature/${window.idSales}/`, {dataSignature}, true, 'POST');
-                if(!backend.success){
-                    window.show_alert('error', 'sales.error.no-save-the-signature', backend.message || 'sales.error.no-save-the-signature', backend.error || '');
-                    return;
-                }
-
-                //also change the status of the sale 
-                //now we will update the 'reference' in the screen with the reference that generate the backend for the sale
-                const answer=backend.answer;
-                change_status_button(answer.status);
-                window.idSales = answer.id;
-                window.reference_sales = answer.reference;
-                window.status=answer.status;
-                document.getElementById('reference').textContent = window.reference_sales;
-                window.show_notification('success', 'sales.message.sales-updated');
-
-                //close the pop of the sale 
-                window.hide_pop('pop_signature')
-            }
-
-            window.clear_signature = clear_signature;
-            window.save_signature_json = save_signature_json; //this function is for save the signature in the backend
         }
+
+        // ----------------------------------------
+        // Obtener posición del dedo/mouse/lápiz
+        // ----------------------------------------
+
+        function get_positions(e) {
+            const rect = canvas.getBoundingClientRect();
+
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        // ----------------------------------------
+        // Comenzar firma
+        // ----------------------------------------
+
+        function startDrawing(e) {
+
+            e.preventDefault();
+
+            drawing = true;
+            current_trace = [];
+
+            // Permite que el canvas mantenga el pointer
+            if (canvas.setPointerCapture) {
+                canvas.setPointerCapture(e.pointerId);
+            }
+
+            const pos = get_positions(e);
+
+            current_trace.push({
+                x: pos.x,
+                y: pos.y
+            });
+
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        // ----------------------------------------
+        // Dibujar
+        // ----------------------------------------
+
+        function draw(e) {
+
+            if (!drawing) return;
+
+            e.preventDefault();
+
+            const pos = get_positions(e);
+
+            current_trace.push({
+                x: pos.x,
+                y: pos.y
+            });
+
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+
+        // ----------------------------------------
+        // Terminar firma
+        // ----------------------------------------
+
+        function stopDrawing(e) {
+
+            if (!drawing) return;
+
+            e.preventDefault();
+
+            drawing = false;
+
+            if (current_trace.length > 0) {
+                strokes.push(current_trace);
+            }
+
+            current_trace = [];
+
+            if (
+                e.pointerId !== undefined &&
+                canvas.releasePointerCapture
+            ) {
+                try {
+                    canvas.releasePointerCapture(e.pointerId);
+                } catch (error) {
+                    // No pasa nada si ya fue liberado
+                }
+            }
+        }
+
+        // ----------------------------------------
+        // Eventos Pointer
+        // ----------------------------------------
+
+        canvas.addEventListener(
+            "pointerdown",
+            startDrawing,
+            { passive: false }
+        );
+
+        canvas.addEventListener(
+            "pointermove",
+            draw,
+            { passive: false }
+        );
+
+        canvas.addEventListener(
+            "pointerup",
+            stopDrawing,
+            { passive: false }
+        );
+
+        canvas.addEventListener(
+            "pointercancel",
+            stopDrawing,
+            { passive: false }
+        );
+
+        canvas.addEventListener(
+            "pointerleave",
+            stopDrawing,
+            { passive: false }
+        );
+
+        // ----------------------------------------
+        // Limpiar firma
+        // ----------------------------------------
+
+        function clear_signature() {
+
+            const rect = canvas.getBoundingClientRect();
+
+            ctx.clearRect(
+                0,
+                0,
+                rect.width,
+                rect.height
+            );
+
+            strokes = [];
+            current_trace = [];
+            drawing = false;
+        }
+
+        // ----------------------------------------
+        // Crear JSON
+        // ----------------------------------------
+
+        function create_json_signature() {
+
+            const responsibleInput =
+                document.querySelector("#responsibleName input") ||
+                document.getElementById("responsibleName");
+
+            const responsibleName =
+                responsibleInput?.value || "";
+
+            const signature = {
+
+                date: new Date(),
+
+                patiente_signature_json: strokes,
+
+                patient_name: responsibleName
+            };
+
+            return signature;
+        }
+
+        // ----------------------------------------
+        // Guardar firma
+        // ----------------------------------------
+
+        async function save_signature_json() {
+
+            if (!window.idSales) {
+
+                window.show_alert(
+                    "error",
+                    "sales.error.not-id-of-sale",
+                    "sales.error.not-id-of-sale",
+                    "you sale not have a ID"
+                );
+
+                return;
+            }
+
+            const dataSignature =
+                create_json_signature();
+
+            // -------------------------------
+            // Validar nombre
+            // -------------------------------
+
+            if (
+                !dataSignature.patient_name ||
+                dataSignature.patient_name.trim() === ""
+            ) {
+
+                window.show_alert(
+                    "error",
+                    "sales.error.need-the-name-of-the-responsible"
+                );
+
+                return;
+            }
+
+            // -------------------------------
+            // Validar firma
+            // -------------------------------
+
+            if (
+                !dataSignature.patiente_signature_json ||
+                dataSignature.patiente_signature_json.length === 0
+            ) {
+
+                window.show_alert(
+                    "error",
+                    "sales.error.need-the-signature",
+                    "sales.error.need-the-signature"
+                );
+
+                return;
+            }
+
+            // -------------------------------
+            // Enviar al backend
+            // -------------------------------
+
+            const backend =
+                await window.send_message_to_the_server(
+                    `/sales/save_signature/${window.idSales}/`,
+                    { dataSignature },
+                    true,
+                    "POST"
+                );
+
+            if (!backend.success) {
+
+                window.show_alert(
+                    "error",
+                    "sales.error.no-save-the-signature",
+                    backend.message ||
+                        "sales.error.no-save-the-signature",
+                    backend.error || ""
+                );
+
+                return;
+            }
+
+            // -------------------------------
+            // Actualizar venta
+            // -------------------------------
+
+            const answer = backend.answer;
+
+            change_status_button(answer.status);
+
+            window.idSales = answer.id;
+            window.reference_sales = answer.reference;
+            window.status = answer.status;
+
+            const referenceElement =
+                document.getElementById("reference");
+
+            if (referenceElement) {
+                referenceElement.textContent =
+                    window.reference_sales;
+            }
+
+            window.show_notification(
+                "success",
+                "sales.message.sales-updated"
+            );
+
+            // -------------------------------
+            // Cerrar popup
+            // -------------------------------
+
+            window.hide_pop("pop_signature");
+        }
+
+        // ----------------------------------------
+        // Exponer funciones globales
+        // ----------------------------------------
+
+        window.clear_signature =
+            clear_signature;
+
+        window.save_signature_json =
+            save_signature_json;
+
+        // ----------------------------------------
+        // Inicializar tamaño
+        // ----------------------------------------
+
+        resizeCanvas();
+
+        // ----------------------------------------
+        // Ajustar si cambia orientación/tamaño
+        // ----------------------------------------
+
+        window.addEventListener(
+            "resize",
+            resizeCanvas
+        );
+    }
+
 
         // wait to that the modal exist
         const observer = new MutationObserver(() => {
@@ -191,7 +453,13 @@
         });
         observer.observe(document.body, { childList: true, subtree: true });
 
+    function open_pop_signature() {
+        window.show_pop("pop_signature");
+        initSignature();
+    }
 
+        window.open_pop_signature =
+            open_pop_signature;
         
-    })();
+})();
 </script>

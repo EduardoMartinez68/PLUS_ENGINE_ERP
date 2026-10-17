@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from httpcore import request
+
+from core.plus.services import ServiceRegistry
 from core.Plus import Plus
 import json
 from django.http import JsonResponse
@@ -368,3 +370,29 @@ def pay_sale(request, slug):
     return render(request, 'sales/pay_sale.html' , {'sale': sale.get('answer', {})})
 
 
+def get_information_for_send_for_whatsapp(request, sale_id):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+    
+    try:
+        #run the service
+        return JsonResponse(ServiceRegistry.execute(
+            "sales.SalesService.get_information_for_send_for_whatsapp", 
+            request.user, 
+            sale_id
+        ))
+
+    except json.JSONDecodeError:
+        return JsonResponse({
+            "success": False,
+            "message": "message.invalid-json",
+            "error": "Invalid JSON"
+        }, status=400)
+
+
+from apps.sales.services.sales_pdf import download_sale_pdf
+def get_pdf_sales(request, sale_id):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+
+    return download_sale_pdf(request, sale_id)

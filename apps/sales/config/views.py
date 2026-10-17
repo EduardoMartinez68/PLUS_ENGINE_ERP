@@ -2,11 +2,13 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
+from apps.sales.services.sales_pdf import download_sale_pdf
 from apps.sales.services.excel import upload_excel
 from apps.sales.services.sales import Sales
 from django.http import JsonResponse
 import json
 from core.Plus import Plus
+from core.plus.services import ServiceRegistry
 from httpcore import request
 from django.shortcuts import render
 @login_required(login_url='login')
@@ -380,4 +382,31 @@ def upload_excel_sales(request):
 def pay_sale(request, slug):
         sale =Sales.get_information_of_link_of_pay(slug)
         return render(request, 'sales/pay_sale.html' , {'sale': sale.get('answer', {})})
+
+@login_required(login_url='login')
+def get_information_for_send_for_whatsapp(request, sale_id):
+        if request.method != "POST":
+            return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+        
+        try:
+            #run the service
+            return JsonResponse(ServiceRegistry.execute(
+                "sales.SalesService.get_information_for_send_for_whatsapp", 
+                request.user, 
+                sale_id
+            ))
+    
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "success": False,
+                "message": "message.invalid-json",
+                "error": "Invalid JSON"
+            }, status=400)
+
+@login_required(login_url='login')
+def get_pdf_sales(request, sale_id):
+        if request.method != "POST":
+            return JsonResponse({"success": False, "message": "Invalid request method"}, status=405)
+    
+        return download_sale_pdf(request, sale_id)
 

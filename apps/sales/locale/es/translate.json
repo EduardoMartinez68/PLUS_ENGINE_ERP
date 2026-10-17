@@ -186,5 +186,14 @@
 
 
     "sales.label.terminal":"Terminal",
-    "sales.label.transfer":"Transferencia"
+    "sales.label.transfer":"Transferencia",
+
+
+    "sales.message.not-exist-id-sale":"No existe un ID de venta válido.",
+    "sales.error.cant-send-whatsapp":"No se pudo enviar el mensaje de WhatsApp. Por favor, intenta de nuevo.",
+    "sales.message.whatsapp-sent":"Mensaje de WhatsApp enviado correctamente.",
+    "sales.message.not-exist-information-customer-or-whatsapp":"No existe información completa del cliente o no tiene un número de WhatsApp registrado.",
+    "sales.btn.send_for_whatsapp":"Enviar por WhatsApp",
+    "sales.btn.download":"Descargar",
+    "sales.error.error-to-download-sale":"No se pudo descargar la venta. Por favor, intenta de nuevo."
 }

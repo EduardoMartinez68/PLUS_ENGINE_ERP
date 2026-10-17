@@ -1,4 +1,8 @@
 {% include 'sales/partials/navbar.html' %}
+<script>
+    window.load_script(window.STATIC_URLS.scriptEditorText, true);
+</script>
+
 <style>
     .container-history-sales {
         height: 70vh;
@@ -136,6 +140,7 @@
 
         //now we will update the 'reference' in the screen with the reference that generate the backend for the sale
         window.idSales = answer.id;
+        window.idSalesData= answer.id;
         window.reference_sales = answer.reference;
         window.totalBuy = answer.balance;
         document.getElementById('reference').textContent = window.reference_sales;
@@ -144,6 +149,12 @@
         //  because this is only for see the information of the sale, if the user want to edit the sale, he need to go to the edit page
         if (typeof window.set_form_read_only === 'function') {
             window.set_form_read_only('formSales', true)
+        }
+
+        if(answer.contractSale){
+            const contractSaleElement = document.getElementById('apps_sales_views_partials_formSales_contractSale');
+            contractSaleElement.loadJSON(answer.contractSale);
+            contractSaleElement.lock();
         }
 
 

@@ -75,7 +75,11 @@ class Sale(models.Model):
 
     first_buy_do=models.BooleanField(default=False)
     commission_made=models.BooleanField(default=False)
-    
+
+    #information of contracts 
+    contractSale = models.JSONField(null=True) #this is for know the information of the contract of the sale. This is for know the information of the contract in the moment of the sale, because if we change the contract of the product, this not need to change in the sale
+
+
     created_by = models.ForeignKey(
         CustomUser,
         on_delete=models.SET_NULL,

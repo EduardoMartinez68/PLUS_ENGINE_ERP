@@ -157,7 +157,7 @@
                     <th t="sale.th.id"></th>
                     <th t="sale.th.name"></th>
                     <th t="sale.th.customer"></th>
-                    <th t="sale.th.users"></th>
+                    <th t="sale.th.doctor"></th>
                     <th t="sale.th.date"></th>
                     <th class="text-right" t="sale.th.total"></th>
                     <th class="text-right" t="sale.th.buy"></th>
@@ -231,22 +231,7 @@
 </script>
 
 
-<script>
-(()=>{
-    //this variable is for can render all the container
-    //this variable are remplace when the server run and load all the container
-    const namespace = "{plus}";
-    
-    //here your create a function encapsulated
-    function render_canva() {
-        console.log("¡Ejecutando render_canva desde la clave {plus}!");
-    }
 
-    // save the function in the variable globale <AppFunctions> for after use in other scripts 
-    window.Plus.Functions.define(namespace, "render", render_canva);
-    window.Plus.Functions.get(namespace).render_canva(); //here we run a function in specific
-})();
-</script>
 
 
 

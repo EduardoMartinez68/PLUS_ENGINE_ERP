@@ -344,6 +344,164 @@
         color: #0f172a;
         font-weight: 500;
     }
+
+/* =========================================================
+   CONTRATO DEL PACIENTE
+   ========================================================= */
+
+#contract-print-container {
+    width: 100%;
+}
+
+/*
+ * Cada página del contrato representa una hoja.
+ */
+.contract-page {
+    width: 100%;
+    box-sizing: border-box;
+
+    background: white;
+
+    padding: 20mm;
+
+    page-break-after: always;
+    break-after: page;
+
+    overflow: hidden;
+}
+
+/*
+ * La última página no necesita crear una página vacía.
+ */
+.contract-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+}
+
+/*
+ * Cada bloque intenta mantenerse completo
+ * dentro de una misma página.
+ */
+.contract-block {
+    width: 100%;
+    max-width: 100%;
+
+    box-sizing: border-box;
+
+    margin-bottom: 12px;
+
+    page-break-inside: avoid;
+    break-inside: avoid;
+
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+}
+
+/*
+ * Evita que los títulos queden solos
+ * al final de una página.
+ */
+.contract-block h1,
+.contract-block h2,
+.contract-block h3 {
+    page-break-after: avoid;
+    break-after: avoid;
+}
+
+/*
+ * Ayuda a que los párrafos no queden con
+ * una sola línea al final de una página.
+ */
+.contract-block p {
+    orphans: 3;
+    widows: 3;
+}
+
+/* Tablas */
+
+.contract-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+
+    overflow: visible;
+
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.contract-table {
+    width: 100%;
+    max-width: 100%;
+
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.contract-table td,
+.contract-table th {
+    border: 1px solid #e2e8f0;
+
+    padding: 8px;
+
+    vertical-align: top;
+
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.contract-table th {
+    background: #f8fafc;
+    font-weight: 600;
+}
+
+/*
+ * Si una tabla continúa en otra página,
+ * el navegador puede repetir el encabezado.
+ */
+.contract-table thead {
+    display: table-header-group;
+}
+
+.contract-table tbody {
+    display: table-row-group;
+}
+
+.contract-table tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+/*
+ * Checklists
+ */
+.contract-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.contract-check-content {
+    flex: 1;
+    min-width: 0;
+
+    overflow-wrap: anywhere;
+}
+
+/*
+ * Listas
+ */
+.contract-list-item {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+
+/* =========================================================
+   IMPRESIÓN
+   ========================================================= */
 </style>
 
 
@@ -367,8 +525,7 @@
                 <p>{% if branch.name_of_the_person_in_charge %}{{ branch.name_of_the_person_in_charge }}{% else
                     %}{{company.name_of_the_person_in_charge }}{% endif %}</p>
                 <p>
-                    {% if branch.phone %}<span>telefono. {{ branch.phone }}</span>{% elif company.phone
-                    %}<span>telefono. {{company.phone }}</span>{% endif %}
+                    {% if branch.phone %}<span>telefono. {{ branch.phone }}</span>{% elif company.phone %}<span>telefono. {{company.phone }}</span>{% endif %}
                     {% if branch.cellphone %}
                     | <span>celular. {{ branch.cellphone }} </span>
                     {% elif company.cellphone %}
@@ -478,10 +635,410 @@
             <strong class="link-denty-cloud" style="color: #3367b1;">www.denty.cloud</strong>
         </a>
     </div>
+
+    <div id="contract-print-container"></div>
 </div>
 
 <script>
+    function renderContractSale(contract) {
+    function paginateContract() {
+
+        const pages =
+            Array.from(
+                container.querySelectorAll(".contract-page")
+            );
+
+        if (pages.length === 0) {
+            return;
+        }
+
+        /*
+        * Todos los bloques que se crearon inicialmente.
+        */
+        const allBlocks = [];
+
+        pages.forEach(page => {
+
+            Array.from(page.children).forEach(block => {
+                allBlocks.push(block);
+            });
+
+        });
+
+        /*
+        * Limpiamos las páginas.
+        */
+        container.innerHTML = "";
+
+        let page = createContractPage();
+
+        allBlocks.forEach(block => {
+
+            page.appendChild(block);
+
+            /*
+            * Altura máxima aproximada de una hoja A4
+            * descontando los márgenes de impresión.
+            *
+            * 297mm - 40mm = 257mm
+            *
+            * 1mm ≈ 3.7795px
+            *
+            * ≈ 971px
+            */
+            const maxHeight = 971;
+
+            if (page.scrollHeight > maxHeight) {
+
+                /*
+                * Quitamos el bloque que provocó
+                * que la página se desbordara.
+                */
+                page.removeChild(block);
+
+                /*
+                * Crear nueva página.
+                */
+                page = createContractPage();
+
+                /*
+                * Colocar el bloque completo
+                * en la siguiente página.
+                */
+                page.appendChild(block);
+            }
+        });
+    }
+
+
+        const container = document.getElementById("contract-print-container");
+
+        if (!container) {
+            console.error("No existe #contract-print-container");
+            return;
+        }
+
+        container.innerHTML = "";
+
+        if (!contract || !contract.blocks || !Array.isArray(contract.blocks)) {
+            return;
+        }
+
+        const blocks = contract.blocks;
+
+        /*
+        * Creamos inicialmente una página.
+        */
+        let currentPage = createContractPage();
+
+        blocks.forEach(block => {
+
+            const element = renderContractBlock(block);
+
+            if (!element) {
+                return;
+            }
+
+            currentPage.appendChild(element);
+
+        });
+
+        /*
+        * Después de insertar todo, intentamos
+        * organizar los bloques por páginas.
+        */
+        paginateContract();
+
+        function createContractPage() {
+
+            const page = document.createElement("div");
+
+            page.className = "contract-page";
+
+            container.appendChild(page);
+
+            return page;
+        }
+
+        function renderContractBlock(block) {
+
+            const wrapper = document.createElement("div");
+
+            wrapper.className = "contract-block";
+
+            /*
+            * Aplicar estilos guardados por el editor.
+            */
+            if (block.styles) {
+
+                if (block.styles.color) {
+                    wrapper.style.color = block.styles.color;
+                }
+
+                if (block.styles.size) {
+                    wrapper.style.fontSize = `${block.styles.size}px`;
+                }
+
+                if (block.styles.align) {
+                    wrapper.style.textAlign = block.styles.align;
+                }
+            }
+
+            /*
+            * TABLA
+            */
+            if (block.type === "table") {
+
+                if (!Array.isArray(block.tableData)) {
+                    return null;
+                }
+
+                const tableWrapper =
+                    document.createElement("div");
+
+                tableWrapper.className =
+                    "contract-table-wrapper";
+
+                const table =
+                    document.createElement("table");
+
+                table.className =
+                    "contract-table";
+
+                /*
+                * Crear filas.
+                */
+                block.tableData.forEach((row, rowIndex) => {
+
+                    if (!Array.isArray(row)) {
+                        return;
+                    }
+
+                    const tr =
+                        document.createElement("tr");
+
+                    row.forEach(cell => {
+
+                        const cellElement =
+                            document.createElement(
+                                rowIndex === 0
+                                    ? "th"
+                                    : "td"
+                            );
+
+                        /*
+                        * El editor permite HTML.
+                        */
+                        cellElement.innerHTML =
+                            cell ?? "";
+
+                        tr.appendChild(cellElement);
+                    });
+
+                    /*
+                    * Primera fila como encabezado.
+                    */
+                    if (rowIndex === 0) {
+
+                        const thead =
+                            table.querySelector("thead") ||
+                            table.appendChild(
+                                document.createElement("thead")
+                            );
+
+                        thead.appendChild(tr);
+
+                    } else {
+
+                        let tbody =
+                            table.querySelector("tbody");
+
+                        if (!tbody) {
+
+                            tbody =
+                                document.createElement("tbody");
+
+                            table.appendChild(tbody);
+                        }
+
+                        tbody.appendChild(tr);
+                    }
+                });
+
+                tableWrapper.appendChild(table);
+
+                wrapper.appendChild(tableWrapper);
+
+                return wrapper;
+            }
+
+
+            /*
+            * LISTA DE CHECKBOX
+            */
+            if (block.type === "listCheck") {
+
+                const check =
+                    document.createElement("div");
+
+                check.className =
+                    "contract-check";
+
+                const checkbox =
+                    document.createElement("input");
+
+                checkbox.type = "checkbox";
+
+                checkbox.checked =
+                    Boolean(block.checked);
+
+                checkbox.disabled = true;
+
+                const content =
+                    document.createElement("div");
+
+                content.className =
+                    "contract-check-content";
+
+                content.innerHTML =
+                    block.content || "";
+
+                if (block.checked) {
+
+                    content.style.textDecoration =
+                        "line-through";
+
+                    content.style.opacity =
+                        "0.6";
+                }
+
+                check.appendChild(checkbox);
+                check.appendChild(content);
+
+                wrapper.appendChild(check);
+
+                return wrapper;
+            }
+
+
+            /*
+            * LISTA NUMERADA
+            */
+            if (block.type === "ol") {
+
+                const list =
+                    document.createElement("div");
+
+                list.className =
+                    "contract-list-item";
+
+                list.style.display = "flex";
+                list.style.gap = "8px";
+
+                const number =
+                    document.createElement("span");
+
+                number.textContent =
+                    getContractNumber(block.id, blocks) + ".";
+
+                number.style.fontWeight = "bold";
+
+                const content =
+                    document.createElement("div");
+
+                content.style.flex = "1";
+                content.style.minWidth = "0";
+
+                content.innerHTML =
+                    block.content || "";
+
+                list.appendChild(number);
+                list.appendChild(content);
+
+                wrapper.appendChild(list);
+
+                return wrapper;
+            }
+
+
+            /*
+            * LISTA CON VIÑETAS
+            */
+            if (block.type === "li") {
+
+                const list =
+                    document.createElement("div");
+
+                list.className =
+                    "contract-list-item";
+
+                list.style.display = "flex";
+                list.style.gap = "8px";
+
+                const bullet =
+                    document.createElement("span");
+
+                bullet.textContent = "•";
+
+                const content =
+                    document.createElement("div");
+
+                content.style.flex = "1";
+                content.style.minWidth = "0";
+
+                content.innerHTML =
+                    block.content || "";
+
+                list.appendChild(bullet);
+                list.appendChild(content);
+
+                wrapper.appendChild(list);
+
+                return wrapper;
+            }
+
+
+            /*
+            * TEXTO NORMAL / H1 / H2
+            */
+            const tag =
+                ["h1", "h2", "h3", "p"].includes(block.type)
+                    ? block.type
+                    : "p";
+
+            const element =
+                document.createElement(tag);
+
+            element.innerHTML =
+                block.content || "";
+
+            wrapper.appendChild(element);
+
+            return wrapper;
+        }
+
+
+        function getContractNumber(id, blocks) {
+
+            let number = 0;
+
+            for (const block of blocks) {
+
+                if (block.type === "ol") {
+                    number++;
+                }
+
+                if (block.id === id) {
+                    return number;
+                }
+            }
+
+            return "";
+        }
+    }
+
     function print_sale(data) {
+        console.log(JSON.stringify(data, null, 2));
         const tbody = document.getElementById("print-lines");
         tbody.innerHTML = "";
         let totalTaxesGlobal = 0;
@@ -553,6 +1110,95 @@
         //update the information of firma 
         document.getElementById("nameUserSale").textContent = data?.user || '';
         document.getElementById("nameCustomerSale").textContent = data?.customer || '';
+
+        if (data?.contractSaleElement) {
+
+            renderContractSale(
+                data.contractSaleElement
+            );
+
+        } else {
+
+            const contractContainer =
+                document.getElementById(
+                    "contract-print-container"
+                );
+
+            if (contractContainer) {
+                contractContainer.innerHTML = "";
+            }
+        }
+
+
         window.print();
+    }
+
+
+    async function btn_download_buy() {
+        if (!window.idSalesData) {
+            window.show_notification('error', 'sales.message.not-exist-id-sale');
+            return;
+        }
+
+        const saleId = window.idSalesData;
+        const url = `/sales/get_pdf_sales/${saleId}/`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // ¡Importante! Si usas Django con CSRF protegido por cookies, 
+                    // debes incluir el token aquí:
+                    'X-CSRFToken': getCookie('csrftoken') 
+                }
+            });
+
+            if (!response.ok) {
+                // Si el servidor respondió con un error (ej. 405, 404, etc.)
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al generar el PDF');
+            }
+
+            // 1. Convertir la respuesta a un Blob (objeto binario)
+            const blob = await response.blob();
+
+            // 2. Crear una URL temporal para ese blob
+            const downloadUrl = window.URL.createObjectURL(blob);
+
+            // 3. Crear un elemento <a> invisible para forzar la descarga
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            
+            // Puedes ponerle un nombre por defecto al archivo si lo deseas
+            a.download = `venta_${saleId}.pdf`; 
+            
+            document.body.appendChild(a);
+            a.click();
+
+            // 4. Limpiar removiendo el elemento y liberando la memoria
+            a.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+
+        } catch (error) {
+            console.error('Hubo un problema con la descarga:', error);
+            alert(error.message);
+        }
+    }
+
+    // Función auxiliar típica de Django para obtener el token CSRF de las cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     }
 </script>

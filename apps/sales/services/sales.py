@@ -271,7 +271,8 @@ class Sales:
                     payment_term_days=payment_term_days,
                     expiration_date=expiration_date,
                     status='pending',
-                    currency=data.get("currency", 'MXN')
+                    currency=data.get("currency", 'MXN'),
+                    contractSale=data.get("contractSale", None)
                 )
 
                 # ---------- create the items ----------
@@ -709,15 +710,16 @@ class Sales:
 
             #if can update the sale to accepted now we will to create a sale or get the contract that have
             #vinculate the sale if exist.
+            dataSignature=data.get('dataSignature', {})
             contract, created = Contract.objects.get_or_create(
                 sale=sale,
-                contract_text=data.get('contract_text',''),
+                contract_text=dataSignature.get('contract_text',''),
 
                 #information of the customer
-                patiente_signature_json=data.get('patiente_signature_json',''),
-                patient_name=data.get('patient_name',''),
-                company_signature_json=data.get('company_signature_json',''),
-                company_name=data.get('company_name',''),
+                patiente_signature_json=dataSignature.get('patiente_signature_json',''),
+                patient_name=dataSignature.get('patient_name',''),
+                company_signature_json=dataSignature.get('company_signature_json',''),
+                company_name=dataSignature.get('company_name',''),
                 patient_ip=ip,
             )
 
@@ -941,7 +943,8 @@ class Sales:
                 "created_at": sale.created_at if hasattr(sale, "created_at") else None,
                 "items": items_data,
                 "note_cancelled":sale.note_cancelled,
-                "link_pay_online_url":link_pay_online_url
+                "link_pay_online_url":link_pay_online_url,
+                "contractSale": sale.contractSale if hasattr(sale, "contractSale") else None
             }
             
             return {    
@@ -998,7 +1001,7 @@ class Sales:
                 query = query.filter(status=status)
 
             # 🔥 Orden
-            query = query.order_by('-creationDate', '-id')
+            query = query.order_by('-creationDate')
 
             # 📄 Paginación
             paginator = Paginator(query, 20)
@@ -1500,4 +1503,12 @@ class Sales:
             "answer": sale_data
         }
 
-        
+    #----------------------------PDF---------------------------------
+
+    @staticmethod
+    @require_permission("view_sales")
+    @ServiceRegistry.register(
+        "sales.SalesService.create_pdf_sales"
+    )
+    def create_pdf_sales(user, sale_id):
+        pass
