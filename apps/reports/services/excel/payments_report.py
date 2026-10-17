@@ -565,7 +565,7 @@ def generate_payment_methods_pdf_report(
         canvas.drawString(
             30,
             20,
-            "Powered by www.Denty.Cloud"
+            "Powered by PLUS ERP"
         )
 
         canvas.drawRightString(

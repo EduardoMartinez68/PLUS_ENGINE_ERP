@@ -449,7 +449,7 @@ def generate_sales_pdf_report(
 
         canvas.saveState()
 
-        footer_text = "Powered by www.Denty.Cloud"
+        footer_text = "Powered by PLUS ERP"
 
         canvas.setFont('Helvetica', 9)
 
