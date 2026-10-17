@@ -28,4 +28,4 @@ redis>=3.5.3,<4.0.0
 
 django-minify-html==1.14.0
 django-axes==8.3.1
-pytz
+pytz==2022.6
