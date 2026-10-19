@@ -1,0 +1,17 @@
+{
+  "dashboard.title.dashboard": "Dashboard",
+  "dashboard.title.welcome": "Bienvenido a tu panel de reportes",
+
+
+  "dashboard.status.A":"Completado",
+  "dashboard.status.P":"Pendiente",
+  "dashboard.status.X":"Cancelada",
+  "dashboard.status.C":"Confirmada",
+
+
+
+  "payroll.kpi.current_week":"Nómina Semana Actual",
+  "payroll.kpi.previous_week":"Nómina Semana Anterior",
+  "payroll.kpi.current_month":"Nómina Mes Actual",
+  "payroll.kpi.previous_month":"Nómina Mes Anterior"
+}

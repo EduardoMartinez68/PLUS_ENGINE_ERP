@@ -253,6 +253,7 @@ from reportlab.platypus import (
     Image,
     PageBreak
 )
+
 from collections import defaultdict
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet

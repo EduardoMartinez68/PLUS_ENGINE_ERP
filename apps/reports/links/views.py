@@ -1,5 +1,4 @@
 from django.shortcuts import render
-
 from core.Plus import Plus
 import json
 from django.http import JsonResponse
@@ -344,3 +343,6 @@ def download_pdf_inventory(request):
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
     
+
+    
+

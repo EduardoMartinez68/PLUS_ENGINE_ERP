@@ -1,0 +1,401 @@
+<!---
+<style>
+    :root {
+        --db-primary-pastel: #1e60a9;
+        /* Azul pastel clínico */
+        --db-primary-hover: #174a8a;
+        --db-bg-light: #F4F7F9;
+        /* Fondo gris-azulado muy tenue */
+        --db-text-main: #2C3E50;
+        --db-text-muted: #7F8C8D;
+        --db-white: #ffffff;
+        --db-green-whatsapp: #25D366;
+        --db-shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    /* --- Banner Superior --- */
+    .db-trial-banner {
+        background-color: var(--db-primary-pastel);
+        color: white;
+        text-align: center;
+        padding: 18px 0;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .db-trial-banner a {
+        color: white;
+        text-decoration: underline;
+        margin-left: 5px;
+        transition: opacity 0.2s;
+    }
+
+    .db-trial-banner a:hover {
+        opacity: 0.8;
+    }
+
+    /* --- Contenedor --- */
+    .db-container {
+        max-width: 850px;
+        margin: 50px auto;
+        text-align: center;
+        padding: 0 20px;
+    }
+
+    /* --- Logo Estilo Odontológico --- */
+    .db-logo-wrapper {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .db-logo-icon {
+        height: 55px;
+        width: auto;
+        fill: var(--db-primary-pastel);
+    }
+
+    .db-logo-text {
+        font-size: 42px;
+        font-weight: 800;
+        color: #34495E;
+        letter-spacing: -1px;
+    }
+
+    .db-logo-x {
+        color: var(--db-primary-pastel);
+    }
+
+    /* --- Textos --- */
+    .db-main-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #2C3E50;
+    }
+
+    .db-sub-title {
+        font-size: 17px;
+        color: var(--db-text-muted);
+        margin-bottom: 40px;
+    }
+
+    /* --- Secciones --- */
+    .db-section {
+        margin-bottom: 50px;
+    }
+
+    .db-section-tag {
+        font-size: 12px;
+        color: var(--db-primary-pastel);
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+    /* --- Botones de Descarga --- */
+    .db-button-grid {
+        display: flex;
+        justify-content: center;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
+    .db-btn-download {
+        background-color: var(--db-white);
+        color: var(--db-primary-pastel);
+        border: 2px solid #E1E8ED;
+        padding: 14px 28px;
+        border-radius: 12px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        min-width: 160px;
+        box-shadow: var(--db-shadow-soft);
+    }
+
+    .db-btn-download:hover {
+        border-color: var(--db-primary-pastel);
+        background-color: var(--db-primary-pastel);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(127, 179, 213, 0.3);
+    }
+
+    .db-btn-icon {
+        margin-right: 12px;
+        height: 24px;
+        width: 24px;
+        fill: var(--db-primary-pastel);
+        transition: fill 0.3s;
+    }
+
+    .db-btn-download:hover .db-btn-icon {
+        fill: white;
+    }
+
+    /* --- Footer --- */
+    .db-footer {
+        margin-top: 60px;
+        padding: 40px 0;
+        border-top: 1px solid #E1E8ED;
+        color: var(--db-text-muted);
+    }
+
+    .db-contact-link {
+        display: inline-flex;
+        align-items: center;
+        margin: 8px 15px;
+        text-decoration: none;
+        color: var(--db-text-main);
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .db-contact-link:hover {
+        color: var(--db-primary-pastel);
+    }
+
+    .db-contact-svg {
+        width: 18px;
+        height: 18px;
+        margin-right: 8px;
+        fill: var(--db-primary-pastel);
+    }
+
+    .db-legal {
+        font-size: 12px;
+        margin-top: 20px;
+        opacity: 0.7;
+    }
+
+    /* --- WhatsApp Flotante --- */
+    .db-wa-float {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background-color: var(--db-green-whatsapp);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+        transition: all 0.3s;
+        z-index: 999;
+    }
+
+    .db-wa-float:hover {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .db-wa-svg {
+        width: 32px;
+        height: 32px;
+        fill: white;
+    }
+
+    @media (max-width: 600px) {
+        .db-button-grid {
+            flex-direction: column;
+            padding: 0 40px;
+        }
+
+        .db-btn-download {
+            justify-content: center;
+        }
+    }
+</style>
+
+
+<div class="db-trial-banner">
+    Días de prueba restantes: 7 | <a href="#">Suscribirme ahora</a>
+</div>
+
+<div class="db-container">
+
+
+    <span class="db-logo-text"><i class="fi fi-sr-tooth" style="font-size: 2rem;"></i> DENTY<span class="db-logo-x">.CLOUD</span></span>
+    <center><b>SOFTWARE ODONTOLOGICO</b></center>
+    <p class="db-sub-title">Brindamos soluciones tecnológicas y administrativas para consultorios Dentales.</p>
+
+    <div class="db-section">
+        <div class="db-section-tag">Acceso rapidos</div>
+        <div class="db-button-grid">
+            <a href="#" class="db-btn-download">
+                <svg class="db-btn-icon" viewBox="0 0 24 24">
+                    <path
+                        d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z" />
+                </svg>
+                <span>MacOS</span>
+            </a>
+            <a href="#" class="db-btn-download">
+                <svg class="db-btn-icon" viewBox="0 0 24 24">
+                    <path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z" />
+                </svg>
+                <span>Windows</span>
+            </a>
+            <a href="#" class="db-btn-download">
+                <svg class="db-btn-icon" viewBox="0 0 24 24">
+                    <path d="M12 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z" />
+                </svg>
+                <span>Linux</span>
+            </a>
+        </div>
+    </div>
+
+
+    <footer class="db-footer">
+        <div class="db-contact-box">
+            <a href="tel:+523173825300" class="db-contact-link">
+                <svg class="db-contact-svg" viewBox="0 0 24 24">
+                    <path
+                        d="M6.62 10.79a15.053 15.053 0 0 0 6.58 6.58l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.46.57 3.58.11.35.03.74-.25 1.02l-2.2 2.2z" />
+                </svg>
+                +52 444 631 6677
+            </a>
+            <a href="mailto: technologyfud@gmail.com" class="db-contact-link">
+                <svg class="db-contact-svg" viewBox="0 0 24 24">
+                    <path
+                        d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                </svg>
+                 technologyfud@gmail.com
+            </a>
+        </div>
+        <div class="db-legal">
+            <p><strong>PLUS SOFTWARE DEVELOPER C.V.</strong></p>
+            <p>Tecnologia con un toque de magia | Todos los derechos reservados © 2026</p>
+        </div>
+    </footer>
+</div>
+
+<a href="#" class="db-wa-float">
+    <svg class="db-wa-svg" viewBox="0 0 24 24">
+        <path
+            d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42 1.55 1.56 2.41 3.63 2.41 5.83 0 4.54-3.7 8.23-8.24 8.23-1.48 0-2.93-.39-4.19-1.15l-.3-.17-3.12.82.83-3.04-.2-.32a8.188 8.188 0 0 1-1.26-4.38c.01-4.54 3.7-8.24 8.25-8.24zm-2.02 3.51c-.13 0-.31.05-.48.24-.17.18-.64.63-.64 1.54 0 .91.66 1.78.75 1.91.09.13 1.3 1.99 3.16 2.79.44.19.78.3 1.05.39.45.14.85.12 1.17.07.36-.04 1.1-.45 1.25-.88.16-.43.16-.8 1.1-.88-.05-.08-.18-.12-.39-.23l-1.92-.95c-.22-.11-.38-.17-.54.06-.16.23-.61.76-.75.91-.14.15-.28.17-.5.06a6.29 6.29 0 0 1-1.85-1.14c-.6-.53-1-1.18-1.11-1.39-.12-.21-.01-.33.1-.44.1-.1.22-.26.33-.38.11-.12.15-.21.22-.35.07-.14.03-.26-.01-.38l-.4-.96c-.12-.29-.26-.25-.36-.25z" />
+    </svg>
+</a>
+--->
+
+
+<style>
+    /* Header */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .header h1 {
+        font-size: 26px;
+        font-weight: 600;
+    }
+
+    .header span {
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    /* Cards */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 20px;
+    }
+
+    .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        padding: 20px;
+    }
+
+    .card h3 {
+        margin: 0 0 10px;
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--muted);
+    }
+
+    .card strong {
+        font-size: 22px;
+        font-weight: 600;
+    }
+
+    /* Status */
+    .status {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 13px;
+        margin-top: 10px;
+    }
+
+    .confirmada {
+        background: #eaf4ff;
+        color: var(--primary);
+    }
+
+    .pendiente {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    /* Sections */
+    .section {
+        margin-top: 40px;
+    }
+
+    .section h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    /* Actions */
+    .actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 25px;
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .btn-secondary {
+        background: #eaf4ff;
+        color: var(--primary);
+    }
+</style>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <h1>{{ request.user.username }}</h1>
+            <span t="dashboard.title.welcome"></span>
+        </div>
+        <span>{{ request.user.company.company_name }}</span>
+    </div>
+    <button onclick="window.print()" class="plugin-sales-btn-print">Imprimir Reporte</button>
+    <br><br>
+    <!-- Cards -->
+    <div class="grid" id="dashboard_grid">
+
+    </div>
+
+    <!-- Actions -->
+    <div class="actions" id="dashboard_actions_buttons">
+
+    </div>
+
+    <!-- Historial -->
+    <div class="section" id="section_down">
+    </div>
+</div>

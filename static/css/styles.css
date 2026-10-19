@@ -1750,6 +1750,7 @@ hr {
 
 .sub-menu-app-btn-primary:hover {
   filter: brightness(0.9);
+  background-color: var(--color-hover-success);
 }
 
 .sub-menu-app-btn-secondary {

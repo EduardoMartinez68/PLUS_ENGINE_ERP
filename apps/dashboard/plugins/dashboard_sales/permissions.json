@@ -1,0 +1,48 @@
+{
+    "character":{
+        "icon":"fi fi-rr-review"
+    },
+    "permissions": [
+        "add_customer",
+        "upload_customer_for_excel",
+        "view_customer",
+        "update_customer",
+        "delete_customer",
+        "recover_customer",
+        
+
+
+        "view_type_customer",
+        "add_type_customer",
+        "update_type_customer",
+        "delete_type_customer",
+
+        "view_source_customer",
+        "add_source_customer",
+        "update_source_customer",
+        "delete_source_customer"
+    ], 
+    "translate":{
+        "es": {
+            "app_name": "Clientes",
+            "description": "Administra toda la información de los clientes, incluyendo sus datos de contacto, historial y registros asociados, asegurando un control completo sobre la relación con los clientes.",
+
+            "add_customer": "Permite registrar un nuevo cliente en el sistema, agregando sus datos de contacto y detalles relevantes.",
+            "upload_customer_for_excel": "Permite importar múltiples clientes de manera masiva mediante un archivo XLSX, facilitando la carga de datos.",
+            "view_customer": "Permite visualizar la lista completa de clientes y sus detalles individuales, incluyendo información de contacto y registros asociados.",
+            "update_customer": "Permite modificar o actualizar la información existente de un cliente.",
+            "delete_customer": "Permite eliminar clientes del sistema.",
+            "recover_customer": "Permite restaurar clientes previamente eliminados, recuperando toda su información y registros asociados.",
+
+            "view_type_customer": "Permite consultar todas las categorías de clientes existentes y sus características.",
+            "add_type_customer": "Permite crear nuevas categorías de clientes, clasificando según necesidades de la empresa.",
+            "update_type_customer": "Permite modificar o actualizar las categorías existentes de clientes.",
+            "delete_type_customer": "Permite eliminar categorías de clientes del sistema, asegurando que no queden registros inconsistentes.",
+
+            "view_source_customer": "Permite consultar todos los medios de captación de clientes registrados en el sistema.",
+            "add_source_customer": "Permite agregar nuevos medios de captación para clasificar cómo se obtuvo cada cliente.",
+            "update_source_customer": "Permite actualizar la información de los medios de captación existentes.",
+            "delete_source_customer": "Permite eliminar medios de captación de clientes, asegurando consistencia en los registros del sistema."
+        }
+    }
+}

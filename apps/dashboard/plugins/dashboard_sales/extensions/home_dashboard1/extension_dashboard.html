@@ -1,0 +1,227 @@
+<style>
+    .plugin-sales-container {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #333;
+        padding: 20px;
+    }
+
+    .plugin-sales-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .plugin-sales-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    /* Cards de Totales */
+    .plugin-sales-card {
+        flex: 1;
+        min-width: 180px;
+        background: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        border-top: 4px solid #444;
+    }
+
+    .plugin-sales-card-alt {
+        border-top-color: #9e9e9e;
+        background: #fdfdfd;
+    }
+
+    .plugin-sales-card-title {
+        font-size: 0.85rem;
+        color: #666;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+    .plugin-sales-card-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-top: 5px;
+        color: #2c3e50;
+    }
+
+    /* Cards de Depósitos */
+    .plugin-sales-deposit-card {
+        flex: 1;
+        min-width: 200px;
+        padding: 15px;
+        border-radius: 6px;
+        background: #fff;
+        border: 1px solid #eee;
+    }
+
+    .plugin-sales-border-cash {
+        border-left: 6px solid #4CAF50;
+    }
+
+    .plugin-sales-border-card {
+        border-left: 6px solid #2196F3;
+    }
+
+    .plugin-sales-border-transfer {
+        border-left: 6px solid #9C27B0;
+    }
+
+    .plugin-sales-chart-wrapper {
+        flex: 1;
+        min-width: 300px;
+        padding: 15px;
+        background: #fff;
+        border-radius: 8px;
+    }
+
+    .plugin-sales-btn-print {
+        background: #2c3e50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .plugin-sales-divider {
+        border: 0;
+        border-top: 1px solid #ddd;
+        margin: 20px 0;
+    }
+
+    @media print {
+        .plugin-sales-btn-print {
+            display: none;
+        }
+
+        .plugin-sales-card,
+        .plugin-sales-deposit-card {
+            border: 1px solid #ccc !important;
+            box-shadow: none !important;
+        }
+    }
+</style>
+<div class="container">
+    <div class="plugin-sales-container">
+        <div class="plugin-sales-header">
+            <h2>Reporte de Ventas y Depósitos</h2>
+        </div>
+
+        <div class="plugin-sales-row">
+            <div class="plugin-sales-card">
+                <span class="plugin-sales-card-title">Ventas Hoy</span>
+                <div id="label_sales_today" class="plugin-sales-card-value">$0.00</div>
+            </div>
+            <div class="plugin-sales-card">
+                <span class="plugin-sales-card-title">Esta Semana</span>
+                <div id="label_sales_week" class="plugin-sales-card-value">$0.00</div>
+            </div>
+            <div class="plugin-sales-card">
+                <span class="plugin-sales-card-title">Este Mes</span>
+                <div id="label_sales_month" class="plugin-sales-card-value">$0.00</div>
+            </div>
+            <div class="plugin-sales-card plugin-sales-card-alt">
+                <span class="plugin-sales-card-title">Mes Anterior</span>
+                <div id="label_sales_prev_month" class="plugin-sales-card-value">$0.00</div>
+            </div>
+        </div>
+
+        <hr class="plugin-sales-divider">
+
+        <h3>Desglose de Depósitos (Mes Actual)</h3>
+        <div class="plugin-sales-row">
+            <div class="plugin-sales-deposit-card plugin-sales-border-cash">
+                <h4>Efectivo (Físico)</h4>
+                <p id="dep_cash">$0.00</p>
+            </div>
+            <div class="plugin-sales-deposit-card plugin-sales-border-card">
+                <h4>Tarjetas (Voucher)</h4>
+                <p id="dep_card">$0.00</p>
+            </div>
+            <div class="plugin-sales-deposit-card plugin-sales-border-transfer">
+                <h4>Devolicones o Cambio</h4>
+                <p id="dep_transfer">$0.00</p>
+            </div>
+        </div>
+
+        <div class="plugin-sales-row">
+            <div class="plugin-sales-chart-wrapper">
+                <canvas id="paymentMethodChart"></canvas>
+            </div>
+            <div class="plugin-sales-chart-wrapper">
+                <canvas id="salesComparisonChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Función para dar formato de moneda
+    function formatMoney(amount) {
+        return new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN'
+        }).format(amount || 0);
+    }
+
+    // Función para sumar todos los métodos de un periodo (usando tu lógica de backend)
+    function sumPeriodTotal(periodData) {
+        if (!periodData) return 0;
+        return parseFloat(periodData.cash || 0) +
+            parseFloat(periodData.card || 0) +
+            parseFloat(periodData.transfer || 0) +
+            parseFloat(periodData.change || 0);
+    }
+
+    async function initDashboard() {
+        const backend = await window.send_message_to_the_server(
+            `dashboard/view_get_information_dashboard/DashboardReportSalesPlugin/`,
+            {}, true, 'POST'
+        );
+
+        const answer = backend.answer[0].DashboardReportSalesPlugin.data.get_sales_by_period;
+
+        // 1. Llenar Cards de Ventas
+        document.getElementById('label_sales_today').textContent = formatMoney(sumPeriodTotal(answer.today));
+        document.getElementById('label_sales_week').textContent = formatMoney(sumPeriodTotal(answer.week));
+        document.getElementById('label_sales_month').textContent = formatMoney(sumPeriodTotal(answer.month));
+        document.getElementById('label_sales_prev_month').textContent = formatMoney(sumPeriodTotal(answer.previous_month));
+
+        // 2. Llenar Desglose de Depósitos (Mes Actual)
+        document.getElementById('dep_cash').textContent = formatMoney(answer.month.cash);
+        document.getElementById('dep_card').textContent = formatMoney(answer.month.card);
+        //document.getElementById('dep_transfer').textContent = formatMoney(answer.month.transfer);
+        document.getElementById('dep_transfer').textContent = formatMoney(answer.month.change);
+
+        // 3. Renderizar Gráficos
+        render_payment_methods_chart(answer.month);
+
+        // Gráfico de comparación incluyendo Mes Anterior
+        const ctxComp = document.getElementById('salesComparisonChart').getContext('2d');
+        new Chart(ctxComp, {
+            type: 'bar',
+            data: {
+                labels: ['Mes Anterior', 'Mes Actual', 'Semana', 'Hoy'],
+                datasets: [{
+                    label: 'Ingresos Totales (MXN)',
+                    data: [
+                        sumPeriodTotal(answer.previous_month),
+                        sumPeriodTotal(answer.month),
+                        sumPeriodTotal(answer.week),
+                        sumPeriodTotal(answer.today)
+                    ],
+                    backgroundColor: ['#95a5a6', '#3498db', '#2ecc71', '#f1c40f']
+                }]
+            }
+        });
+    }
+
+    // Ejecutar
+    initDashboard();
+</script>

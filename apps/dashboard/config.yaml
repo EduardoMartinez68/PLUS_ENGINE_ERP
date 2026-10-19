@@ -1,0 +1,9 @@
+
+name: "dashboard"
+appName: "dashboard"
+icon: "dashboard/icon.webp"
+path: "/dashboard"
+dbInit: true
+public: true
+permissionsFile: 'permissions.json'
+    

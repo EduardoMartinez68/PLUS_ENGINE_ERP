@@ -1,0 +1,289 @@
+<!--
+<span class="status pendiente">Pendiente de pago</span>
+<span class="status pendiente">Pendiente de pago</span>
+<span class="status pendiente">En proceso</span>
+<div class="status confirmada">Confirmada</div>
+--->
+<style>
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    align-items: stretch;
+}
+
+.chart-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.chart-card.small {
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+.chart-title {
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+/* Control real del canvas */
+.chart-card canvas {
+    width: 100% !important;
+    height: 220px !important;
+}
+</style>
+<plus-extension extension_id="dashboard_grid">
+    <div class="card">
+        <h3 t="dashboard.plugin.dashboard_dentist.title.appoint-today"></h3>
+        <strong id="label_appoint_today">...</strong>
+    </div>
+
+    <div class="card">
+        <h3 t="dashboard.plugin.dashboard_dentist.title.appoint-week"></h3>
+        <strong id="label_appoint_week">...</strong>
+    </div>
+
+    <div class="card">
+        <h3 t="dashboard.plugin.dashboard_dentist.title.cancelled-appointments"></h3>
+        <strong id="label_cancelled_appointments">...</strong>
+    </div>
+    <div class="card">
+        <h3 t="dashboard.plugin.dashboard_dentist.title.attended-appointments"></h3>
+        <strong id="label_attended_appointments">...</strong>
+    </div>
+
+</plus-extension>
+
+
+<!--
+<plus-extension extension_id="dashboard_actions_buttons">
+    <button class="btn btn-primary">Agendar cita</button>
+    <button class="btn btn-secondary">Ver pagos</button>
+    <button class="btn btn-secondary">Contactar clínica</button>
+</plus-extension>
+--->
+<style>
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+#appointments-table {
+    width: 100%;
+    min-width: 600px; 
+    border-collapse: collapse;
+}
+</style>
+<plus-extension extension_id="section_down">
+    <div class="charts-grid">
+        <div class="chart-card small">
+            <h3 class="chart-title" t="dashboard.plugin.dashboard_dentist.title.appointment-statuses"></h3>
+            <canvas id="appointmentStatusChart"></canvas>
+        </div>
+
+        <div class="chart-card small">
+            <h3 class="chart-title" t="dashboard.plugin.dashboard_dentist.title.appointment-types"></h3>
+            <canvas id="appointmentTypeChart"></canvas>
+        </div>
+    </div>
+    <h2 t="dashboard.plugin.dashboard_dentist.title.next-appointments"></h2>
+    <div class="table-container">
+        <table id="appointments-table">
+            <thead>
+                <tr>
+                    <th t="dashboard.plugin.dashboard_dentist.title.date"></th>
+                    <th t="dashboard.plugin.dashboard_dentist.title.title"></th>
+                    <th t="dashboard.plugin.dashboard_dentist.title.user"></th>
+                    <th t="dashboard.plugin.dashboard_dentist.title.status"></th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</plus-extension>
+
+<script>
+    //here we will to load the information of the plugins in the dashboard
+    (async ()=>{
+        
+        function renderAppointmentsTable(appointments) {
+            const tbody = document.querySelector("#appointments-table tbody");
+            tbody.innerHTML = ""; // clear table
+
+            //when not exist nothing appoint show message
+            if (!appointments || appointments.length === 0) {
+                const message=window.translate_text('dashboard.plugin.dashboard_dentist.message.no-appointments')
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align:center;">${message}</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            
+            //if exist appoints we will to read the list and show in the table
+            appointments.forEach(app => {
+                const date = new Date(app.date); //convert the time to date object
+
+                //here we will to format the date to show in the table
+                const formattedDate = date.toLocaleDateString(undefined, {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true
+                });
+
+
+                const status = getStatusBadge(app.status); //get the status with the badge
+
+                //construct the row of the table
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${formattedDate}</td>
+                    <td>${app.title}</td>
+                    <td>${app.doctor}</td>
+                    <td>${status}</td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+        
+        function getStatusBadge(appStatus) {
+            const statusConfig = {
+                'P': { label: 'pending',   color: '#FEF3C7', text: '#92400E', border: '#F59E0B' }, // Amber
+                'C': { label: 'confirmed', color: '#D1FAE5', text: '#065F46', border: '#10B981' }, // green
+                'X': { label: 'cancelled', color: '#FEE2E2', text: '#991B1B', border: '#EF4444' }, // red
+                'A': { label: 'attended',  color: '#DBEAFE', text: '#1E40AF', border: '#3B82F6' }, // blue
+                'N': { label: 'no-show',   color: '#F3F4F6', text: '#374151', border: '#6B7280' }  // Grey
+            };
+
+            const config = statusConfig[appStatus] || { label: 'unknown', color: '#F9FAFB', text: '#111827', border: '#D1D5DB' };
+            
+            const translatedText = window.translate_text(`agenda.status.${config.label}`);
+
+            // Retornamos el div con estilos en línea para asegurar que se vea bien
+            return `
+                <div style="
+                    display: inline-block;
+                    padding: 4px 12px;
+                    border-radius: 9999px;
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    text-transform: capitalize;
+                    background-color: ${config.color};
+                    color: ${config.text};
+                    border: 1px solid ${config.border};
+                    white-space: nowrap;
+                ">
+                    ${translatedText}
+                </div>
+            `;
+        }
+
+        function render_graph(appointmentTypeData) {
+            const ctx = document.getElementById('appointmentStatusChart').getContext('2d');
+
+            // Convert object → arrays
+            const labels = Object.keys(appointmentTypeData);
+            const values = Object.values(appointmentTypeData);
+
+            // Colores por estado (puedes ajustarlos)
+            const statusColors = {
+                'P': '#FFC107', // Pending
+                'C': '#4CAF50', // Confirmed
+                'X': '#F44336', // Cancelled
+                'A': '#2196F3', // Attended
+                'N': '#9E9E9E'  // No Show
+            };
+
+            //here we will to translate the text of the status
+            const textTranslate = {
+                'P': window.translate_text('agenda.status.pending'),
+                'C': window.translate_text('agenda.status.confirmed'),
+                'X': window.translate_text('agenda.status.cancelled'),
+                'A': window.translate_text('agenda.status.attended'),
+                'N': window.translate_text('agenda.status.no-show')
+            };
+
+            const colors = labels.map(l => statusColors[l] || '#999');
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels.map(l => textTranslate[l] || l),
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+            
+        function render_type_chart(typeData) {
+            const ctx = document
+                .getElementById('appointmentTypeChart')
+                .getContext('2d');
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: typeData.map(i => i.label),
+                    datasets: [{
+                        data: typeData.map(i => i.value),
+                        backgroundColor: typeData.map(i => i.color)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Tipos de citas más comunes'
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+}
+        
+        //get the information from the backend for the the plugin of the dashboard of the dentist
+        const backend=await window.send_message_to_the_server(`dashboard/view_get_information_dashboard/DashboardDentistPlugin/`, {}, true, 'POST');
+        const answer=backend.answer[0].DashboardDentistPlugin.data;
+ 
+        //set the information in the dashboard
+        document.getElementById('label_appoint_today').textContent=answer.today_appointments_count;
+        document.getElementById('label_appoint_week').textContent=answer.scheduled;
+        document.getElementById('label_cancelled_appointments').textContent=answer.cancelled;
+        document.getElementById('label_attended_appointments').textContent=answer.attended;
+        renderAppointmentsTable(answer.get_next_appointments_today); //render the table with the next appointments
+
+
+        // graph for type appoints and status
+        render_graph(answer.appointment_status_pie);
+        render_type_chart(answer.appointment_type_pie);
+    })();
+</script>
+

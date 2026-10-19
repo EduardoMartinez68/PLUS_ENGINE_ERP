@@ -1,0 +1,1571 @@
+<style>
+    :root {
+        --med-primary: #004AAD;
+        --med-secondary: #38B6FF;
+        --med-bg: #F8FAFC;
+        --med-card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+        --med-border: #e2e8f0;
+        --med-text-main: #1e293b;
+        --med-text-muted: #64748b;
+        --med-success: #059669;
+        --med-danger: #e11d48;
+    }
+
+    .dashboard-container {
+        padding: 2rem 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        flex: 1 0 auto;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Sistema de Rejilla Personalizado */
+    .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .flex-between {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Tarjetas Elegantes */
+    .card {
+        background: #ffffff;
+        border: 1px solid var(--med-border);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: var(--med-card-shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        box-sizing: border-box;
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Tipografía */
+    .dashboard-header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--med-primary);
+        margin: 0 0 0.5rem 0;
+    }
+
+    .kpi-title {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--med-text-muted);
+    }
+
+    .kpi-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        margin: 0.5rem 0;
+    }
+
+    /* Componentes */
+    .progress-container {
+        height: 6px;
+        background: #f1f5f9;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+
+    .progress-bar {
+        height: 100%;
+        border-radius: 10px;
+    }
+
+    .stat-icon-mini {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .btn-pill {
+        padding: 0.5rem 1.25rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.2s;
+        border: 1px solid var(--med-primary);
+        color: var(--med-primary);
+        display: inline-block;
+    }
+
+    .btn-pill:hover {
+        background: var(--med-primary);
+        color: white;
+        cursor: pointer;
+    }
+
+    /* Utils */
+    .text-success {
+        color: var(--med-success);
+    }
+
+    .text-danger {
+        color: var(--med-danger);
+    }
+
+    .badge-soft-success {
+        background: #ecfdf5;
+        color: #059669;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+    /* Estilo base de la etiqueta */
+    .badge-status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 8px;
+        /* Bordes redondeados modernos */
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 5px;
+        border: 1px solid transparent;
+    }
+
+    /* Atendido - Verde Pastel */
+    .status-A {
+        background-color: #ecfdf5;
+        color: #065f46;
+        border-color: #d1fae5;
+    }
+
+    /* Pendiente - Azul/Cian Pastel */
+    .status-P {
+        background-color: #e0f2fe;
+        color: #075985;
+        border-color: #bae6fd;
+    }
+
+    /* Cancelado - Rojo/Rosa Pastel */
+    .status-X {
+        background-color: #fef2f2;
+        color: #991b1b;
+        border-color: #fee2e2;
+    }
+
+    .status-C {
+        background-color: #e0e7ff;
+        color: #3730a3;
+        border-color: #c7d2fe;
+    }
+
+    /* Estilo para la fecha superior */
+    .appt-date-label {
+        color: var(--med-text-muted);
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+</style>
+<style>
+    /* Contenedor de métricas secundarias */
+    .grid-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin: 2rem 0 3rem 0;
+    }
+
+    /* Estilo para los iconos circulares */
+    .stat-icon-circle {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    /* Variantes de tarjetas con acento inferior */
+    .card-accent-danger {
+        border-bottom: 4px solid var(--med-danger) !important;
+    }
+
+    .card-accent-success {
+        border-bottom: 4px solid var(--med-success) !important;
+    }
+
+    .card-accent-primary {
+        border-bottom: 4px solid var(--med-primary) !important;
+    }
+
+    /* Barra de progreso personalizada (sin Bootstrap) */
+    .mini-progress-bg {
+        width: 100%;
+        height: 6px;
+        background: #f1f5f9;
+        border-radius: 10px;
+        margin-top: 12px;
+        overflow: hidden;
+    }
+
+    .mini-progress-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.5s ease-in-out;
+    }
+
+    .bg-danger {
+        background-color: var(--med-danger);
+    }
+
+    .bg-success {
+        background-color: var(--med-success);
+    }
+</style>
+
+<style>
+    .dashboard-help-card {
+        display: inline-flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 20px;
+        background: #ffffff;
+        /* Fondo blanco puro */
+        border-radius: 20px;
+        /* Bordes muy suaves */
+        border: 1px solid #f1f5f9;
+        /* Borde casi invisible */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        /* Sombra muy tenue y difusa */
+        font-family: 'Inter', sans-serif;
+        max-width: 280px;
+        /* Tamaño compacto para el dashboard */
+    }
+
+    /* El enlace a YouTube: El elemento principal */
+    .yt-dashboard-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: #1e293b;
+        /* Gris muy oscuro, casi negro */
+        background-color: #f8fafc;
+        /* Un gris-azul muy tenue de fondo */
+        padding: 12px 16px;
+        border-radius: 12px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .yt-dashboard-link:hover {
+        background-color: #f1f5f9;
+        transform: translateY(-1px);
+        /* Pequeño efecto de elevación */
+    }
+
+    .yt-dashboard-link:hover .yt-text {
+        color: #e11d48;
+        /* El texto cambia a rojo sutil al pasar el mouse */
+    }
+
+    /* Contenedor del icono Play con color de YouTube */
+    .play-icon-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background-color: #ffe4e6;
+        /* Un rojo muy claro y suave */
+        border-radius: 8px;
+        color: #e11d48;
+        /* Rojo YouTube */
+    }
+
+    .yt-text {
+        font-size: 14px;
+        font-weight: 600;
+        /* Texto semi-negrita */
+        letter-spacing: -0.2px;
+        transition: color 0.2s;
+    }
+
+    /* Sección de WhatsApp: Secundaria y discreta */
+    .wa-dashboard-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-left: 8px;
+        /* Alineación con el texto de arriba */
+        font-size: 11px;
+        color: #94a3b8;
+        /* Gris suave */
+        text-transform: uppercase;
+        /* Texto en mayúsculas para estilo 'leyenda' */
+        letter-spacing: 0.5px;
+    }
+
+    /* Icono de WhatsApp sutil en gris */
+    .wa-icon {
+        width: 14px;
+        height: 14px;
+        fill: currentColor;
+    }
+
+    .wa-dashboard-number {
+        color: #64748b;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .wa-dashboard-number:hover {
+        text-decoration: underline;
+    }
+</style>
+
+
+<style>
+    .blogs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .blog-card-mini {
+        background: #fff;
+        border: 1px solid var(--med-border);
+        border-radius: 16px;
+        overflow: hidden;
+        transition: all 0.25s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .blog-card-mini:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--med-card-shadow);
+    }
+
+    .blog-img-mini {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+    }
+
+    .blog-content-mini {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .blog-title-mini {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--med-text-main);
+        margin-bottom: 6px;
+    }
+
+    .blog-desc-mini {
+        font-size: 0.75rem;
+        color: var(--med-text-muted);
+        flex: 1;
+    }
+
+    .blog-footer-mini {
+        margin-top: 10px;
+        font-size: 0.7rem;
+        color: var(--med-text-muted);
+        display: flex;
+        justify-content: space-between;
+    }
+</style>
+<style>
+    .subscription-active {
+        border-left: 4px solid var(--med-success);
+    }
+
+    .subscription-warning {
+        border-left: 4px solid #f59e0b;
+    }
+
+    .subscription-expired {
+        border-left: 4px solid var(--med-danger);
+    }
+</style>
+
+
+<style>
+    /* Contenedor de iconos con fondo suave para los KPI */
+    .icon-shape {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .bg-soft-primary {
+        background-color: #e0f2fe;
+        color: var(--med-primary);
+    }
+
+    .bg-soft-success {
+        background-color: #ecfdf5;
+        color: var(--med-success);
+    }
+
+    .bg-soft-danger {
+        background-color: #fef2f2;
+        color: var(--med-danger);
+    }
+
+    /* Mejora para la meta mensual */
+    .meta-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 0.5rem;
+    }
+
+    .percentage-badge {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 6px;
+        background: #f1f5f9;
+        color: var(--med-text-main);
+    }
+
+    /* Estilos específicos para el Pipeline de Ventas */
+    .pipeline-item {
+        padding: 0.75rem 1rem;
+        border-radius: 15px;
+        background: var(--med-bg);
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+    }
+
+    .pipeline-item:hover {
+        border-color: var(--med-border);
+        background: #ffffff;
+    }
+
+    .pipeline-status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 8px;
+        display: inline-block;
+    }
+
+    .bg-warning {
+        background-color: #f59e0b;
+    }
+
+    /* Para pendientes */
+    .bg-info {
+        background-color: var(--med-secondary);
+    }
+
+    /* Para el estilo de "Dato Histórico" */
+    .bg-soft-slate {
+        background-color: #f1f5f9;
+        color: #475569;
+    }
+
+    /* Contenedor para alinear icono y texto en una sola fila si se desea, 
+   o mantenerlo vertical con un toque de color */
+    .card-icon-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    /* Contenedor para mantener la proporción de la gráfica */
+    .chart-wrapper {
+        position: relative;
+        height: 300px;
+        /* Altura fija para desktop */
+        width: 100%;
+    }
+
+    /* Ajustes para móviles */
+    @media (max-width: 768px) {
+        .grid-2 {
+            grid-template-columns: 1fr !important;
+            /* Una sola columna en móvil */
+            gap: 1rem;
+        }
+
+        .chart-wrapper {
+            height: 250px;
+            /* Un poco más pequeña en móvil para que no ocupe toda la pantalla */
+        }
+
+        .card {
+            padding: 1.25rem;
+            /* Reducimos padding para ganar espacio */
+        }
+
+        .card h6 {
+            font-size: 0.85rem;
+            margin-bottom: 1rem !important;
+        }
+    }
+
+    .dashboard-footer {
+        padding: 2rem 1.5rem;
+        margin-top: 4rem;
+        text-align: center;
+        border-top: 1px solid var(--med-border);
+        background: rgba(248, 250, 252, 0.8);
+        /* Fondo semi-transparente */
+        backdrop-filter: blur(10px);
+        /* Efecto cristal suave */
+    }
+
+    .powered-by {
+        font-size: 0.85rem;
+        color: var(--med-text-muted);
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.3s ease;
+    }
+
+    .powered-by:hover {
+        color: var(--med-primary);
+    }
+
+    .powered-by strong {
+        font-weight: 800;
+        letter-spacing: -0.3px;
+    }
+
+    .footer-dot {
+        height: 4px;
+        width: 4px;
+        background-color: var(--med-secondary);
+        border-radius: 50%;
+        display: inline-block;
+    }
+</style>
+<style>
+  /* Contenedor en Grid para que parezcan columnas de una tabla limpia */
+  .table-utility-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 16px 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* La Tarjeta Minimalista */
+  .table-utility-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0; /* Borde muy suave */
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  /* Efecto hover sutil para interactividad elegante */
+  .table-utility-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  }
+
+  /* Resalte sutil para la tarjeta de Utilidad */
+  .table-utility-highlight {
+    background-color: #f8fafc; /* Un fondo ligeramente diferente */
+    border-color: #cbd5e1;
+  }
+
+  /* Encabezado de la tarjeta */
+  .table-utility-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  /* Títulos limpios en gris médico/profesional */
+  .table-utility-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* El valor numérico principal (Grande y limpio) */
+  .table-utility-value {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 8px 0;
+    letter-spacing: -0.02em;
+  }
+
+  /* Color especial para la utilidad neta */
+  .table-utility-value.profit-color {
+    color: #0f766e; /* Verde teca/esmeralda médico */
+  }
+
+  /* Texto de ayuda inferior */
+  .table-utility-footer {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 4px;
+  }
+
+  /* Indicadores de color minimalistas (Puntos) */
+  .table-utility-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  
+  .dot-income { background-color: #0284c7; }   /* Azul Clínico */
+  .dot-expense { background-color: #f59e0b; }  /* Ámbar Suave */
+  .dot-profit { background-color: #10b981; }   /* Verde Éxito */
+
+  /* Asegurar consistencia de box-sizing */
+  .table-utility-container *, 
+  .table-utility-container *::before, 
+  .table-utility-container *::after {
+    box-sizing: border-box;
+  }
+
+.profit-color{
+    color:#16a34a;
+}
+
+.loss-color{
+    color:#dc2626;
+}
+</style>
+<style>
+/* Contenedor general de KPIs de Nómina */
+.payroll-kpi-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Acentos de colores adicionales para tarjetas financieras */
+.card.card-accent-primary {
+    border-left: 4px solid var(--med-primary, #3b82f6);
+}
+.bg-soft-primary {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--med-primary, #3b82f6);
+}
+
+.card.card-accent-secondary {
+    border-left: 4px solid var(--med-secondary, #8b5cf6);
+}
+.bg-soft-secondary {
+    background-color: rgba(139, 92, 246, 0.1);
+    color: var(--med-secondary, #8b5cf6);
+}
+
+.card.card-accent-warning {
+    border-left: 4px solid var(--med-warning, #f59e0b);
+}
+.bg-soft-warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--med-warning, #f59e0b);
+}
+
+/* Tipografía interna de los KPIs */
+.kpi-title {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--med-text-muted, #6b7280);
+    font-size: 0.75rem;
+}
+
+.kpi-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--med-text-main, #111827);
+}
+</style>
+<div class="dashboard-container">
+    <div class="dashboard-header" style="margin-bottom: 3rem;">
+        <h1>Dashboard de {{ request.user.company.company_name }}</h1>
+        <p style="color: var(--med-text-muted); margin: 0;">Bienvenido, {{ request.user.username }}. Gestiona tu negocio hoy
+            hoy.</p>
+        <br>
+        <div style="display:flex; gap:16px; flex-wrap:wrap;">
+            <div class="dashboard-help-card">
+
+                <a href="https://www.youtube.com/@dentycloud" target="_blank" class="yt-dashboard-link">
+                    <div class="play-icon-container">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    </div>
+                    <span class="yt-text">Tutoriales en Video</span>
+                </a>
+
+                <div class="wa-dashboard-label">
+                    <svg class="wa-icon" viewBox="0 0 24 24">
+                        <path
+                            d="M.057 24l1.687-6.162c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.417-.003 6.557-5.338 11.892-11.893 11.892-1.997-.001-3.951-.5-5.688-1.448l-6.305 1.65zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+                    </svg>
+                    Soporte:
+                    <a href="https://wa.me/5214446316677" target="_blank" class="wa-dashboard-number">+52 1 444 631
+                        6677</a>
+                </div>
+            </div>
+            <!-- CARD SUSCRIPCIÓN -->
+            <div id="subscriptionCard" class="dashboard-help-card" style="display:none; min-width:260px;">
+
+                <div style="font-size:12px; color:#94a3b8; text-transform:uppercase;">
+                    Suscripción
+                </div>
+
+                <div id="planName" style="font-weight:700; font-size:16px;">
+                    Plan
+                </div>
+                <!--
+                <div id="planStatus" style="font-size:12px; margin-top:4px;">
+                    Estado
+                </div>
+                --->
+
+                <div id="planExpire" style="font-size:12px; color:#64748b;">
+                    Vence:
+                </div>
+                <!--
+                <a href="https://wa.me/5214446316677" target="_blank" class="btn-pill" style="margin-top:10px; text-align:center;">
+                    Gestionar plan
+                </a>
+                --->
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-------------------info basic---------------------->
+    <div class="grid-4">
+        <div class="card">
+            <div>
+                <small class="kpi-title">Ingresos Hoy</small>
+                <h4 class="kpi-value" id="today">$0</h4>
+            </div>
+            <div class="badge-soft-success" style="width: fit-content;">Sincronizado</div>
+        </div>
+
+        <div class="card">
+            <div>
+                <small class="kpi-title">Ingresos Semana</small>
+                <h4 class="kpi-value" id="week">cargando...</h4>
+                <div class="progress-container">
+                    <div class="progress-bar"
+                        style="width: 100%; background: linear-gradient(90deg, var(--med-primary), var(--med-secondary));">
+                    </div>
+                </div>
+            </div>
+            <small class="text-muted" style="font-size: 0.7rem; margin-top: 5px;">100% de mejora</small>
+        </div>
+
+        <div class="card">
+            <div>
+                <small class="kpi-title">Total Pacientes</small>
+                <h4 class="kpi-value" id="totalPatients">0</h4>
+            </div>
+            <p class="text-muted small" style="margin:0;" id="totalNewCustomers"> +0 nuevos</p>
+        </div>
+
+        <div class="card"
+            style="background: linear-gradient(135deg, var(--med-primary), #00357a); border: none; color: white;">
+            <div>
+                <small class="kpi-title" style="color: rgba(255,255,255,0.6)">Servicio Estrella</small>
+                <h4 style="font-size: 1.2rem; margin: 0.5rem 0;" id="topService">Cargando...</h4>
+            </div>
+            <div
+                style="background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 20px; font-size: 0.7rem; width: fit-content;">
+                ⭐ Más solicitado
+            </div>
+        </div>
+    </div>
+
+    <!-------------------sale this month---------------------->
+    <div class="grid-4">
+        <div class="card">
+            <div class="card-icon-header">
+                <div>
+                    <small class="kpi-title">Ganancias mes anterior</small>
+                    <h4 class="kpi-value" id="profit_last_month" style="color: var(--med-text-main);">$0</h4>
+                </div>
+                <div class="stat-icon-mini bg-soft-slate">
+                    <i class="fi fi-rr-calendar-check"></i>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <span style="font-size: 0.7rem; color: var(--med-text-muted);">Cierre contable final</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="meta-info">
+                <div>
+                    <small class="kpi-title">Entradas este Mes</small>
+                    <h4 class="kpi-value" id="get_all_the_sale_month" style="margin: 2px 0;">$0</h4>
+                </div>
+            </div>
+            <small style="color: var(--med-text-muted); font-size: 0.7rem; margin-top: 8px; display: block;">
+                Ingreso de dinero y Ventas.
+            </small>
+        </div>
+
+        <div class="card card-accent-danger">
+            <div class="card-icon-header">
+                <div>
+                    <small class="kpi-title">Salidas este mes</small>
+                    <h4 class="kpi-value" id="cancellations_month" style="color: var(--med-danger);">$0</h4>
+                </div>
+                <div class="stat-icon-mini bg-soft-danger">
+                    <i class="fi fi-rr-arrow-trend-down"></i>
+                </div>
+            </div>
+            <div class="progress-container" style="height: 4px; background: #fff1f2;">
+                <div class="progress-bar bg-danger" style="width: 100%; opacity: 0.3;"></div>
+            </div>
+            <small style="color: var(--med-text-muted); font-size: 0.7rem; margin-top: 8px; display: block;">
+                Egresos y devoluciones
+            </small>
+        </div>
+
+        <div class="card">
+            <div class="meta-info">
+                <div>
+                    <small class="kpi-title">Utilidad Mensual</small>
+                    <h4 class="kpi-value" id="month" style="margin: 2px 0;">$0</h4>
+                </div>
+                <div class="percentage-badge" id="goal-percent">65%</div>
+            </div>
+
+            <div class="progress-container" style="height: 8px;">
+                <div class="progress-bar"
+                    style="width: 65%; background: linear-gradient(90deg, var(--med-primary), var(--med-secondary));">
+                </div>
+            </div>
+            <small style="color: var(--med-text-muted); font-size: 0.7rem; margin-top: 8px; display: block;">
+                Objetivo basado en el mes anterior
+            </small>
+        </div>
+    </div>
+
+    <div class="table-utility-container">
+    
+        <!-- Tarjeta: Entradas -->
+        <div class="table-utility-card">
+            <div class="table-utility-header">
+            <span class="table-utility-dot dot-income"></span>
+            <h3 class="table-utility-title">Total de Ingresos</h3>
+            </div>
+            <div class="table-utility-value" id="totalInsideMoney">$...</div>
+            <div class="table-utility-footer">Histórico acumulado este año</div>
+        </div>
+
+        <!-- Tarjeta: Salidas -->
+        <div class="table-utility-card">
+            <div class="table-utility-header">
+            <span class="table-utility-dot dot-expense"></span>
+            <h3 class="table-utility-title" style="color: var(--med-danger);">Total de Gastos</h3>
+            </div>
+            <div class="table-utility-value" style="color: var(--med-danger);" id="totalOutsideMoney">$...</div>
+            <div class="table-utility-footer">Gastos e insumos médicos este año</div>
+        </div>
+
+        <!-- Tarjeta: Utilidad (Destacada sutilmente) -->
+        <div class="table-utility-card table-utility-highlight">
+            <div class="table-utility-header">
+            <span class="table-utility-dot dot-profit"></span>
+            <h3 class="table-utility-title">Total de Utilidad</h3>
+            </div>
+            <div class="table-utility-value profit-color" id="totalProfit">$...</div>
+            <div class="table-utility-footer">Rendimiento neto total este año</div>
+        </div>
+
+    </div>
+
+    <!-------------------type sales---------------------->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="flex-between" style="margin-bottom: 1.5rem;">
+            <h6 style="margin: 0; font-weight: 700;">
+                <i class="fi fi-rr-stats-check me-2"></i>Pipeline de Ventas Activas
+            </h6>
+            <span class="badge-soft-success">Sincronizado en tiempo real</span>
+        </div>
+
+        <div class="grid-4" style="margin-bottom: 0;">
+            <div class="pipeline-item">
+                <div class="flex-between">
+                    <small class="kpi-title" style="font-size: 0.6rem;">Por Aceptar</small>
+                    <span class="pipeline-status-indicator bg-warning"></span>
+                </div>
+                <h4 class="kpi-value" id="pipeline-pending" style="margin: 5px 0 0 0;">3</h4>
+                <small style="font-size: 0.65rem; color: var(--med-text-muted);">Cotizaciones enviadas</small>
+            </div>
+
+            <div class="pipeline-item">
+                <div class="flex-between">
+                    <small class="kpi-title" style="font-size: 0.6rem;">Aceptadas</small>
+                    <span class="pipeline-status-indicator bg-info"></span>
+                </div>
+                <h4 class="kpi-value" id="pipeline-accepted" style="margin: 5px 0 0 0;">14</h4>
+                <small style="font-size: 0.65rem; color: var(--med-text-muted);">Pendientes de pago</small>
+            </div>
+
+            <div class="pipeline-item" style="background: #eef2ff; border-color: #c7d2fe;">
+                <div class="flex-between">
+                    <small class="kpi-title" style="font-size: 0.6rem; color: var(--med-primary);">Total Activas</small>
+                    <i class="fi fi-rr-arrow-right" style="color: var(--med-primary); font-size: 0.8rem;"></i>
+                </div>
+                <h4 class="kpi-value" id="pipeline-total" style="margin: 5px 0 0 0; color: var(--med-primary);">17</h4>
+                <small style="font-size: 0.65rem; color: var(--med-primary); opacity: 0.8;">Flujo total esperado</small>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: center;">
+                <a onclick="nextWeb('/sales/add_sale/')" class="btn-pill"
+                    style="width: 100%; text-align: center; border-style: dashed;">
+                    + Nueva Cotización
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-------------------number sales and outsides---------------------->
+    <div class="grid-2">
+        <div class="card card-accent-success">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="icon-shape bg-soft-success">
+                    <i class="fi fi-rr-coins"></i>
+                </div>
+                <div>
+                    <small class="kpi-title">Nuevas Ventas</small>
+                    <h4 class="kpi-value" id="new_sales" style="margin:0;">cargando...</h4>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--med-text-muted);">
+                <span class="text-success" style="font-weight: 700;">↑ Activo</span> este periodo
+            </div>
+        </div>
+
+        <div class="card card-accent-danger">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="icon-shape bg-soft-danger">
+                    <i class="fi fi-rr-undo"></i>
+                </div>
+                <div>
+                    <small class="kpi-title">Ventas Canceladas</small>
+                    <h4 class="kpi-value" id="cancelled_sales" style="margin:0; color: var(--med-danger);">cargando...
+                    </h4>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--med-text-muted);">
+                Revisar motivos de devolución
+            </div>
+        </div>
+    </div>
+
+    <!-------------------KPI NOMINA---------------------->
+    <div class="grid-2 payroll-kpi-container">
+        <!-- Tarjeta: Semana Actual -->
+        <div class="card card-accent-primary">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="icon-shape bg-soft-primary">
+                    <i class="fi fi-rr-calendar-lines"></i>
+                </div>
+                <div>
+                    <small class="kpi-title" t="payroll.kpi.current_week">Nómina Semana Actual</small>
+                    <h4 class="kpi-value" id="kpi_current_week" style="margin:0;">cargando...</h4>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--med-text-muted);">
+                <span class="text-primary" style="font-weight: 700;">● Periodo en curso</span>
+            </div>
+        </div>
+
+        <!-- Tarjeta: Semana Anterior -->
+        <div class="card card-accent-secondary">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="icon-shape bg-soft-secondary">
+                    <i class="fi fi-rr-history"></i>
+                </div>
+                <div>
+                    <small class="kpi-title" t="payroll.kpi.previous_week">Nómina Semana Anterior</small>
+                    <h4 class="kpi-value" id="kpi_previous_week" style="margin:0;">cargando...</h4>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--med-text-muted);">
+                Periodo cerrado y pagado
+            </div>
+        </div>
+
+        <!-- Tarjeta: Mes Actual -->
+        <div class="card card-accent-success">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="icon-shape bg-soft-success">
+                    <i class="fi fi-rr-calculator"></i>
+                </div>
+                <div>
+                    <small class="kpi-title" t="payroll.kpi.current_month">Nómina Mes Actual</small>
+                    <h4 class="kpi-value" id="kpi_current_month" style="margin:0;">cargando...</h4>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--med-text-muted);">
+                <span class="text-success" style="font-weight: 700;">↑ Acumulado mensual</span>
+            </div>
+        </div>
+
+        <!-- Tarjeta: Mes Anterior -->
+        <div class="card card-accent-warning">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="icon-shape bg-soft-warning">
+                    <i class="fi fi-rr-document"></i>
+                </div>
+                <div>
+                    <small class="kpi-title" t="payroll.kpi.previous_month">Nómina Mes Anterior</small>
+                    <h4 class="kpi-value" id="kpi_previous_month" style="margin:0;">cargando...</h4>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--med-text-muted);">
+                Histórico registrado
+            </div>
+        </div>
+    </div>
+
+    <!-------------------graph---------------------->
+    <div class="grid-2" style="margin-top:2rem;">
+        <div class="card">
+            <h6 style="margin-bottom: 1.5rem; font-weight: 700;">Distribución de Ingresos</h6>
+            <canvas id="moneyChart"></canvas>
+        </div>
+
+        <div class="card">
+            <h6>Servicios más vendidos</h6>
+            <canvas id="servicesChart"></canvas>
+        </div>
+
+        <div class="card">
+            <h6>Ingresos por servicio</h6>
+            <canvas id="servicesRevenueChart"></canvas>
+        </div>
+
+        <div class="card">
+            <h6>Top clientes</h6>
+            <canvas id="customersChart"></canvas>
+        </div>
+
+        <div class="card">
+            <h6>Vendedores que más generan</h6>
+            <canvas id="doctorsChart"></canvas>
+        </div>
+
+        <div class="card">
+            <h6>Origen de pacientes</h6>
+            <canvas id="sourcesChart"></canvas>
+        </div>
+    </div>
+
+    <footer class="dashboard-footer">
+        <a href="" target="_blank" class="powered-by">
+            <span>Powered by</span>
+            <strong>PLUS ERP</strong>
+            <span class="footer-dot"></span>
+            <span style="font-size: 0.75rem; opacity: 0.7;">v2</span>
+        </a>
+
+        <div style="margin-top: 8px; font-size: 0.7rem; color: #94a3b8; letter-spacing: 0.5px;">
+            &copy; 2026 developer by {ED} SOFTWARE DEVELOPMENT. All rights reserved.
+        </div>
+    </footer>
+</div>
+
+
+
+<script>
+    (async () => {
+        function renderPieChart(canvasId, data) {
+            if (!data) return;
+
+            new Chart(document.getElementById(canvasId), {
+                type: 'pie',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data
+                    }]
+                }
+            });
+        }
+
+        function renderBarChart(canvasId, data) {
+            if (!data) return;
+
+            new Chart(document.getElementById(canvasId), {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data
+                    }]
+                }
+            });
+        }
+
+
+        function renderSubscription(subscription) {
+            if (!subscription) return;
+
+            const card = document.getElementById("subscriptionCard");
+            const planName = document.getElementById("planName");
+            //const planStatus = document.getElementById("planStatus");
+            const planExpire = document.getElementById("planExpire");
+
+            card.style.display = "flex";
+            planName.innerText = subscription.plan;
+
+            let className = "";
+            let statusText = "";
+
+            const now = new Date();
+            let daysLeft = null;
+
+            if (subscription.expires_at) {
+                const expireDate = new Date(subscription.expires_at);
+                const diffTime = expireDate - now;
+                daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            }
+
+            // 🔥 LÓGICA INTELIGENTE
+            if (subscription.is_expired || (daysLeft !== null && daysLeft <= 0)) {
+                className = "subscription-expired";
+                statusText = "Expirado";
+            }
+            else if (daysLeft !== null && daysLeft <= 2) {
+                className = "subscription-expired"; // rojo
+                statusText = `Vence en ${daysLeft} día${daysLeft === 1 ? '' : 's'} ⚠️`;
+            }
+            else if (daysLeft !== null && daysLeft <= 5) {
+                className = "subscription-warning"; // amarillo
+                statusText = `Vence en ${daysLeft} días`;
+            }
+            else if (subscription.status === "active") {
+                className = "subscription-active";
+                statusText = "Activo";
+            }
+            else if (subscription.status === "trial") {
+                className = "subscription-warning";
+                statusText = "Prueba";
+            }
+            else {
+                statusText = subscription.status;
+            }
+
+            //planStatus.innerText = statusText;
+
+            // Fecha
+            if (subscription.expires_at) {
+                const date = new Date(subscription.expires_at);
+                planExpire.innerText = "Vence: " + date.toLocaleDateString();
+            } else {
+                planExpire.innerText = "Sin fecha de vencimiento";
+            }
+
+            // limpiar clases anteriores
+            card.classList.remove(
+                "subscription-active",
+                "subscription-warning",
+                "subscription-expired"
+            );
+
+            card.classList.add(className);
+        }
+
+        function formatMoney(value) {
+            return `$${Number(value || 0).toLocaleString('es-MX')}`;
+        }
+
+        function updatePayrollKPIs(kpiData) {
+            // Validamos que exista la propiedad payroll dentro de la respuesta
+            if (!kpiData || !kpiData.payroll) return;
+
+            const payroll = kpiData.payroll;
+
+            // Actualizamos cada KPI usando tu función formatMoney y accediendo a kpi.payroll
+            document.getElementById("kpi_current_week").textContent = formatMoney(payroll.current_week);
+            document.getElementById("kpi_previous_week").textContent = formatMoney(payroll.previous_week);
+            document.getElementById("kpi_current_month").textContent = formatMoney(payroll.current_month);
+            document.getElementById("kpi_previous_month").textContent = formatMoney(payroll.previous_month);
+        }
+
+        function renderKPI(kpi) {
+            document.getElementById("today").textContent = formatMoney(kpi.income_today);
+            document.getElementById('week').textContent = formatMoney(kpi.income_week);
+
+            updatePayrollKPIs(kpi);
+            //render top services 
+
+            document.getElementById("month").textContent = formatMoney(kpi.income_month);
+            document.getElementById('get_all_the_sale_month').textContent = formatMoney(kpi.get_all_the_sale_month);
+            document.getElementById("cancellations_month").textContent = formatMoney(kpi.cancellations_month);
+            document.getElementById("profit_last_month").textContent = formatMoney(kpi.profit_last_month);
+
+            document.getElementById("new_sales").textContent = kpi.new_sales;
+            document.getElementById("cancelled_sales").textContent = kpi.cancelled_sales;
+
+            const pipelineData = kpi.get_active_pipeline;
+            document.getElementById('pipeline-pending').innerText = pipelineData.pending;
+            document.getElementById('pipeline-accepted').innerText = pipelineData.accepted;
+            document.getElementById('pipeline-total').innerText = pipelineData.total_active;
+        }
+
+        function renderCustomers(customers) {
+            document.getElementById("totalPatients").innerText = customers.total_customers;
+            document.getElementById("totalNewCustomers").innerText = `+${customers.new_customers} nuevos`;
+        }
+
+        function renderTopService(data) {
+            if (!data || data.labels.length <= 0) return;
+
+            document.getElementById("topService").innerText = data.labels[0];
+        }
+
+        let salesChart;
+        function renderSalesPredictionChart(data) {
+            const ctx = document.getElementById('salesChart');
+
+            if (salesChart) salesChart.destroy();
+
+            salesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Ingresos',
+                        data: data.data,
+                        tension: 0.4
+                    }]
+                }
+            });
+        }
+
+        let moneyChart;
+        function renderMoneyDistributionChart(data) {
+            const ctx = document.getElementById('moneyChart');
+
+            if (moneyChart) moneyChart.destroy();
+
+            moneyChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data
+                    }]
+                }
+            });
+        }
+
+        function renderSubscription(subscription) {
+            if (!subscription) return;
+
+            const card = document.getElementById("subscriptionCard");
+            const planName = document.getElementById("planName");
+            //const planStatus = document.getElementById("planStatus");
+            const planExpire = document.getElementById("planExpire");
+
+            card.style.display = "flex";
+            planName.innerText = subscription.plan;
+
+            let className = "subscription-expired";
+            let statusText = "";
+
+            const now = new Date();
+            let daysLeft = null;
+
+            if (subscription.expires_at) {
+                const expireDate = new Date(subscription.expires_at);
+                const diffTime = expireDate - now;
+                daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            }
+
+            // 🔥 LÓGICA INTELIGENTE
+            if (subscription.is_expired || (daysLeft !== null && daysLeft <= 0)) {
+                className = "subscription-expired";
+                statusText = "Expirado";
+            }
+            else if (daysLeft !== null && daysLeft <= 2) {
+                className = "subscription-expired"; // rojo
+                statusText = `Vence en ${daysLeft} día${daysLeft === 1 ? '' : 's'} ⚠️`;
+            }
+            else if (daysLeft !== null && daysLeft <= 5) {
+                className = "subscription-warning"; // amarillo
+                statusText = `Vence en ${daysLeft} días`;
+            }
+            else if (subscription.status === "active") {
+                className = "subscription-active";
+                statusText = "Activo";
+            }
+            else if (subscription.status === "trial") {
+                className = "subscription-warning";
+                statusText = "Prueba";
+            }
+            else {
+                statusText = subscription.status;
+            }
+
+            // Fecha
+            if (subscription.expires_at) {
+                const date = new Date(subscription.expires_at);
+                planExpire.innerText = "Vence: " + date.toLocaleDateString();
+            } else {
+                planExpire.innerText = "Sin fecha de vencimiento";
+            }
+
+            // limpiar clases anteriores
+            card.classList.remove(
+                "subscription-active",
+                "subscription-warning",
+                "subscription-expired"
+            );
+
+            card.classList.add(className);
+        }
+
+        function renderTopServicesChart(data) {
+            new Chart(document.getElementById("servicesChart"), {
+                type: 'pie',
+                data: {
+                    labels: data.labels,
+                    datasets: [{ data: data.data }]
+                }
+            });
+        }
+
+        function renderDoctorsChart(data) {
+            new Chart(document.getElementById("doctorsChart"), {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Ingresos',
+                        data: data.data,
+                        backgroundColor: data.backgroundColor,
+                        borderColor: data.borderColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderAreasChart(data) {
+            new Chart(document.getElementById("areasChart"), {
+                type: "pie",
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: data.backgroundColor,
+                        borderColor: data.borderColor,
+                        borderWidth: 1
+                    }]
+
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: "bottom"
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderAreasChartThisMonth(data) {
+            new Chart(document.getElementById("areasChartThisMonth"), {
+                type: "pie",
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: data.backgroundColor,
+                        borderColor: data.borderColor,
+                        borderWidth: 1
+                    }]
+
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: "bottom"
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderAreasChartCompany(data) {
+            new Chart(document.getElementById("areasChartCompany"), {
+                type: "pie",
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: data.backgroundColor,
+                        borderColor: data.borderColor,
+                        borderWidth: 1
+                    }]
+
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: "bottom"
+                        }
+                    }
+                }
+            });
+        }
+
+        function get_text_status(status) {
+            return window.translate_text(`dashboard.status.${status}`)
+        }
+
+        function renderFinancialSummary(data){
+            document.getElementById("totalInsideMoney").textContent =
+                format_currency(data.total_inside_money, window.get_currency_system(), true, true);
+
+            document.getElementById("totalOutsideMoney").textContent =
+                `-${format_currency(data.total_outside_money, window.get_currency_system(), true, true)}`;
+
+            const profitElement = document.getElementById("totalProfit");
+
+            profitElement.textContent =
+                format_currency(data.total_profit, window.get_currency_system(), true, true);
+
+            profitElement.classList.remove("profit-color","loss-color");
+
+            if(data.total_profit >= 0){
+                profitElement.classList.add("profit-color");
+            }else{
+                profitElement.classList.add("loss-color");
+            }
+
+        }
+
+        async function renderDashboard(data) {
+            renderFinancialSummary(data.financial_summary);
+            renderSubscription(data.subscription);
+
+            renderKPI(data.KPI);
+            renderTopService(data.graph.get_top_services);
+            renderCustomers(data.customers);
+
+            renderSalesPredictionChart(data.graph_prediction.predict_next_month_income);
+
+            renderPieChart("servicesChart", data.graph.get_top_services);
+            renderBarChart("servicesRevenueChart", data.graph.get_top_services_revenue);
+            renderBarChart("customersChart", data.graph.get_top_customers);
+
+            console.log(data.graph.get_top_doctors_by_revenue)
+            //renderBarChart("doctorsChart", data.graph.get_top_doctors_by_revenue);
+            renderDoctorsChart(data.graph.get_top_doctors_by_revenue)
+
+            renderPieChart("sourcesChart", data.graph.get_customers_by_source);
+            renderMoneyDistributionChart(data.graph.get_payment_methods_distribution);
+            renderAreasChartCompany(data.graph.get_global_secluded_area_distribution);
+
+            
+        }
+
+        async function loadDashboard() {
+            try {
+                const result = await window.send_message_to_the_server('/dashboard/dashboard_data/', {}, true, 'GET');
+                if (!result.success) {
+                    console.error(result.error);
+                    return;
+                }
+
+                const data = result.answer;
+                //console.log(JSON.stringify(data, null, 2));
+                await renderDashboard(data);
+            } catch (error) {
+                console.error("Error loading dashboard:", error);
+            }
+        }
+
+        await loadDashboard();
+    })();
+</script>
