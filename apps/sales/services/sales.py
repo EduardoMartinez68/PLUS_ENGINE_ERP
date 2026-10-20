@@ -718,8 +718,8 @@ class Sales:
                 #information of the customer
                 patiente_signature_json=dataSignature.get('patiente_signature_json',''),
                 patient_name=dataSignature.get('patient_name',''),
-                company_signature_json=dataSignature.get('company_signature_json',''),
-                company_name=dataSignature.get('company_name',''),
+                company_signature_json=dataSignature.get('user_signature_json',''),
+                company_name=dataSignature.get('user_name',''),
                 patient_ip=ip,
             )
 
