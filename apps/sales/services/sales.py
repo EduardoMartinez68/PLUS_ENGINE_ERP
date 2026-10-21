@@ -711,9 +711,10 @@ class Sales:
             #if can update the sale to accepted now we will to create a sale or get the contract that have
             #vinculate the sale if exist.
             dataSignature=data.get('dataSignature', {})
+            contract_text=dataSignature.get(sale.contractSale, 'contract_text')
             contract, created = Contract.objects.get_or_create(
                 sale=sale,
-                contract_text=dataSignature.get('contract_text',''),
+                contract_text=contract_text,
 
                 #information of the customer
                 patiente_signature_json=dataSignature.get('patiente_signature_json',''),
