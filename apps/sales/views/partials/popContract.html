@@ -424,9 +424,8 @@
 </message-pop>
 
 <!-- Popup para crear o editar una plantilla -->
-<message-pop
-    title="Plantilla de contrato"
-    name="{plus}_contract_template_editor_popup">
+<plus-panel id="{plus}_contract_template_editor_popup" side="left" size="100%"
+    title="Plantilla de contrato">
 
     <div class="{plus}_template_editor">
 
@@ -444,7 +443,7 @@
 
         <div class="{plus}_template_editor_body">
             <plus-word
-                name="contractSale"
+                name="{plus}_contractSale"
                 id="{plus}_contractSale">
             </plus-word>
         </div>
@@ -468,7 +467,7 @@
 
     </div>
 
-</message-pop>
+</plus-panel>
 
 
 
@@ -488,8 +487,8 @@
         delete: id => `/contract/view_delete_contract_template/${id}/`
     };
 
-    const editorId = `${namespace}_contractSale`;
-    const popupId = `${namespace}_contract_template_editor_popup`;
+    const editorId = `{plus}_contractSale`;
+    const popupId = document.getElementById(`${namespace}_contract_template_editor_popup`);
 
     let templates = [];
     let selectedTemplateId = null;
@@ -1021,7 +1020,7 @@
             document.getElementById('apps_sales_views_partials_formSales_contractSale').loadJSON(response.answer.contract_container);
 
             //hiden the pop
-            hide_pop(popupId);
+            popupId.hide();
             hide_pop('{plus}_contract_template_popup');
         } catch (error) {
 
@@ -1049,7 +1048,7 @@
             return;
         }
 
-        show_pop(popupId);
+        popup.show()
     }
 
 
@@ -1081,7 +1080,7 @@
 
             loadEditorJSON(template.contract_container || {});
 
-            show_pop(popupId);
+            popupId.show();
 
         } catch (error) {
 
@@ -1159,8 +1158,8 @@
                         : "sales.success.template-created"
                 )
             );
-            hide_pop(editorId);
-            hide_pop(popupId);
+            
+            popupId.hide();
             await refreshContractTemplates();
         } catch (error) {
 
@@ -1235,7 +1234,7 @@
     // CERRAR EDITOR
     // =====================================================
     function closeContractTemplateEditor() {
-        hide_pop(popupId);
+        popupId.hide();
         editingTemplateId = null;
     }
 
@@ -1265,9 +1264,6 @@
         container.addEventListener("click", handleTemplateListClick);
 
         container.addEventListener("keydown", handleTemplateListKeydown);
-
-        console.log("[Contracts] Eventos registrados correctamente.");
-
         searchContractTemplates();
     }
 
