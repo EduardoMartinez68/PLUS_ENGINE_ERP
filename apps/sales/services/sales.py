@@ -711,9 +711,12 @@ class Sales:
             #if can update the sale to accepted now we will to create a sale or get the contract that have
             #vinculate the sale if exist.
             dataSignature=data.get('dataSignature', {})
-            contract_text=dataSignature.get(sale.contractSale, 'contract_text')
+            if sale.contractSale:
+                contract_text=sale.contractSale
+            else:
+                contract_text=dataSignature.get('contract_text','')
+
             contract, created = Contract.objects.get_or_create(
-                sale=sale,
                 contract_text=contract_text,
 
                 #information of the customer
@@ -724,8 +727,7 @@ class Sales:
                 patient_ip=ip,
             )
 
-            if not contract:
-                raise ValueError("No se creo el contrato")
+            sale.contract = contract #save the relation of the contract with the sale
 
                 
             # save the date for know when was accepted the sale
@@ -739,7 +741,8 @@ class Sales:
                 'status',
                 'startDate',
                 'amount_paid',
-                'balance'
+                'balance',
+                'contract'
             ])
 
             return {

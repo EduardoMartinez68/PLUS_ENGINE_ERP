@@ -1,0 +1,1356 @@
+<style>
+/* =====================================================
+   ESTILOS DE UI: SELECTOR Y EDITOR DE CONTRATOS
+   ===================================================== */
+
+/* Contenedor Principal */
+.{plus}_contract_templates {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px;
+    background-color: #f8fafc;
+    border-radius: 16px;
+    font-family: inherit;
+    color: #1e293b;
+    max-height: 85vh;
+    box-sizing: border-box;
+}
+
+/* Encabezado */
+.{plus}_templates_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 16px;
+}
+
+.{plus}_templates_title_wrapper h2 {
+    margin: 0 0 4px 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.{plus}_templates_title_wrapper p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+/* Buscador */
+.{plus}_templates_search {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.{plus}_search_input_wrapper {
+    position: relative;
+    flex: 1;
+}
+
+.{plus}_search_input_wrapper i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+.{plus}_search_input_wrapper input {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background-color: #ffffff;
+    font-size: 0.925rem;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.{plus}_search_input_wrapper input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.{plus}_templates_counter_badge {
+    background: #e2e8f0;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+/* Listado Grid */
+.{plus}_templates_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+/* Tarjeta de Plantilla */
+.{plus}_template_card {
+    position: relative;
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    outline: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.{plus}_template_card:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+/* ESTADO SELECCIONADO (Margen y borde de otro color destacado) */
+.{plus}_template_card_selected {
+    border-color: #2563eb !important;
+    background-color: #eff6ff !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2) !important;
+}
+
+/* Vista previa esquemática del contrato dentro de la tarjeta */
+.{plus}_template_paper {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    pointer-events: none;
+}
+
+.{plus}_paper_header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748b;
+}
+
+.{plus}_paper_line {
+    height: 4px;
+    background: #e2e8f0;
+    border-radius: 2px;
+    width: 100%;
+}
+
+.{plus}_paper_line_title {
+    width: 60%;
+    background: #cbd5e1;
+}
+
+.{plus}_paper_line_short {
+    width: 40%;
+}
+
+/* Información de la Tarjeta */
+.{plus}_template_card_info h3 {
+    margin: 0 0 4px 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.{plus}_template_card_info span {
+    font-size: 0.75rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Acciones flotantes en la tarjeta (Editar / Borrar) */
+.{plus}_template_card_actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.{plus}_template_card:hover .{plus}_template_card_actions {
+    opacity: 1;
+}
+
+.{plus}_template_action {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #475569;
+    transition: all 0.15s;
+}
+
+.{plus}_template_action:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.{plus}_template_delete:hover {
+    background: #fee2e2;
+    border-color: #f87171;
+    color: #dc2626;
+}
+
+/* Badge de seleccionado */
+.{plus}_template_selected_badge {
+    display: none;
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #2563eb;
+    gap: 4px;
+    align-items: center;
+}
+
+.{plus}_template_card_selected .{plus}_template_selected_badge {
+    display: flex;
+}
+
+/* Pie de página del selector */
+.{plus}_templates_footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 16px;
+}
+
+.{plus}_selected_feedback {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: #475569;
+    font-weight: 500;
+}
+
+/* Editor de Plantilla Popup */
+.{plus}_template_editor {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 16px;
+}
+
+.{plus}_template_editor_header label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 6px;
+}
+
+.{plus}_template_editor_header input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.{plus}_template_editor_body {
+    min-height: 250px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.{plus}_template_editor_footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 14px;
+}
+
+/* Botones genéricos de acción UI limpios */
+.{plus}_btn_primary {
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.{plus}_btn_secondary {
+    background: #e2e8f0;
+    color: #334155;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.{plus}_btn_secondary:hover {
+    background: #cbd5e1;
+}
+
+/* Estado Vacío */
+.{plus}_templates_empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    color: #64748b;
+}
+
+.{plus}_templates_empty i {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+    display: block;
+    color: #94a3b8;
+}
+</style>
+<message-pop
+    title="Plantilla de contrato"
+    name="{plus}_contract_template_popup">
+
+    <div class="{plus}_contract_templates">
+
+        <!-- Encabezado -->
+        <div class="{plus}_templates_header">
+            <div class="{plus}_templates_title_wrapper">
+                <h2 t="sales.title.templates"></h2>
+                <p t="sales.description.templates"></p>
+            </div>
+
+            <button
+                type="button"
+                class="{plus}_btn_primary btn btn-add"
+                onclick="window.Plus.Functions.get('{plus}').openCreateContractTemplate()">
+                <i class="fi fi-rs-plus"></i>
+                <span t="sales.button.create-template"></span>
+            </button>
+        </div>
+
+        <!-- Buscador -->
+        <div class="{plus}_templates_search">
+            <div class="{plus}_search_input_wrapper">
+                <i class="fi fi-rs-search"></i>
+                <input
+                    type="text"
+                    id="{plus}_search_contract_templates"
+                    placeholder="Buscar plantillas por nombre..."
+                    oninput="window.Plus.Functions.get('{plus}').searchContractTemplates()">
+            </div>
+
+            <div class="{plus}_templates_counter_badge">
+                <span t="sales.info.total">Total:</span>
+                <span id="{plus}_contract_templates_count" class="{plus}_templates_count">0</span>
+            </div>
+        </div>
+
+        <!-- Listado -->
+        <div
+            id="{plus}_contract_templates_list"
+            class="{plus}_templates_grid">
+
+            <div class="{plus}_templates_empty">
+                <i class="fi fi-rs-file-contract"></i>
+                <p t="sales.info.loading-templates"></p>
+            </div>
+
+        </div>
+
+        <!-- Acciones de selección -->
+        <div class="{plus}_templates_footer">
+            <div class="{plus}_selected_feedback">
+                <i class="fi fi-rs-info"></i>
+                <span id="{plus}_selected_template_name" t="sales.info.no-template-selected"></span>
+            </div>
+
+            <button
+                type="button"
+                id="{plus}_button_use_contract_template"
+                class="{plus}_btn_primary {plus}_btn_lg"
+                disabled
+                onclick="window.Plus.Functions.get('{plus}').useSelectedContractTemplate()">
+                <i class="fi fi-rs-check"></i>
+                <span t="sales.button.use-template"></span>
+            </button>
+        </div>
+
+    </div>
+    
+</message-pop>
+
+<!-- Popup para crear o editar una plantilla -->
+<message-pop
+    title="Plantilla de contrato"
+    name="{plus}_contract_template_editor_popup">
+
+    <div class="{plus}_template_editor">
+
+        <div class="{plus}_template_editor_header">
+            <label
+                for="{plus}_contract_template_name"
+                t="sales.label.template-name">
+            </label>
+            <input
+                type="text"
+                id="{plus}_contract_template_name"
+                maxlength="255"
+                placeholder="Escribe un nombre descriptivo para la plantilla...">
+        </div>
+
+        <div class="{plus}_template_editor_body">
+            <plus-word
+                name="contractSale"
+                id="{plus}_contractSale">
+            </plus-word>
+        </div>
+
+        <div class="{plus}_template_editor_footer">
+            <button
+                type="button"
+                class="{plus}_btn_secondary"
+                onclick="window.Plus.Functions.get('{plus}').closeContractTemplateEditor()"
+                t="sales.button.cancel">
+            </button>
+            <button
+                type="button"
+                class="{plus}_btn_primary btn btn-add"
+                id="{plus}_button_save_contract_template"
+                onclick="window.Plus.Functions.get('{plus}').saveContractTemplate()">
+                <i class="fi fi-rs-disk"></i>
+                <span t="sales.button.save-template"></span>
+            </button>
+        </div>
+
+    </div>
+
+</message-pop>
+
+
+
+<script>
+(() => {
+
+    const namespace = "{plus}";
+
+    // =====================================================
+    // CONFIGURACIÓN
+    // =====================================================
+    const API = {
+        search: "/contract/view_search_contract_templates/",
+        create: "/contract/view_create_contract_template/",
+        get: id => `/contract/view_get_contract_template/${id}/`,
+        update: id => `/contract/view_update_contract_template/${id}/`,
+        delete: id => `/contract/view_delete_contract_template/${id}/`
+    };
+
+    const editorId = `${namespace}_contractSale`;
+    const popupId = `${namespace}_contract_template_editor_popup`;
+
+    let templates = [];
+    let selectedTemplateId = null;
+    let editingTemplateId = null;
+    let searchTimeout = null;
+    let editorReady = false;
+
+
+    // =====================================================
+    // ELEMENTOS
+    // =====================================================
+
+    function getElement(name) {
+        return document.getElementById(`${namespace}_${name}`);
+    }
+
+    function getEditor() {
+        return document.getElementById(editorId);
+    }
+
+    function getTemplateNameInput() {
+        return getElement("contract_template_name");
+    }
+
+    function getTemplatesContainer() {
+        return getElement("contract_templates_list");
+    }
+
+
+    // =====================================================
+    // UTILIDADES
+    // =====================================================
+
+    function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, character => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[character]);
+    }
+
+    function showError(message) {
+        show_alert(
+            "error",
+            translate_text("sales.error.title"),
+            message
+        );
+    }
+
+    function showSuccess(message) {
+        show_notification("success", message);
+    }
+
+    function getTemplateById(id) {
+        return templates.find(template => String(template.id) === String(id));
+    }
+
+    function getEditorJSON() {
+        const editor = getEditor();
+
+        if (!editor || typeof editor.toJSON !== "function") {
+            throw new Error(
+                "El editor de contratos no está disponible."
+            );
+        }
+
+        return editor.toJSON();
+    }
+
+    function loadEditorJSON(data) {
+        const editor = getEditor();
+
+        if (!editor || typeof editor.loadJSON !== "function") {
+            throw new Error(
+                "El editor de contratos no está disponible."
+            );
+        }
+
+        editor.loadJSON(data);
+    }
+
+    function clearEditor() {
+        const editor = getEditor();
+
+        if (editor && typeof editor.loadJSON === "function") {
+            editor.loadJSON({});
+        }
+
+        getTemplateNameInput().value = "";
+    }
+
+    function getEditorElement() {
+        return getEditor();
+    }
+
+
+    // =====================================================
+    // BÚSQUEDA DE PLANTILLAS
+    // =====================================================
+
+    async function searchContractTemplates() {
+
+        clearTimeout(searchTimeout);
+
+        searchTimeout = setTimeout(async () => {
+
+            const input = getElement("search_contract_templates");
+            const query = input ? input.value.trim() : "";
+
+            const container = getTemplatesContainer();
+
+            container.innerHTML = `
+                <div class="${namespace}_templates_empty">
+                    <i class="fi fi-rs-spinner"></i>
+                    <p>${escapeHtml(
+                        translate_text("sales.info.loading-templates")
+                    )}</p>
+                </div>
+            `;
+
+            try {
+
+                const url = new URL(API.search, window.location.origin);
+
+                url.searchParams.set("allFilters", query);
+
+                const response = await send_message_to_the_server(
+                    url.pathname + url.search,
+                    {},
+                    false,
+                    "GET"
+                );
+
+                if (!response || !response.success) {
+                    throw new Error(
+                        response?.error ||
+                        translate_text("sales.error.search")
+                    );
+                }
+
+                templates = response.answer || [];
+
+                renderTemplates();
+
+            } catch (error) {
+
+                container.innerHTML = `
+                    <div class="${namespace}_templates_empty">
+                        <i class="fi fi-rs-triangle-warning"></i>
+                        <p>${escapeHtml(
+                            translate_text("sales.error.search")
+                        )}</p>
+                    </div>
+                `;
+
+                showError(error.message);
+            }
+
+        }, 250);
+    }
+
+
+    // =====================================================
+    // RENDERIZAR TARJETAS
+    // =====================================================
+    function renderTemplates() {
+
+        const container = getTemplatesContainer();
+
+        const count = getElement("contract_templates_count");
+
+        if (count) {
+            count.textContent = String(templates.length);
+        }
+
+        if (!templates.length) {
+
+            container.innerHTML = `
+                <div class="${namespace}_templates_empty">
+                    <i class="fi fi-rs-file-contract"></i>
+                    <h3>${escapeHtml(
+                        translate_text("sales.info.no-templates")
+                    )}</h3>
+                    <p>${escapeHtml(
+                        translate_text("sales.info.create-first-template")
+                    )}</p>
+                </div>
+            `;
+
+            updateSelectedTemplateUI();
+
+            return;
+        }
+
+        container.innerHTML = templates.map(template => {
+
+            const selected =
+                String(template.id) === String(selectedTemplateId);
+
+            const createdAt = template.created_at
+                ? new Date(template.created_at).toLocaleDateString()
+                : "";
+
+            return `
+                <article
+                    class="${namespace}_template_card ${selected
+                        ? `${namespace}_template_card_selected`
+                        : ""}"
+                    data-template-id="${escapeHtml(template.id)}"
+                    tabindex="0"
+                    role="button"
+                    aria-pressed="${selected}"
+                    onclick="window.Plus.Functions.get('{plus}').selectTemplateCard(this)">
+
+                    <div class="${namespace}_template_card_actions">
+
+                        <button
+                            type="button"
+                            class="${namespace}_template_action"
+                            data-action="edit"
+                            onclick="window.Plus.Functions.get('{plus}').openEditContractTemplate('${escapeHtml(template.id)}')"
+                            data-id="${escapeHtml(template.id)}"
+                            title="${escapeHtml(
+                                translate_text("sales.button.edit")
+                            )}"
+                            aria-label="${escapeHtml(
+                                translate_text("sales.button.edit")
+                            )}">
+
+                            <i class="fi fi-rs-pencil"></i>
+
+                        </button>
+
+                        <button
+                            type="button"
+                            class="${namespace}_template_action ${namespace}_template_delete"
+                            data-action="delete"
+                            onclick="window.Plus.Functions.get('{plus}').deleteContractTemplate('${escapeHtml(template.id)}')"
+                            data-id="${escapeHtml(template.id)}"
+                            title="${escapeHtml(
+                                translate_text("sales.button.delete")
+                            )}"
+                            aria-label="${escapeHtml(
+                                translate_text("sales.button.delete")
+                            )}">
+
+                            <i class="fi fi-rs-trash"></i>
+
+                        </button>
+
+                    </div>
+
+                    <div class="${namespace}_template_paper">
+
+                        <div class="${namespace}_paper_header">
+                            <i class="fi fi-rs-file-contract"></i>
+                            <span>CONTRATO</span>
+                        </div>
+
+                        <div class="${namespace}_paper_line ${namespace}_paper_line_title"></div>
+                        <div class="${namespace}_paper_line"></div>
+                        <div class="${namespace}_paper_line"></div>
+
+                        <div class="${namespace}_paper_section"></div>
+
+                        <div class="${namespace}_paper_line"></div>
+                        <div class="${namespace}_paper_line"></div>
+                        <div class="${namespace}_paper_line ${namespace}_paper_line_short"></div>
+
+                        <div class="${namespace}_paper_signature">
+                            <div></div>
+                            <div></div>
+                        </div>
+
+                    </div>
+
+                    <div class="${namespace}_template_card_info">
+
+                        <h3>${escapeHtml(template.name)}</h3>
+
+                        <span>
+                            <i class="fi fi-rs-calendar"></i>
+                            ${escapeHtml(createdAt)}
+                        </span>
+
+                    </div>
+
+                    <div class="${namespace}_template_selected_badge">
+                        <i class="fi fi-rs-check-circle"></i>
+                        ${escapeHtml(
+                            translate_text("sales.info.selected")
+                        )}
+                    </div>
+
+                </article>
+            `;
+
+        }).join("");
+
+        updateSelectedTemplateUI();
+    }
+
+    function selectTemplateCard(element) {
+        const container = getTemplatesContainer();
+
+        if (!container || !element) {
+            return;
+        }
+
+        // Obtener el ID de la plantilla seleccionada.
+        const templateId = element.dataset.templateId;
+
+        if (!templateId) {
+            return;
+        }
+
+        // Recorrer todas las tarjetas y quitar la selección anterior.
+        const cards = container.querySelectorAll(
+            `.${namespace}_template_card`
+        );
+
+        cards.forEach(card => {
+            card.classList.remove(
+                `${namespace}_template_card_selected`
+            );
+
+            card.setAttribute("aria-pressed", "false");
+        });
+
+        // Seleccionar la tarjeta actual.
+        element.classList.add(
+            `${namespace}_template_card_selected`
+        );
+
+        element.setAttribute("aria-pressed", "true");
+
+        // Guardar el ID de la plantilla seleccionada.
+        selectedTemplateId = templateId;
+
+        // Actualizar la interfaz relacionada con la selección.
+        updateSelectedTemplateUI();
+    }
+
+    // =====================================================
+    // EVENTOS DEL LISTADO
+    // =====================================================
+    function handleTemplateListClick(event) {
+        console.log("[Contracts] Click detectado:", event.target);
+        const actionButton = event.target.closest("[data-action]");
+
+        if (actionButton) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const id = actionButton.dataset.id;
+            const action = actionButton.dataset.action;
+
+            console.log("[Contracts] Acción:", action);
+            console.log("[Contracts] ID:", id);
+
+            if (!id) {
+                console.error("[Contracts] El botón no tiene un ID válido.");
+                return;
+            }
+
+            if (action === "edit") {
+                console.log("[Contracts] Ejecutando edición.");
+                openEditContractTemplate(id);
+                return;
+            }
+
+            if (action === "delete") {
+                console.log("[Contracts] Ejecutando eliminación.");
+                deleteContractTemplate(id);
+                return;
+            }
+
+            return;
+        }
+
+        const card = event.target.closest(
+            `.${namespace}_template_card`
+        );
+
+        if (!card) {
+            console.warn("[Contracts] No se encontró la tarjeta.");
+            return;
+        }
+
+        const id = card.dataset.templateId;
+
+        console.log("[Contracts] Contrato seleccionado:", id);
+
+        if (String(selectedTemplateId) === String(id)) {
+            useContractTemplate(id);
+        } else {
+            selectContractTemplate(id);
+        }
+    }
+
+
+    function handleTemplateListKeydown(event) {
+
+        if (event.key !== "Enter" && event.key !== " ") {
+            return;
+        }
+
+        const card = event.target.closest(
+            `.${namespace}_template_card`
+        );
+
+        if (!card) return;
+
+        event.preventDefault();
+
+        const id = card.dataset.templateId;
+
+        if (String(selectedTemplateId) === String(id)) {
+            useContractTemplate(id);
+        } else {
+            selectContractTemplate(id);
+        }
+    }
+
+
+    function selectContractTemplate(id) {
+
+        const template = getTemplateById(id);
+
+        if (!template) return;
+
+        selectedTemplateId = template.id;
+
+        renderTemplates();
+    }
+
+
+    function updateSelectedTemplateUI() {
+
+        const nameElement = getElement("selected_template_name");
+        const button = getElement("button_use_contract_template");
+
+        const template = getTemplateById(selectedTemplateId);
+
+        if (nameElement) {
+            nameElement.textContent = template
+                ? template.name
+                : translate_text("sales.info.no-template-selected");
+        }
+
+        if (button) {
+            button.disabled = !template;
+        }
+    }
+
+
+    // =====================================================
+    // OBTENER CONTENIDO Y UTILIZAR UNA PLANTILLA
+    // =====================================================
+
+    async function useSelectedContractTemplate() {
+
+        if (!selectedTemplateId) {
+            show_alert(
+                "alert",
+                translate_text("sales.info.title"),
+                translate_text("sales.info.select-template")
+            );
+
+            return;
+        }
+
+        await useContractTemplate(selectedTemplateId);
+    }
+
+
+    async function useContractTemplate(id) {
+
+        try {
+
+            const response = await send_message_to_the_server(
+                API.get(id),
+                {},
+                true,
+                "GET"
+            );
+
+            if (!response || !response.success) {
+                throw new Error(
+                    response?.error ||
+                    translate_text("sales.error.get-template")
+                );
+            }
+
+            const answer = response.answer;
+
+            if (!answer || !answer.contract_container) {
+                throw new Error(
+                    translate_text("sales.error.empty-template")
+                );
+            }
+
+            /*
+             * Este evento permite que otra parte del ERP reciba
+             * el contenido de la plantilla seleccionada.
+             *
+             * Puedes escucharlo desde el formulario que crea
+             * el contrato de una venta.
+             */
+            window.dispatchEvent(
+                new CustomEvent("plus:contract-template-selected", {
+                    detail: {
+                        id: answer.id,
+                        name: answer.name,
+                        contract_container: answer.contract_container
+                    }
+                })
+            );
+
+            show_notification(
+                "success",
+                translate_text("sales.info.template-selected")
+            );
+            window.hide_pop(`${namespace}_contract_templates`);
+            
+            //here we will update the information of the contract in the editor of the sale 
+            document.getElementById('apps_sales_views_partials_formSales_contractSale').loadJSON(response.answer.contract_container);
+
+            //hiden the pop
+            hide_pop(popupId);
+            hide_pop('{plus}_contract_template_popup');
+        } catch (error) {
+
+            showError(error.message);
+
+        }
+    }
+
+
+    // =====================================================
+    // CREAR PLANTILLA
+    // =====================================================
+    function openCreateContractTemplate() {
+
+        editingTemplateId = null;
+
+        clearEditor();
+
+        const popup = document.getElementById(popupId);
+
+        if (!popup) {
+            showError(
+                translate_text("sales.error.editor-not-found")
+            );
+            return;
+        }
+
+        show_pop(popupId);
+    }
+
+
+    // =====================================================
+    // EDITAR PLANTILLA
+    // =====================================================
+    async function openEditContractTemplate(id) {
+        try {
+
+            const response = await send_message_to_the_server(
+                API.get(id),
+                {},
+                true,
+                "GET"
+            );
+
+            if (!response || !response.success) {
+                throw new Error(
+                    response?.error ||
+                    translate_text("sales.error.get-template")
+                );
+            }
+
+            const template = response.answer;
+
+            editingTemplateId = template.id;
+
+            getTemplateNameInput().value = template.name || "";
+
+            loadEditorJSON(template.contract_container || {});
+
+            show_pop(popupId);
+
+        } catch (error) {
+
+            showError(error.message);
+
+        }
+    }
+
+
+    // =====================================================
+    // GUARDAR PLANTILLA NUEVA O EDITADA
+    // =====================================================
+
+    async function saveContractTemplate() {
+
+        const name = getTemplateNameInput().value.trim();
+
+        if (!name) {
+
+            show_alert(
+                "alert",
+                translate_text("sales.error.title"),
+                translate_text("sales.error.name-required")
+            );
+
+            return;
+        }
+
+        let contractContainer;
+
+        try {
+
+            contractContainer = getEditorJSON();
+
+        } catch (error) {
+
+            showError(error.message);
+            return;
+
+        }
+
+        const data = {
+            name: name,
+            contract_container: contractContainer
+        };
+
+        const isEditing = editingTemplateId !== null;
+
+        const url = isEditing
+            ? API.update(editingTemplateId)
+            : API.create;
+
+        const method = "POST";
+
+        try {
+
+            const response = await send_message_to_the_server(
+                url,
+                data,
+                true,
+                method
+            );
+
+            if (!response || !response.success) {
+                throw new Error(
+                    response?.error ||
+                    translate_text("sales.error.save-template")
+                );
+            }
+
+            showSuccess(
+                translate_text(
+                    isEditing
+                        ? "sales.success.template-updated"
+                        : "sales.success.template-created"
+                )
+            );
+            hide_pop(editorId);
+            hide_pop(popupId);
+            await refreshContractTemplates();
+        } catch (error) {
+
+            showError(error.message);
+
+        }
+    }
+
+
+    // =====================================================
+    // ELIMINAR PLANTILLA
+    // =====================================================
+
+    async function deleteContractTemplate(id) {
+
+        const template = getTemplateById(id);
+
+        if (!template) return;
+
+        const accepted = await show_message_question(
+            translate_text("sales.question.delete-title"),
+            translate_text("sales.question.delete-template")
+                .replace("{name}", template.name)
+        );
+
+        if (!accepted) return;
+
+        try {
+
+            const response = await send_message_to_the_server(
+                API.delete(id),
+                {},
+                true,
+                "POST"
+            );
+
+            if (!response || !response.success) {
+                throw new Error(
+                    response?.error ||
+                    translate_text("sales.error.delete-template")
+                );
+            }
+
+            if (String(selectedTemplateId) === String(id)) {
+                selectedTemplateId = null;
+            }
+
+            showSuccess(
+                translate_text("sales.success.template-deleted")
+            );
+
+            await refreshContractTemplates();
+
+        } catch (error) {
+
+            showError(error.message);
+
+        }
+    }
+
+
+    // =====================================================
+    // ACTUALIZAR BÚSQUEDA
+    // =====================================================
+
+    async function refreshContractTemplates() {
+        await searchContractTemplates();
+    }
+
+
+    // =====================================================
+    // CERRAR EDITOR
+    // =====================================================
+    function closeContractTemplateEditor() {
+        hide_pop(popupId);
+        editingTemplateId = null;
+    }
+
+
+    // =====================================================
+    // INICIALIZACIÓN
+    // =====================================================
+    function init() {
+        const container = getTemplatesContainer();
+
+        if (!container) {
+            console.error(
+                "[Contracts] No se encontró el contenedor:",
+                `${namespace}_contract_templates_list`
+            );
+
+            return;
+        }
+
+        // Evitar registrar los eventos varias veces.
+        if (container.dataset.eventsInitialized === "true") {
+            return;
+        }
+
+        container.dataset.eventsInitialized = "true";
+
+        container.addEventListener("click", handleTemplateListClick);
+
+        container.addEventListener("keydown", handleTemplateListKeydown);
+
+        console.log("[Contracts] Eventos registrados correctamente.");
+
+        searchContractTemplates();
+    }
+
+    function open_pop_contract_template_editor() {
+        window.show_pop('{plus}_contract_template_popup');
+    }
+
+
+    // =====================================================
+    // REGISTRO DE FUNCIONES EN PLUS
+    // =====================================================
+    window.Plus.Functions.define(
+        namespace,
+        "open_pop_contract_template_editor",
+        open_pop_contract_template_editor
+    );
+
+    window.Plus.Functions.define(
+        namespace,
+        "selectTemplateCard",
+        selectTemplateCard
+    );
+
+    window.Plus.Functions.define(
+        namespace,
+        "searchContractTemplates",
+        searchContractTemplates
+    );
+
+    window.Plus.Functions.define(
+        namespace,
+        "openCreateContractTemplate",
+        openCreateContractTemplate
+    );
+
+    window.Plus.Functions.define(
+        namespace,
+        "openEditContractTemplate",
+        openEditContractTemplate
+    );
+
+    window.Plus.Functions.define(
+        namespace,
+        "saveContractTemplate",
+        saveContractTemplate
+    );
+
+    window.Plus.Functions.define(
+        namespace,
+        "deleteContractTemplate",
+        deleteContractTemplate
+    );
+
+    window.Plus.Functions.define(
+        namespace,
+        "selectContractTemplate",
+        selectContractTemplate
+    );
+
+    window.Plus.Functions.define(
+        namespace,
+        "useSelectedContractTemplate",
+        useSelectedContractTemplate
+    );
+
+    window.Plus.Functions.define(
+        namespace,
+        "closeContractTemplateEditor",
+        closeContractTemplateEditor
+    );
+
+    window.Plus.Functions.define(
+        namespace,
+        "refreshContractTemplates",
+        refreshContractTemplates
+    );
+
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
+
+})();
+</script>

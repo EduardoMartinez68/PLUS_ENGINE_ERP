@@ -1,10 +1,9 @@
 from django.db import models
 from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField
-from core.models import CustomUser
-from apps.sales.models import Sale
+from core.models import Company, Branch, CustomUser
+
 class Contract(models.Model):
     #---------------this is for sign the treatment---------------
-    sale = models.OneToOneField(Sale, on_delete=models.CASCADE) #save the relation with the sale
     contract_text = EncryptedTextField() #the contract is encrypted for privacity
 
     #----------------------information of the customer-------------------------
@@ -32,8 +31,10 @@ class Contract(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,null=True, blank=True)#here you can create the body of the database 
 
 
-    class Meta:
-        constraints = [
-            #this is for that only exist a Contract for sale
-            models.UniqueConstraint(fields=['sale'], name='unique_contract_per_sale')
-        ]
+class contractTemplates(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+
+    name = models.CharField(max_length=255)
+    contract_container = models.JSONField(null=False)
+    created_at = models.DateTimeField(auto_now_add=True)

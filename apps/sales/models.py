@@ -7,6 +7,7 @@ from apps.services.models import Pack
 
 #-------------------------------------------------------------------------------------SETTINGS OF THE SALES---------------------------------------------
 from apps.customers.models import Customer
+from apps.contract.models import Contract
 import uuid
 import secrets
 
@@ -78,7 +79,7 @@ class Sale(models.Model):
 
     #information of contracts 
     contractSale = models.JSONField(null=True) #this is for know the information of the contract of the sale. This is for know the information of the contract in the moment of the sale, because if we change the contract of the product, this not need to change in the sale
-
+    contract = models.OneToOneField(Contract, on_delete=models.CASCADE) #save the relation with the sale
 
     created_by = models.ForeignKey(
         CustomUser,
@@ -98,6 +99,12 @@ class Sale(models.Model):
 
     def __str__(self):
         return f"Sale #{self.id} - {self.total}"
+
+    class Meta:
+        constraints = [
+            #this is for that only exist a Contract for sale
+            models.UniqueConstraint(fields=['contract'], name='unique_contract_per_sale')
+        ]
     
 class SaleItem(models.Model):
     sale = models.ForeignKey(Sale, related_name='items', on_delete=models.CASCADE)
