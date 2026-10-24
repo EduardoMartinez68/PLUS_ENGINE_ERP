@@ -79,7 +79,7 @@ class Sale(models.Model):
 
     #information of contracts 
     contractSale = models.JSONField(null=True) #this is for know the information of the contract of the sale. This is for know the information of the contract in the moment of the sale, because if we change the contract of the product, this not need to change in the sale
-    contract = models.OneToOneField(Contract, on_delete=models.CASCADE) #save the relation with the sale
+    contract = models.OneToOneField(Contract, on_delete=models.CASCADE, default=None, null=True) #save the relation with the sale
 
     created_by = models.ForeignKey(
         CustomUser,
